@@ -13,6 +13,7 @@ import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { BookOpen, ChevronDown, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
 import AppLogo from './app-logo';
+import { SidebarTrigger } from './ui/sidebar';
 
 const mainNavItems: NavItem[] = [
     {
@@ -52,12 +53,13 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                 <div className="flex h-16 items-center px-4">
                     {/* Menu */}
                     <div className='flex items-center w-full max-sm:w-1/3'>
-                        <Button
+                        {/* <Button
                             variant="ghost"
                             size="icon"
                             className="mr-2 h-[34px] w-[34px]">
                             <Menu className="size-6" />
-                        </Button>
+                        </Button> */}
+                        <SidebarTrigger className="-ml-1" />
 
                         <Link
                             href={dashboard()}
