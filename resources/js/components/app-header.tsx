@@ -11,7 +11,13 @@ import { useInitials } from '@/hooks/use-initials';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, ChevronDown, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
+import {
+    BookOpen,
+    ChevronDown,
+    Folder,
+    LayoutGrid,
+    Search,
+} from 'lucide-react';
 import AppLogo from './app-logo';
 import { SidebarTrigger } from './ui/sidebar';
 
@@ -49,82 +55,42 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const getInitials = useInitials();
     return (
         <>
-            <div className="border-b border-sidebar-border/80">
-                <div className="flex h-16 items-center px-4">
+            <div className="border-b border-sidebar-border/80 border-b-neutral-600">
+                <div className="flex h-16 items-center gap-1 px-4">
                     {/* Menu */}
-                    <div className='flex items-center w-full max-sm:w-1/3'>
-                        {/* <Button
-                            variant="ghost"
-                            size="icon"
-                            className="mr-2 h-[34px] w-[34px]">
-                            <Menu className="size-6" />
-                        </Button> */}
-                        <SidebarTrigger className="-ml-1" />
+                    <div className="flex w-full items-center max-sm:w-1/3">
+                        <SidebarTrigger className="mr-2 h-[34px] w-[34px]" />
 
                         <Link
                             href={dashboard()}
                             prefetch
                             className="flex items-center space-x-2"
-                            >
+                        >
                             <AppLogo />
                         </Link>
                     </div>
 
                     {/* Searchbar */}
-                    <div className="pt-2 relative mx-auto  w-full">
-                        <button type="submit" className="absolute left-2.5 top-0 mt-5 mr-4">
-                            <Search className='h-4 w-4' />
+                    <div className="relative mx-auto w-full pt-2">
+                        <button
+                            type="submit"
+                            className="absolute top-0 left-2.5 mt-5 mr-4"
+                        >
+                            <Search className="h-4 w-4" />
                         </button>
-                        <input className=" bg-input h-10 w-full rounded-4xl pl-8 text-sm focus:outline-none"
-                        type="search" name="search" placeholder="Search" />
+                        <input
+                            className="h-10 w-full rounded-4xl bg-input pl-8 text-sm focus:outline-none"
+                            type="search"
+                            name="search"
+                            placeholder="Search"
+                        />
                     </div>
 
                     {/* User Dropdown  */}
-                    <div className="ml-auto flex space-x-2 w-full text-right justify-end max-sm:w-1/3">
-                        {/* <div className="relative flex items-center space-x-1">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="group h-9 w-9 cursor-pointer"
-                            >
-                                <Search className="!size-5 opacity-80 group-hover:opacity-100" />
-                            </Button>
-                            <div className="hidden lg:flex">
-                                {rightNavItems.map((item) => (
-                                    <TooltipProvider
-                                        key={item.title}
-                                        delayDuration={0}
-                                    >
-                                        <Tooltip>
-                                            <TooltipTrigger>
-                                                <a
-                                                    href={resolveUrl(item.href)}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="group ml-1 inline-flex h-9 w-9 items-center justify-center rounded-md bg-transparent p-0 text-sm font-medium text-accent-foreground ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-                                                >
-                                                    <span className="sr-only">
-                                                        {item.title}
-                                                    </span>
-                                                    {item.icon && (
-                                                        <Icon
-                                                            iconNode={item.icon}
-                                                            className="size-5 opacity-80 group-hover:opacity-100"
-                                                        />
-                                                    )}
-                                                </a>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                                <p>{item.title}</p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    </TooltipProvider>
-                                ))}
-                            </div>
-                        </div> */}
+                    <div className="ml-auto flex w-full justify-end space-x-2 text-right max-sm:w-1/3">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <span className='flex items-center hover:cursor-pointer'>
+                                <span className="flex items-center hover:cursor-pointer">
                                     <Button
                                         variant="ghost"
                                         className="size-10 rounded-full p-1 hover:cursor-pointer"
@@ -135,11 +101,11 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                                                 alt={auth.user.name}
                                             />
                                             <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                                {getInitials(auth.user.name)} 
+                                                {getInitials(auth.user.name)}
                                             </AvatarFallback>
                                         </Avatar>
                                     </Button>
-                                    <ChevronDown className='size-4' />
+                                    <ChevronDown className="size-4" />
                                 </span>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-56" align="end">

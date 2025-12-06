@@ -1,11 +1,8 @@
 import { NavMain } from '@/components/nav-main';
-import {
-    Sidebar,
-    SidebarContent,
-} from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
-import { House, ClipboardCheck, Star } from 'lucide-react';
+import { ClipboardCheck, House, Star } from 'lucide-react';
 import { ClipboardClock } from './ui/icons';
 
 const mainNavItems: NavItem[] = [
@@ -16,36 +13,28 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Pending Orders',
-        href: dashboard(),
+        href: '/#',
         icon: ClipboardClock,
     },
     {
         title: 'My Tasks',
-        href: dashboard(),
+        href: '/#',
         icon: ClipboardCheck,
     },
     {
         title: 'Starred',
-        href: dashboard(),
+        href: '/#',
         icon: Star,
     },
 ];
 
 export function AppSidebar() {
     return (
-        <Sidebar collapsible="icon" variant="sidebar" className='absolute top-16'>
-            {/* <SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
-                                <AppLogo />
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarHeader> */}
-
+        <Sidebar
+            collapsible="icon"
+            variant="sidebar"
+            className="background absolute top-16"
+        >
             <SidebarContent>
                 <NavMain items={mainNavItems} />
             </SidebarContent>
