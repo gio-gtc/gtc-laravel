@@ -33,7 +33,7 @@ export function AppSidebar() {
         <Sidebar
             collapsible="icon"
             variant="sidebar"
-            className="background absolute top-16"
+            className="absolute top-16 border-t border-border bg-foreground text-white"
         >
             <SidebarContent>
                 <NavMain items={mainNavItems} />

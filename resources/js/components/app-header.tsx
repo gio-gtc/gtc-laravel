@@ -25,10 +25,10 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const getInitials = useInitials();
     return (
         <>
-            <div className="border-b border-sidebar-border/80 border-b-neutral-600">
-                <div className="flex h-16 items-center gap-1 px-4">
+            <div className="bg-foreground text-background">
+                <div className="flex h-[50px] items-center justify-center gap-1 px-2">
                     {/* Menu */}
-                    <div className="flex w-full items-center max-sm:w-1/3">
+                    <div className="flex w-full items-center max-sm:w-1/3 sm:gap-3">
                         <SidebarTrigger className="mr-2 h-[34px] w-[34px] cursor-pointer" />
 
                         <Link
@@ -41,15 +41,15 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                     </div>
 
                     {/* Searchbar */}
-                    <div className="relative mx-auto w-full pt-2">
+                    <div className="relative mx-auto w-full">
                         <button
                             type="submit"
-                            className="absolute top-0 left-2.5 mt-5 mr-4"
+                            className="absolute top-1.5 left-2.5 cursor-pointer"
                         >
-                            <Search className="h-4 w-4" />
+                            <Search className="h-3.5 w-3.5" />
                         </button>
                         <input
-                            className="h-10 w-full rounded-4xl bg-input pl-8 text-sm focus:outline-none"
+                            className="h-6 w-full rounded-4xl bg-input pl-7 text-sm focus:outline-none"
                             type="search"
                             name="search"
                             placeholder="Search"
@@ -61,21 +61,18 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <span className="flex items-center hover:cursor-pointer">
-                                    <Button
-                                        variant="ghost"
-                                        className="size-10 rounded-full p-1 hover:cursor-pointer"
-                                    >
-                                        <Avatar className="size-8 overflow-hidden rounded-full">
+                                    <Button className="rounded-full p-1 hover:cursor-pointer">
+                                        <Avatar className="size-6 overflow-hidden rounded-full">
                                             <AvatarImage
                                                 src={auth.user.avatar}
                                                 alt={auth.user.name}
                                             />
-                                            <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                            <AvatarFallback className="rounded-lg bg-neutral-200 text-black">
                                                 {getInitials(auth.user.name)}
                                             </AvatarFallback>
                                         </Avatar>
                                     </Button>
-                                    <ChevronDown className="size-4" />
+                                    <ChevronDown className="size-3" />
                                 </span>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-56" align="end">

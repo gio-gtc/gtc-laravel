@@ -24,7 +24,7 @@ export const CreateBtn = () => {
                 <MenubarMenu>
                     <TooltipTrigger asChild>
                         <MenubarTrigger className="mt-6 flex max-w-[100px] cursor-pointer gap-1.5 rounded-4xl bg-input p-2 align-middle">
-                            <div className="flex items-center justify-center rounded-full bg-gtc-red">
+                            <div className="flex items-center justify-center rounded-full bg-brand-gtc-red">
                                 <Plus
                                     style={{
                                         width: 'calc(var(--spacing) * 4)',
@@ -52,7 +52,7 @@ export const CreateBtn = () => {
 
 const CreateDropdown = () => {
     return (
-        <MenubarContent>
+        <MenubarContent className="text-white">
             <MenubarItem>Organization</MenubarItem>
             <MenubarItem>Contact</MenubarItem>
             <MenubarItem>Tour</MenubarItem>
