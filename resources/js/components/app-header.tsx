@@ -9,41 +9,11 @@ import {
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
 import { dashboard } from '@/routes';
-import { type BreadcrumbItem, type NavItem, type SharedData } from '@/types';
+import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import {
-    BookOpen,
-    ChevronDown,
-    Folder,
-    LayoutGrid,
-    Search,
-} from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
 import AppLogo from './app-logo';
 import { SidebarTrigger } from './ui/sidebar';
-
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
-
-const rightNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
-];
-
-const activeItemStyles =
-    'text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100';
 
 interface AppHeaderProps {
     breadcrumbs?: BreadcrumbItem[];
@@ -59,7 +29,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                 <div className="flex h-16 items-center gap-1 px-4">
                     {/* Menu */}
                     <div className="flex w-full items-center max-sm:w-1/3">
-                        <SidebarTrigger className="mr-2 h-[34px] w-[34px]" />
+                        <SidebarTrigger className="mr-2 h-[34px] w-[34px] cursor-pointer" />
 
                         <Link
                             href={dashboard()}
