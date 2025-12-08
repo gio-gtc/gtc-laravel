@@ -16,14 +16,17 @@ import { Plus } from 'lucide-react';
 export const CreateBtn = () => {
     const { isMobile, state } = useSidebar();
     const notCollapsedOrMobile = state !== 'collapsed' || isMobile;
-    const hiddenClasses = notCollapsedOrMobile ? '' : 'hidden';
+    const hiddenString = notCollapsedOrMobile ? '' : 'hidden';
+    const hiddenBackhground = notCollapsedOrMobile ? 'bg-input' : '';
 
     return (
         <Tooltip>
             <Menubar>
                 <MenubarMenu>
                     <TooltipTrigger asChild>
-                        <MenubarTrigger className="mt-6 flex max-w-[100px] cursor-pointer gap-1.5 rounded-4xl bg-input p-2 align-middle">
+                        <MenubarTrigger
+                            className={`flex max-w-[100px] cursor-pointer gap-1.5 rounded-4xl p-2 align-middle ${hiddenBackhground}`}
+                        >
                             <div className="flex items-center justify-center rounded-full bg-brand-gtc-red">
                                 <Plus
                                     style={{
@@ -32,7 +35,7 @@ export const CreateBtn = () => {
                                     }}
                                 />
                             </div>
-                            <span className={`text-sm ${hiddenClasses}`}>
+                            <span className={`text-sm ${hiddenString}`}>
                                 Create
                             </span>
                         </MenubarTrigger>

@@ -7,10 +7,10 @@ interface AppContentProps extends React.ComponentProps<'main'> {
 
 export function AppContent({ children, ...props }: AppContentProps) {
     return (
-        <div className="flex h-full min-h-screen">
+        <div className="flex min-h-screen">
             <AppSidebar />
             <main
-                className="mx-auto flex h-full min-h-screen w-full max-w-7xl flex-1 flex-col gap-4 rounded-xl"
+                className="mx-auto flex min-h-screen w-full max-w-7xl flex-1 flex-col gap-4 rounded-xl"
                 {...props}
             >
                 {children}
