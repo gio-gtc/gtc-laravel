@@ -1,4 +1,3 @@
-import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import * as React from 'react';
 import { AppSidebar } from './app-sidebar';
 
@@ -6,23 +5,15 @@ interface AppContentProps extends React.ComponentProps<'main'> {
     variant?: 'header' | 'sidebar';
 }
 
-export function AppContent({
-    variant = 'header',
-    children,
-    ...props
-}: AppContentProps) {
-    // if (variant === 'sidebar') {
-    //     return <SidebarInset {...props}>{children}</SidebarInset>;
-    // }
-
+export function AppContent({ children, ...props }: AppContentProps) {
     return (
-        <div className='flex min-h-screen h-full'>
+        <div className="flex h-full min-h-screen">
             <AppSidebar />
             <main
-                className="mx-auto flex min-h-screen h-full w-full max-w-7xl flex-1 flex-col gap-4 rounded-xl"
+                className="mx-auto flex h-full min-h-screen w-full max-w-7xl flex-1 flex-col gap-4 rounded-xl"
                 {...props}
-                >
-                    {children}
+            >
+                {children}
             </main>
         </div>
     );
