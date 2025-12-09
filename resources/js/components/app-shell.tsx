@@ -4,10 +4,9 @@ import { usePage } from '@inertiajs/react';
 
 interface AppShellProps {
     children: React.ReactNode;
-    variant?: 'header' | 'sidebar';
 }
 
-export function AppShell({ children, variant = 'header' }: AppShellProps) {
+export function AppShell({ children }: AppShellProps) {
     const isOpen = usePage<SharedData>().props.sidebarOpen;
 
     return (
