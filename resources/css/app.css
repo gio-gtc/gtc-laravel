@@ -10,7 +10,6 @@
 @theme {
     --font-sans: 'Inter', sans-serif;
 
-    /* TODO: Check mobile side nav */
     /* GTC Colors */
     --color-brand-gtc-red: #ec1a29;
     --color-custom-background: #252628;
