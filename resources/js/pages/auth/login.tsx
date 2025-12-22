@@ -60,12 +60,12 @@ export default function Login({
                             </div>
 
                             <div className="grid gap-2">
-                                <div className="flex items-center">
+                                <div className="flex flex-col sm:flex-row sm:items-center">
                                     <Label htmlFor="password">Password</Label>
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
-                                            className="ml-auto text-sm text-white/90 decoration-white/50 hover:text-white hover:decoration-white"
+                                            className="text-sm text-white/90 decoration-white/50 hover:text-white hover:decoration-white sm:ml-auto"
                                             tabIndex={5}
                                         >
                                             Forgot password?
@@ -122,13 +122,6 @@ export default function Login({
                     </>
                 )}
             </Form>
-
-            {/* {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
-        </AuthLayout> */}
         </AuthVideoLayout>
     );
 }
