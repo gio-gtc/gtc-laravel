@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
-import AuthLayout from '@/layouts/auth-layout';
+import AuthVideoLayout from '@/layouts/auth/auth-video-layout';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
@@ -23,11 +23,17 @@ export default function Login({
     canRegister,
 }: LoginProps) {
     return (
-        <AuthLayout
+        <AuthVideoLayout
             title="Log in to your account"
             description="Enter your email and password below to log in"
         >
             <Head title="Log in" />
+
+            {status && (
+                <div className="mb-4 rounded-lg border border-white/15 bg-white/10 px-4 py-3 text-center text-sm font-medium text-white backdrop-blur">
+                    {status}
+                </div>
+            )}
 
             <Form
                 {...store.form()}
@@ -48,6 +54,7 @@ export default function Login({
                                     tabIndex={1}
                                     autoComplete="email"
                                     placeholder="email@example.com"
+                                    className="border-white/25 text-white placeholder:text-white/60 focus-visible:border-white/40 focus-visible:ring-white/20"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -58,7 +65,7 @@ export default function Login({
                                     {canResetPassword && (
                                         <TextLink
                                             href={request()}
-                                            className="ml-auto text-sm"
+                                            className="ml-auto text-sm text-white/90 decoration-white/50 hover:text-white hover:decoration-white"
                                             tabIndex={5}
                                         >
                                             Forgot password?
@@ -73,6 +80,7 @@ export default function Login({
                                     tabIndex={2}
                                     autoComplete="current-password"
                                     placeholder="Password"
+                                    className="border-white/25 text-white placeholder:text-white/60 focus-visible:border-white/40 focus-visible:ring-white/20"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -82,13 +90,14 @@ export default function Login({
                                     id="remember"
                                     name="remember"
                                     tabIndex={3}
+                                    className="border-white/35 data-[state=checked]:border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
                                 />
                                 <Label htmlFor="remember">Remember me</Label>
                             </div>
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full"
+                                className="mt-4 w-full bg-white text-black hover:bg-white/90"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
@@ -99,9 +108,13 @@ export default function Login({
                         </div>
 
                         {canRegister && (
-                            <div className="text-center text-sm text-muted-foreground">
+                            <div className="text-center text-sm text-white/80">
                                 Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
+                                <TextLink
+                                    href={register()}
+                                    tabIndex={5}
+                                    className="text-white/90 decoration-white/50 hover:text-white hover:decoration-white"
+                                >
                                     Sign up
                                 </TextLink>
                             </div>
@@ -110,11 +123,12 @@ export default function Login({
                 )}
             </Form>
 
-            {status && (
+            {/* {status && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
                     {status}
                 </div>
             )}
-        </AuthLayout>
+        </AuthLayout> */}
+        </AuthVideoLayout>
     );
 }
