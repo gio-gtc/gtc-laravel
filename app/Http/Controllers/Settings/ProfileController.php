@@ -8,6 +8,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -29,15 +30,50 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $validated = $request->validated();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user->fill($validated);
+
+        // If the request uses split first/last name, keep "name" in sync
+        // (the rest of the UI expects auth.user.name to exist).
+        if (
+            array_key_exists('first_name', $validated) ||
+            array_key_exists('last_name', $validated)
+        ) {
+            $first = trim((string) ($validated['first_name'] ?? $user->first_name ?? ''));
+            $last = trim((string) ($validated['last_name'] ?? $user->last_name ?? ''));
+            $fullName = trim("{$first} {$last}");
+
+            if ($fullName !== '') {
+                $user->name = $fullName;
+            }
         }
 
-        $request->user()->save();
+        if (array_key_exists('out_of_office', $validated) && ! $validated['out_of_office']) {
+            $user->out_of_office_start_date = null;
+            $user->out_of_office_end_date = null;
+        }
 
-        return to_route('profile.edit');
+        if ($request->hasFile('photo')) {
+            $photo = $request->file('photo');
+
+            if ($photo) {
+                if ($user->profile_photo_path) {
+                    Storage::disk('public')->delete($user->profile_photo_path);
+                }
+
+                $user->profile_photo_path = $photo->storePublicly('avatars', 'public');
+            }
+        }
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        return back();
     }
 
     /**

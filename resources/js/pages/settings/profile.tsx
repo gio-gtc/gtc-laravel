@@ -2,17 +2,19 @@ import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileCo
 import { send } from '@/routes/verification';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Transition } from '@headlessui/react';
-import { Form, Head, Link, usePage } from '@inertiajs/react';
+import { Form, Head, Link, router, usePage } from '@inertiajs/react';
 
 import DeleteUser from '@/components/delete-user';
 import HeadingSmall from '@/components/heading-small';
 import InputError from '@/components/input-error';
+import UserInfoModal from '@/components/user-info-modal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 import { edit } from '@/routes/profile';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -29,12 +31,43 @@ export default function Profile({
     status?: string;
 }) {
     const { auth } = usePage<SharedData>().props;
+    const [isUserInfoOpen, setIsUserInfoOpen] = useState<boolean>(() => {
+        if (typeof window === 'undefined') return false;
+        return new URLSearchParams(window.location.search).get('modal') ===
+            'user-info'
+            ? true
+            : false;
+    });
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Profile settings" />
 
             <SettingsLayout>
+                <UserInfoModal
+                    isOpen={isUserInfoOpen}
+                    onClose={() => {
+                        setIsUserInfoOpen(false);
+
+                        if (typeof window !== 'undefined') {
+                            const params = new URLSearchParams(
+                                window.location.search,
+                            );
+                            if (params.get('modal') === 'user-info') {
+                                router.get(
+                                    edit(),
+                                    {},
+                                    {
+                                        replace: true,
+                                        preserveScroll: true,
+                                        preserveState: true,
+                                    },
+                                );
+                            }
+                        }
+                    }}
+                />
+
                 <div className="space-y-6">
                     <HeadingSmall
                         title="Profile information"
