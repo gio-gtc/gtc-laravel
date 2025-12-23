@@ -97,7 +97,6 @@ export default function UserInfoModal({
                     {...ProfileController.update.form()}
                     options={{
                         preserveScroll: true,
-                        forceFormData: true,
                     }}
                     onSuccess={onClose}
                     className="space-y-4"
