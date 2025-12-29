@@ -225,40 +225,42 @@ export default function OrganizationModal({
                     <Divider />
                     {/* Address Section */}
                     <div className="space-y-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="address">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+                            <Label htmlFor="address" className="sm:flex-1">
                                 Address
                                 <span className="text-destructive">*</span>
                             </Label>
-                            <Input
-                                id="street_address"
-                                name="street_address"
-                                placeholder="Street Address"
-                                required
-                                className="mb-2 border-gray-300"
-                            />
-                            <div className="grid grid-cols-1 gap-4">
+                            <div className="flex flex-1 flex-col gap-2">
                                 <Input
-                                    id="city"
-                                    name="city"
-                                    placeholder="City"
+                                    id="street_address"
+                                    name="street_address"
+                                    placeholder="Street Address"
                                     required
                                     className="border-gray-300"
                                 />
-                                <Input
-                                    id="state"
-                                    name="state"
-                                    placeholder="State"
-                                    required
-                                    className="border-gray-300"
-                                />
-                                <Input
-                                    id="zip"
-                                    name="zip"
-                                    placeholder="ZIP"
-                                    required
-                                    className="border-gray-300"
-                                />
+                                <div className="flex gap-2">
+                                    <Input
+                                        id="city"
+                                        name="city"
+                                        placeholder="City"
+                                        required
+                                        className="flex-[2] border-gray-300"
+                                    />
+                                    <Input
+                                        id="state"
+                                        name="state"
+                                        placeholder="State"
+                                        required
+                                        className="flex-1 border-gray-300"
+                                    />
+                                    <Input
+                                        id="zip"
+                                        name="zip"
+                                        placeholder="ZIP"
+                                        required
+                                        className="flex-1 border-gray-300"
+                                    />
+                                </div>
                                 <Select name="country" required>
                                     <SelectTrigger className="border-gray-300">
                                         <SelectValue placeholder="Select Country" />
@@ -286,18 +288,22 @@ export default function OrganizationModal({
                         </div>
                     </div>
 
+                    <Divider />
                     {/* Financial Details Section */}
                     <div className="space-y-4">
                         <div className="grid grid-cols-1 gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="credit_limit">
-                                    Credit Limit{' '}
+                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+                                <Label
+                                    htmlFor="credit_limit"
+                                    className="sm:flex-1"
+                                >
+                                    Credit Limit
                                     <span className="text-destructive">*</span>
                                     <span className="block text-xs font-normal text-muted-foreground">
                                         In US Dollars
                                     </span>
                                 </Label>
-                                <div className="relative">
+                                <div className="relative flex-1">
                                     <DollarSign className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         id="credit_limit"
@@ -311,53 +317,74 @@ export default function OrganizationModal({
                                 <InputError message={undefined} />
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="credit_terms">
-                                    Credit Terms{' '}
+                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+                                <Label
+                                    className="sm:flex-1"
+                                    htmlFor="credit_terms"
+                                >
+                                    Credit Terms
                                     <span className="text-destructive">*</span>
                                     <span className="block text-xs font-normal text-muted-foreground">
                                         Number of days
                                     </span>
                                 </Label>
-                                <Input
-                                    id="credit_terms"
-                                    name="credit_terms"
-                                    type="number"
-                                    placeholder="Enter Terms"
-                                    required
-                                    className="border-gray-300"
-                                />
+                                <div className="relative flex-1">
+                                    <Input
+                                        id="credit_terms"
+                                        name="credit_terms"
+                                        type="number"
+                                        placeholder="Enter Terms"
+                                        required
+                                        className="border-gray-300"
+                                    />
+                                </div>
                                 <InputError message={undefined} />
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="preferred_currency">
-                                    Preferred Currency{' '}
+                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+                                <Label
+                                    className="sm:flex-1"
+                                    htmlFor="preferred_currency"
+                                >
+                                    Preferred Currency
                                     <span className="text-destructive">*</span>
                                 </Label>
-                                <Select name="preferred_currency" required>
-                                    <SelectTrigger className="border-gray-300">
-                                        <SelectValue placeholder="Select Currency" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="usd">USD</SelectItem>
-                                        <SelectItem value="eur">EUR</SelectItem>
-                                        <SelectItem value="gbp">GBP</SelectItem>
-                                        <SelectItem value="cad">CAD</SelectItem>
-                                        <SelectItem value="aud">AUD</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <div className="relative flex-1">
+                                    <Select name="preferred_currency" required>
+                                        <SelectTrigger className="border-gray-300">
+                                            <SelectValue placeholder="Select Currency" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="usd">
+                                                USD
+                                            </SelectItem>
+                                            <SelectItem value="eur">
+                                                EUR
+                                            </SelectItem>
+                                            <SelectItem value="gbp">
+                                                GBP
+                                            </SelectItem>
+                                            <SelectItem value="cad">
+                                                CAD
+                                            </SelectItem>
+                                            <SelectItem value="aud">
+                                                AUD
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                                 <InputError message={undefined} />
                             </div>
                         </div>
                     </div>
 
+                    <Divider />
                     {/* Accounts Payable Section */}
                     <div className="space-y-4">
                         <div className="grid grid-cols-1 gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="ap_email">
-                                    Accounts Payable Email{' '}
+                                    Accounts Payable Email
                                     <span className="text-destructive">*</span>
                                 </Label>
                                 {apEmails.map((email, index) => (
@@ -407,7 +434,7 @@ export default function OrganizationModal({
                                 <Label htmlFor="ap_contact">
                                     Accounts Payable Contact
                                 </Label>
-                                <div className="relative">
+                                <div className="relative flex-1">
                                     <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         id="ap_contact"
@@ -424,7 +451,7 @@ export default function OrganizationModal({
                             <Label htmlFor="ap_phone">
                                 Accounts Payable Phone Number
                             </Label>
-                            <div className="relative">
+                            <div className="relative flex-1">
                                 <Phone className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                 <Input
                                     id="ap_phone"
@@ -524,6 +551,7 @@ export default function OrganizationModal({
                         </div>
                     </div>
 
+                    <Divider />
                     {/* Bank Information Section */}
                     <div className="space-y-4">
                         <div className="grid grid-cols-1 gap-4">
@@ -579,6 +607,7 @@ export default function OrganizationModal({
                         </div>
                     </div>
 
+                    <Divider />
                     <DialogFooter className="gap-3 sm:gap-2">
                         <Button
                             type="button"
