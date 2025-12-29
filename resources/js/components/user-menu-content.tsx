@@ -11,7 +11,7 @@ import { type User } from '@/types';
 import { Link, router } from '@inertiajs/react';
 import { LogOut, Settings } from 'lucide-react';
 import { useState } from 'react';
-import UserInfoModal from './user-info-modal';
+import UserInfoModal from './modals/user-info-modal';
 
 interface UserMenuContentProps {
     user: User;
