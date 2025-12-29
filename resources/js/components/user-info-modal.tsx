@@ -16,6 +16,7 @@ import { type SharedData } from '@/types';
 import { Form, usePage } from '@inertiajs/react';
 import { Calendar, Camera, HelpCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import Divider from './globals/utils/divider';
 
 function splitName(fullName: string) {
     const normalized = fullName.trim().replace(/\s+/g, ' ');
@@ -92,7 +93,7 @@ export default function UserInfoModal({
                 <DialogHeader>
                     <DialogTitle>Profile</DialogTitle>
                 </DialogHeader>
-
+                <Divider />
                 <Form
                     {...ProfileController.update.form()}
                     options={{
@@ -528,6 +529,7 @@ export default function UserInfoModal({
                                 </div>
                             </div>
 
+                            <Divider />
                             <DialogFooter className="gap-3 sm:gap-2">
                                 <Button
                                     type="button"
