@@ -1,4 +1,4 @@
-import OrganizationModal from '@/components/organization-modal';
+import OrganizationModal from '@/components/globals/navigation/nav-main/organization-modal';
 import {
     Menubar,
     MenubarContent,

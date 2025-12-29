@@ -1,3 +1,4 @@
+import Divider from '@/components/globals/utils/divider';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -73,6 +74,8 @@ export default function OrganizationModal({
                 <DialogHeader>
                     <DialogTitle>Organization Information</DialogTitle>
                 </DialogHeader>
+
+                <Divider />
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-4">
