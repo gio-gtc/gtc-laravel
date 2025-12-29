@@ -78,74 +78,92 @@ export default function OrganizationModal({
                 <Divider />
 
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* Organization Information Section */}
                     <div className="space-y-4">
                         <div className="grid grid-cols-1 gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="organization_name">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+                                <Label
+                                    htmlFor="organization_name"
+                                    className="sm:flex-1"
+                                >
                                     Organization Name
                                     <span className="text-destructive">*</span>
                                 </Label>
-                                <Input
-                                    id="organization_name"
-                                    name="organization_name"
-                                    placeholder="Enter Organization Name"
-                                    required
-                                    className="border-gray-300"
-                                />
+                                <div className="relative flex-1">
+                                    <Input
+                                        id="organization_name"
+                                        name="organization_name"
+                                        placeholder="Enter Organization Name"
+                                        required
+                                        className="border-gray-300"
+                                    />
+                                </div>
                                 <InputError message={undefined} />
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="organization_type">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+                                <Label
+                                    htmlFor="organization_type"
+                                    className="sm:flex-1"
+                                >
                                     Organization Type{' '}
                                     <span className="text-destructive">*</span>
                                 </Label>
-                                <Select name="organization_type" required>
-                                    <SelectTrigger className="border-gray-300">
-                                        <SelectValue placeholder="Select Organization Type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="corporation">
-                                            Corporation
-                                        </SelectItem>
-                                        <SelectItem value="llc">LLC</SelectItem>
-                                        <SelectItem value="partnership">
-                                            Partnership
-                                        </SelectItem>
-                                        <SelectItem value="sole_proprietorship">
-                                            Sole Proprietorship
-                                        </SelectItem>
-                                        <SelectItem value="nonprofit">
-                                            Nonprofit
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                <div className="relative flex-1">
+                                    <Select name="organization_type" required>
+                                        <SelectTrigger className="border-gray-300">
+                                            <SelectValue placeholder="Select Organization Type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="corporation">
+                                                Corporation
+                                            </SelectItem>
+                                            <SelectItem value="llc">
+                                                LLC
+                                            </SelectItem>
+                                            <SelectItem value="partnership">
+                                                Partnership
+                                            </SelectItem>
+                                            <SelectItem value="sole_proprietorship">
+                                                Sole Proprietorship
+                                            </SelectItem>
+                                            <SelectItem value="nonprofit">
+                                                Nonprofit
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                                 <InputError message={undefined} />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="vat_tax_id">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+                                <Label
+                                    htmlFor="vat_tax_id"
+                                    className="sm:flex-1"
+                                >
                                     VAT, Tax ID, or EIN
                                     <span className="text-destructive">*</span>
                                 </Label>
-                                <Input
-                                    id="vat_tax_id"
-                                    name="vat_tax_id"
-                                    placeholder="XX-XXXXXXXXX"
-                                    required
-                                    className="border-gray-300"
-                                />
+                                <div className="relative flex-1">
+                                    <Input
+                                        id="vat_tax_id"
+                                        name="vat_tax_id"
+                                        placeholder="XX-XXXXXXXXX"
+                                        required
+                                        className="border-gray-300"
+                                    />
+                                </div>
                                 <InputError message={undefined} />
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="website">
-                                    Website{' '}
+                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+                                <Label htmlFor="website" className="sm:flex-1">
+                                    Website
                                     <span className="text-destructive">*</span>
                                 </Label>
-                                <div className="relative">
+                                <div className="relative flex-1">
                                     <Globe className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         id="website"
@@ -161,12 +179,15 @@ export default function OrganizationModal({
                         </div>
 
                         <div className="grid grid-cols-1 gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="phone_number">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+                                <Label
+                                    htmlFor="phone_number"
+                                    className="sm:flex-1"
+                                >
                                     Phone Number
                                     <span className="text-destructive">*</span>
                                 </Label>
-                                <div className="relative">
+                                <div className="relative flex-1">
                                     <Phone className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         id="phone_number"
@@ -180,11 +201,14 @@ export default function OrganizationModal({
                                 <InputError message={undefined} />
                             </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="clock_prefix">
+                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+                                <Label
+                                    htmlFor="clock_prefix"
+                                    className="sm:flex-1"
+                                >
                                     UK/IRE Clock Prefix
                                 </Label>
-                                <div className="relative">
+                                <div className="relative flex-1">
                                     <Clock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         id="clock_prefix"
@@ -196,7 +220,11 @@ export default function OrganizationModal({
                                 <InputError message={undefined} />
                             </div>
                         </div>
+                    </div>
 
+                    <Divider />
+                    {/* Address Section */}
+                    <div className="space-y-4">
                         <div className="grid gap-2">
                             <Label htmlFor="address">
                                 Address
