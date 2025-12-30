@@ -17,16 +17,8 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import Divider from '@/components/utils/divider';
-import {
-    Clock,
-    DollarSign,
-    Globe,
-    Mail,
-    Phone,
-    Plus,
-    User,
-    X,
-} from 'lucide-react';
+import InputAdditions from '@/components/utils/input-additions';
+import { Clock, DollarSign, Globe, Phone, User } from 'lucide-react';
 import { useState } from 'react';
 
 interface OrganizationModalProps {
@@ -40,26 +32,6 @@ export default function OrganizationModal({
 }: OrganizationModalProps) {
     const [apEmails, setApEmails] = useState<string[]>(['']);
     const [arEmails, setArEmails] = useState<string[]>(['']);
-
-    const addApEmail = () => {
-        setApEmails([...apEmails, '']);
-    };
-
-    const removeApEmail = (index: number) => {
-        if (apEmails.length > 1) {
-            setApEmails(apEmails.filter((_, i) => i !== index));
-        }
-    };
-
-    const addArEmail = () => {
-        setArEmails([...arEmails, '']);
-    };
-
-    const removeArEmail = (index: number) => {
-        if (arEmails.length > 1) {
-            setArEmails(arEmails.filter((_, i) => i !== index));
-        }
-    };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -388,44 +360,10 @@ export default function OrganizationModal({
                                     <span className="text-destructive">*</span>
                                 </Label>
                                 <div className="relative flex flex-1 flex-col gap-1">
-                                    {apEmails.map((email, index) => (
-                                        <div
-                                            key={index}
-                                            className="relative flex-1"
-                                        >
-                                            <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                            <Input
-                                                id={`ap_email_${index}`}
-                                                name={`ap_email_${index}`}
-                                                type="email"
-                                                placeholder="email@company.com"
-                                                required={index === 0}
-                                                className="border-gray-300 pr-9 pl-9"
-                                            />
-                                            {index === apEmails.length - 1 && (
-                                                <button
-                                                    type="button"
-                                                    onClick={addApEmail}
-                                                    className="absolute top-1/2 right-3 -translate-y-1/2 text-destructive hover:text-destructive/80"
-                                                >
-                                                    <Plus className="h-4 w-4" />
-                                                </button>
-                                            )}
-                                            {apEmails.length > 1 &&
-                                                index !==
-                                                    apEmails.length - 1 && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            removeApEmail(index)
-                                                        }
-                                                        className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                                    >
-                                                        <X className="h-4 w-4" />
-                                                    </button>
-                                                )}
-                                        </div>
-                                    ))}
+                                    <InputAdditions
+                                        inputList={apEmails}
+                                        setInputList={setApEmails}
+                                    />
                                 </div>
                                 <InputError message={undefined} />
                             </div>
@@ -476,44 +414,10 @@ export default function OrganizationModal({
                                     <span className="text-destructive">*</span>
                                 </Label>
                                 <div className="relative flex flex-1 flex-col gap-1">
-                                    {arEmails.map((email, index) => (
-                                        <div
-                                            key={index}
-                                            className="relative flex-1"
-                                        >
-                                            <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                            <Input
-                                                id={`ar_email_${index}`}
-                                                name={`ar_email_${index}`}
-                                                type="email"
-                                                placeholder="email@company.com"
-                                                required={index === 0}
-                                                className="border-gray-300 pr-9 pl-9"
-                                            />
-                                            {index === arEmails.length - 1 && (
-                                                <button
-                                                    type="button"
-                                                    onClick={addArEmail}
-                                                    className="absolute top-1/2 right-3 -translate-y-1/2 text-destructive hover:text-destructive/80"
-                                                >
-                                                    <Plus className="h-4 w-4" />
-                                                </button>
-                                            )}
-                                            {arEmails.length > 1 &&
-                                                index !==
-                                                    arEmails.length - 1 && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            removeArEmail(index)
-                                                        }
-                                                        className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                                    >
-                                                        <X className="h-4 w-4" />
-                                                    </button>
-                                                )}
-                                        </div>
-                                    ))}
+                                    <InputAdditions
+                                        inputList={arEmails}
+                                        setInputList={setArEmails}
+                                    />
                                 </div>
                                 <InputError message={undefined} />
                             </div>
