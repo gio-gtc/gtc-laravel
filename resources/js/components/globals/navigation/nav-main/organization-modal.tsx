@@ -281,6 +281,8 @@ export default function OrganizationModal({
                                         id="credit_limit"
                                         name="credit_limit"
                                         type="number"
+                                        min="0"
+                                        step="0.01"
                                         placeholder="Enter Credit Limit"
                                         required
                                         className="border-gray-300 pl-9"
@@ -304,6 +306,7 @@ export default function OrganizationModal({
                                     <Input
                                         id="credit_terms"
                                         name="credit_terms"
+                                        min="0"
                                         type="number"
                                         placeholder="Enter Terms"
                                         required
