@@ -1,4 +1,6 @@
 import Heading from '@/components/heading';
+import ARAgingCard from '@/components/pages/dashboard/AR-aging-card';
+import KPICard from '@/components/pages/dashboard/KPI-Card';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -15,12 +17,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
@@ -28,16 +24,8 @@ import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import { ArrowUp, Calendar, MoreVertical } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { useState } from 'react';
-import {
-    Line,
-    LineChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
-} from 'recharts';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -87,106 +75,6 @@ const timePeriods = [
 ] as const;
 
 type TimePeriod = (typeof timePeriods)[number]['value'];
-
-// Mini chart component
-function MiniChart({ data }: { data: { name: string; value: number }[] }) {
-    return (
-        <ResponsiveContainer width="100%" height={60}>
-            <LineChart data={data}>
-                <XAxis dataKey="name" hide />
-                <YAxis hide />
-                <Tooltip content={() => null} />
-                <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#9333ea"
-                    strokeWidth={2}
-                    dot={false}
-                />
-            </LineChart>
-        </ResponsiveContainer>
-    );
-}
-
-// KPI Card Component
-function KPICard({
-    title,
-    value,
-    change,
-    chartData,
-}: {
-    title: string;
-    value: string;
-    change: string;
-    chartData: { name: string; value: number }[];
-}) {
-    return (
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{title}</CardTitle>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View details</DropdownMenuItem>
-                        <DropdownMenuItem>Export</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{value}</div>
-                <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
-                    <ArrowUp className="h-3 w-3" />
-                    {change}
-                </div>
-                <div className="mt-4 h-[60px]">
-                    <MiniChart data={chartData} />
-                </div>
-            </CardContent>
-        </Card>
-    );
-}
-
-// Accounts Receivable Aging Card
-function AgingCard({
-    label,
-    amount,
-    change,
-}: {
-    label: string;
-    amount: string;
-    change: string;
-}) {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-sm font-medium">{label}</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{amount}</div>
-                <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
-                    <ArrowUp className="h-3 w-3" />
-                    {change}
-                </div>
-            </CardContent>
-            <CardFooter>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => {
-                        // No-op for now
-                    }}
-                >
-                    View report
-                </Button>
-            </CardFooter>
-        </Card>
-    );
-}
 
 // Order/Invoice Card Component
 function CountCard({ title, count }: { title: string; count: number }) {
@@ -284,7 +172,7 @@ export default function Dashboard() {
                 />
 
                 {/* Time Period Filters and Date Range */}
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-4 sm:items-center sm:justify-between lg:flex-row">
                     <div className="inline-flex gap-0.5 rounded-md bg-gray-100 p-0.5">
                         {timePeriods.map((period) => (
                             <Button
@@ -373,7 +261,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* KPI Cards */}
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-4 lg:grid-cols-3">
                     <KPICard
                         title="Sales"
                         value="$500,000"
@@ -395,49 +283,45 @@ export default function Dashboard() {
                 </div>
 
                 {/* Accounts Receivable Section */}
-                <div className="space-y-4">
+                <div className="space-y-4 rounded-lg border-1 bg-gray-50 px-4 py-2">
                     <h3 className="text-lg font-semibold">
                         Accounts Receivable
                     </h3>
-                    <div className="grid gap-4 md:grid-cols-5">
-                        <AgingCard
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+                        <ARAgingCard
                             label="0-30 days"
                             amount="$361,428"
                             change="10%"
                         />
-                        <AgingCard
+                        <ARAgingCard
                             label="30-60 days"
                             amount="$261,897"
                             change="10%"
                         />
-                        <AgingCard
+                        <ARAgingCard
                             label="60-90 days"
                             amount="$541,419"
                             change="10%"
                         />
-                        <AgingCard
+                        <ARAgingCard
                             label="90-120 days"
                             amount="$675,395"
                             change="10%"
                         />
-                        <AgingCard
+                        <ARAgingCard
                             label="120+ days"
                             amount="$275,823"
                             change="10%"
                         />
                     </div>
-                    <div className="flex gap-6 text-sm">
-                        <div>
-                            <span className="text-muted-foreground">
-                                Total:{' '}
-                            </span>
-                            <span className="font-semibold">$1,361,428</span>
+                    <div className="text-sm font-semibold">
+                        <div className="flex justify-between py-2">
+                            <span>Total</span>
+                            <span className="text-2xl">$1,361,428</span>
                         </div>
-                        <div>
-                            <span className="text-muted-foreground">
-                                Total Follow up:{' '}
-                            </span>
-                            <span className="font-semibold">$261,428</span>
+                        <div className="flex justify-between border-t-1 py-2">
+                            <span>Total Follow up</span>
+                            <span className="text-2xl">$261,428</span>
                         </div>
                     </div>
                 </div>
