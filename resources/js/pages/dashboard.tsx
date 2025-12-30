@@ -246,6 +246,17 @@ function getDefaultDates() {
     };
 }
 
+function todaysDateDisplay() {
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('en-GB', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    });
+
+    return formattedDate;
+}
+
 export default function Dashboard() {
     const page = usePage<SharedData>();
     const {
@@ -269,12 +280,12 @@ export default function Dashboard() {
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl">
                 <Heading
                     title={`Welcome back, ${name}`}
-                    description="4 November, 2025"
+                    description={todaysDateDisplay()}
                 />
 
                 {/* Time Period Filters and Date Range */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="inline-flex rounded-full bg-gray-100 p-1 dark:bg-gray-800">
+                    <div className="inline-flex gap-0.5 rounded-md bg-gray-100 p-0.5">
                         {timePeriods.map((period) => (
                             <Button
                                 key={period.value}
@@ -282,10 +293,10 @@ export default function Dashboard() {
                                 size="sm"
                                 onClick={() => setSelectedPeriod(period.value)}
                                 className={cn(
-                                    'rounded-full border-0 shadow-none transition-all',
+                                    'rounded-md border-0 transition-all',
                                     selectedPeriod === period.value
-                                        ? 'bg-white text-foreground shadow-sm hover:bg-white hover:text-foreground'
-                                        : 'bg-gray-50 text-muted-foreground hover:bg-white hover:text-foreground dark:bg-gray-700',
+                                        ? 'border-gray-200 bg-white text-foreground shadow-sm hover:bg-white hover:text-foreground'
+                                        : 'text-muted-foreground hover:bg-white hover:text-foreground',
                                 )}
                             >
                                 {period.label}
@@ -303,7 +314,7 @@ export default function Dashboard() {
                                 className="gap-2"
                             >
                                 <Calendar className="h-4 w-4" />
-                                {formattedStartDate} – {formattedEndDate}
+                                {formattedStartDate} - {formattedEndDate}
                             </Button>
                         </DialogTrigger>
                         <DialogContent>
