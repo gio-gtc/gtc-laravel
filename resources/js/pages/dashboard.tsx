@@ -1,14 +1,7 @@
 import Heading from '@/components/heading';
-import ARAgingCard from '@/components/pages/dashboard/AR-aging-card';
+import CardLink from '@/components/pages/dashboard/card-link';
 import KPICard from '@/components/pages/dashboard/KPI-Card';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -75,32 +68,6 @@ const timePeriods = [
 ] as const;
 
 type TimePeriod = (typeof timePeriods)[number]['value'];
-
-// Order/Invoice Card Component
-function CountCard({ title, count }: { title: string; count: number }) {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="text-sm font-medium">{title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{count}</div>
-            </CardContent>
-            <CardFooter>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => {
-                        // No-op for now
-                    }}
-                >
-                    View report
-                </Button>
-            </CardFooter>
-        </Card>
-    );
-}
 
 // Format date for display
 function formatDateLabel(value: string) {
@@ -173,7 +140,7 @@ export default function Dashboard() {
 
                 {/* Time Period Filters and Date Range */}
                 <div className="flex flex-col gap-4 sm:items-center sm:justify-between lg:flex-row">
-                    <div className="inline-flex gap-0.5 rounded-md bg-gray-100 p-0.5">
+                    <div className="inline-flex gap-0.5 overflow-auto rounded-md bg-gray-100 p-0.5">
                         {timePeriods.map((period) => (
                             <Button
                                 key={period.value}
@@ -288,29 +255,29 @@ export default function Dashboard() {
                         Accounts Receivable
                     </h3>
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-                        <ARAgingCard
+                        <CardLink
                             label="0-30 days"
-                            amount="$361,428"
+                            content="$361,428"
                             change="10%"
                         />
-                        <ARAgingCard
+                        <CardLink
                             label="30-60 days"
-                            amount="$261,897"
+                            content="$261,897"
                             change="10%"
                         />
-                        <ARAgingCard
+                        <CardLink
                             label="60-90 days"
-                            amount="$541,419"
+                            content="$541,419"
                             change="10%"
                         />
-                        <ARAgingCard
+                        <CardLink
                             label="90-120 days"
-                            amount="$675,395"
+                            content="$675,395"
                             change="10%"
                         />
-                        <ARAgingCard
+                        <CardLink
                             label="120+ days"
-                            amount="$275,823"
+                            content="$275,823"
                             change="10%"
                         />
                     </div>
@@ -332,10 +299,10 @@ export default function Dashboard() {
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Orders</h3>
                         <div className="grid gap-4 md:grid-cols-2">
-                            <CountCard title="Pending" count={48} />
-                            <CountCard title="In Production" count={218} />
-                            <CountCard title="Outstanding ER" count={34} />
-                            <CountCard title="Outstanding Custom" count={21} />
+                            <CardLink label="Pending" content="48" />
+                            <CardLink label="In Production" content="218" />
+                            <CardLink label="Outstanding ER" content="34" />
+                            <CardLink label="Outstanding Custom" content="21" />
                         </div>
                     </div>
 
@@ -343,8 +310,8 @@ export default function Dashboard() {
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Held Invoices</h3>
                         <div className="grid gap-4 md:grid-cols-2">
-                            <CountCard title="Amount" count={32} />
-                            <CountCard title="In Production" count={218} />
+                            <CardLink label="Amount" content="32" />
+                            <CardLink label="In Production" content="218" />
                         </div>
                     </div>
                 </div>
