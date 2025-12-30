@@ -16,7 +16,7 @@ import { type SharedData } from '@/types';
 import { Form, usePage } from '@inertiajs/react';
 import { Calendar, Camera, HelpCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import Divider from '../globals/utils/divider';
+import Divider from '../utils/divider';
 
 function splitName(fullName: string) {
     const normalized = fullName.trim().replace(/\s+/g, ' ');
