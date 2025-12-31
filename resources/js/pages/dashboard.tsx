@@ -378,8 +378,31 @@ export default function Dashboard() {
                     </div>
                 </div>
 
+                {/* Orders and Held Invoices Section */}
+                <div className="grid gap-6 md:grid-cols-2">
+                    {/* Orders Section */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Orders</h3>
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <CardLink label="Pending" content="48" />
+                            <CardLink label="In Production" content="218" />
+                            <CardLink label="Outstanding ER" content="34" />
+                            <CardLink label="Outstanding Custom" content="21" />
+                        </div>
+                    </div>
+
+                    {/* Held Invoices Section */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Held Invoices</h3>
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <CardLink label="Amount" content="32" />
+                            <CardLink label="In Production" content="218" />
+                        </div>
+                    </div>
+                </div>
+
                 {/* Revenue by Tour Section */}
-                <div className="space-y-4 rounded-lg border-1 bg-gray-50 px-4 py-2">
+                <div className="space-y-4 px-4 py-2">
                     <h3 className="text-lg font-semibold">Revenue by Tour</h3>
                     <div className="overflow-x-auto">
                         <table className="w-full border-collapse">
@@ -435,29 +458,6 @@ export default function Dashboard() {
                                 </tr>
                             </tfoot>
                         </table>
-                    </div>
-                </div>
-
-                {/* Orders and Held Invoices Section */}
-                <div className="grid gap-6 md:grid-cols-2">
-                    {/* Orders Section */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">Orders</h3>
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <CardLink label="Pending" content="48" />
-                            <CardLink label="In Production" content="218" />
-                            <CardLink label="Outstanding ER" content="34" />
-                            <CardLink label="Outstanding Custom" content="21" />
-                        </div>
-                    </div>
-
-                    {/* Held Invoices Section */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">Held Invoices</h3>
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <CardLink label="Amount" content="32" />
-                            <CardLink label="In Production" content="218" />
-                        </div>
                     </div>
                 </div>
             </div>
