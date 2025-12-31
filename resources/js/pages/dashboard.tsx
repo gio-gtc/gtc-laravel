@@ -6,6 +6,7 @@ import {
 } from '@/components/mockdata.js';
 import CardLink from '@/components/pages/dashboard/card-link';
 import KPICard from '@/components/pages/dashboard/KPI-Card';
+import RevanueTable from '@/components/pages/dashboard/revanue-table';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -17,22 +18,13 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { Calendar } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -95,105 +87,6 @@ function todaysDateDisplay() {
     return formattedDate;
 }
 
-// Revenue by Tour data
-interface TourRevenue {
-    tour: string;
-    currentMonth: number;
-    ytd: number;
-    total: number;
-}
-
-const tourRevenueData: TourRevenue[] = [
-    {
-        tour: 'Live Nation Concerts',
-        currentMonth: 125000,
-        ytd: 980000,
-        total: 1105000,
-    },
-    {
-        tour: 'Live Nation Chicago',
-        currentMonth: 98000,
-        ytd: 820000,
-        total: 918000,
-    },
-    { tour: 'Red Housing', currentMonth: 87000, ytd: 720000, total: 807000 },
-    {
-        tour: 'The Boys From The County Hell',
-        currentMonth: 76000,
-        ytd: 650000,
-        total: 726000,
-    },
-    { tour: 'Housemath', currentMonth: 68000, ytd: 590000, total: 658000 },
-    { tour: 'Westlife 2024', currentMonth: 62000, ytd: 540000, total: 602000 },
-    { tour: "A Doll's 2024", currentMonth: 58000, ytd: 495000, total: 553000 },
-    { tour: 'Descendants', currentMonth: 54000, ytd: 460000, total: 514000 },
-    { tour: 'Opzn 2024', currentMonth: 51000, ytd: 430000, total: 481000 },
-    { tour: 'Bon Jovi 2024', currentMonth: 48000, ytd: 410000, total: 458000 },
-    {
-        tour: 'Demi Lovato Tour',
-        currentMonth: 45000,
-        ytd: 385000,
-        total: 430000,
-    },
-    { tour: 'Diesel Ltd', currentMonth: 43000, ytd: 365000, total: 408000 },
-    { tour: 'Matt Rife 2024', currentMonth: 41000, ytd: 350000, total: 391000 },
-    { tour: 'Luke Life Girl', currentMonth: 39000, ytd: 330000, total: 369000 },
-    {
-        tour: 'Renee Rapp - Snow Tour',
-        currentMonth: 37000,
-        ytd: 315000,
-        total: 352000,
-    },
-    {
-        tour: 'Lady Gaga: chromatica ball',
-        currentMonth: 35000,
-        ytd: 295000,
-        total: 330000,
-    },
-    {
-        tour: 'Christina Aguilera',
-        currentMonth: 34000,
-        ytd: 285000,
-        total: 319000,
-    },
-    {
-        tour: 'The Streets 2024',
-        currentMonth: 32000,
-        ytd: 270000,
-        total: 302000,
-    },
-    {
-        tour: 'Rock In The Park',
-        currentMonth: 31000,
-        ytd: 260000,
-        total: 291000,
-    },
-    {
-        tour: 'Playboi Carti Tour',
-        currentMonth: 29000,
-        ytd: 245000,
-        total: 274000,
-    },
-    { tour: 'Rüfüs 2025', currentMonth: 28000, ytd: 235000, total: 263000 },
-    {
-        tour: 'Earth, Wind & Fire',
-        currentMonth: 27000,
-        ytd: 225000,
-        total: 252000,
-    },
-    { tour: 'Cosmic Girl', currentMonth: 26000, ytd: 215000, total: 241000 },
-];
-
-// Format currency
-function formatCurrency(value: number): string {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-    }).format(value);
-}
-
 export default function Dashboard() {
     const page = usePage<SharedData>();
     const {
@@ -210,18 +103,6 @@ export default function Dashboard() {
 
     const formattedStartDate = formatDateLabel(startDate);
     const formattedEndDate = formatDateLabel(endDate);
-
-    // Calculate totals for each column
-    const totals = useMemo(() => {
-        return tourRevenueData.reduce(
-            (acc, tour) => ({
-                currentMonth: acc.currentMonth + tour.currentMonth,
-                ytd: acc.ytd + tour.ytd,
-                total: acc.total + tour.total,
-            }),
-            { currentMonth: 0, ytd: 0, total: 0 },
-        );
-    }, []);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -410,58 +291,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                {/* Revenue by Tour Section */}
-                <div className="space-y-4 px-4 py-2">
-                    <h3 className="text-lg font-semibold">Revenue by Tour</h3>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Tour</TableHead>
-                                <TableHead className="text-right">
-                                    CURRENT MONTH
-                                </TableHead>
-                                <TableHead className="text-right">
-                                    YTD
-                                </TableHead>
-                                <TableHead className="text-right">
-                                    TOTAL
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {tourRevenueData.map((tour, index) => (
-                                <TableRow key={index}>
-                                    <TableCell>{tour.tour}</TableCell>
-                                    <TableCell className="text-right">
-                                        {formatCurrency(tour.currentMonth)}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        {formatCurrency(tour.ytd)}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        {formatCurrency(tour.total)}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TableCell className="font-semibold">
-                                    Total
-                                </TableCell>
-                                <TableCell className="text-right font-semibold">
-                                    {formatCurrency(totals.currentMonth)}
-                                </TableCell>
-                                <TableCell className="text-right font-semibold">
-                                    {formatCurrency(totals.ytd)}
-                                </TableCell>
-                                <TableCell className="text-right font-semibold">
-                                    {formatCurrency(totals.total)}
-                                </TableCell>
-                            </TableRow>
-                        </TableFooter>
-                    </Table>
-                </div>
+                <RevanueTable />
             </div>
         </AppLayout>
     );
