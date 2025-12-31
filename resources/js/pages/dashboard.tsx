@@ -17,6 +17,15 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableFooter,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
@@ -404,61 +413,54 @@ export default function Dashboard() {
                 {/* Revenue by Tour Section */}
                 <div className="space-y-4 px-4 py-2">
                     <h3 className="text-lg font-semibold">Revenue by Tour</h3>
-                    <div className="overflow-x-auto">
-                        <table className="w-full border-collapse">
-                            <thead>
-                                <tr className="border-b-1">
-                                    <th className="px-4 py-3 text-left text-sm font-semibold">
-                                        Tour
-                                    </th>
-                                    <th className="px-4 py-3 text-right text-sm font-semibold">
-                                        CURRENT MONTH
-                                    </th>
-                                    <th className="px-4 py-3 text-right text-sm font-semibold">
-                                        YTD
-                                    </th>
-                                    <th className="px-4 py-3 text-right text-sm font-semibold">
-                                        TOTAL
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {tourRevenueData.map((tour, index) => (
-                                    <tr
-                                        key={index}
-                                        className="border-b-1 hover:bg-gray-100"
-                                    >
-                                        <td className="px-4 py-3 text-sm">
-                                            {tour.tour}
-                                        </td>
-                                        <td className="px-4 py-3 text-right text-sm">
-                                            {formatCurrency(tour.currentMonth)}
-                                        </td>
-                                        <td className="px-4 py-3 text-right text-sm">
-                                            {formatCurrency(tour.ytd)}
-                                        </td>
-                                        <td className="px-4 py-3 text-right text-sm">
-                                            {formatCurrency(tour.total)}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                            <tfoot>
-                                <tr className="border-t-2 bg-gray-100 font-semibold">
-                                    <td className="px-4 py-3 text-sm">Total</td>
-                                    <td className="px-4 py-3 text-right text-sm">
-                                        {formatCurrency(totals.currentMonth)}
-                                    </td>
-                                    <td className="px-4 py-3 text-right text-sm">
-                                        {formatCurrency(totals.ytd)}
-                                    </td>
-                                    <td className="px-4 py-3 text-right text-sm">
-                                        {formatCurrency(totals.total)}
-                                    </td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Tour</TableHead>
+                                <TableHead className="text-right">
+                                    CURRENT MONTH
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    YTD
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    TOTAL
+                                </TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {tourRevenueData.map((tour, index) => (
+                                <TableRow key={index}>
+                                    <TableCell>{tour.tour}</TableCell>
+                                    <TableCell className="text-right">
+                                        {formatCurrency(tour.currentMonth)}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {formatCurrency(tour.ytd)}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {formatCurrency(tour.total)}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                        <TableFooter>
+                            <TableRow>
+                                <TableCell className="font-semibold">
+                                    Total
+                                </TableCell>
+                                <TableCell className="text-right font-semibold">
+                                    {formatCurrency(totals.currentMonth)}
+                                </TableCell>
+                                <TableCell className="text-right font-semibold">
+                                    {formatCurrency(totals.ytd)}
+                                </TableCell>
+                                <TableCell className="text-right font-semibold">
+                                    {formatCurrency(totals.total)}
+                                </TableCell>
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
                 </div>
             </div>
         </AppLayout>
