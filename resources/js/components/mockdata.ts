@@ -1,3 +1,5 @@
+import { SalesByRepDataSchema } from "@/types";
+
 // Mock data for mini charts - static data showing upward trend
 export const salesChartData = [
     { name: 'Day 1', value: 45 },
@@ -247,5 +249,32 @@ export const pendingOrdersData = [
         collaborators: [mockUsers[3], mockUsers[4]],
         status: 'pending',
         isGroupHeader: false,
+    },
+];
+
+export const salesByRepData: SalesByRepDataSchema[] = [
+    {
+        rep: 'Russel',
+        currentMonth: 125000,
+        currentMonthChange: { direction: 'up', percentage: 12 },
+        ytd: 980000,
+        ytdChange: { direction: 'up', percentage: 8 },
+        total: 1105000,
+    },
+    {
+        rep: 'James',
+        currentMonth: 98000,
+        currentMonthChange: { direction: 'up', percentage: 15 },
+        ytd: 820000,
+        ytdChange: { direction: 'up', percentage: 10 },
+        total: 918000,
+    },
+    {
+        rep: 'Jordan',
+        currentMonth: -74000,
+        currentMonthChange: { direction: 'down', percentage: 5 },
+        ytd: -74000,
+        ytdChange: { direction: 'up', percentage: 6 },
+        total: -74000,
     },
 ];

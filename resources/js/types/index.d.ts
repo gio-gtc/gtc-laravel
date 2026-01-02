@@ -52,3 +52,12 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export interface SalesByRepDataSchema {
+    rep: string;
+    currentMonth: number;
+    currentMonthChange: { direction: 'up' | 'down'; percentage: number };
+    ytd: number;
+    ytdChange: { direction: 'up' | 'down'; percentage: numeber };
+    total: number;
+}
