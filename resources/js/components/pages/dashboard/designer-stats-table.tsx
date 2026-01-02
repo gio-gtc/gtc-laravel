@@ -25,7 +25,7 @@ import { useMemo, useState } from 'react';
 type SortColumn = 'name' | 'assetsAssigned' | 'assetsUploaded' | 'accuracy';
 type SortDirection = 'asc' | 'desc';
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 7;
 
 function DesignerStatsTable() {
     const getInitials = useInitials();
@@ -236,14 +236,7 @@ function DesignerStatsTable() {
                                             ) : (
                                                 <ArrowDown className="h-3 w-3 text-red-600" />
                                             )}
-                                            <span
-                                                className={
-                                                    designer.trend.direction ===
-                                                    'up'
-                                                        ? 'text-green-600'
-                                                        : 'text-red-600'
-                                                }
-                                            >
+                                            <span>
                                                 {designer.trend.percentage}%
                                             </span>
                                         </div>
