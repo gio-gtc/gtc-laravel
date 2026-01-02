@@ -5,6 +5,7 @@ import {
     ytdChartData,
 } from '@/components/mockdata.js';
 import CardLink from '@/components/pages/dashboard/card-link';
+import DesignerStatsTable from '@/components/pages/dashboard/designer-stats-table';
 import KPICard from '@/components/pages/dashboard/KPI-Card';
 import RevanueTable from '@/components/pages/dashboard/revanue-table';
 import { Button } from '@/components/ui/button';
@@ -292,6 +293,8 @@ export default function Dashboard() {
                 </div>
 
                 <RevanueTable />
+
+                <DesignerStatsTable />
             </div>
         </AppLayout>
     );
