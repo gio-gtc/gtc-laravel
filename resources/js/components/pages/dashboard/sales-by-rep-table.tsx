@@ -37,15 +37,12 @@ function SalesByRepTable() {
         value: number,
         change: { direction: 'up' | 'down'; percentage: number },
     ) {
-        const isPositive = value >= 0;
         const isUp = change.direction === 'up';
         const arrowColor = isUp ? 'text-green-600' : 'text-red-600';
 
         return (
             <div className="flex items-center justify-end gap-2">
-                <span className={isPositive ? '' : 'text-red-600'}>
-                    {formatCurrency(value)}
-                </span>
+                <span>{formatCurrency(value)}</span>
                 <div
                     className={`inline-flex items-center gap-1 rounded-md border-1 p-0.5 text-xs ${arrowColor}`}
                 >
@@ -96,13 +93,13 @@ function SalesByRepTable() {
                 <TableFooter className="bg-white">
                     <TableRow>
                         <TableCell className="font-semibold">Total</TableCell>
-                        <TableCell className="text-right font-semibold">
+                        <TableCell className="text-right text-lg font-semibold">
                             {formatCurrency(totals.currentMonth)}
                         </TableCell>
-                        <TableCell className="text-right font-semibold">
+                        <TableCell className="text-right text-lg font-semibold">
                             {formatCurrency(totals.ytd)}
                         </TableCell>
-                        <TableCell className="text-right font-semibold">
+                        <TableCell className="text-right text-lg font-semibold">
                             {formatCurrency(totals.total)}
                         </TableCell>
                     </TableRow>

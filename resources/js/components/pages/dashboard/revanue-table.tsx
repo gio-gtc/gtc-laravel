@@ -66,13 +66,13 @@ function RevanueTable() {
                 <TableFooter className="bg-white">
                     <TableRow>
                         <TableCell className="font-semibold">Total</TableCell>
-                        <TableCell className="text-right font-semibold">
+                        <TableCell className="text-right text-lg font-semibold">
                             {formatCurrency(totals.currentMonth)}
                         </TableCell>
-                        <TableCell className="text-right font-semibold">
+                        <TableCell className="text-right text-lg font-semibold">
                             {formatCurrency(totals.ytd)}
                         </TableCell>
-                        <TableCell className="text-right font-semibold">
+                        <TableCell className="text-right text-lg font-semibold">
                             {formatCurrency(totals.total)}
                         </TableCell>
                     </TableRow>

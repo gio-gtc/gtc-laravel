@@ -257,11 +257,11 @@ function DesignerStatsTable() {
                                         Math.max(1, prev - 1),
                                     )
                                 }
-                                className={
+                                className={`${
                                     currentPage === 1
                                         ? 'pointer-events-none opacity-50'
                                         : 'cursor-pointer'
-                                }
+                                }`}
                             />
                         </PaginationItem>
                         {getPageNumbers().map((page, index) => {
@@ -292,11 +292,11 @@ function DesignerStatsTable() {
                                         Math.min(totalPages, prev + 1),
                                     )
                                 }
-                                className={
+                                className={`${
                                     currentPage === totalPages
                                         ? 'pointer-events-none opacity-50'
                                         : 'cursor-pointer'
-                                }
+                                }`}
                             />
                         </PaginationItem>
                     </PaginationContent>
