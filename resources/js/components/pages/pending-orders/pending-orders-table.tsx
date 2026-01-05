@@ -297,7 +297,7 @@ function PendingOrdersTable() {
                                             position: 'relative',
                                         }}
                                         className={cn(
-                                            'relative',
+                                            'relative px-2 py-1',
                                             headerGroup.headers.indexOf(
                                                 header,
                                             ) <
@@ -342,7 +342,6 @@ function PendingOrdersTable() {
                     <TableBody>
                         {table.getRowModel().rows.length ? (
                             table.getRowModel().rows.map((row) => {
-                                console.log({ row });
                                 const isGroupHeader =
                                     row.original.isGroupHeader;
                                 const isSelected = row.getIsSelected();
@@ -356,7 +355,7 @@ function PendingOrdersTable() {
                                                 'cursor-pointer hover:bg-muted/50',
                                             isSelected &&
                                                 !isGroupHeader &&
-                                                'bg-muted',
+                                                'data-[state=selected]:bg-red-100',
                                         )}
                                         onClick={() => {
                                             if (!isGroupHeader) {
@@ -395,7 +394,7 @@ function PendingOrdersTable() {
                                                             <ChevronRight className="h-4 w-4" />
                                                         )}
                                                     </button>
-                                                    <span className="font-medium">
+                                                    <span className="text-lg font-medium">
                                                         {row.original.artist}
                                                     </span>
                                                 </div>
@@ -415,6 +414,7 @@ function PendingOrdersTable() {
                                                                 width: cell.column.getSize(),
                                                             }}
                                                             className={cn(
+                                                                'px-2 py-1 text-gray-500',
                                                                 cellIndex <
                                                                     cells.length -
                                                                         1 &&
