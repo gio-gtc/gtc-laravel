@@ -18,7 +18,7 @@ export default function PendingOrders() {
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl">
                 <Heading
                     title="Pending Orders"
-                    description="Manage and track your pending orders"
+                    description="Manage your orders with ease — track progress and add new items."
                 />
                 <PendingOrdersTable />
             </div>

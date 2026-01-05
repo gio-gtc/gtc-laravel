@@ -56,6 +56,7 @@ function PendingOrdersTable() {
         Eagles: false,
     });
     const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
+    const [columnSizing, setColumnSizing] = useState({});
     const getInitials = useInitials();
 
     const data = useMemo(() => pendingOrdersData, []);
@@ -65,6 +66,9 @@ function PendingOrdersTable() {
             {
                 accessorKey: 'name',
                 header: 'Name',
+                size: 200,
+                minSize: 100,
+                maxSize: 500,
                 cell: ({ row, getValue }) => {
                     if (row.original.isGroupHeader) {
                         return (
@@ -97,6 +101,9 @@ function PendingOrdersTable() {
             {
                 accessorKey: 'venue',
                 header: 'Venue',
+                size: 150,
+                minSize: 100,
+                maxSize: 400,
                 cell: ({ getValue }) => {
                     const venue = getValue() as string;
                     return <div>{venue || ''}</div>;
@@ -105,6 +112,9 @@ function PendingOrdersTable() {
             {
                 accessorKey: 'dueDate',
                 header: 'Due Date',
+                size: 120,
+                minSize: 80,
+                maxSize: 200,
                 cell: ({ getValue }) => {
                     const date = getValue() as string;
                     return <div>{date || ''}</div>;
@@ -113,6 +123,9 @@ function PendingOrdersTable() {
             {
                 accessorKey: 'client',
                 header: 'Client',
+                size: 100,
+                minSize: 80,
+                maxSize: 200,
                 cell: ({ row }) => {
                     if (row.original.isGroupHeader) {
                         return null;
@@ -136,6 +149,9 @@ function PendingOrdersTable() {
             {
                 accessorKey: 'collaborators',
                 header: 'Collaborators',
+                size: 150,
+                minSize: 100,
+                maxSize: 300,
                 cell: ({ row }) => {
                     if (row.original.isGroupHeader) {
                         return null;
@@ -179,6 +195,9 @@ function PendingOrdersTable() {
             {
                 accessorKey: 'status',
                 header: 'Status',
+                size: 100,
+                minSize: 80,
+                maxSize: 150,
                 cell: ({ row }) => {
                     if (row.original.isGroupHeader) {
                         return null;
@@ -219,9 +238,13 @@ function PendingOrdersTable() {
         columns,
         getCoreRowModel: getCoreRowModel(),
         enableRowSelection: true,
+        enableColumnResizing: true,
+        columnResizeMode: 'onChange',
         onRowSelectionChange: setRowSelection,
+        onColumnSizingChange: setColumnSizing,
         state: {
             rowSelection,
+            columnSizing,
         },
     });
 
@@ -267,7 +290,22 @@ function PendingOrdersTable() {
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
+                                    <TableHead
+                                        key={header.id}
+                                        style={{
+                                            width: header.getSize(),
+                                            position: 'relative',
+                                        }}
+                                        className={cn(
+                                            'relative',
+                                            headerGroup.headers.indexOf(
+                                                header,
+                                            ) <
+                                                headerGroup.headers.length -
+                                                    1 &&
+                                                'border-r border-border',
+                                        )}
+                                    >
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(
@@ -275,6 +313,27 @@ function PendingOrdersTable() {
                                                       .header,
                                                   header.getContext(),
                                               )}
+                                        {header.column.getCanResize() && (
+                                            <div
+                                                onMouseDown={header.getResizeHandler()}
+                                                onTouchStart={header.getResizeHandler()}
+                                                className={cn(
+                                                    'absolute top-0 right-0 z-10 h-full w-0.5 cursor-col-resize touch-none bg-border opacity-50 transition-opacity select-none hover:bg-primary hover:opacity-100',
+                                                    header.column.getIsResizing() &&
+                                                        'bg-primary opacity-100',
+                                                )}
+                                                style={{
+                                                    transform:
+                                                        header.column.getIsResizing()
+                                                            ? `translateX(${
+                                                                  table.getState()
+                                                                      .columnSizingInfo
+                                                                      .deltaOffset
+                                                              }px)`
+                                                            : undefined,
+                                                }}
+                                            />
+                                        )}
                                     </TableHead>
                                 ))}
                             </TableRow>
@@ -305,14 +364,73 @@ function PendingOrdersTable() {
                                             }
                                         }}
                                     >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext(),
-                                                )}
+                                        {isGroupHeader ? (
+                                            <TableCell
+                                                colSpan={columns.length}
+                                                className="px-4"
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => {
+                                                            const artist =
+                                                                row.original
+                                                                    .artist;
+                                                            setExpanded(
+                                                                (prev) => ({
+                                                                    ...prev,
+                                                                    [artist]:
+                                                                        !prev[
+                                                                            artist
+                                                                        ],
+                                                                }),
+                                                            );
+                                                        }}
+                                                        className="flex items-center"
+                                                    >
+                                                        {expanded[
+                                                            row.original.artist
+                                                        ] ? (
+                                                            <ChevronDown className="h-4 w-4" />
+                                                        ) : (
+                                                            <ChevronRight className="h-4 w-4" />
+                                                        )}
+                                                    </button>
+                                                    <span className="font-medium">
+                                                        {row.original.artist}
+                                                    </span>
+                                                </div>
                                             </TableCell>
-                                        ))}
+                                        ) : (
+                                            row
+                                                .getVisibleCells()
+                                                .map(
+                                                    (
+                                                        cell,
+                                                        cellIndex,
+                                                        cells,
+                                                    ) => (
+                                                        <TableCell
+                                                            key={cell.id}
+                                                            style={{
+                                                                width: cell.column.getSize(),
+                                                            }}
+                                                            className={cn(
+                                                                cellIndex <
+                                                                    cells.length -
+                                                                        1 &&
+                                                                    'border-r border-border',
+                                                            )}
+                                                        >
+                                                            {flexRender(
+                                                                cell.column
+                                                                    .columnDef
+                                                                    .cell,
+                                                                cell.getContext(),
+                                                            )}
+                                                        </TableCell>
+                                                    ),
+                                                )
+                                        )}
                                     </TableRow>
                                 );
                             })
