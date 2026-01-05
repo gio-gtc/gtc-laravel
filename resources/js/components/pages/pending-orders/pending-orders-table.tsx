@@ -28,7 +28,6 @@ import {
     ChevronDown,
     ChevronRight,
     Filter,
-    MoreVertical,
     Search,
     SortAsc,
 } from 'lucide-react';
@@ -121,7 +120,7 @@ function PendingOrdersTable() {
                     const client = row.original.client;
                     return (
                         <div className="flex items-center">
-                            <Avatar className="h-8 w-8">
+                            <Avatar className="h-7 w-7">
                                 <AvatarImage
                                     src={client.avatar}
                                     alt={client.name}
@@ -143,36 +142,36 @@ function PendingOrdersTable() {
                     }
                     const collaborators = row.original.collaborators;
                     return (
-                        <div className="flex items-center gap-1">
-                            {collaborators.slice(0, 3).map((collab, idx) => (
-                                <Avatar
-                                    key={idx}
-                                    className="-ml-1 h-8 w-8 first:ml-0"
-                                >
-                                    <AvatarImage
-                                        src={collab.avatar}
-                                        alt={collab.name}
-                                    />
-                                    <AvatarFallback className="bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                        {getInitials(collab.name)}
-                                    </AvatarFallback>
-                                </Avatar>
-                            ))}
+                        <div
+                            className="flex cursor-pointer items-center"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingOrderId(row.original.id);
+                            }}
+                        >
+                            <div className="flex items-center">
+                                {collaborators
+                                    .slice(0, 3)
+                                    .map((collab, idx) => (
+                                        <Avatar
+                                            key={idx}
+                                            className="-ml-3 h-7 w-7 border-2 border-background first:ml-0"
+                                        >
+                                            <AvatarImage
+                                                src={collab.avatar}
+                                                alt={collab.name}
+                                            />
+                                            <AvatarFallback className="bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                {getInitials(collab.name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    ))}
+                            </div>
                             {collaborators.length > 3 && (
-                                <span className="ml-1 text-xs text-muted-foreground">
+                                <span className="ml-2 text-xs text-muted-foreground">
                                     +{collaborators.length - 3}
                                 </span>
                             )}
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="ml-2 h-6 w-6"
-                                onClick={() =>
-                                    setEditingOrderId(row.original.id)
-                                }
-                            >
-                                <MoreVertical className="h-4 w-4" />
-                            </Button>
                         </div>
                     );
                 },
@@ -188,7 +187,7 @@ function PendingOrdersTable() {
                 },
             },
         ],
-        [expanded, getInitials],
+        [expanded, getInitials, setEditingOrderId],
     );
 
     const groupedData = useMemo(() => {
