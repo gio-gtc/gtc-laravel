@@ -13,7 +13,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Pending Orders',
-        href: '/#',
+        href: '/pending-orders',
         icon: ClipboardClock,
     },
     {
