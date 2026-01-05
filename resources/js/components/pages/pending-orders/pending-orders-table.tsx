@@ -237,7 +237,13 @@ function PendingOrdersTable() {
         data: groupedData,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        enableRowSelection: true,
+        getRowId: (row) => {
+            if (row.isGroupHeader) {
+                return `group-${row.artist}`;
+            }
+            return row.id;
+        },
+        enableRowSelection: (row) => !row.original.isGroupHeader,
         enableColumnResizing: true,
         columnResizeMode: 'onChange',
         onRowSelectionChange: setRowSelection,
