@@ -232,7 +232,7 @@ function PendingOrdersTable() {
                 <div className="flex items-center gap-2">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="default">
+                            <Button variant="outline">
                                 Add New
                                 <ChevronDown className="ml-2 h-4 w-4" />
                             </Button>
@@ -283,6 +283,7 @@ function PendingOrdersTable() {
                     <TableBody>
                         {table.getRowModel().rows.length ? (
                             table.getRowModel().rows.map((row) => {
+                                console.log({ row });
                                 const isGroupHeader =
                                     row.original.isGroupHeader;
                                 const isSelected = row.getIsSelected();
