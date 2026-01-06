@@ -61,3 +61,38 @@ export interface SalesByRepDataSchema {
     ytdChange: { direction: 'up' | 'down'; percentage: numeber };
     total: number;
 }
+
+export type OrderStatus =
+    | 'pending'
+    | 'approved'
+    | 'in-progress'
+    | 'paused'
+    | 'completed'
+    | 'needs-attention'
+    | 'mic'
+    | 'speaker';
+
+export interface UserData {
+    id: number;
+    name: string;
+    email: string;
+    avatar?: string | null;
+    permissionLevel: 'admin' | 'designer' | 'client' | 'collaborator';
+}
+
+export interface PendingOrder {
+    id: string;
+    name: string;
+    venue: string;
+    dueDate: string | null;
+    client: UserData;
+    collaborators: UserData[];
+    status: OrderStatus[];
+    tourGroup: string; // artist/tour name
+}
+
+export interface PendingOrderGroup {
+    tourGroup: string;
+    orders: PendingOrder[];
+    isExpanded?: boolean;
+}
