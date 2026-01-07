@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useInitials } from '@/hooks/use-initials';
-import { type SharedData } from '@/types';
+import { type SharedData, type User } from '@/types';
 import { Form, usePage } from '@inertiajs/react';
 import { Calendar, Camera, HelpCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -42,39 +42,67 @@ function formatDateLabel(value: string) {
     }).format(date);
 }
 
+interface UserInfoModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    user?: User;
+    mode?: 'edit' | 'create';
+    title?: string;
+}
+
 export default function UserInfoModal({
     isOpen,
     onClose,
-}: {
-    isOpen: boolean;
-    onClose: () => void;
-}) {
+    user: providedUser,
+    mode = 'edit',
+    title: providedTitle,
+}: UserInfoModalProps) {
     const { auth } = usePage<SharedData>().props;
     const getInitials = useInitials();
 
+    // Use provided user or fall back to auth.user
+    const user = providedUser ?? auth.user;
+    const isCreateMode = mode === 'create';
+    const modalTitle =
+        providedTitle ?? (isCreateMode ? 'Create Contact' : 'Profile');
+
     const defaults = useMemo(() => {
-        const fallback = splitName(auth.user.name ?? '');
+        if (isCreateMode) {
+            return {
+                first_name: '',
+                last_name: '',
+                organization: '',
+                job_title: '',
+                department: '',
+                phone_number: '',
+                about_me: '',
+                out_of_office: false,
+                out_of_office_start_date: '',
+                out_of_office_end_date: '',
+                permissions_level: 'Admin',
+            };
+        }
+
+        const fallback = splitName(user.name ?? '');
 
         return {
             first_name:
-                (auth.user.first_name as string | undefined) ?? fallback.first,
-            last_name:
-                (auth.user.last_name as string | undefined) ?? fallback.last,
-            organization: (auth.user.organization as string | undefined) ?? '',
-            job_title: (auth.user.job_title as string | undefined) ?? '',
-            department: (auth.user.department as string | undefined) ?? '',
-            phone_number: (auth.user.phone_number as string | undefined) ?? '',
-            about_me: (auth.user.about_me as string | undefined) ?? '',
-            out_of_office: Boolean(auth.user.out_of_office),
+                (user.first_name as string | undefined) ?? fallback.first,
+            last_name: (user.last_name as string | undefined) ?? fallback.last,
+            organization: (user.organization as string | undefined) ?? '',
+            job_title: (user.job_title as string | undefined) ?? '',
+            department: (user.department as string | undefined) ?? '',
+            phone_number: (user.phone_number as string | undefined) ?? '',
+            about_me: (user.about_me as string | undefined) ?? '',
+            out_of_office: Boolean(user.out_of_office),
             out_of_office_start_date:
-                (auth.user.out_of_office_start_date as string | undefined) ??
-                '',
+                (user.out_of_office_start_date as string | undefined) ?? '',
             out_of_office_end_date:
-                (auth.user.out_of_office_end_date as string | undefined) ?? '',
+                (user.out_of_office_end_date as string | undefined) ?? '',
             permissions_level:
-                (auth.user.permissions_level as string | undefined) ?? 'Admin',
+                (user.permissions_level as string | undefined) ?? 'Admin',
         };
-    }, [auth.user]);
+    }, [user, isCreateMode]);
 
     const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
     const [outOfOfficeEnabled, setOutOfOfficeEnabled] = useState<boolean>(
@@ -91,7 +119,7 @@ export default function UserInfoModal({
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="sm:max-w-3xl">
                 <DialogHeader>
-                    <DialogTitle>Profile</DialogTitle>
+                    <DialogTitle>{modalTitle}</DialogTitle>
                 </DialogHeader>
                 <Divider />
                 <Form
@@ -107,7 +135,7 @@ export default function UserInfoModal({
                             <div className="grid gap-2">
                                 <div className="space-y-4">
                                     <Label className="text-gray-400">
-                                        Your Photo
+                                        {isCreateMode ? 'Photo' : 'Your Photo'}
                                     </Label>
 
                                     <div className="relative w-fit">
@@ -115,20 +143,32 @@ export default function UserInfoModal({
                                             <AvatarImage
                                                 src={
                                                     photoPreviewUrl ??
-                                                    auth.user.avatar ??
+                                                    (isCreateMode
+                                                        ? undefined
+                                                        : user.avatar) ??
                                                     undefined
                                                 }
-                                                alt={auth.user.name}
+                                                alt={
+                                                    isCreateMode
+                                                        ? 'Contact'
+                                                        : user.name
+                                                }
                                             />
                                             <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                                {getInitials(auth.user.name)}
+                                                {isCreateMode
+                                                    ? 'CN'
+                                                    : getInitials(user.name)}
                                             </AvatarFallback>
                                         </Avatar>
 
                                         <label
                                             htmlFor="photo"
                                             className="absolute right-0 bottom-0 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border bg-background shadow-sm hover:bg-muted"
-                                            title="Change photo"
+                                            title={
+                                                isCreateMode
+                                                    ? 'Upload photo'
+                                                    : 'Change photo'
+                                            }
                                         >
                                             <Camera className="h-4 w-4" />
                                         </label>
@@ -255,7 +295,11 @@ export default function UserInfoModal({
                                                 id="email"
                                                 name="email"
                                                 type="email"
-                                                defaultValue={auth.user.email}
+                                                defaultValue={
+                                                    isCreateMode
+                                                        ? ''
+                                                        : user.email
+                                                }
                                                 autoComplete="email"
                                                 placeholder="Email"
                                                 required
@@ -317,11 +361,17 @@ export default function UserInfoModal({
                                             <Input
                                                 className="border-gray-300"
                                                 id="permissions_level"
-                                                value={
+                                                name="permissions_level"
+                                                defaultValue={
                                                     defaults.permissions_level
                                                 }
-                                                disabled
-                                                readOnly
+                                                disabled={!isCreateMode}
+                                                readOnly={!isCreateMode}
+                                                placeholder={
+                                                    isCreateMode
+                                                        ? 'Select permissions level'
+                                                        : undefined
+                                                }
                                             />
                                         </div>
                                     </div>
@@ -340,194 +390,206 @@ export default function UserInfoModal({
                                 <InputError message={errors.about_me} />
                             </div>
 
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between gap-4">
-                                    <div className="flex items-center gap-3">
-                                        <input
-                                            type="hidden"
-                                            name="out_of_office"
-                                            value={
-                                                outOfOfficeEnabled ? '1' : '0'
-                                            }
-                                        />
-                                        <button
-                                            type="button"
-                                            role="switch"
-                                            aria-checked={outOfOfficeEnabled}
-                                            id="out_of_office"
-                                            onClick={() =>
-                                                setOutOfOfficeEnabled((v) => !v)
-                                            }
-                                            className={[
-                                                'relative inline-flex h-4 w-8 items-center rounded-full transition-colors',
-                                                outOfOfficeEnabled
-                                                    ? 'bg-brand-gtc-red'
-                                                    : 'bg-muted',
-                                                'focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none',
-                                            ].join(' ')}
-                                        >
-                                            <span
-                                                className={[
-                                                    'inline-block h-3 w-3 transform rounded-full bg-background shadow-lg transition-transform',
+                            {!isCreateMode && (
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div className="flex items-center gap-3">
+                                            <input
+                                                type="hidden"
+                                                name="out_of_office"
+                                                value={
                                                     outOfOfficeEnabled
-                                                        ? 'translate-x-4.5'
-                                                        : 'translate-x-1',
-                                                ].join(' ')}
+                                                        ? '1'
+                                                        : '0'
+                                                }
                                             />
-                                        </button>
-                                        <Label
-                                            htmlFor="out_of_office"
-                                            className="cursor-pointer"
-                                        >
-                                            Set Out of Office
-                                        </Label>
-                                    </div>
-                                </div>
-
-                                {outOfOfficeEnabled === true && (
-                                    <div
-                                        className={[
-                                            'flex flex-wrap items-center gap-2',
-                                            !outOfOfficeEnabled
-                                                ? 'pointer-events-none opacity-50'
-                                                : '',
-                                        ].join(' ')}
-                                    >
-                                        <input
-                                            type="hidden"
-                                            name="out_of_office_start_date"
-                                            value={
-                                                outOfOfficeEnabled
-                                                    ? outOfOfficeStartDate
-                                                    : ''
-                                            }
-                                        />
-                                        <input
-                                            type="hidden"
-                                            name="out_of_office_end_date"
-                                            value={
-                                                outOfOfficeEnabled
-                                                    ? outOfOfficeEndDate
-                                                    : ''
-                                            }
-                                        />
-
-                                        <span className="flex flex-col">
-                                            <label htmlFor="ooo_start">
-                                                First Day
-                                            </label>
-                                            <label
-                                                className="sr-only"
-                                                htmlFor="ooo_start"
-                                            >
-                                                Out of office start date
-                                            </label>
-                                            <input
-                                                id="ooo_start"
-                                                type="date"
-                                                className="sr-only"
-                                                value={outOfOfficeStartDate}
-                                                onChange={(e) => {
-                                                    const next =
-                                                        e.currentTarget.value;
-                                                    setOutOfOfficeStartDate(
-                                                        next,
-                                                    );
-                                                    if (
-                                                        outOfOfficeEndDate &&
-                                                        next &&
-                                                        outOfOfficeEndDate <
-                                                            next
-                                                    ) {
-                                                        setOutOfOfficeEndDate(
-                                                            next,
-                                                        );
-                                                    }
-                                                }}
-                                            />
-
-                                            <label
-                                                className="sr-only"
-                                                htmlFor="ooo_end"
-                                            >
-                                                Out of office end date
-                                            </label>
-                                            <input
-                                                id="ooo_end"
-                                                type="date"
-                                                className="sr-only"
-                                                value={outOfOfficeEndDate}
-                                                onChange={(e) =>
-                                                    setOutOfOfficeEndDate(
-                                                        e.currentTarget.value,
+                                            <button
+                                                type="button"
+                                                role="switch"
+                                                aria-checked={
+                                                    outOfOfficeEnabled
+                                                }
+                                                id="out_of_office"
+                                                onClick={() =>
+                                                    setOutOfOfficeEnabled(
+                                                        (v) => !v,
                                                     )
                                                 }
-                                                min={
-                                                    outOfOfficeStartDate ||
-                                                    undefined
+                                                className={[
+                                                    'relative inline-flex h-4 w-8 items-center rounded-full transition-colors',
+                                                    outOfOfficeEnabled
+                                                        ? 'bg-brand-gtc-red'
+                                                        : 'bg-muted',
+                                                    'focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none',
+                                                ].join(' ')}
+                                            >
+                                                <span
+                                                    className={[
+                                                        'inline-block h-3 w-3 transform rounded-full bg-background shadow-lg transition-transform',
+                                                        outOfOfficeEnabled
+                                                            ? 'translate-x-4.5'
+                                                            : 'translate-x-1',
+                                                    ].join(' ')}
+                                                />
+                                            </button>
+                                            <Label
+                                                htmlFor="out_of_office"
+                                                className="cursor-pointer"
+                                            >
+                                                Set Out of Office
+                                            </Label>
+                                        </div>
+                                    </div>
+
+                                    {outOfOfficeEnabled === true && (
+                                        <div
+                                            className={[
+                                                'flex flex-wrap items-center gap-2',
+                                                !outOfOfficeEnabled
+                                                    ? 'pointer-events-none opacity-50'
+                                                    : '',
+                                            ].join(' ')}
+                                        >
+                                            <input
+                                                type="hidden"
+                                                name="out_of_office_start_date"
+                                                value={
+                                                    outOfOfficeEnabled
+                                                        ? outOfOfficeStartDate
+                                                        : ''
+                                                }
+                                            />
+                                            <input
+                                                type="hidden"
+                                                name="out_of_office_end_date"
+                                                value={
+                                                    outOfOfficeEnabled
+                                                        ? outOfOfficeEndDate
+                                                        : ''
                                                 }
                                             />
 
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    const el =
-                                                        document.getElementById(
-                                                            'ooo_start',
-                                                        ) as HTMLInputElement | null;
-                                                    el?.showPicker?.();
-                                                    el?.focus();
-                                                    el?.click();
-                                                }}
-                                                className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-background px-3 py-1 text-sm hover:bg-muted"
-                                            >
-                                                <Calendar className="h-4 w-4 text-muted-foreground" />
-                                                {formatDateLabel(
-                                                    outOfOfficeStartDate,
-                                                )}
-                                            </button>
-                                        </span>
+                                            <span className="flex flex-col">
+                                                <label htmlFor="ooo_start">
+                                                    First Day
+                                                </label>
+                                                <label
+                                                    className="sr-only"
+                                                    htmlFor="ooo_start"
+                                                >
+                                                    Out of office start date
+                                                </label>
+                                                <input
+                                                    id="ooo_start"
+                                                    type="date"
+                                                    className="sr-only"
+                                                    value={outOfOfficeStartDate}
+                                                    onChange={(e) => {
+                                                        const next =
+                                                            e.currentTarget
+                                                                .value;
+                                                        setOutOfOfficeStartDate(
+                                                            next,
+                                                        );
+                                                        if (
+                                                            outOfOfficeEndDate &&
+                                                            next &&
+                                                            outOfOfficeEndDate <
+                                                                next
+                                                        ) {
+                                                            setOutOfOfficeEndDate(
+                                                                next,
+                                                            );
+                                                        }
+                                                    }}
+                                                />
 
-                                        <span className="flex flex-col">
-                                            <label htmlFor="ooo_start">
-                                                Last Day
-                                            </label>
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    const el =
-                                                        document.getElementById(
-                                                            'ooo_end',
-                                                        ) as HTMLInputElement | null;
-                                                    el?.showPicker?.();
-                                                    el?.focus();
-                                                    el?.click();
-                                                }}
-                                                className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-background px-3 py-1 text-sm hover:bg-muted"
-                                            >
-                                                <Calendar className="h-4 w-4 text-muted-foreground" />
-                                                {formatDateLabel(
-                                                    outOfOfficeEndDate,
-                                                )}
-                                            </button>
-                                        </span>
+                                                <label
+                                                    className="sr-only"
+                                                    htmlFor="ooo_end"
+                                                >
+                                                    Out of office end date
+                                                </label>
+                                                <input
+                                                    id="ooo_end"
+                                                    type="date"
+                                                    className="sr-only"
+                                                    value={outOfOfficeEndDate}
+                                                    onChange={(e) =>
+                                                        setOutOfOfficeEndDate(
+                                                            e.currentTarget
+                                                                .value,
+                                                        )
+                                                    }
+                                                    min={
+                                                        outOfOfficeStartDate ||
+                                                        undefined
+                                                    }
+                                                />
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const el =
+                                                            document.getElementById(
+                                                                'ooo_start',
+                                                            ) as HTMLInputElement | null;
+                                                        el?.showPicker?.();
+                                                        el?.focus();
+                                                        el?.click();
+                                                    }}
+                                                    className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-background px-3 py-1 text-sm hover:bg-muted"
+                                                >
+                                                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                                                    {formatDateLabel(
+                                                        outOfOfficeStartDate,
+                                                    )}
+                                                </button>
+                                            </span>
+
+                                            <span className="flex flex-col">
+                                                <label htmlFor="ooo_start">
+                                                    Last Day
+                                                </label>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const el =
+                                                            document.getElementById(
+                                                                'ooo_end',
+                                                            ) as HTMLInputElement | null;
+                                                        el?.showPicker?.();
+                                                        el?.focus();
+                                                        el?.click();
+                                                    }}
+                                                    className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-background px-3 py-1 text-sm hover:bg-muted"
+                                                >
+                                                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                                                    {formatDateLabel(
+                                                        outOfOfficeEndDate,
+                                                    )}
+                                                </button>
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    <div className="grid gap-1">
+                                        <InputError
+                                            message={errors.out_of_office}
+                                        />
+                                        <InputError
+                                            message={
+                                                errors.out_of_office_start_date
+                                            }
+                                        />
+                                        <InputError
+                                            message={
+                                                errors.out_of_office_end_date
+                                            }
+                                        />
                                     </div>
-                                )}
-
-                                <div className="grid gap-1">
-                                    <InputError
-                                        message={errors.out_of_office}
-                                    />
-                                    <InputError
-                                        message={
-                                            errors.out_of_office_start_date
-                                        }
-                                    />
-                                    <InputError
-                                        message={errors.out_of_office_end_date}
-                                    />
                                 </div>
-                            </div>
+                            )}
 
                             <Divider />
                             <DialogFooter className="gap-3 sm:gap-2">
@@ -544,7 +606,7 @@ export default function UserInfoModal({
                                     disabled={processing}
                                     className="bg-brand-gtc-red"
                                 >
-                                    Submit
+                                    {isCreateMode ? 'Create Contact' : 'Submit'}
                                 </Button>
                             </DialogFooter>
                         </>

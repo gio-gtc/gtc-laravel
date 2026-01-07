@@ -1,4 +1,5 @@
 import OrganizationModal from '@/components/globals/navigation/nav-main/organization-modal';
+import UserInfoModal from '@/components/modals/user-info-modal';
 import {
     Menubar,
     MenubarContent,
@@ -22,6 +23,7 @@ export const CreateBtn = () => {
     const hiddenBackhground = notCollapsedOrMobile ? 'bg-input' : '';
     const [isOrganizationModalOpen, setIsOrganizationModalOpen] =
         useState(false);
+    const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
     return (
         <>
@@ -49,6 +51,7 @@ export const CreateBtn = () => {
                             onOrganizationClick={() =>
                                 setIsOrganizationModalOpen(true)
                             }
+                            onContactClick={() => setIsContactModalOpen(true)}
                         />
                     </MenubarMenu>
                 </Menubar>
@@ -63,21 +66,28 @@ export const CreateBtn = () => {
                 isOpen={isOrganizationModalOpen}
                 onClose={() => setIsOrganizationModalOpen(false)}
             />
+            <UserInfoModal
+                isOpen={isContactModalOpen}
+                onClose={() => setIsContactModalOpen(false)}
+                mode="create"
+            />
         </>
     );
 };
 
 const CreateDropdown = ({
     onOrganizationClick,
+    onContactClick,
 }: {
     onOrganizationClick: () => void;
+    onContactClick: () => void;
 }) => {
     return (
         <MenubarContent className="text-white">
             <MenubarItem onClick={onOrganizationClick}>
                 Organization
             </MenubarItem>
-            <MenubarItem>Contact</MenubarItem>
+            <MenubarItem onClick={onContactClick}>Contact</MenubarItem>
             <MenubarItem>Tour</MenubarItem>
         </MenubarContent>
     );
