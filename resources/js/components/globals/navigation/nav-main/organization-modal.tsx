@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/select';
 import Divider from '@/components/utils/divider';
 import InputAdditions from '@/components/utils/input-additions';
-import { Clock, DollarSign, Globe, Phone, User } from 'lucide-react';
+import { DollarSign, User } from 'lucide-react';
 import { useState } from 'react';
 
 interface OrganizationModalProps {
@@ -104,90 +104,6 @@ export default function OrganizationModal({
                                             </SelectItem>
                                         </SelectContent>
                                     </Select>
-                                </div>
-                                <InputError message={undefined} />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-4">
-                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                                <Label
-                                    htmlFor="vat_tax_id"
-                                    className="sm:flex-1"
-                                >
-                                    VAT, Tax ID, or EIN
-                                    <span className="text-destructive">*</span>
-                                </Label>
-                                <div className="relative flex-1">
-                                    <Input
-                                        id="vat_tax_id"
-                                        name="vat_tax_id"
-                                        placeholder="XX-XXXXXXXXX"
-                                        required
-                                        className="border-gray-300"
-                                    />
-                                </div>
-                                <InputError message={undefined} />
-                            </div>
-
-                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                                <Label htmlFor="website" className="sm:flex-1">
-                                    Website
-                                    <span className="text-destructive">*</span>
-                                </Label>
-                                <div className="relative flex-1">
-                                    <Globe className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                    <Input
-                                        id="website"
-                                        name="website"
-                                        type="url"
-                                        placeholder="https://www.company.com"
-                                        required
-                                        className="border-gray-300 pl-9"
-                                    />
-                                </div>
-                                <InputError message={undefined} />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-4">
-                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                                <Label
-                                    htmlFor="phone_number"
-                                    className="sm:flex-1"
-                                >
-                                    Phone Number
-                                    <span className="text-destructive">*</span>
-                                </Label>
-                                <div className="relative flex-1">
-                                    <Phone className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                    <Input
-                                        id="phone_number"
-                                        name="phone_number"
-                                        type="tel"
-                                        placeholder="(555) 124-4566"
-                                        required
-                                        className="border-gray-300 pl-9"
-                                    />
-                                </div>
-                                <InputError message={undefined} />
-                            </div>
-
-                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                                <Label
-                                    htmlFor="clock_prefix"
-                                    className="sm:flex-1"
-                                >
-                                    UK/IRE Clock Prefix
-                                </Label>
-                                <div className="relative flex-1">
-                                    <Clock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                    <Input
-                                        id="clock_prefix"
-                                        name="clock_prefix"
-                                        placeholder="GMT"
-                                        className="border-gray-300 pl-9"
-                                    />
                                 </div>
                                 <InputError message={undefined} />
                             </div>
@@ -327,7 +243,10 @@ export default function OrganizationModal({
                                 <div className="relative flex-1">
                                     <Select name="preferred_currency" required>
                                         <SelectTrigger className="border-gray-300">
-                                            <SelectValue placeholder="Select Currency" />
+                                            <SelectValue
+                                                placeholder="USD"
+                                                defaultValue="usd"
+                                            />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="usd">
@@ -386,161 +305,6 @@ export default function OrganizationModal({
                                         placeholder="Contact Name"
                                         className="border-gray-300 pl-9"
                                     />
-                                </div>
-                                <InputError message={undefined} />
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                            <Label className="sm:flex-1" htmlFor="ap_phone">
-                                Accounts Payable Phone Number
-                            </Label>
-                            <div className="relative flex-1">
-                                <Phone className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                <Input
-                                    id="ap_phone"
-                                    name="ap_phone"
-                                    type="tel"
-                                    placeholder="(555) 124-4566"
-                                    className="border-gray-300 pl-9"
-                                />
-                            </div>
-                            <InputError message={undefined} />
-                        </div>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-1 gap-4">
-                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                                <Label className="sm:flex-1" htmlFor="ar_email">
-                                    Accounts Receivable Email
-                                    <span className="text-destructive">*</span>
-                                </Label>
-                                <div className="relative flex flex-1 flex-col gap-1">
-                                    <InputAdditions
-                                        inputList={arEmails}
-                                        setInputList={setArEmails}
-                                    />
-                                </div>
-                                <InputError message={undefined} />
-                            </div>
-
-                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                                <Label
-                                    className="sm:flex-1"
-                                    htmlFor="ar_contact"
-                                >
-                                    Accounts Receivable Contact
-                                </Label>
-                                <div className="relative flex-1">
-                                    <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                    <Input
-                                        id="ar_contact"
-                                        name="ar_contact"
-                                        placeholder="Contact Name"
-                                        className="border-gray-300 pl-9"
-                                    />
-                                </div>
-                                <InputError message={undefined} />
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                            <Label className="sm:flex-1" htmlFor="ar_phone">
-                                Accounts Receivable Phone Number
-                            </Label>
-                            <div className="relative flex-1">
-                                <Phone className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                <Input
-                                    id="ar_phone"
-                                    name="ar_phone"
-                                    type="tel"
-                                    placeholder="(555) 124-4566"
-                                    className="border-gray-300 pl-9"
-                                />
-                            </div>
-                            <InputError message={undefined} />
-                        </div>
-                    </div>
-
-                    <Divider />
-                    {/* Bank Information Section */}
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-1 gap-4">
-                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                                <Label
-                                    className="sm:flex-1"
-                                    htmlFor="bank_account_number"
-                                >
-                                    Bank Account Number{' '}
-                                    <span className="text-destructive">*</span>
-                                </Label>
-                                <div className="relative flex-1">
-                                    <Input
-                                        id="bank_account_number"
-                                        name="bank_account_number"
-                                        placeholder="Enter Account Number"
-                                        required
-                                        className="border-gray-300"
-                                    />
-                                </div>
-                                <InputError message={undefined} />
-                            </div>
-
-                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                                <Label
-                                    className="sm:flex-1"
-                                    htmlFor="bank_routing_number"
-                                >
-                                    Bank Routing Number{' '}
-                                    <span className="text-destructive">*</span>
-                                </Label>
-                                <div className="relative flex-1">
-                                    <Input
-                                        id="bank_routing_number"
-                                        name="bank_routing_number"
-                                        placeholder="Enter Routing Number"
-                                        required
-                                        className="border-gray-300"
-                                    />
-                                </div>
-                                <InputError message={undefined} />
-                            </div>
-
-                            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                                <Label
-                                    className="sm:flex-1"
-                                    htmlFor="bank_preferred_currency"
-                                >
-                                    Preferred Currency{' '}
-                                    <span className="text-destructive">*</span>
-                                </Label>
-                                <div className="relative flex-1">
-                                    <Select
-                                        name="bank_preferred_currency"
-                                        required
-                                    >
-                                        <SelectTrigger className="border-gray-300">
-                                            <SelectValue placeholder="Select currency" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="usd">
-                                                USD
-                                            </SelectItem>
-                                            <SelectItem value="eur">
-                                                EUR
-                                            </SelectItem>
-                                            <SelectItem value="gbp">
-                                                GBP
-                                            </SelectItem>
-                                            <SelectItem value="cad">
-                                                CAD
-                                            </SelectItem>
-                                            <SelectItem value="aud">
-                                                AUD
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
                                 </div>
                                 <InputError message={undefined} />
                             </div>
