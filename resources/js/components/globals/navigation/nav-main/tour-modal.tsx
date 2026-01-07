@@ -145,88 +145,74 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                     {/* Tour Options Section */}
                     <div className="grid grid-cols-1 gap-4">
                         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                            <Label htmlFor="voice_over" className="sm:flex-1">
-                                Voice Over
-                            </Label>
-                            <div className="relative flex-2">
-                                <Select name="voice_over">
-                                    <SelectTrigger className="border-gray-300">
-                                        <SelectValue placeholder="Voice Over" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="gilbert_gottfried">
-                                            Gilbert Gottfried
-                                        </SelectItem>
-                                        <SelectItem value="none">
-                                            None
-                                        </SelectItem>
-                                        <SelectItem value="option_1">
-                                            Option 1
-                                        </SelectItem>
-                                        <SelectItem value="option_2">
-                                            Option 2
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <InputError message={undefined} />
+                            <Label
+                                htmlFor="voice_over"
+                                className="sm:flex-1"
+                            ></Label>
                         </div>
 
-                        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                            <Label className="sm:flex-1">
-                                Hold All Invoices
-                            </Label>
-                            <div className="flex flex-1 items-center gap-2">
-                                <input
-                                    type="hidden"
-                                    name="hold_all_invoices"
-                                    value={holdAllInvoices ? '1' : '0'}
-                                />
-                                <Switch
-                                    id="hold_all_invoices"
-                                    checked={holdAllInvoices}
-                                    onCheckedChange={setHoldAllInvoices}
-                                />
-                            </div>
-                            <InputError message={undefined} />
-                        </div>
+                        <div className="flex flex-1 flex-col gap-2 sm:flex-row">
+                            <Label className="sm:flex-1">Tour Options</Label>
+                            <div className="flex flex-2 flex-col gap-3">
+                                <div className="flex flex-col gap-1">
+                                    <span className="text-xs text-muted-foreground">
+                                        Voice Over
+                                    </span>
+                                    <Select name="voice_over">
+                                        <SelectTrigger className="border-gray-300">
+                                            <SelectValue placeholder="Voice Over" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="gilbert_gottfried">
+                                                Gilbert Gottfried
+                                            </SelectItem>
+                                            <SelectItem value="none">
+                                                None
+                                            </SelectItem>
+                                            <SelectItem value="option_1">
+                                                Option 1
+                                            </SelectItem>
+                                            <SelectItem value="option_2">
+                                                Option 2
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError message={undefined} />
+                                </div>
+                                <div className="flex gap-1">
+                                    <Switch
+                                        id="hold_all_invoices"
+                                        checked={holdAllInvoices}
+                                        onCheckedChange={setHoldAllInvoices}
+                                    />
+                                    <span>Hold All Invoices</span>
+                                    <InputError message={undefined} />
+                                </div>
 
-                        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                            <Label className="sm:flex-1">
-                                Live On Ordering System
-                            </Label>
-                            <div className="flex flex-1 items-center gap-2">
-                                <input
-                                    type="hidden"
-                                    name="live_on_ordering_system"
-                                    value={liveOnOrderingSystem ? '1' : '0'}
-                                />
-                                <Switch
-                                    id="live_on_ordering_system"
-                                    checked={liveOnOrderingSystem}
-                                    onCheckedChange={setLiveOnOrderingSystem}
-                                />
-                            </div>
-                            <InputError message={undefined} />
-                        </div>
+                                <div className="flex gap-1">
+                                    <Switch
+                                        id="live_on_ordering_system"
+                                        checked={liveOnOrderingSystem}
+                                        onCheckedChange={
+                                            setLiveOnOrderingSystem
+                                        }
+                                    />
+                                    <span>Live On Ordering System</span>
+                                    <InputError message={undefined} />
+                                </div>
 
-                        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                            <Label className="sm:flex-1">
-                                Require Client Approval
-                            </Label>
-                            <div className="flex flex-1 items-center gap-2">
-                                <input
-                                    type="hidden"
-                                    name="require_client_approval"
-                                    value={requireClientApproval ? '1' : '0'}
-                                />
-                                <Switch
-                                    id="require_client_approval"
-                                    checked={requireClientApproval}
-                                    onCheckedChange={setRequireClientApproval}
-                                />
+                                <div className="flex gap-1">
+                                    <Switch
+                                        id="require_client_approval"
+                                        checked={requireClientApproval}
+                                        onCheckedChange={
+                                            setRequireClientApproval
+                                        }
+                                    />
+                                    <span>Require Client Approval</span>
+                                    <InputError message={undefined} />
+                                </div>
                             </div>
-                            <InputError message={undefined} />
                         </div>
 
                         {requireClientApproval && (
