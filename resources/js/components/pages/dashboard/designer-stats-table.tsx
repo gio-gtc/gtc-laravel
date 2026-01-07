@@ -1,4 +1,4 @@
-import { designerStatsData } from '@/components/mockdata';
+import { mockUsers } from '@/components/mockdata';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     Pagination,
@@ -35,9 +35,9 @@ function DesignerStatsTable() {
 
     // Sort data
     const sortedData = useMemo(() => {
-        if (!sortColumn) return designerStatsData;
+        if (!sortColumn) return mockUsers;
 
-        return [...designerStatsData].sort((a, b) => {
+        return [...mockUsers].sort((a, b) => {
             let aValue: string | number;
             let bValue: string | number;
 

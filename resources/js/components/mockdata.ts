@@ -124,6 +124,10 @@ export const mockUsers = [
         updated_at: new Date().toISOString(),
         first_name: 'Sarah',
         last_name: 'Johnson',
+        assetsAssigned: 45,
+        assetsUploaded: 38,
+        rolling30DayAccuracy: 87,
+        trend: { direction: 'up' as const, percentage: 5 },
     },
     {
         id: 2,
@@ -135,6 +139,10 @@ export const mockUsers = [
         updated_at: new Date().toISOString(),
         first_name: 'Michael',
         last_name: 'Chen',
+        assetsAssigned: 52,
+        assetsUploaded: 44,
+        rolling30DayAccuracy: 92,
+        trend: { direction: 'up' as const, percentage: 8 },
     },
     {
         id: 3,
@@ -146,6 +154,10 @@ export const mockUsers = [
         updated_at: new Date().toISOString(),
         first_name: 'Emily',
         last_name: 'Rodriguez',
+        assetsAssigned: 38,
+        assetsUploaded: 32,
+        rolling30DayAccuracy: 79,
+        trend: { direction: 'down' as const, percentage: 3 },
     },
     {
         id: 4,
@@ -157,6 +169,10 @@ export const mockUsers = [
         updated_at: new Date().toISOString(),
         first_name: 'David',
         last_name: 'Williams',
+        assetsAssigned: 61,
+        assetsUploaded: 55,
+        rolling30DayAccuracy: 95,
+        trend: { direction: 'up' as const, percentage: 12 },
     },
     {
         id: 5,
@@ -168,6 +184,10 @@ export const mockUsers = [
         updated_at: new Date().toISOString(),
         first_name: 'Jessica',
         last_name: 'Martinez',
+        assetsAssigned: 41,
+        assetsUploaded: 36,
+        rolling30DayAccuracy: 83,
+        trend: { direction: 'up' as const, percentage: 6 },
     },
 ];
 
