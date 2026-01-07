@@ -16,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import Divider from '@/components/utils/divider';
 import { Calendar, DollarSign, Mail } from 'lucide-react';
 import { useState } from 'react';
@@ -181,31 +182,11 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                     name="hold_all_invoices"
                                     value={holdAllInvoices ? '1' : '0'}
                                 />
-                                <button
-                                    type="button"
-                                    role="switch"
-                                    aria-checked={holdAllInvoices}
+                                <Switch
                                     id="hold_all_invoices"
-                                    onClick={() =>
-                                        setHoldAllInvoices((v) => !v)
-                                    }
-                                    className={[
-                                        'relative inline-flex h-4 w-8 items-center rounded-full transition-colors',
-                                        holdAllInvoices
-                                            ? 'bg-brand-gtc-red'
-                                            : 'bg-muted',
-                                        'focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none',
-                                    ].join(' ')}
-                                >
-                                    <span
-                                        className={[
-                                            'inline-block h-3 w-3 transform rounded-full bg-background shadow-lg transition-transform',
-                                            holdAllInvoices
-                                                ? 'translate-x-4.5'
-                                                : 'translate-x-1',
-                                        ].join(' ')}
-                                    />
-                                </button>
+                                    checked={holdAllInvoices}
+                                    onCheckedChange={setHoldAllInvoices}
+                                />
                             </div>
                             <InputError message={undefined} />
                         </div>
@@ -220,31 +201,11 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                     name="live_on_ordering_system"
                                     value={liveOnOrderingSystem ? '1' : '0'}
                                 />
-                                <button
-                                    type="button"
-                                    role="switch"
-                                    aria-checked={liveOnOrderingSystem}
+                                <Switch
                                     id="live_on_ordering_system"
-                                    onClick={() =>
-                                        setLiveOnOrderingSystem((v) => !v)
-                                    }
-                                    className={[
-                                        'relative inline-flex h-4 w-8 items-center rounded-full transition-colors',
-                                        liveOnOrderingSystem
-                                            ? 'bg-brand-gtc-red'
-                                            : 'bg-muted',
-                                        'focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none',
-                                    ].join(' ')}
-                                >
-                                    <span
-                                        className={[
-                                            'inline-block h-3 w-3 transform rounded-full bg-background shadow-lg transition-transform',
-                                            liveOnOrderingSystem
-                                                ? 'translate-x-4.5'
-                                                : 'translate-x-1',
-                                        ].join(' ')}
-                                    />
-                                </button>
+                                    checked={liveOnOrderingSystem}
+                                    onCheckedChange={setLiveOnOrderingSystem}
+                                />
                             </div>
                             <InputError message={undefined} />
                         </div>
@@ -259,31 +220,11 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                     name="require_client_approval"
                                     value={requireClientApproval ? '1' : '0'}
                                 />
-                                <button
-                                    type="button"
-                                    role="switch"
-                                    aria-checked={requireClientApproval}
+                                <Switch
                                     id="require_client_approval"
-                                    onClick={() =>
-                                        setRequireClientApproval((v) => !v)
-                                    }
-                                    className={[
-                                        'relative inline-flex h-4 w-8 items-center rounded-full transition-colors',
-                                        requireClientApproval
-                                            ? 'bg-brand-gtc-red'
-                                            : 'bg-muted',
-                                        'focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none',
-                                    ].join(' ')}
-                                >
-                                    <span
-                                        className={[
-                                            'inline-block h-3 w-3 transform rounded-full bg-background shadow-lg transition-transform',
-                                            requireClientApproval
-                                                ? 'translate-x-4.5'
-                                                : 'translate-x-1',
-                                        ].join(' ')}
-                                    />
-                                </button>
+                                    checked={requireClientApproval}
+                                    onCheckedChange={setRequireClientApproval}
+                                />
                             </div>
                             <InputError message={undefined} />
                         </div>
