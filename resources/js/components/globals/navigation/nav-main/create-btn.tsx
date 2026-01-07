@@ -1,4 +1,5 @@
 import OrganizationModal from '@/components/globals/navigation/nav-main/organization-modal';
+import TourModal from '@/components/globals/navigation/nav-main/tour-modal';
 import UserInfoModal from '@/components/modals/user-info-modal';
 import {
     Menubar,
@@ -24,6 +25,7 @@ export const CreateBtn = () => {
     const [isOrganizationModalOpen, setIsOrganizationModalOpen] =
         useState(false);
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+    const [isTourModalOpen, setIsTourModalOpen] = useState(false);
 
     return (
         <>
@@ -52,6 +54,7 @@ export const CreateBtn = () => {
                                 setIsOrganizationModalOpen(true)
                             }
                             onContactClick={() => setIsContactModalOpen(true)}
+                            onTourClick={() => setIsTourModalOpen(true)}
                         />
                     </MenubarMenu>
                 </Menubar>
@@ -71,6 +74,10 @@ export const CreateBtn = () => {
                 onClose={() => setIsContactModalOpen(false)}
                 mode="create"
             />
+            <TourModal
+                isOpen={isTourModalOpen}
+                onClose={() => setIsTourModalOpen(false)}
+            />
         </>
     );
 };
@@ -78,9 +85,11 @@ export const CreateBtn = () => {
 const CreateDropdown = ({
     onOrganizationClick,
     onContactClick,
+    onTourClick,
 }: {
     onOrganizationClick: () => void;
     onContactClick: () => void;
+    onTourClick: () => void;
 }) => {
     return (
         <MenubarContent className="text-white">
@@ -88,7 +97,7 @@ const CreateDropdown = ({
                 Organization
             </MenubarItem>
             <MenubarItem onClick={onContactClick}>Contact</MenubarItem>
-            <MenubarItem>Tour</MenubarItem>
+            <MenubarItem onClick={onTourClick}>Tour</MenubarItem>
         </MenubarContent>
     );
 };
