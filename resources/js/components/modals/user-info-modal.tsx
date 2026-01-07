@@ -79,7 +79,7 @@ export default function UserInfoModal({
                 out_of_office: false,
                 out_of_office_start_date: '',
                 out_of_office_end_date: '',
-                permissions_level: 'Admin',
+                permissions_level: '',
             };
         }
 
@@ -154,7 +154,7 @@ export default function UserInfoModal({
                                                         : user.name
                                                 }
                                             />
-                                            <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                            <AvatarFallback className="rounded-full bg-neutral-200 text-black">
                                                 {isCreateMode
                                                     ? 'CN'
                                                     : getInitials(user.name)}
