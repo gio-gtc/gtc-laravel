@@ -25,10 +25,7 @@ interface TourModalProps {
     onClose: () => void;
 }
 
-export default function TourModal({
-    isOpen,
-    onClose,
-}: TourModalProps) {
+export default function TourModal({ isOpen, onClose }: TourModalProps) {
     const [holdAllInvoices, setHoldAllInvoices] = useState(false);
     const [liveOnOrderingSystem, setLiveOnOrderingSystem] = useState(false);
     const [requireClientApproval, setRequireClientApproval] = useState(false);
@@ -105,10 +102,9 @@ export default function TourModal({
                                     <button
                                         type="button"
                                         onClick={() => {
-                                            const el =
-                                                document.getElementById(
-                                                    'start_date',
-                                                ) as HTMLInputElement | null;
+                                            const el = document.getElementById(
+                                                'start_date',
+                                            ) as HTMLInputElement | null;
                                             el?.showPicker?.();
                                             el?.focus();
                                             el?.click();
@@ -144,10 +140,9 @@ export default function TourModal({
                                     <button
                                         type="button"
                                         onClick={() => {
-                                            const el =
-                                                document.getElementById(
-                                                    'expire_on_sale_now_cuts',
-                                                ) as HTMLInputElement | null;
+                                            const el = document.getElementById(
+                                                'expire_on_sale_now_cuts',
+                                            ) as HTMLInputElement | null;
                                             el?.showPicker?.();
                                             el?.focus();
                                             el?.click();
@@ -183,7 +178,9 @@ export default function TourModal({
                                             <SelectItem value="gilbert_gottfried">
                                                 Gilbert Gottfried
                                             </SelectItem>
-                                            <SelectItem value="none">None</SelectItem>
+                                            <SelectItem value="none">
+                                                None
+                                            </SelectItem>
                                             <SelectItem value="option_1">
                                                 Option 1
                                             </SelectItem>
@@ -243,9 +240,7 @@ export default function TourModal({
                                     <input
                                         type="hidden"
                                         name="live_on_ordering_system"
-                                        value={
-                                            liveOnOrderingSystem ? '1' : '0'
-                                        }
+                                        value={liveOnOrderingSystem ? '1' : '0'}
                                     />
                                     <button
                                         type="button"
@@ -386,7 +381,7 @@ export default function TourModal({
                                     id="special_instructions"
                                     name="special_instructions"
                                     placeholder="Special Instructions"
-                                    className="flex min-h-28 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm resize-y"
+                                    className="flex min-h-28 w-full resize-y rounded-md border border-gray-300 bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm"
                                 />
                             </div>
                             <InputError message={undefined} />
@@ -590,4 +585,3 @@ export default function TourModal({
         </Dialog>
     );
 }
-
