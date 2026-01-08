@@ -52,6 +52,7 @@ export default function OrganizationModal({
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Organization Information Section */}
                     <div className="space-y-4">
+                        {/* TODO: Check if grid container is needed */}
                         <div className="grid grid-cols-1 gap-4">
                             <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
                                 <Label

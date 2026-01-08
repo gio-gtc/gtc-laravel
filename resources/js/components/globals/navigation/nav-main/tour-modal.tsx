@@ -266,86 +266,88 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
 
                     {/* Pricing Section */}
                     <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label className="sm:flex-1">Price</Label>
+                        <h5 className="sm:flex-1">Price</h5>
 
                         <div className="relative flex flex-2 flex-col gap-2">
-                            {/* TODO: make reusable component ---- Continue From here! */}
-                            <div className="flex items-center gap-2">
-                                <span className="flex">TV First Cut</span>
-                                <div className="relative max-w-24">
-                                    <DollarSign className="absolute top-1/2 left-2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
-                                    <Input
-                                        id="tv_first_cut"
-                                        name="tv_first_cut"
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        className="border-gray-300 p-0 pl-6"
-                                    />
+                            {/* TODO: make reusable component */}
+                            <div className="flex max-w-[300px] flex-col justify-between gap-2">
+                                <div className="flex items-center justify-between gap-2">
+                                    <span>TV First Cut</span>
+                                    <div className="relative max-w-20">
+                                        <DollarSign className="absolute top-1/2 left-2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+                                        <Input
+                                            id="tv_first_cut"
+                                            name="tv_first_cut"
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            className="border-gray-300 p-0 pl-6"
+                                        />
+                                    </div>
                                 </div>
                                 <InputError message={undefined} />
-                            </div>
 
-                            <div className="flex items-center gap-2">
-                                <div>TV Second Cut</div>
-                                <div className="relative">
-                                    <DollarSign className="absolute top-1/2 left-2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
-                                    <Input
-                                        id="tv_second_cut"
-                                        name="tv_second_cut"
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        className="border-gray-300 p-0 pl-6"
-                                    />
+                                <div className="flex items-center justify-between gap-2">
+                                    <div>TV Second Cut</div>
+                                    <div className="relative max-w-20">
+                                        <DollarSign className="absolute top-1/2 left-2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+                                        <Input
+                                            id="tv_second_cut"
+                                            name="tv_second_cut"
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            className="border-gray-300 p-0 pl-6"
+                                        />
+                                    </div>
                                 </div>
                                 <InputError message={undefined} />
-                            </div>
 
-                            <div className="flex items-center gap-2">
-                                <div>Radio Single Duration</div>
-                                <div className="relative">
-                                    <DollarSign className="absolute top-1/2 left-2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
-                                    <Input
-                                        id="radio_single_duration"
-                                        name="radio_single_duration"
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        className="border-gray-300 p-0 pl-6"
-                                    />
+                                <div className="flex items-center justify-between gap-2">
+                                    <div>Radio Single Duration</div>
+                                    <div className="relative max-w-20">
+                                        <DollarSign className="absolute top-1/2 left-2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+                                        <Input
+                                            id="radio_single_duration"
+                                            name="radio_single_duration"
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            className="border-gray-300 p-0 pl-6"
+                                        />
+                                    </div>
                                 </div>
                                 <InputError message={undefined} />
-                            </div>
 
-                            <div className="flex items-center gap-2">
-                                <div>Radio Dual Duration</div>
-                                <div className="relative">
-                                    <DollarSign className="absolute top-1/2 left-2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
-                                    <Input
-                                        id="radio_dual_duration"
-                                        name="radio_dual_duration"
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        className="border-gray-300 p-0 pl-6"
-                                    />
+                                <div className="flex items-center justify-between gap-2">
+                                    <div>Radio Dual Duration</div>
+                                    <div className="relative max-w-20">
+                                        <DollarSign className="absolute top-1/2 left-2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+                                        <Input
+                                            id="radio_dual_duration"
+                                            name="radio_dual_duration"
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            className="border-gray-300 p-0 pl-6"
+                                        />
+                                    </div>
                                 </div>
                                 <InputError message={undefined} />
-                            </div>
 
-                            <div className="flex items-center gap-2">
-                                <div>Key Art</div>
-                                <div className="relative">
-                                    <DollarSign className="absolute top-1/2 left-2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
-                                    <Input
-                                        id="key_art"
-                                        name="key_art"
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        className="border-gray-300 p-0 pl-6"
-                                    />
+                                <div className="flex items-center justify-between gap-2">
+                                    <div>Key Art</div>
+                                    <div className="relative max-w-20">
+                                        <DollarSign className="absolute top-1/2 left-2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+                                        <Input
+                                            id="key_art"
+                                            name="key_art"
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            className="border-gray-300 p-0 pl-6"
+                                        />
+                                    </div>
                                 </div>
                                 <InputError message={undefined} />
                             </div>
