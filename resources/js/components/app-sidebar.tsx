@@ -18,7 +18,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'My Tasks',
-        href: '/#',
+        href: '/invoices',
         icon: ClipboardCheck,
     },
     {

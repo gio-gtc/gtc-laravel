@@ -1,4 +1,4 @@
-import { SalesByRepDataSchema } from "@/types";
+import { SalesByRepDataSchema, type Invoice } from "@/types";
 
 // Mock data for mini charts - static data showing upward trend
 export const salesChartData = [
@@ -296,5 +296,74 @@ export const salesByRepData: SalesByRepDataSchema[] = [
         ytd: -74000,
         ytdChange: { direction: 'up', percentage: 6 },
         total: -74000,
+    },
+];
+
+// Mock invoice data based on image
+export const invoicesData: Invoice[] = [
+    {
+        id: '1',
+        invoiceNumber: '974658',
+        date: '11/06/24',
+        tour: 'Cirque du Soleil Portfolio',
+        market: 'Portfolio Sizzle',
+        venue: 'N/A',
+        ref: 'Generic Pre Sale',
+        amount: 52820.79,
+        daysToShow: -40,
+        showDate: new Date('2024-10-27'),
+        isDeleted: false,
+    },
+    {
+        id: '2',
+        invoiceNumber: '980043',
+        date: '9/30/25',
+        tour: 'Cirque du Soleil Echo',
+        market: 'San Francisco, CA',
+        venue: 'Oracle Park',
+        ref: 'Amex Pre Sale',
+        amount: 17692.27,
+        daysToShow: -2,
+        showDate: new Date('2025-09-28'),
+        isDeleted: false,
+    },
+    {
+        id: '3',
+        invoiceNumber: '984958',
+        date: '11/06/24',
+        tour: 'Cirque du Soleil Echo',
+        market: 'Dallas, TX',
+        venue: 'American Airlines Center',
+        ref: 'Generic Pre Sale',
+        amount: 10571.78,
+        daysToShow: 29,
+        showDate: new Date('2025-01-15'),
+        isDeleted: false,
+    },
+    {
+        id: '4',
+        invoiceNumber: '981873',
+        date: '9/30/25',
+        tour: 'Cirque du Soleil Echo',
+        market: 'Seattle, WA',
+        venue: "King County's Marymoor Park",
+        ref: 'Generic Pre sale',
+        amount: 26005.24,
+        daysToShow: 62,
+        showDate: new Date('2025-02-17'),
+        isDeleted: false,
+    },
+    {
+        id: '5',
+        invoiceNumber: '981873',
+        date: '9/30/25',
+        tour: 'Cirque du Soleil Echo',
+        market: 'Seattle, WA',
+        venue: "King County's Marymoor Park",
+        ref: 'Generic Pre sale',
+        amount: 26005.24,
+        daysToShow: 0,
+        showDate: new Date('2025-02-17'),
+        isDeleted: true,
     },
 ];

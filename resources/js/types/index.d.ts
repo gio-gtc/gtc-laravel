@@ -96,3 +96,17 @@ export interface PendingOrderGroup {
     orders: PendingOrder[];
     isExpanded?: boolean;
 }
+
+export interface Invoice {
+    id: string;
+    invoiceNumber: string;
+    date: string;
+    tour: string;
+    market: string;
+    venue: string;
+    ref: string;
+    amount: number;
+    daysToShow: number;
+    showDate: Date;
+    isDeleted: boolean;
+}

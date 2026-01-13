@@ -18,6 +18,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('pending-orders', function () {
         return Inertia::render('pending-orders');
     })->name('pending-orders');
+
+    Route::get('invoices', function () {
+        return Inertia::render('invoices');
+    })->name('invoices');
 });
 
 require __DIR__.'/settings.php';
