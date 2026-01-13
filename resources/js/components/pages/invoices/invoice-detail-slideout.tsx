@@ -366,6 +366,7 @@ export default function InvoiceDetailSlideout({
                                                         itemId={item.id}
                                                         field="description"
                                                         type="text"
+                                                        // TODO: Check this line out - To funky
                                                         formatValue={(val) =>
                                                             val === '' ||
                                                             val === null ||
@@ -422,8 +423,15 @@ export default function InvoiceDetailSlideout({
                                                         type="number"
                                                         min={0}
                                                         step={0.01}
-                                                        formatValue={
-                                                            formatCurrency
+                                                        formatValue={(val) =>
+                                                            formatCurrency(
+                                                                typeof val ===
+                                                                    'string'
+                                                                    ? parseFloat(
+                                                                          val,
+                                                                      ) || 0
+                                                                    : val,
+                                                            )
                                                         }
                                                         onChange={
                                                             handleCellChange

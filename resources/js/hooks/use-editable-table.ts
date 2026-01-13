@@ -27,7 +27,7 @@ interface UseEditableTableReturn<T> {
     isEditing: (itemId: number | string, field: string) => boolean;
 }
 
-export function useEditableTable<T extends Record<string, unknown>>({
+export function useEditableTable<T extends object>({
     data,
     onChange,
     getId,
