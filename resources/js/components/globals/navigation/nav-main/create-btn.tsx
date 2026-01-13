@@ -1,3 +1,5 @@
+import InvoiceModal from '@/components/globals/navigation/nav-main/invoice-modal';
+import OrderModal from '@/components/globals/navigation/nav-main/order-modal';
 import OrganizationModal from '@/components/globals/navigation/nav-main/organization-modal';
 import TourModal from '@/components/globals/navigation/nav-main/tour-modal';
 import UserInfoModal from '@/components/modals/user-info-modal';
@@ -26,6 +28,8 @@ export const CreateBtn = () => {
         useState(false);
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
     const [isTourModalOpen, setIsTourModalOpen] = useState(false);
+    const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+    const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
 
     return (
         <>
@@ -55,6 +59,8 @@ export const CreateBtn = () => {
                             }
                             onContactClick={() => setIsContactModalOpen(true)}
                             onTourClick={() => setIsTourModalOpen(true)}
+                            onOrderClick={() => setIsOrderModalOpen(true)}
+                            onInvoiceClick={() => setIsInvoiceModalOpen(true)}
                         />
                     </MenubarMenu>
                 </Menubar>
@@ -78,6 +84,14 @@ export const CreateBtn = () => {
                 isOpen={isTourModalOpen}
                 onClose={() => setIsTourModalOpen(false)}
             />
+            <OrderModal
+                isOpen={isOrderModalOpen}
+                onClose={() => setIsOrderModalOpen(false)}
+            />
+            <InvoiceModal
+                isOpen={isInvoiceModalOpen}
+                onClose={() => setIsInvoiceModalOpen(false)}
+            />
         </>
     );
 };
@@ -86,10 +100,14 @@ const CreateDropdown = ({
     onOrganizationClick,
     onContactClick,
     onTourClick,
+    onOrderClick,
+    onInvoiceClick,
 }: {
     onOrganizationClick: () => void;
     onContactClick: () => void;
     onTourClick: () => void;
+    onOrderClick: () => void;
+    onInvoiceClick: () => void;
 }) => {
     return (
         <MenubarContent className="text-white">
@@ -98,6 +116,8 @@ const CreateDropdown = ({
             </MenubarItem>
             <MenubarItem onClick={onContactClick}>Contact</MenubarItem>
             <MenubarItem onClick={onTourClick}>Tour</MenubarItem>
+            <MenubarItem onClick={onOrderClick}>Order</MenubarItem>
+            <MenubarItem onClick={onInvoiceClick}>Invoice</MenubarItem>
         </MenubarContent>
     );
 };
