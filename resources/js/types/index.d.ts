@@ -104,11 +104,16 @@ export interface Invoice {
     tour: string;
     market: string;
     venue: string;
-    ref: string;
     amount: number;
     daysToShow: number;
     showDate: Date;
     isDeleted: boolean;
+    user_id: number;
+    companyName?: string;
+    address?: string;
+    invoiceReleaseDate?: string;
+    invoiceDueDate?: string;
+    clientReference: string;
 }
 
 export interface InvoiceItem {

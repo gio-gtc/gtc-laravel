@@ -1,4 +1,5 @@
 import { invoicesData } from '@/components/mockdata';
+import InvoiceDetailSlideout from '@/components/pages/invoices/invoice-detail-slideout';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -26,7 +27,7 @@ import { ChevronDown, Filter, Search, SortAsc } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 function InvoicesTable() {
-    const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+    const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
     const [columnSizing, setColumnSizing] = useState({});
 
     const data = useMemo(() => invoicesData, []);
@@ -154,7 +155,7 @@ function InvoicesTable() {
                 },
             },
             {
-                accessorKey: 'ref',
+                accessorKey: 'clientReference',
                 header: 'Ref',
                 size: 150,
                 cell: ({ getValue, row }) => {
@@ -305,7 +306,8 @@ function InvoicesTable() {
                     <TableBody>
                         {table.getRowModel().rows.length ? (
                             table.getRowModel().rows.map((row) => {
-                                const isSelected = selectedRowId === row.id;
+                                const isSelected =
+                                    selectedInvoice?.id === row.original.id;
 
                                 return (
                                     <TableRow
@@ -317,9 +319,10 @@ function InvoicesTable() {
                                                 'opacity-60',
                                         )}
                                         onClick={() => {
-                                            // Placeholder for future slideout
-                                            setSelectedRowId(
-                                                isSelected ? null : row.id,
+                                            setSelectedInvoice(
+                                                isSelected
+                                                    ? null
+                                                    : row.original,
                                             );
                                         }}
                                     >
@@ -361,6 +364,13 @@ function InvoicesTable() {
                     </TableBody>
                 </Table>
             </div>
+
+            {/* Invoice Detail Slide-out */}
+            <InvoiceDetailSlideout
+                invoice={selectedInvoice}
+                isOpen={selectedInvoice !== null}
+                onClose={() => setSelectedInvoice(null)}
+            />
         </div>
     );
 }
