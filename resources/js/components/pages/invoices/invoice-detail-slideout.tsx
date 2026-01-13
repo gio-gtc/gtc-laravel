@@ -18,7 +18,14 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { type Invoice } from '@/types';
-import { Calendar, Maximize2, MoreHorizontal, Send, X } from 'lucide-react';
+import {
+    Calendar,
+    Maximize2,
+    MoreHorizontal,
+    Plus,
+    Send,
+    X,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface InvoiceDetailSlideoutProps {
@@ -289,7 +296,7 @@ export default function InvoiceDetailSlideout({
                             </ColumnedRowsParent>
                         </div>
 
-                        <div className="flex justify-end gap-2">
+                        <div className="flex flex-col justify-end gap-2 sm:flex-row">
                             <Button variant="outline" onClick={onClose}>
                                 Cancel
                             </Button>
@@ -299,7 +306,7 @@ export default function InvoiceDetailSlideout({
 
                     <Separator />
                     {/* Action Buttons Section */}
-                    <div className="flex justify-center gap-2">
+                    <div className="flex flex-col justify-center gap-2 sm:flex-row">
                         <Button variant="destructive">Release Hold</Button>
                         <Button variant="outline">Delete Invoice</Button>
                     </div>
@@ -353,7 +360,7 @@ export default function InvoiceDetailSlideout({
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        className="h-6 w-6 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                        className="h-6 w-6 rounded-full border-2 border-destructive text-destructive hover:bg-destructive/90"
                                                     >
                                                         <X className="h-3 w-3" />
                                                     </Button>
@@ -377,21 +384,9 @@ export default function InvoiceDetailSlideout({
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-6 w-6 rounded-full bg-muted text-muted-foreground hover:bg-muted/80"
+                                                className="h-6 w-6 rounded-full bg-muted text-muted-foreground"
                                             >
-                                                <svg
-                                                    className="h-3 w-3"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M12 4v16m8-8H4"
-                                                    />
-                                                </svg>
+                                                <Plus className="h-3 w-3" />
                                             </Button>
                                         </TableCell>
                                     </TableRow>
@@ -406,7 +401,7 @@ export default function InvoiceDetailSlideout({
                                     Total Amount:
                                 </span>
                                 <span className="text-lg font-semibold">
-                                    {formatCurrency(totalAmount)}
+                                    {formatCurrency(invoice?.amount)}
                                 </span>
                             </div>
                         </div>
