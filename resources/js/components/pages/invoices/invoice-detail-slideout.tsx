@@ -18,31 +18,13 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { type Invoice } from '@/types';
-import {
-    ArrowRight,
-    Calendar,
-    Maximize2,
-    MoreHorizontal,
-    Send,
-    X,
-} from 'lucide-react';
+import { Calendar, Maximize2, MoreHorizontal, Send, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface InvoiceDetailSlideoutProps {
     invoice: Invoice | null;
     isOpen: boolean;
     onClose: () => void;
-}
-
-function formatDateLabel(value: string | undefined): string {
-    if (!value) return '';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return '';
-    return new Intl.DateTimeFormat(undefined, {
-        month: 'short',
-        day: '2-digit',
-        year: 'numeric',
-    }).format(date);
 }
 
 function formatDateInput(value: string | undefined): string {
@@ -112,9 +94,12 @@ export default function InvoiceDetailSlideout({
 
     return (
         <Sheet open={isOpen} onOpenChange={onClose}>
-            <SheetContent side="right" className="w-[80%] overflow-y-auto p-0">
+            <SheetContent
+                side="right"
+                className="w-full overflow-y-auto p-0 sm:max-w-5xl"
+            >
                 <SheetHeader className="relative border-b px-6 pt-6 pb-4">
-                    <div className="flex items-start justify-between pr-10">
+                    <div className="flex flex-col items-start justify-between pr-10 sm:flex-row">
                         <div className="flex-1">
                             <SheetTitle className="text-2xl font-semibold">
                                 {invoice.tour}
@@ -145,13 +130,6 @@ export default function InvoiceDetailSlideout({
                             >
                                 <MoreHorizontal className="h-4 w-4" />
                             </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                            >
-                                <ArrowRight className="h-4 w-4" />
-                            </Button>
                         </div>
                     </div>
                 </SheetHeader>
@@ -159,164 +137,174 @@ export default function InvoiceDetailSlideout({
                 <div className="space-y-6 px-6 py-6">
                     {/* Customer and Invoice Details Section */}
                     <div className="space-y-4">
-                        <div className="grid grid-cols-[200px_1fr] items-start gap-4">
-                            <Label htmlFor="companyName" className="pt-2">
-                                Company Name
-                            </Label>
-                            <Input
-                                id="companyName"
-                                value={formData.companyName}
-                                onChange={(e) =>
-                                    handleInputChange(
-                                        'companyName',
-                                        e.target.value,
-                                    )
-                                }
-                            />
+                        <div className="flex flex-col gap-4 md:flex-row">
+                            <ColumnedRowsParent>
+                                <RowsColumnedChild>
+                                    <Label
+                                        htmlFor="companyName"
+                                        className="pt-2"
+                                    >
+                                        Company Name
+                                    </Label>
+                                    <Input
+                                        id="companyName"
+                                        value={formData.companyName}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                'companyName',
+                                                e.target.value,
+                                            )
+                                        }
+                                    />
+                                </RowsColumnedChild>
+
+                                <RowsColumnedChild>
+                                    <Label htmlFor="address" className="pt-2">
+                                        Address
+                                    </Label>
+                                    <textarea
+                                        id="address"
+                                        className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+                                        value={formData.address}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                'address',
+                                                e.target.value,
+                                            )
+                                        }
+                                        rows={3}
+                                    />
+                                </RowsColumnedChild>
+                            </ColumnedRowsParent>
+
+                            <ColumnedRowsParent>
+                                <RowsColumnedChild>
+                                    <Label
+                                        htmlFor="invoiceReleaseDate"
+                                        className="pt-2"
+                                    >
+                                        Invoice Release Date
+                                    </Label>
+                                    <div className="relative">
+                                        <Input
+                                            id="invoiceReleaseDate"
+                                            type="date"
+                                            value={formatDateInput(
+                                                formData.invoiceReleaseDate,
+                                            )}
+                                            onChange={(e) =>
+                                                handleInputChange(
+                                                    'invoiceReleaseDate',
+                                                    e.target.value,
+                                                )
+                                            }
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const el =
+                                                    document.getElementById(
+                                                        'invoiceReleaseDate',
+                                                    ) as HTMLInputElement | null;
+                                                el?.showPicker?.();
+                                                el?.focus();
+                                                el?.click();
+                                            }}
+                                            className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                        >
+                                            <Calendar className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                </RowsColumnedChild>
+
+                                <RowsColumnedChild>
+                                    <Label
+                                        htmlFor="invoiceDueDate"
+                                        className="pt-2"
+                                    >
+                                        Invoice Due Date
+                                    </Label>
+                                    <div className="relative">
+                                        <Input
+                                            id="invoiceDueDate"
+                                            type="date"
+                                            value={formatDateInput(
+                                                formData.invoiceDueDate,
+                                            )}
+                                            onChange={(e) =>
+                                                handleInputChange(
+                                                    'invoiceDueDate',
+                                                    e.target.value,
+                                                )
+                                            }
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const el =
+                                                    document.getElementById(
+                                                        'invoiceDueDate',
+                                                    ) as HTMLInputElement | null;
+                                                el?.showPicker?.();
+                                                el?.focus();
+                                                el?.click();
+                                            }}
+                                            className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                        >
+                                            <Calendar className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                </RowsColumnedChild>
+
+                                <RowsColumnedChild>
+                                    <Label
+                                        htmlFor="clientReference"
+                                        className="pt-2"
+                                    >
+                                        Client Reference
+                                    </Label>
+                                    <Input
+                                        id="clientReference"
+                                        value={formData.clientReference}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                'clientReference',
+                                                e.target.value,
+                                            )
+                                        }
+                                    />
+                                </RowsColumnedChild>
+
+                                <RowsColumnedChild>
+                                    <Label htmlFor="orderedBy" className="pt-2">
+                                        Ordered By
+                                    </Label>
+                                    <Input
+                                        id="orderedBy"
+                                        value={orderedByUser?.name || ''}
+                                        readOnly
+                                        className="bg-muted"
+                                    />
+                                </RowsColumnedChild>
+                            </ColumnedRowsParent>
                         </div>
 
-                        <div className="grid grid-cols-[200px_1fr] items-start gap-4">
-                            <Label htmlFor="address" className="pt-2">
-                                Address
-                            </Label>
-                            <textarea
-                                id="address"
-                                className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
-                                value={formData.address}
-                                onChange={(e) =>
-                                    handleInputChange('address', e.target.value)
-                                }
-                                rows={3}
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-[200px_1fr] items-start gap-4">
-                            <Label
-                                htmlFor="invoiceReleaseDate"
-                                className="pt-2"
-                            >
-                                Invoice Release Date
-                            </Label>
-                            <div className="relative">
-                                <Input
-                                    id="invoiceReleaseDate"
-                                    type="date"
-                                    value={formatDateInput(
-                                        formData.invoiceReleaseDate,
-                                    )}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            'invoiceReleaseDate',
-                                            e.target.value,
-                                        )
-                                    }
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const el = document.getElementById(
-                                            'invoiceReleaseDate',
-                                        ) as HTMLInputElement | null;
-                                        el?.showPicker?.();
-                                        el?.focus();
-                                        el?.click();
-                                    }}
-                                    className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                >
-                                    <Calendar className="h-4 w-4" />
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-[200px_1fr] items-start gap-4">
-                            <Label htmlFor="invoiceDueDate" className="pt-2">
-                                Invoice Due Date
-                            </Label>
-                            <div className="relative">
-                                <Input
-                                    id="invoiceDueDate"
-                                    type="date"
-                                    value={formatDateInput(
-                                        formData.invoiceDueDate,
-                                    )}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            'invoiceDueDate',
-                                            e.target.value,
-                                        )
-                                    }
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const el = document.getElementById(
-                                            'invoiceDueDate',
-                                        ) as HTMLInputElement | null;
-                                        el?.showPicker?.();
-                                        el?.focus();
-                                        el?.click();
-                                    }}
-                                    className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                >
-                                    <Calendar className="h-4 w-4" />
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-[200px_1fr] items-start gap-4">
-                            <Label htmlFor="clientReference" className="pt-2">
-                                Client Reference
-                            </Label>
-                            <Input
-                                id="clientReference"
-                                value={formData.clientReference}
-                                onChange={(e) =>
-                                    handleInputChange(
-                                        'clientReference',
-                                        e.target.value,
-                                    )
-                                }
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-[200px_1fr] items-start gap-4">
-                            <Label htmlFor="orderedBy" className="pt-2">
-                                Ordered By
-                            </Label>
-                            <Input
-                                id="orderedBy"
-                                value={orderedByUser?.name || ''}
-                                readOnly
-                                className="bg-muted"
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-[200px_1fr] gap-4">
-                            <div></div>
-                            <div className="flex gap-2">
-                                <Button variant="outline" onClick={onClose}>
-                                    Cancel
-                                </Button>
-                                <Button variant="outline">Save Changes</Button>
-                            </div>
+                        <div className="flex justify-end gap-2">
+                            <Button variant="outline" onClick={onClose}>
+                                Cancel
+                            </Button>
+                            <Button variant="outline">Save Changes</Button>
                         </div>
                     </div>
 
                     <Separator />
-
                     {/* Action Buttons Section */}
-                    <div className="flex items-center justify-between">
-                        <Button variant="outline" className="text-destructive">
-                            Delete Invoice
-                        </Button>
-                        <div className="flex gap-2">
-                            <Button variant="destructive">Release Hold</Button>
-                            <Button variant="outline">Delete Invoice</Button>
-                        </div>
+                    <div className="flex justify-center gap-2">
+                        <Button variant="destructive">Release Hold</Button>
+                        <Button variant="outline">Delete Invoice</Button>
                     </div>
 
                     <Separator />
-
                     {/* Line Items Table */}
                     <div className="space-y-4">
                         <div className="rounded-md border">
@@ -427,4 +415,16 @@ export default function InvoiceDetailSlideout({
             </SheetContent>
         </Sheet>
     );
+}
+
+function RowsColumnedChild({ children }: { children: React.ReactNode }) {
+    return (
+        <div className="flex flex-col items-start gap-2 md:grid md:grid-cols-[150px_1fr]">
+            {children}
+        </div>
+    );
+}
+
+function ColumnedRowsParent({ children }: { children: React.ReactNode }) {
+    return <div className="flex flex-1 flex-col gap-2">{children}</div>;
 }
