@@ -309,7 +309,7 @@ export const invoicesData: Invoice[] = [
         market: 'Portfolio Sizzle',
         venue: 'N/A',
         ref: 'Generic Pre Sale',
-        amount: 52820.79,
+        amount: 8750.0,
         daysToShow: -40,
         showDate: new Date('2024-10-27'),
         isDeleted: false,
@@ -322,7 +322,7 @@ export const invoicesData: Invoice[] = [
         market: 'San Francisco, CA',
         venue: 'Oracle Park',
         ref: 'Amex Pre Sale',
-        amount: 17692.27,
+        amount: 7692.44,
         daysToShow: -2,
         showDate: new Date('2025-09-28'),
         isDeleted: false,
@@ -335,7 +335,7 @@ export const invoicesData: Invoice[] = [
         market: 'Dallas, TX',
         venue: 'American Airlines Center',
         ref: 'Generic Pre Sale',
-        amount: 10571.78,
+        amount: 9571.78,
         daysToShow: 29,
         showDate: new Date('2025-01-15'),
         isDeleted: false,
@@ -348,7 +348,7 @@ export const invoicesData: Invoice[] = [
         market: 'Seattle, WA',
         venue: "King County's Marymoor Park",
         ref: 'Generic Pre sale',
-        amount: 26005.24,
+        amount: 9205.24,
         daysToShow: 62,
         showDate: new Date('2025-02-17'),
         isDeleted: false,
@@ -361,7 +361,7 @@ export const invoicesData: Invoice[] = [
         market: 'Seattle, WA',
         venue: "King County's Marymoor Park",
         ref: 'Generic Pre sale',
-        amount: 26005.24,
+        amount: 3205.24,
         daysToShow: 0,
         showDate: new Date('2025-02-17'),
         isDeleted: true,
@@ -374,7 +374,7 @@ export const invoicesData: Invoice[] = [
         market: 'Los Angeles, CA',
         venue: 'Hollywood Bowl',
         ref: 'VIP Pre Sale',
-        amount: 45230.5,
+        amount: 9230.5,
         daysToShow: 15,
         showDate: new Date('2025-01-30'),
         isDeleted: false,
@@ -387,7 +387,7 @@ export const invoicesData: Invoice[] = [
         market: 'Chicago, IL',
         venue: 'United Center',
         ref: 'Early Bird Sale',
-        amount: 32150.0,
+        amount: 8150.0,
         daysToShow: 45,
         showDate: new Date('2025-02-12'),
         isDeleted: false,
@@ -400,7 +400,7 @@ export const invoicesData: Invoice[] = [
         market: 'New York, NY',
         venue: 'Madison Square Garden',
         ref: 'Fan Club Pre Sale',
-        amount: 67890.25,
+        amount: 9890.25,
         daysToShow: 78,
         showDate: new Date('2025-03-05'),
         isDeleted: false,
@@ -413,7 +413,7 @@ export const invoicesData: Invoice[] = [
         market: 'Miami, FL',
         venue: 'American Airlines Arena',
         ref: 'General Sale',
-        amount: 23456.78,
+        amount: 8457.0,
         daysToShow: 92,
         showDate: new Date('2025-03-20'),
         isDeleted: false,
@@ -426,7 +426,7 @@ export const invoicesData: Invoice[] = [
         market: 'Boston, MA',
         venue: 'TD Garden',
         ref: 'Presale Code',
-        amount: 18945.33,
+        amount: 6945.33,
         daysToShow: 105,
         showDate: new Date('2025-04-02'),
         isDeleted: false,
@@ -435,22 +435,22 @@ export const invoicesData: Invoice[] = [
 
 // Mock invoice items data
 export const invoiceItemsData: InvoiceItem[] = [
-    // Invoice 1 - 1 item
+    // Invoice 1 - 1 item (total: 8750.0)
     {
         id: 1,
         invoice_id: 1,
         code: 'Big Top',
         description: 'Large format tent structure rental',
         quantity: 1,
-        price: 52820.79,
+        price: 8750.0,
     },
-    // Invoice 2 - 2 items
+    // Invoice 2 - 2 items (total: 7692.44)
     {
         id: 2,
         invoice_id: 2,
         code: 'TV',
         description: 'LED display screen rental - 65 inch',
-        quantity: 4,
+        quantity: 2,
         price: 2500.0,
     },
     {
@@ -459,9 +459,9 @@ export const invoiceItemsData: InvoiceItem[] = [
         code: 'Print',
         description: 'Printed promotional materials and banners',
         quantity: 12,
-        price: 641.02,
+        price: 224.37,
     },
-    // Invoice 3 - 6 items
+    // Invoice 3 - 6 items (total: 9571.78)
     {
         id: 4,
         invoice_id: 3,
@@ -508,24 +508,24 @@ export const invoiceItemsData: InvoiceItem[] = [
         code: 'Backdrop',
         description: 'Stage backdrop - custom printed',
         quantity: 1,
-        price: 4367.78,
+        price: 3367.78,
     },
-    // Invoice 4 - 8 items
+    // Invoice 4 - 8 items (total: 9205.24)
     {
         id: 10,
         invoice_id: 4,
         code: 'LED Screen',
         description: 'LED video wall rental - 10x15ft',
         quantity: 1,
-        price: 8500.0,
+        price: 1500.0,
     },
     {
         id: 11,
         invoice_id: 4,
         code: 'TV',
         description: 'TV monitor rental - 55 inch',
-        quantity: 6,
-        price: 1800.0,
+        quantity: 2,
+        price: 800.0,
     },
     {
         id: 12,
@@ -557,7 +557,7 @@ export const invoiceItemsData: InvoiceItem[] = [
         code: 'Stage Set',
         description: 'Stage set pieces and props',
         quantity: 1,
-        price: 2800.0,
+        price: 1994.74,
     },
     {
         id: 16,
@@ -565,7 +565,7 @@ export const invoiceItemsData: InvoiceItem[] = [
         code: 'Backdrop',
         description: 'Custom printed backdrop - 20x30ft',
         quantity: 1,
-        price: 1200.0,
+        price: 1205.0,
     },
     {
         id: 17,
@@ -575,23 +575,23 @@ export const invoiceItemsData: InvoiceItem[] = [
         quantity: 20,
         price: 12.9,
     },
-    // Invoice 5 - 1 item (deleted invoice)
+    // Invoice 5 - 1 item (deleted invoice) (total: 3205.24)
     {
         id: 18,
         invoice_id: 5,
         code: 'Billboard',
         description: 'Outdoor billboard advertising',
         quantity: 1,
-        price: 26005.24,
+        price: 3205.24,
     },
-    // Invoice 6 - 7 items
+    // Invoice 6 - 7 items (total: 9230.5)
     {
         id: 19,
         invoice_id: 6,
         code: 'Big Top',
         description: 'Large tent structure with setup',
         quantity: 1,
-        price: 15000.0,
+        price: 1500.0,
     },
     {
         id: 20,
@@ -599,15 +599,15 @@ export const invoiceItemsData: InvoiceItem[] = [
         code: 'LED Screen',
         description: 'LED video display - 12x20ft',
         quantity: 1,
-        price: 12000.0,
+        price: 1200.0,
     },
     {
         id: 21,
         invoice_id: 6,
         code: 'TV',
         description: 'TV monitor rental - 75 inch',
-        quantity: 8,
-        price: 2200.0,
+        quantity: 2,
+        price: 800.0,
     },
     {
         id: 22,
@@ -639,24 +639,24 @@ export const invoiceItemsData: InvoiceItem[] = [
         code: 'Stage Set',
         description: 'Stage set design and installation',
         quantity: 1,
-        price: 1960.5,
+        price: 1260.5,
     },
-    // Invoice 7 - 5 items
+    // Invoice 7 - 5 items (total: 8150.0)
     {
         id: 26,
         invoice_id: 7,
         code: 'Digital Display',
         description: 'Digital signage system rental',
         quantity: 2,
-        price: 4200.0,
+        price: 1200.0,
     },
     {
         id: 27,
         invoice_id: 7,
         code: 'TV',
         description: 'TV monitor rental - 65 inch',
-        quantity: 5,
-        price: 2100.0,
+        quantity: 3,
+        price: 600.0,
     },
     {
         id: 28,
@@ -680,16 +680,16 @@ export const invoiceItemsData: InvoiceItem[] = [
         code: 'Backdrop',
         description: 'Custom stage backdrop - 15x25ft',
         quantity: 1,
-        price: 11775.0,
+        price: 2475.0,
     },
-    // Invoice 8 - 9 items
+    // Invoice 8 - 9 items (total: 9890.25)
     {
         id: 31,
         invoice_id: 8,
         code: 'Big Top',
         description: 'Premium tent structure rental',
         quantity: 1,
-        price: 25000.0,
+        price: 1500.0,
     },
     {
         id: 32,
@@ -697,47 +697,47 @@ export const invoiceItemsData: InvoiceItem[] = [
         code: 'LED Screen',
         description: 'LED video wall - 15x25ft',
         quantity: 1,
-        price: 18000.0,
+        price: 1100.0,
     },
     {
         id: 33,
         invoice_id: 8,
         code: 'TV',
         description: 'TV monitor rental - 85 inch',
-        quantity: 10,
-        price: 2800.0,
+        quantity: 2,
+        price: 650.0,
     },
     {
         id: 34,
         invoice_id: 8,
         code: 'Banner',
         description: 'Custom banners - various sizes',
-        quantity: 6,
-        price: 425.0,
+        quantity: 4,
+        price: 240.0,
     },
     {
         id: 35,
         invoice_id: 8,
         code: 'Signage',
         description: 'Comprehensive signage package',
-        quantity: 20,
-        price: 125.0,
+        quantity: 15,
+        price: 85.0,
     },
     {
         id: 36,
         invoice_id: 8,
         code: 'Poster',
         description: 'Event posters - 24x36 inch',
-        quantity: 60,
-        price: 13.5,
+        quantity: 50,
+        price: 10.0,
     },
     {
         id: 37,
         invoice_id: 8,
         code: 'Flyer',
         description: 'Promotional flyers - 8.5x11 inch',
-        quantity: 1000,
-        price: 0.4,
+        quantity: 800,
+        price: 0.35,
     },
     {
         id: 38,
@@ -745,7 +745,7 @@ export const invoiceItemsData: InvoiceItem[] = [
         code: 'Stage Set',
         description: 'Premium stage set design',
         quantity: 1,
-        price: 3500.0,
+        price: 1500.0,
     },
     {
         id: 39,
@@ -753,16 +753,16 @@ export const invoiceItemsData: InvoiceItem[] = [
         code: 'Backdrop',
         description: 'Custom printed backdrop - 25x40ft',
         quantity: 1,
-        price: 2130.25,
+        price: 1515.25,
     },
-    // Invoice 9 - 3 items
+    // Invoice 9 - 3 items (total: 8457.00)
     {
         id: 40,
         invoice_id: 9,
         code: 'Digital Display',
         description: 'Digital display board rental',
         quantity: 1,
-        price: 12000.0,
+        price: 3000.0,
     },
     {
         id: 41,
@@ -770,7 +770,7 @@ export const invoiceItemsData: InvoiceItem[] = [
         code: 'TV',
         description: 'TV monitor rental - 55 inch',
         quantity: 4,
-        price: 1900.0,
+        price: 1200.0,
     },
     {
         id: 42,
@@ -778,9 +778,9 @@ export const invoiceItemsData: InvoiceItem[] = [
         code: 'Print',
         description: 'Printed marketing materials package',
         quantity: 30,
-        price: 128.59,
+        price: 21.9,
     },
-    // Invoice 10 - 4 items
+    // Invoice 10 - 4 items (total: 6945.33)
     {
         id: 43,
         invoice_id: 10,
@@ -811,6 +811,6 @@ export const invoiceItemsData: InvoiceItem[] = [
         code: 'Backdrop',
         description: 'Stage backdrop - 12x20ft',
         quantity: 1,
-        price: 16302.83,
+        price: 4302.83,
     },
 ];
