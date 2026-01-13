@@ -8,6 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { formatCurrency } from '@/components/utils/functions';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useMemo } from 'react';
 
@@ -21,16 +22,6 @@ function SalesByRepTable() {
         }),
         [],
     );
-
-    // Format currency
-    function formatCurrency(value: number): string {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).format(value);
-    }
 
     // Render value with change indicator
     function renderValueWithChange(

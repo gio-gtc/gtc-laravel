@@ -15,6 +15,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { formatCurrency } from '@/components/utils/functions';
 import { cn } from '@/lib/utils';
 import { type Invoice } from '@/types';
 import {
@@ -27,19 +28,12 @@ import { ChevronDown, Filter, Search, SortAsc } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 function InvoicesTable() {
-    const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+    const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(
+        null,
+    );
     const [columnSizing, setColumnSizing] = useState({});
 
     const data = useMemo(() => invoicesData, []);
-
-    const formatCurrency = (value: number): string => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        }).format(value);
-    };
 
     const getDaysToShowBadge = (invoice: Invoice) => {
         const pillContent = invoice.isDeleted ? 'DELETED' : invoice.daysToShow;

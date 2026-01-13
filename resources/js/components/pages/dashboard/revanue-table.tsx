@@ -8,6 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { formatCurrency } from '@/components/utils/functions';
 import { useMemo } from 'react';
 
 function RevanueTable() {
@@ -22,16 +23,6 @@ function RevanueTable() {
             { currentMonth: 0, ytd: 0, total: 0 },
         );
     }, []);
-
-    // Format currency
-    function formatCurrency(value: number): string {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        }).format(value);
-    }
 
     return (
         <div className="space-y-4 px-4 py-2">
