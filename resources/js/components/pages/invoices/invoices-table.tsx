@@ -41,37 +41,29 @@ function InvoicesTable() {
     };
 
     const getDaysToShowBadge = (invoice: Invoice) => {
-        if (invoice.isDeleted) {
-            return (
-                <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
-                    DELETED
-                </span>
-            );
-        }
+        const pillContent = invoice.isDeleted ? 'DELETED' : invoice.daysToShow;
+        let extraClasses = '';
 
-        const daysToShow = invoice.daysToShow;
-        if (daysToShow < 0) {
+        if (pillContent === 'DELETED') {
+            extraClasses = 'border-gray-400 bg-gray-50';
+        } else if (pillContent < 0) {
             // Red badge for past show date
-            return (
-                <span className="inline-flex items-center rounded-full bg-red-500 px-2.5 py-0.5 text-xs font-medium text-white">
-                    {daysToShow}
-                </span>
-            );
-        } else if (daysToShow <= 30) {
+            extraClasses = 'border-red-400 bg-red-50';
+        } else if (pillContent <= 30) {
             // Yellow badge for within 30 days
-            return (
-                <span className="inline-flex items-center rounded-full bg-yellow-400 px-2.5 py-0.5 text-xs font-medium text-black">
-                    {daysToShow}
-                </span>
-            );
+            extraClasses = 'border-yellow-400 bg-yellow-50';
         } else {
             // Gray badge for >30 days
-            return (
-                <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
-                    {daysToShow}
-                </span>
-            );
+            extraClasses = 'border-gray-400 bg-gray-50';
         }
+
+        return (
+            <span
+                className={`inline-flex items-center rounded-full border-2 border-solid px-2.5 py-0.5 text-xs font-medium ${extraClasses}`}
+            >
+                {pillContent}
+            </span>
+        );
     };
 
     const columns = useMemo<ColumnDef<Invoice>[]>(
@@ -340,7 +332,7 @@ function InvoicesTable() {
                                                         width: cell.column.getSize(),
                                                     }}
                                                     className={cn(
-                                                        'px-2 py-0.5 text-gray-500',
+                                                        'px-2 py-0.5',
                                                         cellIndex <
                                                             cells.length - 1 &&
                                                             'border-r border-border',
