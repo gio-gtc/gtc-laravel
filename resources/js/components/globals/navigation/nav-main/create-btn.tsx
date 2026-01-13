@@ -1,5 +1,4 @@
-import InvoiceModal from '@/components/globals/navigation/nav-main/invoice-modal';
-import OrderModal from '@/components/globals/navigation/nav-main/order-modal';
+import InvoiceOrOrderModal from '@/components/globals/navigation/nav-main/invoice-or-order-modal';
 import OrganizationModal from '@/components/globals/navigation/nav-main/organization-modal';
 import TourModal from '@/components/globals/navigation/nav-main/tour-modal';
 import UserInfoModal from '@/components/modals/user-info-modal';
@@ -84,13 +83,15 @@ export const CreateBtn = () => {
                 isOpen={isTourModalOpen}
                 onClose={() => setIsTourModalOpen(false)}
             />
-            <OrderModal
+            <InvoiceOrOrderModal
                 isOpen={isOrderModalOpen}
                 onClose={() => setIsOrderModalOpen(false)}
+                title="Create Order"
             />
-            <InvoiceModal
+            <InvoiceOrOrderModal
                 isOpen={isInvoiceModalOpen}
                 onClose={() => setIsInvoiceModalOpen(false)}
+                title="Create Invoice"
             />
         </>
     );
