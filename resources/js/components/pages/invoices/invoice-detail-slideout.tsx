@@ -17,8 +17,10 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { EditableTableCell } from '@/components/utils/editable-table-cell';
 import { formatCurrency } from '@/components/utils/functions';
-import { type Invoice } from '@/types';
+import { useEditableTable } from '@/hooks/use-editable-table';
+import { type Invoice, type InvoiceItem } from '@/types';
 import {
     Calendar,
     Maximize2,
@@ -27,7 +29,7 @@ import {
     Send,
     X,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 interface InvoiceDetailSlideoutProps {
     invoice: Invoice | null;
@@ -58,31 +60,34 @@ export default function InvoiceDetailSlideout({
         clientReference: invoice?.clientReference || '',
     });
 
-    // Update form data when invoice changes
-    useEffect(() => {
-        if (invoice) {
-            setFormData({
-                companyName: invoice.companyName || '',
-                address: invoice.address || '',
-                invoiceReleaseDate: invoice.invoiceReleaseDate || '',
-                invoiceDueDate: invoice.invoiceDueDate || '',
-                clientReference: invoice.clientReference || '',
-            });
-        }
+    // Get filtered invoice items for the current invoice
+    const invoiceItems = useMemo(() => {
+        if (!invoice) return [];
+        return invoiceItemsData.filter(
+            (item) => item.invoice_id === invoice.id,
+        );
     }, [invoice]);
+
+    // Use editable table hook
+    const {
+        localData: localInvoiceItems,
+        handleDoubleClick,
+        handleCellChange,
+        handleCellBlur,
+        handleCellKeyDown,
+        isEditing,
+    } = useEditableTable<InvoiceItem>({
+        data: invoiceItems,
+        getId: (item) => item.id,
+    });
 
     if (!invoice) return null;
 
     // Find user by user_id
     const orderedByUser = mockUsers.find((user) => user.id === invoice.user_id);
 
-    // Filter invoice items by invoice_id
-    const invoiceItems = invoiceItemsData.filter(
-        (item) => item.invoice_id === invoice.id,
-    );
-
-    // Calculate total amount
-    const totalAmount = invoiceItems.reduce(
+    // Calculate total amount from local invoice items
+    const totalAmount = localInvoiceItems.reduce(
         (sum, item) => sum + item.quantity * item.price,
         0,
     );
@@ -327,20 +332,115 @@ export default function InvoiceDetailSlideout({
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {invoiceItems.length > 0 ? (
-                                        invoiceItems.map((item) => (
+                                    {localInvoiceItems.length > 0 ? (
+                                        localInvoiceItems.map((item) => (
                                             <TableRow key={item.id}>
                                                 <TableCell className="font-medium">
-                                                    {item.code}
+                                                    <EditableTableCell
+                                                        value={item.code}
+                                                        itemId={item.id}
+                                                        field="code"
+                                                        type="text"
+                                                        onChange={
+                                                            handleCellChange
+                                                        }
+                                                        onDoubleClick={
+                                                            handleDoubleClick
+                                                        }
+                                                        onBlur={handleCellBlur}
+                                                        onKeyDown={
+                                                            handleCellKeyDown
+                                                        }
+                                                        isEditing={isEditing(
+                                                            item.id,
+                                                            'code',
+                                                        )}
+                                                    />
                                                 </TableCell>
                                                 <TableCell>
-                                                    {item.description || 'N/A'}
+                                                    <EditableTableCell
+                                                        value={
+                                                            item.description ||
+                                                            ''
+                                                        }
+                                                        itemId={item.id}
+                                                        field="description"
+                                                        type="text"
+                                                        formatValue={(val) =>
+                                                            val === '' ||
+                                                            val === null ||
+                                                            val === undefined
+                                                                ? 'N/A'
+                                                                : String(val)
+                                                        }
+                                                        onChange={
+                                                            handleCellChange
+                                                        }
+                                                        onDoubleClick={
+                                                            handleDoubleClick
+                                                        }
+                                                        onBlur={handleCellBlur}
+                                                        onKeyDown={
+                                                            handleCellKeyDown
+                                                        }
+                                                        isEditing={isEditing(
+                                                            item.id,
+                                                            'description',
+                                                        )}
+                                                    />
                                                 </TableCell>
                                                 <TableCell className="text-right">
-                                                    {item.quantity}
+                                                    <EditableTableCell
+                                                        value={item.quantity}
+                                                        itemId={item.id}
+                                                        field="quantity"
+                                                        type="number"
+                                                        min={0}
+                                                        step={0.01}
+                                                        onChange={
+                                                            handleCellChange
+                                                        }
+                                                        onDoubleClick={
+                                                            handleDoubleClick
+                                                        }
+                                                        onBlur={handleCellBlur}
+                                                        onKeyDown={
+                                                            handleCellKeyDown
+                                                        }
+                                                        isEditing={isEditing(
+                                                            item.id,
+                                                            'quantity',
+                                                        )}
+                                                        align="right"
+                                                    />
                                                 </TableCell>
                                                 <TableCell className="text-right">
-                                                    {formatCurrency(item.price)}
+                                                    <EditableTableCell
+                                                        value={item.price}
+                                                        itemId={item.id}
+                                                        field="price"
+                                                        type="number"
+                                                        min={0}
+                                                        step={0.01}
+                                                        formatValue={
+                                                            formatCurrency
+                                                        }
+                                                        onChange={
+                                                            handleCellChange
+                                                        }
+                                                        onDoubleClick={
+                                                            handleDoubleClick
+                                                        }
+                                                        onBlur={handleCellBlur}
+                                                        onKeyDown={
+                                                            handleCellKeyDown
+                                                        }
+                                                        isEditing={isEditing(
+                                                            item.id,
+                                                            'price',
+                                                        )}
+                                                        align="right"
+                                                    />
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     {formatCurrency(
@@ -393,7 +493,7 @@ export default function InvoiceDetailSlideout({
                                     Total Amount:
                                 </span>
                                 <span className="text-lg font-semibold">
-                                    {formatCurrency(invoice?.amount)}
+                                    {formatCurrency(totalAmount)}
                                 </span>
                             </div>
                         </div>
