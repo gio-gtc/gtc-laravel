@@ -203,7 +203,7 @@ function InvoicesTable() {
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getRowId: (row) => row.id,
+        getRowId: (row) => String(row.id),
         enableColumnResizing: true,
         columnResizeMode: 'onChange',
         onColumnSizingChange: setColumnSizing,

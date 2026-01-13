@@ -98,7 +98,7 @@ export interface PendingOrderGroup {
 }
 
 export interface Invoice {
-    id: string;
+    id: number;
     invoiceNumber: string;
     date: string;
     tour: string;
@@ -109,4 +109,13 @@ export interface Invoice {
     daysToShow: number;
     showDate: Date;
     isDeleted: boolean;
+}
+
+export interface InvoiceItem {
+    id: number;
+    invoice_id: number;
+    code: string;
+    description: string;
+    quantity: number;
+    price: number;
 }
