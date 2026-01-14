@@ -265,27 +265,24 @@ function InvoicesTable() {
                     <Button
                         variant={filter === 'all' ? 'default' : 'outline'}
                         onClick={() => setFilter('all')}
-                        size="sm"
                     >
                         All
                     </Button>
                     <Button
                         variant={filter === 'on-hold' ? 'default' : 'outline'}
                         onClick={() => setFilter('on-hold')}
-                        size="sm"
                     >
                         On Hold
                     </Button>
                     <Button
                         variant={filter === 'released' ? 'default' : 'outline'}
                         onClick={() => setFilter('released')}
-                        size="sm"
                     >
                         Released
                     </Button>
                 </div>
                 <div className="flex items-center gap-1">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline">
                         Held, US, +2
                         <span className="ml-2">×</span>
                     </Button>

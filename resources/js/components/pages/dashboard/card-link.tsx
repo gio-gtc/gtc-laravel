@@ -35,7 +35,6 @@ function CardLink({
             <CardFooter className="border-t-1">
                 <Button
                     variant="link"
-                    size="sm"
                     className="w-full cursor-pointer text-purple-800"
                     // TODO: Make a function prop to handle click
                     onClick={() => {

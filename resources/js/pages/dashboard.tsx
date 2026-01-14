@@ -122,7 +122,6 @@ export default function Dashboard() {
                             <Button
                                 key={period.value}
                                 variant="ghost"
-                                size="sm"
                                 onClick={() => setSelectedPeriod(period.value)}
                                 className={cn(
                                     'rounded-md border-0 transition-all',
@@ -140,11 +139,7 @@ export default function Dashboard() {
                         onOpenChange={setIsDateDialogOpen}
                     >
                         <DialogTrigger asChild>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="gap-2"
-                            >
+                            <Button variant="outline" className="gap-2">
                                 <Calendar className="h-4 w-4" />
                                 {formattedStartDate} - {formattedEndDate}
                             </Button>

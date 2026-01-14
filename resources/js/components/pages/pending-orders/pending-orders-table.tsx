@@ -273,7 +273,7 @@ function PendingOrdersTable() {
                     </DropdownMenu>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline">
                         My Tours, US, +4
                         <span className="ml-2">×</span>
                     </Button>
