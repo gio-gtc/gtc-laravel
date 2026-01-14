@@ -1,4 +1,8 @@
-import { invoiceItemsData, mockUsers } from '@/components/mockdata';
+import {
+    companiesData,
+    invoiceItemsData,
+    mockUsers,
+} from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -29,7 +33,7 @@ import {
     Send,
     X,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 interface InvoiceDetailSlideoutProps {
     invoice: Invoice | null;
@@ -52,13 +56,32 @@ export default function InvoiceDetailSlideout({
     isOpen,
     onClose,
 }: InvoiceDetailSlideoutProps) {
+    // Look up company data from companiesData
+    const company = invoice
+        ? companiesData.find((c) => c.id === invoice.company_id)
+        : null;
+
     const [formData, setFormData] = useState({
-        companyName: invoice?.companyName || '',
-        address: invoice?.address || '',
+        companyName: company?.companyName || '',
+        address: company?.address || '',
         invoiceReleaseDate: invoice?.invoiceReleaseDate || '',
         invoiceDueDate: invoice?.invoiceDueDate || '',
         clientReference: invoice?.clientReference || '',
     });
+
+    // Update form data when invoice changes
+    useEffect(() => {
+        const currentCompany = invoice
+            ? companiesData.find((c) => c.id === invoice.company_id)
+            : null;
+        setFormData({
+            companyName: currentCompany?.companyName || '',
+            address: currentCompany?.address || '',
+            invoiceReleaseDate: invoice?.invoiceReleaseDate || '',
+            invoiceDueDate: invoice?.invoiceDueDate || '',
+            clientReference: invoice?.clientReference || '',
+        });
+    }, [invoice]);
 
     // Get filtered invoice items for the current invoice
     const invoiceItems = useMemo(() => {

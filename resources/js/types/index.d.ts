@@ -97,6 +97,12 @@ export interface PendingOrderGroup {
     isExpanded?: boolean;
 }
 
+export interface Company {
+    id: number;
+    companyName: string;
+    address: string;
+}
+
 export interface Invoice {
     id: number;
     invoiceNumber: string;
@@ -109,8 +115,7 @@ export interface Invoice {
     showDate: Date;
     isDeleted: boolean;
     user_id: number;
-    companyName?: string;
-    address?: string;
+    company_id: number;
     invoiceReleaseDate?: string;
     invoiceDueDate?: string;
     clientReference: string;

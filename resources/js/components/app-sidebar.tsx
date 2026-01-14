@@ -2,7 +2,7 @@ import { NavMain } from '@/components/globals/navigation/nav-main';
 import { Sidebar, SidebarContent } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
-import { ClipboardCheck, House, Star } from 'lucide-react';
+import { ClipboardCheck, House, Receipt } from 'lucide-react';
 import { ClipboardClock } from './ui/icons';
 
 const mainNavItems: NavItem[] = [
@@ -18,13 +18,14 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'My Tasks',
-        href: '/invoices',
+        href: '/#',
         icon: ClipboardCheck,
     },
+    // TODO: only seen by managers and Russ/James/David
     {
-        title: 'Starred',
-        href: '/#',
-        icon: Star,
+        title: 'Invoices',
+        href: '/invoices',
+        icon: Receipt,
     },
 ];
 

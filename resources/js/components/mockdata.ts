@@ -1,4 +1,9 @@
-import { SalesByRepDataSchema, type Invoice, type InvoiceItem } from '@/types';
+import {
+    SalesByRepDataSchema,
+    type Company,
+    type Invoice,
+    type InvoiceItem,
+} from '@/types';
 
 // Mock data for mini charts - static data showing upward trend
 export const salesChartData = [
@@ -299,6 +304,40 @@ export const salesByRepData: SalesByRepDataSchema[] = [
     },
 ];
 
+// Mock company data
+export const companiesData: Company[] = [
+    {
+        id: 1,
+        companyName: 'CIRQUE DU SOLEIL AMERICA NEWCO,',
+        address: '1151 Grier Drive, Suite C\nLas Vegas, NV 964075, USA',
+    },
+    {
+        id: 2,
+        companyName: 'Live Nation Entertainment, Inc.',
+        address: '9348 Civic Center Drive\nBeverly Hills, CA 90210, USA',
+    },
+    {
+        id: 3,
+        companyName: 'Matt Rife Productions',
+        address: '123 Entertainment Blvd\nLos Angeles, CA 90028, USA',
+    },
+    {
+        id: 4,
+        companyName: 'Bon Jovi Touring, LLC',
+        address: '456 Music Avenue\nNew York, NY 10001, USA',
+    },
+    {
+        id: 5,
+        companyName: 'Demi Lovato Entertainment',
+        address: '789 Star Street\nLos Angeles, CA 90069, USA',
+    },
+    {
+        id: 6,
+        companyName: 'Renee Rapp Touring',
+        address: '321 Performance Lane\nNashville, TN 37203, USA',
+    },
+];
+
 // Mock invoice data based on image
 export const invoicesData: Invoice[] = [
     {
@@ -313,8 +352,7 @@ export const invoicesData: Invoice[] = [
         showDate: new Date('2024-10-27'),
         isDeleted: false,
         user_id: 1,
-        companyName: 'CIRQUE DU SOLEIL AMERICA NEWCO,',
-        address: '1151 Grier Drive, Suite C\nLas Vegas, NV 964075, USA',
+        company_id: 1,
         invoiceReleaseDate: '2024-10-27',
         invoiceDueDate: '2024-11-27',
         clientReference: 'Generic Pre Sale',
@@ -331,8 +369,7 @@ export const invoicesData: Invoice[] = [
         showDate: new Date('2025-09-28'),
         isDeleted: false,
         user_id: 2,
-        companyName: 'CIRQUE DU SOLEIL AMERICA NEWCO,',
-        address: '1151 Grier Drive, Suite C\nLas Vegas, NV 964075, USA',
+        company_id: 1,
         invoiceReleaseDate: '2025-09-28',
         invoiceDueDate: '2025-10-28',
         clientReference: 'Amex Pre Sale',
@@ -349,8 +386,7 @@ export const invoicesData: Invoice[] = [
         showDate: new Date('2025-01-15'),
         isDeleted: false,
         user_id: 3,
-        companyName: 'CIRQUE DU SOLEIL AMERICA NEWCO,',
-        address: '1151 Grier Drive, Suite C\nLas Vegas, NV 964075, USA',
+        company_id: 1,
         invoiceReleaseDate: '2024-12-10',
         invoiceDueDate: '2025-01-10',
         clientReference: 'Generic Spots',
@@ -367,8 +403,7 @@ export const invoicesData: Invoice[] = [
         showDate: new Date('2025-02-17'),
         isDeleted: false,
         user_id: 4,
-        companyName: 'CIRQUE DU SOLEIL AMERICA NEWCO,',
-        address: '1151 Grier Drive, Suite C\nLas Vegas, NV 964075, USA',
+        company_id: 1,
         invoiceReleaseDate: '2025-01-15',
         invoiceDueDate: '2025-02-15',
         clientReference: 'Generic Pre sale',
@@ -385,8 +420,7 @@ export const invoicesData: Invoice[] = [
         showDate: new Date('2025-02-17'),
         isDeleted: true,
         user_id: 5,
-        companyName: 'CIRQUE DU SOLEIL AMERICA NEWCO,',
-        address: '1151 Grier Drive, Suite C\nLas Vegas, NV 964075, USA',
+        company_id: 1,
         invoiceReleaseDate: '2025-01-15',
         invoiceDueDate: '2025-02-15',
         clientReference: 'Generic Pre sale',
@@ -403,8 +437,7 @@ export const invoicesData: Invoice[] = [
         showDate: new Date('2025-01-30'),
         isDeleted: false,
         user_id: 1,
-        companyName: 'Live Nation Entertainment, Inc.',
-        address: '9348 Civic Center Drive\nBeverly Hills, CA 90210, USA',
+        company_id: 2,
         invoiceReleaseDate: '2024-12-15',
         invoiceDueDate: '2025-01-15',
         clientReference: 'VIP Pre Sale',
@@ -421,8 +454,7 @@ export const invoicesData: Invoice[] = [
         showDate: new Date('2025-02-12'),
         isDeleted: false,
         user_id: 2,
-        companyName: 'Matt Rife Productions',
-        address: '123 Entertainment Blvd\nLos Angeles, CA 90028, USA',
+        company_id: 3,
         invoiceReleaseDate: '2024-12-22',
         invoiceDueDate: '2025-01-22',
         clientReference: 'Early Bird Sale',
@@ -439,8 +471,7 @@ export const invoicesData: Invoice[] = [
         showDate: new Date('2025-03-05'),
         isDeleted: false,
         user_id: 3,
-        companyName: 'Bon Jovi Touring, LLC',
-        address: '456 Music Avenue\nNew York, NY 10001, USA',
+        company_id: 4,
         invoiceReleaseDate: '2025-01-01',
         invoiceDueDate: '2025-02-01',
         clientReference: 'Fan Club Pre Sale',
@@ -457,8 +488,7 @@ export const invoicesData: Invoice[] = [
         showDate: new Date('2025-03-20'),
         isDeleted: false,
         user_id: 4,
-        companyName: 'Demi Lovato Entertainment',
-        address: '789 Star Street\nLos Angeles, CA 90069, USA',
+        company_id: 5,
         invoiceReleaseDate: '2025-01-10',
         invoiceDueDate: '2025-02-10',
         clientReference: 'General Sale',
@@ -475,8 +505,7 @@ export const invoicesData: Invoice[] = [
         showDate: new Date('2025-04-02'),
         isDeleted: false,
         user_id: 5,
-        companyName: 'Renee Rapp Touring',
-        address: '321 Performance Lane\nNashville, TN 37203, USA',
+        company_id: 6,
         invoiceReleaseDate: '2025-01-18',
         invoiceDueDate: '2025-02-18',
         clientReference: 'Presale Code',
