@@ -31,8 +31,9 @@ import { Filter, HelpCircle, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 function InvoicesTable() {
-    // TODO: Filter buttons - Held (Button), Released (Button), US (Checkbox), International (Checkbox), Tour, venue (Type in with autofill), Days (as date input)
-    // Filter Button turns in into extended input with pulls allowing to clear item filter
+    // TODO: Filter buttons - US (Checkbox), International (Checkbox), Days (as date input [quick buttons - 30, 60, 90, custom])
+    // Change Released pills to >-30 (Gray), >-60 (Yellow), >-90 (Red)
+    // Change on hold pills to <30 (Red), <60 (Yellow), >60 (Gray)
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(
         null,
     );
@@ -301,7 +302,7 @@ function InvoicesTable() {
                 },
             },
         ],
-        [],
+        [sorting],
     );
 
     const table = useReactTable({
