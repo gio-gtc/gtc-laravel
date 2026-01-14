@@ -1,6 +1,7 @@
 import { invoicesData } from '@/components/mockdata';
 import InvoiceDetailSlideout from '@/components/pages/invoices/invoice-detail-slideout';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
     Table,
     TableBody,
@@ -27,7 +28,7 @@ import {
     type ColumnDef,
 } from '@tanstack/react-table';
 import { Filter, HelpCircle, Search, X } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 function InvoicesTable() {
     // TODO: Filter buttons - Held (Button), Released (Button), US (Checkbox), International (Checkbox), Tour, venue (Type in with autofill), Days (as date input)
@@ -38,20 +39,63 @@ function InvoicesTable() {
     const [columnSizing, setColumnSizing] = useState({});
     const [sorting, setSorting] = useTableSorting();
     const [filter, setFilter] = useState<'all' | 'on-hold' | 'released'>('all');
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const [showSearchContent, setShowSearchContent] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
-    // Filter invoices based on selected filter
+    // Handle smooth open/close transitions
+    useEffect(() => {
+        if (isSearchExpanded) {
+            // Immediately show content when opening
+            setShowSearchContent(true);
+        } else {
+            // Delay hiding content until after width animation completes
+            const timer = setTimeout(() => {
+                setShowSearchContent(false);
+            }, 300); // Match the transition duration
+            return () => clearTimeout(timer);
+        }
+    }, [isSearchExpanded]);
+
+    // Filter invoices based on selected filter and search query
     const filteredData = useMemo(() => {
-        if (filter === 'all') return invoicesData;
-        if (filter === 'on-hold')
-            return invoicesData.filter(
+        let result = invoicesData;
+
+        // Apply held/released filter
+        if (filter === 'on-hold') {
+            result = result.filter(
                 (invoice) => invoice.held === 1 && !invoice.isDeleted,
             );
-        if (filter === 'released')
-            return invoicesData.filter(
+        } else if (filter === 'released') {
+            result = result.filter(
                 (invoice) => invoice.held === 0 && !invoice.isDeleted,
             );
-        return invoicesData;
-    }, [filter]);
+        }
+
+        // Apply search filter
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase().trim();
+            result = result.filter((invoice) => {
+                const invoiceNumber =
+                    invoice.invoiceNumber?.toLowerCase() || '';
+                const tour = invoice.tour?.toLowerCase() || '';
+                const market = invoice.market?.toLowerCase() || '';
+                const venue = invoice.venue?.toLowerCase() || '';
+                const clientReference =
+                    invoice.clientReference?.toLowerCase() || '';
+
+                return (
+                    invoiceNumber.includes(query) ||
+                    tour.includes(query) ||
+                    market.includes(query) ||
+                    venue.includes(query) ||
+                    clientReference.includes(query)
+                );
+            });
+        }
+
+        return result;
+    }, [filter, searchQuery]);
 
     const data = useMemo(() => filteredData, [filteredData]);
 
@@ -327,9 +371,65 @@ function InvoicesTable() {
                     <Button variant="outline" size="icon">
                         <Filter className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" size="icon">
-                        <Search className="h-4 w-4" />
-                    </Button>
+                    <div
+                        className={cn(
+                            'relative flex items-center overflow-hidden transition-[width] duration-300 ease-in-out',
+                            isSearchExpanded ? 'w-64' : 'w-9',
+                        )}
+                    >
+                        {showSearchContent ? (
+                            <>
+                                <Search
+                                    className={cn(
+                                        'pointer-events-none absolute left-3 z-10 h-4 w-4 text-muted-foreground transition-opacity duration-300',
+                                        isSearchExpanded
+                                            ? 'opacity-100'
+                                            : 'opacity-0',
+                                    )}
+                                />
+                                <Input
+                                    type="text"
+                                    placeholder="Search invoices, tour, market, venue, refs..."
+                                    value={searchQuery}
+                                    onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                    }
+                                    className={cn(
+                                        'h-9 w-full pr-9 pl-9 transition-opacity duration-300',
+                                        isSearchExpanded
+                                            ? 'opacity-100'
+                                            : 'opacity-0',
+                                    )}
+                                    autoFocus={isSearchExpanded}
+                                />
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className={cn(
+                                        'absolute right-1 z-10 h-7 w-7 transition-opacity duration-300',
+                                        isSearchExpanded
+                                            ? 'opacity-100'
+                                            : 'opacity-0',
+                                    )}
+                                    onClick={() => {
+                                        setSearchQuery('');
+                                        setIsSearchExpanded(false);
+                                    }}
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </>
+                        ) : (
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="w-9"
+                                onClick={() => setIsSearchExpanded(true)}
+                            >
+                                <Search className="h-4 w-4" />
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </div>
 
