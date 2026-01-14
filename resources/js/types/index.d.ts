@@ -116,6 +116,7 @@ export interface Invoice {
     isDeleted: boolean;
     user_id: number;
     company_id: number;
+    held: number;
     invoiceReleaseDate?: string;
     invoiceDueDate?: string;
     clientReference: string;
