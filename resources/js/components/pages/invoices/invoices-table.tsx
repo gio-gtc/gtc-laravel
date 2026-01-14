@@ -15,22 +15,28 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { formatCurrency, getDaysRemaining } from '@/components/utils/functions';
+import { SortableHeader } from '@/components/utils/sortable-header';
+import { useTableSorting } from '@/hooks/use-table-sorting';
 import { cn } from '@/lib/utils';
 import { type Invoice } from '@/types';
 import {
     flexRender,
     getCoreRowModel,
+    getSortedRowModel,
     useReactTable,
     type ColumnDef,
 } from '@tanstack/react-table';
-import { Filter, HelpCircle, Search, SortAsc } from 'lucide-react';
+import { Filter, HelpCircle, Search, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 function InvoicesTable() {
+    // TODO: Filter buttons - Held (Button), Released (Button), US (Checkbox), International (Checkbox), Tour, venue (Type in with autofill), Days (as date input)
+    // Filter Button turns in into extended input with pulls allowing to clear item filter
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(
         null,
     );
     const [columnSizing, setColumnSizing] = useState({});
+    const [sorting, setSorting] = useTableSorting();
     const [filter, setFilter] = useState<'all' | 'on-hold' | 'released'>('all');
 
     // Filter invoices based on selected filter
@@ -94,7 +100,10 @@ function InvoicesTable() {
         () => [
             {
                 accessorKey: 'invoiceNumber',
-                header: 'Invoice #',
+                header: ({ column }) => (
+                    <SortableHeader column={column}>Invoice #</SortableHeader>
+                ),
+                enableSorting: true,
                 size: 120,
                 cell: ({ getValue, row }) => {
                     const value = getValue() as string;
@@ -111,7 +120,10 @@ function InvoicesTable() {
             },
             {
                 accessorKey: 'date',
-                header: 'Date',
+                header: ({ column }) => (
+                    <SortableHeader column={column}>Date</SortableHeader>
+                ),
+                enableSorting: true,
                 size: 100,
                 cell: ({ getValue, row }) => {
                     const value = getValue() as string;
@@ -128,7 +140,10 @@ function InvoicesTable() {
             },
             {
                 accessorKey: 'tour',
-                header: 'Tour',
+                header: ({ column }) => (
+                    <SortableHeader column={column}>Tour</SortableHeader>
+                ),
+                enableSorting: true,
                 size: 200,
                 cell: ({ getValue, row }) => {
                     const value = getValue() as string;
@@ -145,7 +160,10 @@ function InvoicesTable() {
             },
             {
                 accessorKey: 'market',
-                header: 'Market',
+                header: ({ column }) => (
+                    <SortableHeader column={column}>Market</SortableHeader>
+                ),
+                enableSorting: true,
                 size: 150,
                 cell: ({ getValue, row }) => {
                     const value = getValue() as string;
@@ -162,7 +180,10 @@ function InvoicesTable() {
             },
             {
                 accessorKey: 'venue',
-                header: 'Venue',
+                header: ({ column }) => (
+                    <SortableHeader column={column}>Venue</SortableHeader>
+                ),
+                enableSorting: true,
                 size: 200,
                 cell: ({ getValue, row }) => {
                     const value = getValue() as string;
@@ -179,7 +200,10 @@ function InvoicesTable() {
             },
             {
                 accessorKey: 'clientReference',
-                header: 'Ref',
+                header: ({ column }) => (
+                    <SortableHeader column={column}>Ref</SortableHeader>
+                ),
+                enableSorting: true,
                 size: 150,
                 cell: ({ getValue, row }) => {
                     const value = getValue() as string;
@@ -196,7 +220,10 @@ function InvoicesTable() {
             },
             {
                 accessorKey: 'amount',
-                header: 'Amt',
+                header: ({ column }) => (
+                    <SortableHeader column={column}>Amt</SortableHeader>
+                ),
+                enableSorting: true,
                 size: 120,
                 cell: ({ getValue, row }) => {
                     const value = getValue() as number;
@@ -217,24 +244,29 @@ function InvoicesTable() {
                     return getDaysRemaining(row.showDate);
                 },
                 id: 'daysToShow',
-                header: () => {
+                header: ({ column }) => {
                     return (
-                        <div className="flex items-center gap-0.5">
-                            <span>Days</span>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <HelpCircle className="h-2 w-2 cursor-help text-blue-500" />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <div className="space-y-1">
-                                        <div>DTS = Days To Show</div>
-                                        <div>Aged = Days Since Released</div>
-                                    </div>
-                                </TooltipContent>
-                            </Tooltip>
-                        </div>
+                        <SortableHeader column={column}>
+                            <div className="flex items-start gap-0.5">
+                                <span>Days</span>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <HelpCircle className="h-2 w-2 cursor-help text-blue-500" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <div className="space-y-1">
+                                            <div>DTS = Days To Show</div>
+                                            <div>
+                                                Aged = Days Since Released
+                                            </div>
+                                        </div>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </div>
+                        </SortableHeader>
                     );
                 },
+                enableSorting: true,
                 size: 120,
                 cell: ({ row }) => {
                     return getDayBadge(row.original);
@@ -248,12 +280,16 @@ function InvoicesTable() {
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
+        getSortedRowModel: getSortedRowModel(),
         getRowId: (row) => String(row.id),
         enableColumnResizing: true,
+        enableSorting: true,
         columnResizeMode: 'onChange',
         onColumnSizingChange: setColumnSizing,
+        onSortingChange: setSorting,
         state: {
             columnSizing,
+            sorting,
         },
     });
 
@@ -284,13 +320,12 @@ function InvoicesTable() {
                 <div className="flex items-center gap-1">
                     <Button variant="outline">
                         Held, US, +2
-                        <span className="ml-2">×</span>
+                        <span className="ml-2">
+                            <X className="size-2.5" />
+                        </span>
                     </Button>
                     <Button variant="outline" size="icon">
                         <Filter className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="icon">
-                        <SortAsc className="h-4 w-4" />
                     </Button>
                     <Button variant="outline" size="icon">
                         <Search className="h-4 w-4" />
