@@ -2,12 +2,6 @@ import { invoicesData } from '@/components/mockdata';
 import InvoiceDetailSlideout from '@/components/pages/invoices/invoice-detail-slideout';
 import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
     Table,
     TableBody,
     TableCell,
@@ -29,7 +23,7 @@ import {
     useReactTable,
     type ColumnDef,
 } from '@tanstack/react-table';
-import { ChevronDown, Filter, HelpCircle, Search, SortAsc } from 'lucide-react';
+import { Filter, HelpCircle, Search, SortAsc } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 function InvoicesTable() {
@@ -37,8 +31,23 @@ function InvoicesTable() {
         null,
     );
     const [columnSizing, setColumnSizing] = useState({});
+    const [filter, setFilter] = useState<'all' | 'on-hold' | 'released'>('all');
 
-    const data = useMemo(() => invoicesData, []);
+    // Filter invoices based on selected filter
+    const filteredData = useMemo(() => {
+        if (filter === 'all') return invoicesData;
+        if (filter === 'on-hold')
+            return invoicesData.filter(
+                (invoice) => invoice.held === 1 && !invoice.isDeleted,
+            );
+        if (filter === 'released')
+            return invoicesData.filter(
+                (invoice) => invoice.held === 0 && !invoice.isDeleted,
+            );
+        return invoicesData;
+    }, [filter]);
+
+    const data = useMemo(() => filteredData, [filteredData]);
 
     const getDayBadge = (invoice: Invoice) => {
         if (invoice.isDeleted) {
@@ -49,7 +58,6 @@ function InvoicesTable() {
             );
         }
 
-        // TODO: Create tooltip to explain DTS vs Age
         const daysRemaining =
             invoice.held === 1
                 ? getDaysRemaining(invoice.showDate)
@@ -252,21 +260,31 @@ function InvoicesTable() {
     return (
         <div className="space-y-4">
             {/* Header Actions */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline">
-                                Add New
-                                <ChevronDown className="ml-2 h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuItem>New Invoice</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+            <div className="flex justify-between gap-1 overflow-auto">
+                <div className="flex items-center gap-1">
+                    <Button
+                        variant={filter === 'all' ? 'default' : 'outline'}
+                        onClick={() => setFilter('all')}
+                        size="sm"
+                    >
+                        All
+                    </Button>
+                    <Button
+                        variant={filter === 'on-hold' ? 'default' : 'outline'}
+                        onClick={() => setFilter('on-hold')}
+                        size="sm"
+                    >
+                        On Hold
+                    </Button>
+                    <Button
+                        variant={filter === 'released' ? 'default' : 'outline'}
+                        onClick={() => setFilter('released')}
+                        size="sm"
+                    >
+                        Released
+                    </Button>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                     <Button variant="outline" size="sm">
                         Held, US, +2
                         <span className="ml-2">×</span>
