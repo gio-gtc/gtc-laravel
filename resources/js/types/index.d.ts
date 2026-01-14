@@ -111,8 +111,7 @@ export interface Invoice {
     market: string;
     venue: string;
     amount: number;
-    daysToShow: number;
-    showDate: Date;
+    showDate: string;
     isDeleted: boolean;
     user_id: number;
     company_id: number;

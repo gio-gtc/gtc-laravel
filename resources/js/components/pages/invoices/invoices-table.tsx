@@ -15,7 +15,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { formatCurrency } from '@/components/utils/functions';
+import { formatCurrency, getDaysRemaining } from '@/components/utils/functions';
 import { cn } from '@/lib/utils';
 import { type Invoice } from '@/types';
 import {
@@ -35,16 +35,31 @@ function InvoicesTable() {
 
     const data = useMemo(() => invoicesData, []);
 
-    const getDaysToShowBadge = (invoice: Invoice) => {
-        const pillContent = invoice.isDeleted ? 'DELETED' : invoice.daysToShow;
-        let extraClasses = '';
+    const getDayBadge = (invoice: Invoice) => {
+        if (invoice.isDeleted) {
+            return (
+                <span className="inline-flex items-center rounded-full border-2 border-solid border-gray-400 bg-gray-50 px-2.5 py-0.5 text-xs font-medium">
+                    DELETED
+                </span>
+            );
+        }
 
-        if (pillContent === 'DELETED') {
-            extraClasses = 'border-gray-400 bg-gray-50';
-        } else if (pillContent < 0) {
+        // TODO: Create tooltip to explain DTS vs Age
+        const daysRemaining =
+            invoice.held === 1
+                ? getDaysRemaining(invoice.showDate)
+                : getDaysRemaining(
+                      invoice?.invoiceReleaseDate ||
+                          new Date().toISOString().split('T')[0],
+                  );
+
+        let extraClasses = '';
+        const abb = invoice.held === 1 ? 'DTS: ' : 'Age: ';
+
+        if (daysRemaining < 0) {
             // Red badge for past show date
             extraClasses = 'border-red-400 bg-red-50';
-        } else if (pillContent <= 30) {
+        } else if (daysRemaining <= 30) {
             // Yellow badge for within 30 days
             extraClasses = 'border-yellow-400 bg-yellow-50';
         } else {
@@ -56,7 +71,8 @@ function InvoicesTable() {
             <span
                 className={`inline-flex items-center rounded-full border-2 border-solid px-2.5 py-0.5 text-xs font-medium ${extraClasses}`}
             >
-                {pillContent}
+                {abb}
+                {daysRemaining}
             </span>
         );
     };
@@ -183,11 +199,15 @@ function InvoicesTable() {
                 },
             },
             {
-                accessorKey: 'daysToShow',
-                header: 'Days to Show',
+                accessorFn: (row) => {
+                    // Calculate days between today and showDate for sorting using date-fns
+                    return getDaysRemaining(row.showDate);
+                },
+                id: 'daysToShow',
+                header: 'Days',
                 size: 120,
                 cell: ({ row }) => {
-                    return getDaysToShowBadge(row.original);
+                    return getDayBadge(row.original);
                 },
             },
         ],
