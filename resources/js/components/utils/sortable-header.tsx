@@ -13,15 +13,17 @@ export function SortableHeader<TData, TValue>({
     children,
     className = '',
 }: SortableHeaderProps<TData, TValue>) {
+    const sortedState = column.getIsSorted();
+
     return (
         <button
             className={`flex w-full items-center justify-between gap-1 hover:text-foreground ${className}`}
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            onClick={() => column.toggleSorting()}
         >
             <span>{children}</span>
-            {column.getIsSorted() === 'asc' ? (
+            {sortedState === 'asc' ? (
                 <ArrowUp className="h-4 w-4" />
-            ) : column.getIsSorted() === 'desc' ? (
+            ) : sortedState === 'desc' ? (
                 <ArrowDown className="h-4 w-4" />
             ) : (
                 <ArrowUpDown className="h-4 w-4 opacity-50" />
