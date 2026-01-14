@@ -15,6 +15,11 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { formatCurrency, getDaysRemaining } from '@/components/utils/functions';
 import { cn } from '@/lib/utils';
 import { type Invoice } from '@/types';
@@ -24,7 +29,7 @@ import {
     useReactTable,
     type ColumnDef,
 } from '@tanstack/react-table';
-import { ChevronDown, Filter, Search, SortAsc } from 'lucide-react';
+import { ChevronDown, Filter, HelpCircle, Search, SortAsc } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 function InvoicesTable() {
@@ -204,7 +209,24 @@ function InvoicesTable() {
                     return getDaysRemaining(row.showDate);
                 },
                 id: 'daysToShow',
-                header: 'Days',
+                header: () => {
+                    return (
+                        <div className="flex items-center gap-0.5">
+                            <span>Days</span>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <HelpCircle className="h-2 w-2 cursor-help text-blue-500" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <div className="space-y-1">
+                                        <div>DTS = Days To Show</div>
+                                        <div>Aged = Days Since Released</div>
+                                    </div>
+                                </TooltipContent>
+                            </Tooltip>
+                        </div>
+                    );
+                },
                 size: 120,
                 cell: ({ row }) => {
                     return getDayBadge(row.original);
