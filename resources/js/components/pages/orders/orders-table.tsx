@@ -1,4 +1,4 @@
-import { pendingOrdersData } from '@/components/mockdata';
+import { ordersData } from '@/components/mockdata';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,7 +35,7 @@ import { useMemo, useState } from 'react';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
 import StatusIcon from './status-icon';
 
-interface PendingOrder {
+interface Order {
     id: string;
     artist: string;
     name: string;
@@ -47,7 +47,7 @@ interface PendingOrder {
     isGroupHeader?: boolean;
 }
 
-function PendingOrdersTable() {
+function OrdersTable() {
     const [rowSelection, setRowSelection] = useState<Record<string, boolean>>(
         {},
     );
@@ -59,9 +59,9 @@ function PendingOrdersTable() {
     const [columnSizing, setColumnSizing] = useState({});
     const getInitials = useInitials();
 
-    const data = useMemo(() => pendingOrdersData, []);
+    const data = useMemo(() => ordersData, []);
 
-    const columns = useMemo<ColumnDef<PendingOrder>[]>(
+    const columns = useMemo<ColumnDef<Order>[]>(
         () => [
             {
                 accessorKey: 'name',
@@ -210,22 +210,22 @@ function PendingOrdersTable() {
     );
 
     const groupedData = useMemo(() => {
-        const groups: Record<string, PendingOrder[]> = {};
+        const groups: Record<string, Order[]> = {};
         data.forEach((order) => {
             if (!groups[order.artist]) {
                 groups[order.artist] = [];
             }
-            groups[order.artist].push(order as unknown as PendingOrder);
+            groups[order.artist].push(order as unknown as Order);
         });
 
-        const result: PendingOrder[] = [];
+        const result: Order[] = [];
         Object.keys(groups).forEach((artist) => {
             const orders = groups[artist];
             result.push({
                 ...orders[0],
                 name: artist,
                 isGroupHeader: true,
-            } as PendingOrder);
+            } as Order);
             if (expanded[artist]) {
                 result.push(...orders.filter((o) => !o.isGroupHeader));
             }
@@ -481,4 +481,4 @@ function PendingOrdersTable() {
     );
 }
 
-export default PendingOrdersTable;
+export default OrdersTable;

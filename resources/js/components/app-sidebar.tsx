@@ -12,8 +12,8 @@ const mainNavItems: NavItem[] = [
         icon: House,
     },
     {
-        title: 'Pending Orders',
-        href: '/pending-orders',
+        title: 'Orders',
+        href: '/orders',
         icon: ClipboardClock,
     },
     {

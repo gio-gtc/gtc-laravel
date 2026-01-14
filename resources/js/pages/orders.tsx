@@ -1,26 +1,26 @@
 import Heading from '@/components/heading';
-import PendingOrdersTable from '@/components/pages/pending-orders/pending-orders-table';
+import OrdersTable from '@/components/pages/orders/orders-table';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Pending Orders',
-        href: '/pending-orders',
+        title: 'Orders',
+        href: '/orders',
     },
 ];
 
-export default function PendingOrders() {
+export default function Orders() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Pending Orders" />
+            <Head title="Orders" />
             <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl">
                 <Heading
-                    title="Pending Orders"
+                    title="Orders"
                     description="Manage your orders with ease — track progress and add new items."
                 />
-                <PendingOrdersTable />
+                <OrdersTable />
             </div>
         </AppLayout>
     );

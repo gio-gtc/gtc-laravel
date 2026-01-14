@@ -15,9 +15,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::get('pending-orders', function () {
-        return Inertia::render('pending-orders');
-    })->name('pending-orders');
+    Route::get('orders', function () {
+        return Inertia::render('orders');
+    })->name('orders');
 
     Route::get('invoices', function () {
         return Inertia::render('invoices');

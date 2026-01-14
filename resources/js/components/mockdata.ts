@@ -196,8 +196,8 @@ export const mockUsers = [
     },
 ];
 
-// Mock pending orders grouped by artist
-export const pendingOrdersData = [
+// Mock orders grouped by artist
+export const ordersData = [
     {
         id: '1',
         artist: 'Matt Rife',
