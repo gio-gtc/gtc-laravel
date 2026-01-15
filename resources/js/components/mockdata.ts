@@ -308,7 +308,7 @@ export const salesByRepData: SalesByRepDataSchema[] = [
 export const companiesData: Company[] = [
     {
         id: 1,
-        companyName: 'CIRQUE DU SOLEIL AMERICA NEWCO,',
+        companyName: 'CIRQUE DU SOLEIL AMERICA NEWCO, INC.',
         address: '1151 Grier Drive, Suite C\nLas Vegas, NV 964075, USA',
     },
     {
@@ -353,8 +353,8 @@ export const invoicesData: Invoice[] = [
         user_id: 1,
         company_id: 1,
         held: 1,
-        invoiceReleaseDate: '2025-10-27',
-        invoiceDueDate: '2025-11-27',
+        release_date: '2025-10-27',
+        payment_due: '2025-11-27',
         clientReference: 'Generic Pre Sale',
     },
     {
@@ -370,8 +370,8 @@ export const invoicesData: Invoice[] = [
         user_id: 2,
         company_id: 1,
         held: 0,
-        invoiceReleaseDate: '2026-02-25',
-        invoiceDueDate: '2025-10-28',
+        release_date: '2026-02-25',
+        payment_due: '2025-10-28',
         clientReference: 'Amex Pre Sale',
     },
     {
@@ -387,8 +387,8 @@ export const invoicesData: Invoice[] = [
         user_id: 3,
         company_id: 1,
         held: 1,
-        invoiceReleaseDate: '2025-12-10',
-        invoiceDueDate: '2025-01-10',
+        release_date: '2025-12-10',
+        payment_due: '2025-01-10',
         clientReference: 'Generic Spots',
     },
     {
@@ -404,8 +404,8 @@ export const invoicesData: Invoice[] = [
         user_id: 4,
         company_id: 1,
         held: 0,
-        invoiceReleaseDate: '2025-01-15',
-        invoiceDueDate: '2025-02-15',
+        release_date: '2025-01-15',
+        payment_due: '2025-02-15',
         clientReference: 'Generic Pre sale',
     },
     {
@@ -421,8 +421,8 @@ export const invoicesData: Invoice[] = [
         user_id: 5,
         company_id: 1,
         held: 1,
-        invoiceReleaseDate: '2025-01-15',
-        invoiceDueDate: '2025-02-15',
+        release_date: '2025-01-15',
+        payment_due: '2025-02-15',
         clientReference: 'Generic Pre sale',
     },
     {
@@ -438,8 +438,8 @@ export const invoicesData: Invoice[] = [
         user_id: 1,
         company_id: 2,
         held: 0,
-        invoiceReleaseDate: '2025-12-15',
-        invoiceDueDate: '2025-01-15',
+        release_date: '2025-12-15',
+        payment_due: '2025-01-15',
         clientReference: 'VIP Pre Sale',
     },
     {
@@ -455,8 +455,8 @@ export const invoicesData: Invoice[] = [
         user_id: 2,
         company_id: 3,
         held: 1,
-        invoiceReleaseDate: '2025-12-22',
-        invoiceDueDate: '2025-01-22',
+        release_date: '2025-12-22',
+        payment_due: '2025-01-22',
         clientReference: 'Early Bird Sale',
     },
     {
@@ -472,8 +472,8 @@ export const invoicesData: Invoice[] = [
         user_id: 3,
         company_id: 4,
         held: 0,
-        invoiceReleaseDate: '2025-01-01',
-        invoiceDueDate: '2025-02-01',
+        release_date: '2025-01-01',
+        payment_due: '2025-02-01',
         clientReference: 'Fan Club Pre Sale',
     },
     {
@@ -489,8 +489,8 @@ export const invoicesData: Invoice[] = [
         user_id: 4,
         company_id: 5,
         held: 1,
-        invoiceReleaseDate: '2025-01-10',
-        invoiceDueDate: '2025-02-10',
+        release_date: '2025-01-10',
+        payment_due: '2025-02-10',
         clientReference: 'General Sale',
     },
     {
@@ -506,8 +506,8 @@ export const invoicesData: Invoice[] = [
         user_id: 5,
         company_id: 6,
         held: 0,
-        invoiceReleaseDate: '2025-01-18',
-        invoiceDueDate: '2025-02-18',
+        release_date: '2025-01-18',
+        payment_due: '2025-02-18',
         clientReference: 'Presale Code',
     },
 ];

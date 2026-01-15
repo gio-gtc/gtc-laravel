@@ -27,19 +27,21 @@ import {
     useReactTable,
     type ColumnDef,
 } from '@tanstack/react-table';
-import { Filter, HelpCircle, X } from 'lucide-react';
+import { Filter, HelpCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 function InvoicesTable() {
-    // TODO: Filter buttons - US (Checkbox), International (Checkbox), Days (as date input [quick buttons - 30, 60, 90, custom])
-    // Change Released pills to >-30 (Gray), >-60 (Yellow), >-90 (Red)
-    // Change on hold pills to <30 (Red), <60 (Yellow), >60 (Gray)
+    // TODO: Filter buttons - US (Checkbox), International (Checkbox), Days (as date input [quick buttons - 30, 60, 90, custom] Follow below)
+    // Change Released pills (Today -> Tomorrow) to >-30 (Gray), >-60 (Yellow), >-90 (Red)
+    // Change on hold pills (Yesteday -> Today) to <30 (Red), <60 (Yellow), >60 (Gray)
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(
         null,
     );
     const [columnSizing, setColumnSizing] = useState({});
     const [sorting, setSorting] = useTableSorting();
-    const [filter, setFilter] = useState<'all' | 'on-hold' | 'released'>('all');
+    const [filter, setFilter] = useState<'all' | 'on-hold' | 'released'>(
+        'on-hold',
+    );
     const [searchQuery, setSearchQuery] = useState('');
 
     // Filter invoices based on selected filter and search query
@@ -97,7 +99,7 @@ function InvoicesTable() {
             invoice.held === 1
                 ? getDaysRemaining(invoice.showDate)
                 : getDaysRemaining(
-                      invoice?.invoiceReleaseDate ||
+                      invoice?.release_date ||
                           new Date().toISOString().split('T')[0],
                   );
 
@@ -348,13 +350,8 @@ function InvoicesTable() {
                 </div>
                 <div className="flex items-center gap-1">
                     <Button variant="outline">
-                        Held, US, +2
-                        <span className="ml-2">
-                            <X className="size-2.5" />
-                        </span>
-                    </Button>
-                    <Button variant="outline" size="icon">
-                        <Filter className="h-4 w-4" />
+                        <Filter className="size-3" />
+                        Filters
                     </Button>
                     <ExpandableSearch
                         onSearchChange={setSearchQuery}

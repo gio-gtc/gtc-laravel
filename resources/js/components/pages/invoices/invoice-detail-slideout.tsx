@@ -64,8 +64,8 @@ export default function InvoiceDetailSlideout({
     const [formData, setFormData] = useState({
         companyName: company?.companyName || '',
         address: company?.address || '',
-        invoiceReleaseDate: invoice?.invoiceReleaseDate || '',
-        invoiceDueDate: invoice?.invoiceDueDate || '',
+        release_date: invoice?.release_date || '',
+        payment_due: invoice?.payment_due || '',
         clientReference: invoice?.clientReference || '',
     });
 
@@ -77,8 +77,8 @@ export default function InvoiceDetailSlideout({
         setFormData({
             companyName: currentCompany?.companyName || '',
             address: currentCompany?.address || '',
-            invoiceReleaseDate: invoice?.invoiceReleaseDate || '',
-            invoiceDueDate: invoice?.invoiceDueDate || '',
+            release_date: invoice?.release_date || '',
+            payment_due: invoice?.payment_due || '',
             clientReference: invoice?.clientReference || '',
         });
     }, [invoice]);
@@ -207,21 +207,21 @@ export default function InvoiceDetailSlideout({
                             <ColumnedRowsParent>
                                 <RowsColumnedChild>
                                     <Label
-                                        htmlFor="invoiceReleaseDate"
+                                        htmlFor="release_date"
                                         className="pt-2"
                                     >
                                         Invoice Release Date
                                     </Label>
                                     <div className="relative">
                                         <Input
-                                            id="invoiceReleaseDate"
+                                            id="release_date"
                                             type="date"
                                             value={formatDateInput(
-                                                formData.invoiceReleaseDate,
+                                                formData.release_date,
                                             )}
                                             onChange={(e) =>
                                                 handleInputChange(
-                                                    'invoiceReleaseDate',
+                                                    'release_date',
                                                     e.target.value,
                                                 )
                                             }
@@ -231,7 +231,7 @@ export default function InvoiceDetailSlideout({
                                             onClick={() => {
                                                 const el =
                                                     document.getElementById(
-                                                        'invoiceReleaseDate',
+                                                        'release_date',
                                                     ) as HTMLInputElement | null;
                                                 el?.showPicker?.();
                                                 el?.focus();
@@ -246,21 +246,21 @@ export default function InvoiceDetailSlideout({
 
                                 <RowsColumnedChild>
                                     <Label
-                                        htmlFor="invoiceDueDate"
+                                        htmlFor="payment_due"
                                         className="pt-2"
                                     >
                                         Invoice Due Date
                                     </Label>
                                     <div className="relative">
                                         <Input
-                                            id="invoiceDueDate"
+                                            id="payment_due"
                                             type="date"
                                             value={formatDateInput(
-                                                formData.invoiceDueDate,
+                                                formData.payment_due,
                                             )}
                                             onChange={(e) =>
                                                 handleInputChange(
-                                                    'invoiceDueDate',
+                                                    'payment_due',
                                                     e.target.value,
                                                 )
                                             }
@@ -270,7 +270,7 @@ export default function InvoiceDetailSlideout({
                                             onClick={() => {
                                                 const el =
                                                     document.getElementById(
-                                                        'invoiceDueDate',
+                                                        'payment_due',
                                                     ) as HTMLInputElement | null;
                                                 el?.showPicker?.();
                                                 el?.focus();

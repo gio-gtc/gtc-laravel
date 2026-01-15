@@ -116,8 +116,8 @@ export interface Invoice {
     user_id: number;
     company_id: number;
     held: number;
-    invoiceReleaseDate?: string;
-    invoiceDueDate?: string;
+    release_date?: string;
+    payment_due?: string;
     clientReference: string;
 }
 
