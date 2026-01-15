@@ -31,7 +31,7 @@ import { Filter, HelpCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 function InvoicesTable() {
-    // TODO: Filter buttons - US (Checkbox), International (Checkbox), Days (as date input [quick buttons - 30, 60, 90, custom] Follow below)
+    // TODO: Filter buttons - US (buttons), International (buttons), Days (as date input [quick buttons - 30, 60, 90, custom] Follow below)
     // Change Released pills (Today -> Tomorrow) to >-30 (Gray), >-60 (Yellow), >-90 (Red)
     // Change on hold pills (Yesteday -> Today) to <30 (Red), <60 (Yellow), >60 (Gray)
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(
@@ -87,9 +87,11 @@ function InvoicesTable() {
     const data = useMemo(() => filteredData, [filteredData]);
 
     const getDayBadge = (invoice: Invoice) => {
+        const normalClasses =
+            'inline-flex items-center rounded-full border-2 border-solid px-2.5 py-0.5 text-xs font-medium';
         if (invoice.isDeleted) {
             return (
-                <span className="inline-flex items-center rounded-full border-2 border-solid border-gray-400 bg-gray-50 px-2.5 py-0.5 text-xs font-medium">
+                <span className={`${normalClasses} border-gray-400 bg-gray-50`}>
                     DELETED
                 </span>
             );
@@ -118,9 +120,7 @@ function InvoicesTable() {
         }
 
         return (
-            <span
-                className={`inline-flex items-center rounded-full border-2 border-solid px-2.5 py-0.5 text-xs font-medium ${extraClasses}`}
-            >
+            <span className={`${normalClasses} ${extraClasses}`}>
                 {abb}
                 {daysRemaining}
             </span>

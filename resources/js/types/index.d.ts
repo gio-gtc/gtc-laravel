@@ -34,7 +34,7 @@ export interface User {
     id: number;
     name: string;
     email: string;
-    avatar?: string;
+    avatar?: string | null;
     email_verified_at: string | null;
     two_factor_enabled?: boolean;
     first_name?: string | null;
@@ -51,50 +51,6 @@ export interface User {
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
-}
-
-export interface SalesByRepDataSchema {
-    rep: string;
-    currentMonth: number;
-    currentMonthChange: { direction: 'up' | 'down'; percentage: number };
-    ytd: number;
-    ytdChange: { direction: 'up' | 'down'; percentage: numeber };
-    total: number;
-}
-
-export type OrderStatus =
-    | 'pending'
-    | 'approved'
-    | 'in-progress'
-    | 'paused'
-    | 'completed'
-    | 'needs-attention'
-    | 'mic'
-    | 'speaker';
-
-export interface UserData {
-    id: number;
-    name: string;
-    email: string;
-    avatar?: string | null;
-    permissionLevel: 'admin' | 'designer' | 'client' | 'collaborator';
-}
-
-export interface PendingOrder {
-    id: string;
-    name: string;
-    venue: string;
-    dueDate: string | null;
-    client: UserData;
-    collaborators: UserData[];
-    status: OrderStatus[];
-    tourGroup: string; // artist/tour name
-}
-
-export interface PendingOrderGroup {
-    tourGroup: string;
-    orders: PendingOrder[];
-    isExpanded?: boolean;
 }
 
 export interface Company {
@@ -128,4 +84,28 @@ export interface InvoiceItem {
     description: string;
     quantity: number;
     price: number;
+}
+
+export interface Tour {
+    id: number;
+    name: string;
+    performer: string;
+    owner_contact_id: number;
+    date_started: string;
+    live: 0 | 1;
+    require_owner_approval: 0 | 1;
+    special_instructions: string | null;
+    gtc_rep_contact_id: number;
+    high_def_only: 0 | 1;
+}
+
+export interface Order {
+    id: string | number;
+    tour_id: number;
+    venue: string;
+    dueDate: string;
+    client: User;
+    collaborators: User[];
+    status: 'completed' | 'in-progress' | 'pending' | 'paused' | 'edit';
+    isGroupHeader?: boolean;
 }
