@@ -1,11 +1,19 @@
 import {
     companiesData,
+    countriesData,
     invoiceItemsData,
     mockUsers,
 } from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import {
     Sheet,
@@ -62,8 +70,12 @@ export default function InvoiceDetailSlideout({
         : null;
 
     const [formData, setFormData] = useState({
-        companyName: company?.companyName || '',
-        address: company?.address || '',
+        name: company?.name || '',
+        billing_address: company?.billing_address || '',
+        city: company?.city || '',
+        state: company?.state || '',
+        zip: company?.zip || '',
+        country_id: company?.country_id?.toString() || '',
         release_date: invoice?.release_date || '',
         payment_due: invoice?.payment_due || '',
         clientReference: invoice?.clientReference || '',
@@ -75,8 +87,12 @@ export default function InvoiceDetailSlideout({
             ? companiesData.find((c) => c.id === invoice.company_id)
             : null;
         setFormData({
-            companyName: currentCompany?.companyName || '',
-            address: currentCompany?.address || '',
+            name: currentCompany?.name || '',
+            billing_address: currentCompany?.billing_address || '',
+            city: currentCompany?.city || '',
+            state: currentCompany?.state || '',
+            zip: currentCompany?.zip || '',
+            country_id: currentCompany?.country_id?.toString() || '',
             release_date: invoice?.release_date || '',
             payment_due: invoice?.payment_due || '',
             clientReference: invoice?.clientReference || '',
@@ -167,18 +183,15 @@ export default function InvoiceDetailSlideout({
                         <div className="flex flex-col gap-4 md:flex-row">
                             <ColumnedRowsParent>
                                 <RowsColumnedChild>
-                                    <Label
-                                        htmlFor="companyName"
-                                        className="pt-2"
-                                    >
+                                    <Label htmlFor="name" className="pt-2">
                                         Company Name
                                     </Label>
                                     <Input
-                                        id="companyName"
-                                        value={formData.companyName}
+                                        id="name"
+                                        value={formData.name}
                                         onChange={(e) =>
                                             handleInputChange(
-                                                'companyName',
+                                                'name',
                                                 e.target.value,
                                             )
                                         }
@@ -186,21 +199,98 @@ export default function InvoiceDetailSlideout({
                                 </RowsColumnedChild>
 
                                 <RowsColumnedChild>
-                                    <Label htmlFor="address" className="pt-2">
-                                        Address
+                                    <Label
+                                        htmlFor="billing_address"
+                                        className="pt-2"
+                                    >
+                                        Billing Address
                                     </Label>
                                     <textarea
-                                        id="address"
+                                        id="billing_address"
                                         className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
-                                        value={formData.address}
+                                        value={formData.billing_address}
                                         onChange={(e) =>
                                             handleInputChange(
-                                                'address',
+                                                'billing_address',
                                                 e.target.value,
                                             )
                                         }
                                         rows={3}
                                     />
+                                </RowsColumnedChild>
+
+                                <RowsColumnedChild>
+                                    <Label htmlFor="city" className="pt-2">
+                                        City
+                                    </Label>
+                                    <Input
+                                        id="city"
+                                        value={formData.city}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                'city',
+                                                e.target.value,
+                                            )
+                                        }
+                                    />
+                                </RowsColumnedChild>
+
+                                <RowsColumnedChild>
+                                    <Label htmlFor="state" className="pt-2">
+                                        State/Province
+                                    </Label>
+                                    <Input
+                                        id="state"
+                                        value={formData.state}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                'state',
+                                                e.target.value,
+                                            )
+                                        }
+                                    />
+                                </RowsColumnedChild>
+
+                                <RowsColumnedChild>
+                                    <Label htmlFor="zip" className="pt-2">
+                                        ZIP/Postal Code
+                                    </Label>
+                                    <Input
+                                        id="zip"
+                                        value={formData.zip}
+                                        onChange={(e) =>
+                                            handleInputChange(
+                                                'zip',
+                                                e.target.value,
+                                            )
+                                        }
+                                    />
+                                </RowsColumnedChild>
+
+                                <RowsColumnedChild>
+                                    <Label htmlFor="country_id" className="pt-2">
+                                        Country
+                                    </Label>
+                                    <Select
+                                        value={formData.country_id}
+                                        onValueChange={(value) =>
+                                            handleInputChange('country_id', value)
+                                        }
+                                    >
+                                        <SelectTrigger id="country_id">
+                                            <SelectValue placeholder="Select country" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {countriesData.map((country) => (
+                                                <SelectItem
+                                                    key={country.id}
+                                                    value={country.id.toString()}
+                                                >
+                                                    {country.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </RowsColumnedChild>
                             </ColumnedRowsParent>
 

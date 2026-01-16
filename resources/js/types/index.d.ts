@@ -48,15 +48,38 @@ export interface User {
     out_of_office_start_date?: string | null;
     out_of_office_end_date?: string | null;
     profile_photo_path?: string | null;
+    company_id: number;
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
 
+export interface Country {
+    id: number;
+    name: string;
+    code: string;
+}
+
 export interface Company {
     id: number;
-    companyName: string;
-    address: string;
+    name: string;
+    billing_address: string;
+    city: string;
+    zip: string;
+    state: string;
+    country_id: number;
+    discount_rate: number;
+    credit_limit: number;
+    pay_email: string;
+    rec_email: string;
+    telephone: string;
+    copy_email: string;
+    fax_number: string;
+    bank_account_number: string;
+    routing_number: string;
+    rec_name: string;
+    rec_tel: string;
+    country?: Country;
 }
 
 export interface Invoice {
