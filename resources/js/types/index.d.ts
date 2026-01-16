@@ -98,6 +98,11 @@ export interface Invoice {
     release_date: string | null;
     payment_due?: string;
     clientReference: string;
+    address: string | null;
+    city: string | null;
+    state: string | null;
+    zip: string | null;
+    country_id: number | null;
 }
 
 export interface InvoiceItem {

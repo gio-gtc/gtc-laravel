@@ -30,7 +30,10 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { EditableTableCell } from '@/components/utils/editable-table-cell';
-import { formatCurrency } from '@/components/utils/functions';
+import {
+    formatCurrency,
+    getInvoiceAddress,
+} from '@/components/utils/functions';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { type Invoice, type InvoiceItem } from '@/types';
 import {
@@ -49,7 +52,7 @@ interface InvoiceDetailSlideoutProps {
     onClose: () => void;
 }
 
-function formatDateInput(value: string | undefined): string {
+function formatDateInput(value: string | undefined | null): string {
     if (!value) return '';
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return '';
@@ -64,18 +67,30 @@ export default function InvoiceDetailSlideout({
     isOpen,
     onClose,
 }: InvoiceDetailSlideoutProps) {
-    // Look up company data from companiesData
+    // Look up company data from companiesData (before hooks to avoid hook order issues)
     const company = invoice
         ? companiesData.find((c) => c.id === invoice.company_id)
         : null;
 
+    // Get address data: use invoice address if filled, otherwise use company address
+    const addressData =
+        invoice && company
+            ? getInvoiceAddress(invoice, company)
+            : {
+                  billing_address: '',
+                  city: '',
+                  state: '',
+                  zip: '',
+                  country_id: '',
+              };
+
     const [formData, setFormData] = useState({
         name: company?.name || '',
-        billing_address: company?.billing_address || '',
-        city: company?.city || '',
-        state: company?.state || '',
-        zip: company?.zip || '',
-        country_id: company?.country_id?.toString() || '',
+        billing_address: addressData.billing_address,
+        city: addressData.city,
+        state: addressData.state,
+        zip: addressData.zip,
+        country_id: addressData.country_id,
         release_date: invoice?.release_date || '',
         payment_due: invoice?.payment_due || '',
         clientReference: invoice?.clientReference || '',
@@ -83,19 +98,30 @@ export default function InvoiceDetailSlideout({
 
     // Update form data when invoice changes
     useEffect(() => {
-        const currentCompany = invoice
-            ? companiesData.find((c) => c.id === invoice.company_id)
-            : null;
+        if (!invoice) return;
+
+        const currentCompany = companiesData.find(
+            (c) => c.id === invoice.company_id,
+        );
+
+        if (!currentCompany) {
+            console.error(
+                `Company not found for invoice ${invoice.id} with company_id ${invoice.company_id}`,
+            );
+            return;
+        }
+
+        const currentAddressData = getInvoiceAddress(invoice, currentCompany);
         setFormData({
-            name: currentCompany?.name || '',
-            billing_address: currentCompany?.billing_address || '',
-            city: currentCompany?.city || '',
-            state: currentCompany?.state || '',
-            zip: currentCompany?.zip || '',
-            country_id: currentCompany?.country_id?.toString() || '',
-            release_date: invoice?.release_date || '',
-            payment_due: invoice?.payment_due || '',
-            clientReference: invoice?.clientReference || '',
+            name: currentCompany.name || '',
+            billing_address: currentAddressData.billing_address,
+            city: currentAddressData.city,
+            state: currentAddressData.state,
+            zip: currentAddressData.zip,
+            country_id: currentAddressData.country_id,
+            release_date: invoice.release_date || '',
+            payment_due: invoice.payment_due || '',
+            clientReference: invoice.clientReference || '',
         });
     }, [invoice]);
 
@@ -120,7 +146,10 @@ export default function InvoiceDetailSlideout({
         getId: (item) => item.id,
     });
 
-    if (!invoice) return null;
+    // Early return if invoice or company doesn't exist - AFTER all hooks are called
+    if (!invoice || !company) {
+        return null;
+    }
 
     // Find user by user_id
     const orderedByUser = mockUsers.find((user) => user.id === invoice.user_id);
@@ -268,13 +297,19 @@ export default function InvoiceDetailSlideout({
                                 </RowsColumnedChild>
 
                                 <RowsColumnedChild>
-                                    <Label htmlFor="country_id" className="pt-2">
+                                    <Label
+                                        htmlFor="country_id"
+                                        className="pt-2"
+                                    >
                                         Country
                                     </Label>
                                     <Select
                                         value={formData.country_id}
                                         onValueChange={(value) =>
-                                            handleInputChange('country_id', value)
+                                            handleInputChange(
+                                                'country_id',
+                                                value,
+                                            )
                                         }
                                     >
                                         <SelectTrigger id="country_id">
