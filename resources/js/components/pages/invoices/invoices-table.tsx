@@ -32,8 +32,8 @@ import { useMemo, useState } from 'react';
 
 function InvoicesTable() {
     // TODO: Filter buttons - US (buttons), International (buttons), Days (as date input [quick buttons - 30, 60, 90, custom] Follow below)
-    // Change Released pills (Today -> Tomorrow) to >-30 (Gray), >-60 (Yellow), >-90 (Red)
-    // Change on hold pills (Yesteday -> Today) to <30 (Red), <60 (Yellow), >60 (Gray)
+    // Change Released badge (Rule: Today -> Past ) to >-30 (Gray), >-60 (Yellow), >-90 (Red) ✅
+    // Change on hold badge (Rule: Today -> Future) to <30 (Red), <60 (Yellow), >60 (Gray) ✅
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(
         null,
     );
@@ -100,23 +100,35 @@ function InvoicesTable() {
         const daysRemaining =
             invoice.held === 1
                 ? getDaysRemaining(invoice.showDate)
-                : getDaysRemaining(
-                      invoice?.release_date ||
-                          new Date().toISOString().split('T')[0],
-                  );
+                : getDaysRemaining(invoice.release_date, invoice.id);
 
         let extraClasses = '';
         const abb = invoice.held === 1 ? 'DTS: ' : 'Age: ';
 
-        if (daysRemaining < 0) {
-            // Red badge for past show date
-            extraClasses = 'border-red-400 bg-red-50';
-        } else if (daysRemaining <= 30) {
-            // Yellow badge for within 30 days
-            extraClasses = 'border-yellow-400 bg-yellow-50';
+        if (invoice.held === 0) {
+            // Released invoices: use release_date age
+            if (daysRemaining > -30) {
+                // Gray: within 30 days ago or future dates
+                extraClasses = 'border-gray-400 bg-gray-50';
+            } else if (daysRemaining > -60) {
+                // Yellow: 30-60 days ago
+                extraClasses = 'border-yellow-400 bg-yellow-50';
+            } else {
+                // Red: 60+ days ago
+                extraClasses = 'border-red-400 bg-red-50';
+            }
         } else {
-            // Gray badge for >30 days
-            extraClasses = 'border-gray-400 bg-gray-50';
+            // On hold invoices: use showDate countdown
+            if (daysRemaining <= 30) {
+                // Red: 30 days or less until show, or past dates
+                extraClasses = 'border-red-400 bg-red-50';
+            } else if (daysRemaining <= 60) {
+                // Yellow: 31-60 days until show
+                extraClasses = 'border-yellow-400 bg-yellow-50';
+            } else {
+                // Gray: more than 60 days until show
+                extraClasses = 'border-gray-400 bg-gray-50';
+            }
         }
 
         return (

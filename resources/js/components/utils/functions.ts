@@ -9,6 +9,13 @@ export function formatCurrency(value: number): string {
     }).format(value);
 }
 
-export function getDaysRemaining(targetDate: string): number {
+export function getDaysRemaining(
+    targetDate: string | null,
+    id?: number,
+): number {
+    if (targetDate === null) {
+        console.log(`Release date missing! ID: ${id}`);
+        return 0;
+    }
     return differenceInCalendarDays(new Date(targetDate), new Date());
 }
