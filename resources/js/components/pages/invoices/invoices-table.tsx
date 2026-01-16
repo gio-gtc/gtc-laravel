@@ -1,6 +1,15 @@
-import { invoicesData } from '@/components/mockdata';
+import {
+    companiesData,
+    countriesData,
+    invoicesData,
+} from '@/components/mockdata';
 import InvoiceDetailSlideout from '@/components/pages/invoices/invoice-detail-slideout';
 import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
     Table,
     TableBody,
@@ -15,7 +24,11 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { ExpandableSearch } from '@/components/utils/expandable-search';
-import { formatCurrency, getDaysRemaining } from '@/components/utils/functions';
+import {
+    formatCurrency,
+    getDaysRemaining,
+    getInvoiceAddress,
+} from '@/components/utils/functions';
 import { SortableHeader } from '@/components/utils/sortable-header';
 import { useTableSorting } from '@/hooks/use-table-sorting';
 import { cn } from '@/lib/utils';
@@ -45,6 +58,31 @@ function InvoicesTable() {
         'on-hold',
     );
     const [searchQuery, setSearchQuery] = useState('');
+    const [countryFilter, setCountryFilter] = useState({
+        us: false,
+        international: false,
+    });
+    const [dateFilter, setDateFilter] = useState<'30' | '60' | '61+' | null>(
+        null,
+    );
+
+    // Helper function to get country code for an invoice
+    const getInvoiceCountryCode = (
+        invoice: Invoice,
+    ): 'US' | 'International' => {
+        const company = companiesData.find((c) => c.id === invoice.company_id);
+        if (!company) return 'International';
+
+        const addressData = getInvoiceAddress(invoice, company);
+        const countryId = addressData.country_id
+            ? parseInt(addressData.country_id, 10)
+            : null;
+
+        if (!countryId) return 'International';
+
+        const country = countriesData.find((c) => c.id === countryId);
+        return country?.code === 'US' ? 'US' : 'International';
+    };
 
     // Filter invoices based on selected filter and search query
     const filteredData = useMemo(() => {
@@ -59,6 +97,54 @@ function InvoicesTable() {
             result = result.filter(
                 (invoice) => invoice.held === 0 && !invoice.isDeleted,
             );
+        }
+
+        // Apply country filter
+        if (countryFilter.us || countryFilter.international) {
+            result = result.filter((invoice) => {
+                const countryCode = getInvoiceCountryCode(invoice);
+                if (countryFilter.us && countryFilter.international) {
+                    // Both selected - show all
+                    return true;
+                } else if (countryFilter.us) {
+                    return countryCode === 'US';
+                } else if (countryFilter.international) {
+                    return countryCode === 'International';
+                }
+                return true;
+            });
+        }
+
+        // Apply date filter
+        if (dateFilter) {
+            result = result.filter((invoice) => {
+                const daysRemaining =
+                    invoice.held === 1
+                        ? getDaysRemaining(invoice.showDate)
+                        : getDaysRemaining(invoice.release_date, invoice.id);
+
+                if (invoice.held === 1) {
+                    // On hold invoices: use showDate countdown
+                    // Ranges: 30 = 0-30, 60 = 31-60, 61+ = 61+
+                    if (dateFilter === '30') {
+                        return daysRemaining >= 0 && daysRemaining <= 30;
+                    } else if (dateFilter === '60') {
+                        return daysRemaining > 30 && daysRemaining <= 60;
+                    } else if (dateFilter === '61+') {
+                        return daysRemaining > 60;
+                    }
+                } else {
+                    // Released invoices: use release_date age
+                    if (dateFilter === '30') {
+                        return daysRemaining >= -30 && daysRemaining <= 0;
+                    } else if (dateFilter === '60') {
+                        return daysRemaining > -60 && daysRemaining <= -30;
+                    } else if (dateFilter === '61+') {
+                        return daysRemaining < -60;
+                    }
+                }
+                return false;
+            });
         }
 
         // Apply search filter
@@ -84,7 +170,7 @@ function InvoicesTable() {
         }
 
         return result;
-    }, [filter, searchQuery]);
+    }, [filter, searchQuery, countryFilter, dateFilter]);
 
     const data = useMemo(() => filteredData, [filteredData]);
 
@@ -363,10 +449,124 @@ function InvoicesTable() {
                     </Button>
                 </div>
                 <div className="flex items-center gap-1">
-                    <Button variant="outline">
-                        <Filter className="size-3" />
-                        Filters
-                    </Button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline">
+                                <Filter className="size-3" />
+                                Filters
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56 p-4">
+                            <div className="space-y-4">
+                                {/* Country Filter Section */}
+                                <div className="space-y-2">
+                                    <span className="text-sm font-medium text-muted-foreground">
+                                        Country
+                                    </span>
+                                    <div className="flex flex-col gap-2">
+                                        <Button
+                                            variant={
+                                                countryFilter.us
+                                                    ? 'default'
+                                                    : 'outline'
+                                            }
+                                            size="sm"
+                                            className="w-full justify-start"
+                                            onClick={() =>
+                                                setCountryFilter((prev) => ({
+                                                    ...prev,
+                                                    us: !prev.us,
+                                                }))
+                                            }
+                                        >
+                                            US
+                                        </Button>
+                                        <Button
+                                            variant={
+                                                countryFilter.international
+                                                    ? 'default'
+                                                    : 'outline'
+                                            }
+                                            size="sm"
+                                            className="w-full justify-start"
+                                            onClick={() =>
+                                                setCountryFilter((prev) => ({
+                                                    ...prev,
+                                                    international:
+                                                        !prev.international,
+                                                }))
+                                            }
+                                        >
+                                            International
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                {/* Date Filter Section */}
+                                <div className="space-y-2">
+                                    <span className="text-sm font-medium text-muted-foreground">
+                                        Days
+                                    </span>
+                                    <div className="flex flex-col gap-2">
+                                        <Button
+                                            variant={
+                                                dateFilter === '30'
+                                                    ? 'default'
+                                                    : 'outline'
+                                            }
+                                            size="sm"
+                                            className="w-full justify-start"
+                                            onClick={() =>
+                                                setDateFilter(
+                                                    dateFilter === '30'
+                                                        ? null
+                                                        : '30',
+                                                )
+                                            }
+                                        >
+                                            30
+                                        </Button>
+                                        <Button
+                                            variant={
+                                                dateFilter === '60'
+                                                    ? 'default'
+                                                    : 'outline'
+                                            }
+                                            size="sm"
+                                            className="w-full justify-start"
+                                            onClick={() =>
+                                                setDateFilter(
+                                                    dateFilter === '60'
+                                                        ? null
+                                                        : '60',
+                                                )
+                                            }
+                                        >
+                                            60
+                                        </Button>
+                                        <Button
+                                            variant={
+                                                dateFilter === '61+'
+                                                    ? 'default'
+                                                    : 'outline'
+                                            }
+                                            size="sm"
+                                            className="w-full justify-start"
+                                            onClick={() =>
+                                                setDateFilter(
+                                                    dateFilter === '61+'
+                                                        ? null
+                                                        : '61+',
+                                                )
+                                            }
+                                        >
+                                            61+
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     <ExpandableSearch
                         onSearchChange={setSearchQuery}
                         placeholder="Search Invoice #, Tour, Market, Venue, Refs..."
