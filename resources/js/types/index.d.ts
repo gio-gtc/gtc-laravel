@@ -95,7 +95,7 @@ export interface Invoice {
     user_id: number;
     company_id: number;
     held: number;
-    release_date?: string;
+    release_date: string | null;
     payment_due?: string;
     clientReference: string;
 }
