@@ -103,6 +103,9 @@ export interface Invoice {
     state: string | null;
     zip: string | null;
     country_id: number | null;
+    delete_date: string | null;
+    deleted_by: number | null;
+    deleted_reason: string | null;
 }
 
 export interface InvoiceItem {
