@@ -25,6 +25,7 @@ interface EditableTableCellProps {
     align?: 'left' | 'right' | 'center';
     min?: number;
     step?: number;
+    disabled?: boolean;
 }
 
 export function EditableTableCell({
@@ -42,8 +43,10 @@ export function EditableTableCell({
     align = 'left',
     min,
     step,
+    disabled = false,
 }: EditableTableCellProps) {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (disabled) return;
         const newValue =
             type === 'number'
                 ? parseFloat(e.target.value) || 0
@@ -52,7 +55,13 @@ export function EditableTableCell({
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (disabled) return;
         onKeyDown(e, itemId, field);
+    };
+
+    const handleDoubleClick = () => {
+        if (disabled) return;
+        onDoubleClick(itemId, field);
     };
 
     const displayValue = formatValue ? formatValue(value) : String(value);
@@ -63,7 +72,7 @@ export function EditableTableCell({
         center: 'text-center',
     };
 
-    if (isEditing) {
+    if (isEditing && !disabled) {
         return (
             <Input
                 type={type}
@@ -74,6 +83,7 @@ export function EditableTableCell({
                 autoFocus
                 min={min}
                 step={step}
+                disabled={disabled}
                 className={cn(
                     'h-8 w-full',
                     alignmentClasses[align],
@@ -85,9 +95,9 @@ export function EditableTableCell({
 
     return (
         <span
-            onDoubleClick={() => onDoubleClick(itemId, field)}
+            onDoubleClick={handleDoubleClick}
             className={cn(
-                'cursor-pointer',
+                disabled ? 'cursor-default' : 'cursor-pointer',
                 alignmentClasses[align],
                 className,
             )}

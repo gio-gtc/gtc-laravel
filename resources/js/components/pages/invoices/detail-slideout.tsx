@@ -4,10 +4,7 @@ import {
     mockUsers,
 } from '@/components/mockdata';
 import { Separator } from '@/components/ui/separator';
-import {
-    Sheet,
-    SheetContent,
-} from '@/components/ui/sheet';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { getInvoiceAddress } from '@/components/utils/functions';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { type Invoice, type InvoiceItem } from '@/types';
@@ -121,16 +118,33 @@ export default function InvoiceDetailSlideout({
     // Find user by user_id
     const orderedByUser = mockUsers.find((user) => user.id === invoice.user_id);
 
+    // Find user who deleted the invoice
+    const deletedByUser = mockUsers.find(
+        (user) => user.id === invoice.deleted_by,
+    );
+
+    // Format delete date as readable date and time with AM/PM
+    const formatDeleteDate = (dateString: string | null): string => {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        if (Number.isNaN(date.getTime())) return 'N/A';
+        return new Intl.DateTimeFormat('en-US', {
+            month: 'numeric',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+        }).format(date);
+    };
+
     // Calculate total amount from local invoice items
     const totalAmount = localInvoiceItems.reduce(
         (sum, item) => sum + item.quantity * item.price,
         0,
     );
 
-    const handleInputChange = (
-        field: keyof typeof formData,
-        value: string,
-    ) => {
+    const handleInputChange = (field: keyof typeof formData, value: string) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
@@ -185,9 +199,37 @@ export default function InvoiceDetailSlideout({
                     {/* Action Buttons Section */}
                     <InvoiceActionButtons
                         onDeleteInvoice={() => setIsDeleteModalOpen(true)}
+                        disabled={invoice.isDeleted}
                     />
 
                     <Separator />
+                    {/* Deletion Info */}
+                    {invoice.isDeleted && (
+                        <div className="space-y-1 font-semibold">
+                            <p>
+                                <span className="text-red-500">
+                                    Deleted By:{' '}
+                                </span>
+                                {deletedByUser
+                                    ? [
+                                          deletedByUser.first_name,
+                                          deletedByUser.last_name,
+                                      ]
+                                          .filter(Boolean)
+                                          .join(' ')
+                                    : 'Unknown User'}{' '}
+                                on {formatDeleteDate(invoice.delete_date)}
+                            </p>
+                            {invoice.deleted_reason && (
+                                <p>
+                                    <span className="text-red-500">
+                                        Reason:{' '}
+                                    </span>
+                                    {invoice.deleted_reason}
+                                </p>
+                            )}
+                        </div>
+                    )}
                     {/* Line Items Table */}
                     <InvoiceLineItemsTable
                         items={localInvoiceItems}
@@ -197,6 +239,7 @@ export default function InvoiceDetailSlideout({
                         onItemKeyDown={handleCellKeyDown}
                         isEditing={isEditing}
                         totalAmount={totalAmount}
+                        isDeleted={invoice.isDeleted}
                     />
                 </div>
             </SheetContent>

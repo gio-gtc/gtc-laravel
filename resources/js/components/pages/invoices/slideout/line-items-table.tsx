@@ -30,6 +30,7 @@ interface InvoiceLineItemsTableProps {
     onAddItem?: () => void;
     onRemoveItem?: (itemId: number) => void;
     totalAmount: number;
+    isDeleted?: boolean;
 }
 
 export default function InvoiceLineItemsTable({
@@ -42,10 +43,15 @@ export default function InvoiceLineItemsTable({
     onAddItem,
     onRemoveItem,
     totalAmount,
+    isDeleted = false,
 }: InvoiceLineItemsTableProps) {
     return (
         <div className="space-y-4">
-            <div className="rounded-md border">
+            <div
+                className={`rounded-md border ${
+                    isDeleted ? 'opacity-50' : ''
+                }`}
+            >
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -81,6 +87,7 @@ export default function InvoiceLineItemsTable({
                                                 item.id,
                                                 'code',
                                             )}
+                                            disabled={isDeleted}
                                         />
                                     </TableCell>
                                     <TableCell>
@@ -104,6 +111,7 @@ export default function InvoiceLineItemsTable({
                                                 item.id,
                                                 'description',
                                             )}
+                                            disabled={isDeleted}
                                         />
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -123,6 +131,7 @@ export default function InvoiceLineItemsTable({
                                                 'quantity',
                                             )}
                                             align="right"
+                                            disabled={isDeleted}
                                         />
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -149,6 +158,7 @@ export default function InvoiceLineItemsTable({
                                                 'price',
                                             )}
                                             align="right"
+                                            disabled={isDeleted}
                                         />
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -164,6 +174,7 @@ export default function InvoiceLineItemsTable({
                                             onClick={() =>
                                                 onRemoveItem?.(item.id)
                                             }
+                                            disabled={isDeleted}
                                         >
                                             <X className="h-3 w-3" />
                                         </Button>
@@ -189,6 +200,7 @@ export default function InvoiceLineItemsTable({
                                     size="icon"
                                     className="h-6 w-6 rounded-full bg-muted text-muted-foreground"
                                     onClick={onAddItem}
+                                    disabled={isDeleted}
                                 >
                                     <Plus className="h-3 w-3" />
                                 </Button>
@@ -199,7 +211,11 @@ export default function InvoiceLineItemsTable({
             </div>
 
             {/* Total Amount */}
-            <div className="flex justify-end pr-4">
+            <div
+                className={`flex justify-end pr-4 ${
+                    isDeleted ? 'opacity-50 text-muted-foreground' : ''
+                }`}
+            >
                 <div className="flex items-center gap-4">
                     <span className="text-sm font-medium">Total Amount:</span>
                     <span className="text-lg font-semibold">
