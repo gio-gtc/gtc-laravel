@@ -29,7 +29,7 @@ function OnHoldInvoicesTable({
         <InvoiceTableBase
             data={data}
             columns={columns}
-            onRowClick={(invoice) => {
+            onRowClick={(invoice, _event) => {
                 onInvoiceSelect(
                     selectedInvoice?.id === invoice.id ? null : invoice,
                 );

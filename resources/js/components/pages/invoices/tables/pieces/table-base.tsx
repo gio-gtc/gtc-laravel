@@ -16,12 +16,12 @@ import {
     useReactTable,
     type ColumnDef,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useState, type MouseEvent } from 'react';
 
 interface InvoiceTableBaseProps {
     data: Invoice[];
     columns: ColumnDef<Invoice>[];
-    onRowClick: (invoice: Invoice) => void;
+    onRowClick: (invoice: Invoice, event: React.MouseEvent) => void;
     isRowSelected: (invoice: Invoice) => boolean;
 }
 
@@ -112,11 +112,17 @@ export function InvoiceTableBase({
                                 <TableRow
                                     key={row.id}
                                     className={cn(
-                                        'cursor-pointer hover:bg-red-50',
+                                        'cursor-pointer hover:bg-red-50 select-none',
                                         isSelected && 'bg-red-200',
                                         row.original.isDeleted && 'opacity-60',
                                     )}
-                                    onClick={() => onRowClick(row.original)}
+                                    onClick={(e) => onRowClick(row.original, e)}
+                                    onMouseDown={(e) => {
+                                        // Prevent text selection when shift-clicking
+                                        if (e.shiftKey) {
+                                            e.preventDefault();
+                                        }
+                                    }}
                                 >
                                     {row
                                         .getVisibleCells()
