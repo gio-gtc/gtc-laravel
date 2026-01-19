@@ -3,13 +3,9 @@ import {
     countriesData,
     invoicesData,
 } from '@/components/mockdata';
+import InvoiceAdvancedFilters from '@/components/pages/invoices/invoice-advanced-filters';
 import InvoiceDetailSlideout from '@/components/pages/invoices/invoice-detail-slideout';
-import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import InvoiceStatusFilters from '@/components/pages/invoices/invoice-status-filters';
 import {
     Table,
     TableBody,
@@ -23,7 +19,6 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { ExpandableSearch } from '@/components/utils/expandable-search';
 import {
     formatCurrency,
     getDaysRemaining,
@@ -40,7 +35,7 @@ import {
     useReactTable,
     type ColumnDef,
 } from '@tanstack/react-table';
-import { Filter, HelpCircle } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 function InvoicesTable() {
@@ -59,8 +54,8 @@ function InvoicesTable() {
     );
     const [searchQuery, setSearchQuery] = useState('');
     const [countryFilter, setCountryFilter] = useState({
-        us: false,
-        international: false,
+        us: true,
+        international: true,
     });
     const [dateFilter, setDateFilter] = useState<'30' | '60' | '61+' | null>(
         null,
@@ -104,7 +99,6 @@ function InvoicesTable() {
             result = result.filter((invoice) => {
                 const countryCode = getInvoiceCountryCode(invoice);
                 if (countryFilter.us && countryFilter.international) {
-                    // Both selected - show all
                     return true;
                 } else if (countryFilter.us) {
                     return countryCode === 'US';
@@ -428,150 +422,17 @@ function InvoicesTable() {
         <div className="space-y-4">
             {/* Header Actions */}
             <div className="flex justify-between gap-1 overflow-auto">
-                <div className="flex items-center gap-1">
-                    <Button
-                        variant={filter === 'all' ? 'default' : 'outline'}
-                        onClick={() => setFilter('all')}
-                    >
-                        All
-                    </Button>
-                    <Button
-                        variant={filter === 'on-hold' ? 'default' : 'outline'}
-                        onClick={() => setFilter('on-hold')}
-                    >
-                        On Hold
-                    </Button>
-                    <Button
-                        variant={filter === 'released' ? 'default' : 'outline'}
-                        onClick={() => setFilter('released')}
-                    >
-                        Released
-                    </Button>
-                </div>
-                <div className="flex items-center gap-1">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline">
-                                <Filter className="size-3" />
-                                Filters
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56 p-4">
-                            <div className="space-y-4">
-                                {/* Country Filter Section */}
-                                <div className="space-y-2">
-                                    <span className="text-sm font-medium text-muted-foreground">
-                                        Country
-                                    </span>
-                                    <div className="flex flex-col gap-2">
-                                        <Button
-                                            variant={
-                                                countryFilter.us
-                                                    ? 'default'
-                                                    : 'outline'
-                                            }
-                                            size="sm"
-                                            className="w-full justify-start"
-                                            onClick={() =>
-                                                setCountryFilter((prev) => ({
-                                                    ...prev,
-                                                    us: !prev.us,
-                                                }))
-                                            }
-                                        >
-                                            US
-                                        </Button>
-                                        <Button
-                                            variant={
-                                                countryFilter.international
-                                                    ? 'default'
-                                                    : 'outline'
-                                            }
-                                            size="sm"
-                                            className="w-full justify-start"
-                                            onClick={() =>
-                                                setCountryFilter((prev) => ({
-                                                    ...prev,
-                                                    international:
-                                                        !prev.international,
-                                                }))
-                                            }
-                                        >
-                                            International
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                {/* Date Filter Section */}
-                                <div className="space-y-2">
-                                    <span className="text-sm font-medium text-muted-foreground">
-                                        Days
-                                    </span>
-                                    <div className="flex flex-col gap-2">
-                                        <Button
-                                            variant={
-                                                dateFilter === '30'
-                                                    ? 'default'
-                                                    : 'outline'
-                                            }
-                                            size="sm"
-                                            className="w-full justify-start"
-                                            onClick={() =>
-                                                setDateFilter(
-                                                    dateFilter === '30'
-                                                        ? null
-                                                        : '30',
-                                                )
-                                            }
-                                        >
-                                            30
-                                        </Button>
-                                        <Button
-                                            variant={
-                                                dateFilter === '60'
-                                                    ? 'default'
-                                                    : 'outline'
-                                            }
-                                            size="sm"
-                                            className="w-full justify-start"
-                                            onClick={() =>
-                                                setDateFilter(
-                                                    dateFilter === '60'
-                                                        ? null
-                                                        : '60',
-                                                )
-                                            }
-                                        >
-                                            60
-                                        </Button>
-                                        <Button
-                                            variant={
-                                                dateFilter === '61+'
-                                                    ? 'default'
-                                                    : 'outline'
-                                            }
-                                            size="sm"
-                                            className="w-full justify-start"
-                                            onClick={() =>
-                                                setDateFilter(
-                                                    dateFilter === '61+'
-                                                        ? null
-                                                        : '61+',
-                                                )
-                                            }
-                                        >
-                                            61+
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <ExpandableSearch
-                        onSearchChange={setSearchQuery}
-                        placeholder="Search Invoice #, Tour, Market, Venue, Refs..."
-                    />
-                </div>
+                <InvoiceStatusFilters
+                    filter={filter}
+                    onFilterChange={setFilter}
+                />
+                <InvoiceAdvancedFilters
+                    countryFilter={countryFilter}
+                    onCountryFilterChange={setCountryFilter}
+                    dateFilter={dateFilter}
+                    onDateFilterChange={setDateFilter}
+                    onSearchChange={setSearchQuery}
+                />
             </div>
 
             {/* Table */}
