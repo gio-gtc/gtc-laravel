@@ -39,9 +39,14 @@ import { HelpCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 function InvoicesTable() {
-    // TODO: Filter buttons - US (buttons), International (buttons), Days (as date input [quick buttons - 30, 60, 90, custom] if held use showday if reaseled use release_date)
+    // TODO: Filter buttons -
+    //  -US (buttons) ✅
+    //  -International (buttons) ✅
+    //  -Days as date input if held use showday if reaseled use release_date quick buttons
+    //      -30, 60, 90 ✅
+    //      -custom
     // Component build: New table that is clickable and keeps on a list as a reminder for invoice payments (on release filter)
-    // Data update: invoices have an address intially blank, if blank show company address from companies table (join) if filled out show invoice address
+    // Data update: invoices have an address intially blank, if blank show company address from companies table (join) if filled out show invoice address ✅
     // Change Released badge (Rule: Today -> Past ) to >-30 (Gray), >-60 (Yellow), >-90 (Red) ✅
     // Change on hold badge (Rule: Today -> Future) to <30 (Red), <60 (Yellow), >60 (Gray) ✅
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(
@@ -60,6 +65,10 @@ function InvoicesTable() {
     const [dateFilter, setDateFilter] = useState<'30' | '60' | '61+' | null>(
         null,
     );
+    const [dateRangeFilter, setDateRangeFilter] = useState<{
+        startDate: string | null;
+        endDate: string | null;
+    }>({ startDate: null, endDate: null });
 
     // Helper function to get country code for an invoice
     const getInvoiceCountryCode = (
@@ -109,8 +118,51 @@ function InvoicesTable() {
             });
         }
 
-        // Apply date filter
-        if (dateFilter) {
+        // Apply date range filter (takes precedence over days filter)
+        const startDate = dateRangeFilter.startDate;
+        const endDate = dateRangeFilter.endDate;
+
+        if (startDate && endDate) {
+            result = result.filter((invoice) => {
+                // Use release_date for released invoices (held === 0), showDate for held invoices (held === 1)
+                const invoiceDate =
+                    invoice.held === 0
+                        ? invoice.release_date
+                        : invoice.showDate;
+
+                // Skip if invoice date is null (for released invoices without release_date)
+                if (!invoiceDate) {
+                    return false;
+                }
+
+                const invoiceDateObj = new Date(invoiceDate);
+                let startDateObj = new Date(startDate);
+                let endDateObj = new Date(endDate);
+
+                // Set time to start of day for accurate comparison
+                invoiceDateObj.setHours(0, 0, 0, 0);
+                startDateObj.setHours(0, 0, 0, 0);
+                endDateObj.setHours(23, 59, 59, 999);
+
+                // Normalize reversed ranges: if start > end, swap them
+                // This allows users to enter dates in any order, but we always filter for dates BETWEEN the range
+                if (startDateObj > endDateObj) {
+                    const temp = startDateObj;
+                    startDateObj = endDateObj;
+                    endDateObj = temp;
+                    // Adjust endDateObj to end of day
+                    endDateObj.setHours(23, 59, 59, 999);
+                }
+
+                // Filter dates BETWEEN start and end (normalized range)
+                return (
+                    invoiceDateObj >= startDateObj &&
+                    invoiceDateObj <= endDateObj
+                );
+            });
+        }
+        // Apply days filter (only if date range is not active)
+        else if (dateFilter) {
             result = result.filter((invoice) => {
                 const daysRemaining =
                     invoice.held === 1
@@ -164,7 +216,7 @@ function InvoicesTable() {
         }
 
         return result;
-    }, [filter, searchQuery, countryFilter, dateFilter]);
+    }, [filter, searchQuery, countryFilter, dateFilter, dateRangeFilter]);
 
     const data = useMemo(() => filteredData, [filteredData]);
 
@@ -431,6 +483,8 @@ function InvoicesTable() {
                     onCountryFilterChange={setCountryFilter}
                     dateFilter={dateFilter}
                     onDateFilterChange={setDateFilter}
+                    dateRangeFilter={dateRangeFilter}
+                    onDateRangeFilterChange={setDateRangeFilter}
                     onSearchChange={setSearchQuery}
                 />
             </div>

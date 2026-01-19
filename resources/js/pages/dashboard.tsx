@@ -10,22 +10,12 @@ import KPICard from '@/components/pages/dashboard/KPI-Card';
 import RevanueTable from '@/components/pages/dashboard/revanue-table';
 import SalesByRepTable from '@/components/pages/dashboard/sales-by-rep-table';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import DateRangePicker from '@/components/utils/date-range-picker';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import { Calendar } from 'lucide-react';
 import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -45,18 +35,6 @@ const timePeriods = [
 ] as const;
 
 type TimePeriod = (typeof timePeriods)[number]['value'];
-
-// Format date for display
-function formatDateLabel(value: string) {
-    if (!value) return 'Select date';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return 'Select date';
-    return new Intl.DateTimeFormat(undefined, {
-        month: 'short',
-        day: '2-digit',
-        year: 'numeric',
-    }).format(date);
-}
 
 // Format date to YYYY-MM-DD for input
 function formatDateInput(date: Date): string {
@@ -98,13 +76,14 @@ export default function Dashboard() {
     } = page.props;
 
     const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('custom');
-    const [isDateDialogOpen, setIsDateDialogOpen] = useState(false);
     const defaultDates = getDefaultDates();
-    const [startDate, setStartDate] = useState(defaultDates.start);
-    const [endDate, setEndDate] = useState(defaultDates.end);
-
-    const formattedStartDate = formatDateLabel(startDate);
-    const formattedEndDate = formatDateLabel(endDate);
+    const [dateRange, setDateRange] = useState<{
+        startDate: string | null;
+        endDate: string | null;
+    }>({
+        startDate: defaultDates.start,
+        endDate: defaultDates.end,
+    });
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -134,69 +113,12 @@ export default function Dashboard() {
                             </Button>
                         ))}
                     </div>
-                    <Dialog
-                        open={isDateDialogOpen}
-                        onOpenChange={setIsDateDialogOpen}
-                    >
-                        <DialogTrigger asChild>
-                            <Button variant="outline" className="gap-2">
-                                <Calendar className="h-4 w-4" />
-                                {formattedStartDate} - {formattedEndDate}
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Select Date Range</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="start-date">
-                                        Start Date
-                                    </Label>
-                                    <Input
-                                        id="start-date"
-                                        type="date"
-                                        value={startDate}
-                                        onChange={(e) => {
-                                            setStartDate(e.target.value);
-                                            if (e.target.value > endDate) {
-                                                setEndDate(e.target.value);
-                                            }
-                                        }}
-                                        max={endDate}
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <Label htmlFor="end-date">End Date</Label>
-                                    <Input
-                                        id="end-date"
-                                        type="date"
-                                        value={endDate}
-                                        onChange={(e) => {
-                                            setEndDate(e.target.value);
-                                            if (e.target.value < startDate) {
-                                                setStartDate(e.target.value);
-                                            }
-                                        }}
-                                        min={startDate}
-                                    />
-                                </div>
-                            </div>
-                            <DialogFooter>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setIsDateDialogOpen(false)}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    onClick={() => setIsDateDialogOpen(false)}
-                                >
-                                    Apply
-                                </Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
+                    <DateRangePicker
+                        startDate={dateRange.startDate}
+                        endDate={dateRange.endDate}
+                        onDateRangeChange={setDateRange}
+                        buttonVariant="outline"
+                    />
                 </div>
 
                 {/* KPI Cards */}

@@ -5,6 +5,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ExpandableSearch } from '@/components/utils/expandable-search';
+import DateRangePicker from '@/components/utils/date-range-picker';
 import { cn } from '@/lib/utils';
 import { Filter } from 'lucide-react';
 import { useMemo } from 'react';
@@ -17,6 +18,11 @@ interface InvoiceAdvancedFiltersProps {
     }) => void;
     dateFilter: '30' | '60' | '61+' | null;
     onDateFilterChange: (filter: '30' | '60' | '61+' | null) => void;
+    dateRangeFilter: { startDate: string | null; endDate: string | null };
+    onDateRangeFilterChange: (filter: {
+        startDate: string | null;
+        endDate: string | null;
+    }) => void;
     onSearchChange: (query: string) => void;
 }
 
@@ -25,8 +31,13 @@ export default function InvoiceAdvancedFilters({
     onCountryFilterChange,
     dateFilter,
     onDateFilterChange,
+    dateRangeFilter,
+    onDateRangeFilterChange,
     onSearchChange,
 }: InvoiceAdvancedFiltersProps) {
+    // Allow reversed date ranges (start date can be after end date)
+    const allowReversedRange = true;
+
     // Check if any filters are active
     const hasActiveFilters = useMemo(() => {
         // Country filter is active if not both are selected
@@ -34,8 +45,30 @@ export default function InvoiceAdvancedFilters({
             !countryFilter.us || !countryFilter.international;
         // Date filter is active if a date filter is selected
         const dateFilterActive = dateFilter !== null;
-        return countryFilterActive || dateFilterActive;
-    }, [countryFilter, dateFilter]);
+        // Date range filter is active if both dates are set
+        const dateRangeFilterActive =
+            dateRangeFilter.startDate !== null &&
+            dateRangeFilter.endDate !== null;
+        return countryFilterActive || dateFilterActive || dateRangeFilterActive;
+    }, [countryFilter, dateFilter, dateRangeFilter]);
+
+    const handleDateRangeChange = (range: {
+        startDate: string | null;
+        endDate: string | null;
+    }) => {
+        onDateRangeFilterChange(range);
+        // Clear days filter when date range is applied
+        if (range.startDate && range.endDate) {
+            onDateFilterChange(null);
+        }
+    };
+
+    const handleDaysFilterClick = (value: '30' | '60' | '61+') => {
+        // Clear date range when Days filter is selected
+        onDateRangeFilterChange({ startDate: null, endDate: null });
+        // Toggle the days filter
+        onDateFilterChange(dateFilter === value ? null : value);
+    };
 
     return (
         <div className="flex items-center gap-1">
@@ -113,11 +146,7 @@ export default function InvoiceAdvancedFilters({
                                         size="sm"
                                         className="w-full justify-start"
                                         onClick={() =>
-                                            onDateFilterChange(
-                                                dateFilter === '30'
-                                                    ? null
-                                                    : '30',
-                                            )
+                                            handleDaysFilterClick('30')
                                         }
                                     >
                                         30
@@ -131,11 +160,7 @@ export default function InvoiceAdvancedFilters({
                                         size="sm"
                                         className="w-full justify-start"
                                         onClick={() =>
-                                            onDateFilterChange(
-                                                dateFilter === '60'
-                                                    ? null
-                                                    : '60',
-                                            )
+                                            handleDaysFilterClick('60')
                                         }
                                     >
                                         60
@@ -149,17 +174,30 @@ export default function InvoiceAdvancedFilters({
                                         size="sm"
                                         className="w-full justify-start"
                                         onClick={() =>
-                                            onDateFilterChange(
-                                                dateFilter === '61+'
-                                                    ? null
-                                                    : '61+',
-                                            )
+                                            handleDaysFilterClick('61+')
                                         }
                                     >
                                         61+
                                     </Button>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Date Range Filter Section */}
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium text-muted-foreground">
+                                Date Range
+                            </p>
+                            <DateRangePicker
+                                startDate={dateRangeFilter.startDate}
+                                endDate={dateRangeFilter.endDate}
+                                onDateRangeChange={handleDateRangeChange}
+                                buttonVariant="secondary"
+                                buttonSize="sm"
+                                buttonClassName="w-full justify-start"
+                                placeholder="Select date range"
+                                allowReversedRange={allowReversedRange}
+                            />
                         </div>
                     </div>
                 </DropdownMenuContent>
