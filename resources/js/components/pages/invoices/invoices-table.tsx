@@ -3,40 +3,17 @@ import {
     countriesData,
     invoicesData,
 } from '@/components/mockdata';
-import InvoiceAdvancedFilters from '@/components/pages/invoices/invoice-advanced-filters';
-import InvoiceDetailSlideout from '@/components/pages/invoices/invoice-detail-slideout';
-import InvoiceStatusFilters from '@/components/pages/invoices/invoice-status-filters';
+import InvoiceAdvancedFilters from '@/components/pages/invoices/advanced-filters';
+import InvoiceDetailSlideout from '@/components/pages/invoices/detail-slideout';
+import HoldInvoicesTable from '@/components/pages/invoices/hold-invoices-table';
+import ReleasedInvoicesTable from '@/components/pages/invoices/released-invoices-table';
+import InvoiceStatusFilters from '@/components/pages/invoices/status-filters';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
-import {
-    formatCurrency,
     getDaysRemaining,
     getInvoiceAddress,
 } from '@/components/utils/functions';
-import { SortableHeader } from '@/components/utils/sortable-header';
-import { useTableSorting } from '@/hooks/use-table-sorting';
-import { cn } from '@/lib/utils';
 import { type Invoice } from '@/types';
-import {
-    flexRender,
-    getCoreRowModel,
-    getSortedRowModel,
-    useReactTable,
-    type ColumnDef,
-} from '@tanstack/react-table';
-import { HelpCircle } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 function InvoicesTable() {
     // TODO: Filter buttons -
@@ -44,16 +21,14 @@ function InvoicesTable() {
     //  -International (buttons) ✅
     //  -Days as date input if held use showday if reaseled use release_date quick buttons
     //      -30, 60, 90 ✅
-    //      -custom
-    // Component build: New table that is clickable and keeps on a list as a reminder for invoice payments (on release filter)
+    //      -custom ✅
+    // Component build: New table that is clickable and keeps on a list as a reminder for invoice payments (on release filter) ✅
     // Data update: invoices have an address intially blank, if blank show company address from companies table (join) if filled out show invoice address ✅
     // Change Released badge (Rule: Today -> Past ) to >-30 (Gray), >-60 (Yellow), >-90 (Red) ✅
     // Change on hold badge (Rule: Today -> Future) to <30 (Red), <60 (Yellow), >60 (Gray) ✅
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(
         null,
     );
-    const [columnSizing, setColumnSizing] = useState({});
-    const [sorting, setSorting] = useTableSorting();
     const [filter, setFilter] = useState<'all' | 'on-hold' | 'released'>(
         'on-hold',
     );
@@ -69,6 +44,26 @@ function InvoicesTable() {
         startDate: string | null;
         endDate: string | null;
     }>({ startDate: null, endDate: null });
+    const [selectedReleasedInvoiceIds, setSelectedReleasedInvoiceIds] =
+        useState<number[]>([]);
+
+    // Clear selected invoices when switching away from released filter
+    useEffect(() => {
+        if (filter !== 'released') {
+            setSelectedReleasedInvoiceIds([]);
+        }
+    }, [filter]);
+
+    // Handler for Send Payment Reminder button
+    const handleSendReminder = () => {
+        const selectedInvoices = filteredData.filter((invoice) =>
+            selectedReleasedInvoiceIds.includes(invoice.id),
+        );
+        console.log(
+            'Selected invoices for payment reminder:',
+            selectedInvoices,
+        );
+    };
 
     // Helper function to get country code for an invoice
     const getInvoiceCountryCode = (
@@ -218,258 +213,6 @@ function InvoicesTable() {
         return result;
     }, [filter, searchQuery, countryFilter, dateFilter, dateRangeFilter]);
 
-    const data = useMemo(() => filteredData, [filteredData]);
-
-    const getDayBadge = (invoice: Invoice) => {
-        const normalClasses =
-            'inline-flex items-center rounded-full border-2 border-solid px-2.5 py-0.5 text-xs font-medium';
-        if (invoice.isDeleted) {
-            return (
-                <span className={`${normalClasses} border-gray-400 bg-gray-50`}>
-                    DELETED
-                </span>
-            );
-        }
-
-        const daysRemaining =
-            invoice.held === 1
-                ? getDaysRemaining(invoice.showDate)
-                : getDaysRemaining(invoice.release_date, invoice.id);
-
-        let extraClasses = '';
-        const abb = invoice.held === 1 ? 'DTS: ' : 'Age: ';
-
-        if (invoice.held === 0) {
-            // Released invoices: use release_date age
-            if (daysRemaining > -30) {
-                // Gray: within 30 days ago or future dates
-                extraClasses = 'border-gray-400 bg-gray-50';
-            } else if (daysRemaining > -60) {
-                // Yellow: 30-60 days ago
-                extraClasses = 'border-yellow-400 bg-yellow-50';
-            } else {
-                // Red: 60+ days ago
-                extraClasses = 'border-red-400 bg-red-50';
-            }
-        } else {
-            // On hold invoices: use showDate countdown
-            if (daysRemaining <= 30) {
-                // Red: 30 days or less until show, or past dates
-                extraClasses = 'border-red-400 bg-red-50';
-            } else if (daysRemaining <= 60) {
-                // Yellow: 31-60 days until show
-                extraClasses = 'border-yellow-400 bg-yellow-50';
-            } else {
-                // Gray: more than 60 days until show
-                extraClasses = 'border-gray-400 bg-gray-50';
-            }
-        }
-
-        return (
-            <span className={`${normalClasses} ${extraClasses}`}>
-                {abb}
-                {daysRemaining}
-            </span>
-        );
-    };
-
-    const columns = useMemo<ColumnDef<Invoice>[]>(
-        () => [
-            {
-                accessorKey: 'invoiceNumber',
-                header: ({ column }) => (
-                    <SortableHeader column={column}>Invoice #</SortableHeader>
-                ),
-                enableSorting: true,
-                size: 120,
-                cell: ({ getValue, row }) => {
-                    const value = getValue() as string;
-                    return (
-                        <div
-                            className={cn(
-                                row.original.isDeleted && 'text-gray-400',
-                            )}
-                        >
-                            {value}
-                        </div>
-                    );
-                },
-            },
-            {
-                accessorKey: 'date',
-                header: ({ column }) => (
-                    <SortableHeader column={column}>Date</SortableHeader>
-                ),
-                enableSorting: true,
-                size: 100,
-                cell: ({ getValue, row }) => {
-                    const value = getValue() as string;
-                    return (
-                        <div
-                            className={cn(
-                                row.original.isDeleted && 'text-gray-400',
-                            )}
-                        >
-                            {value}
-                        </div>
-                    );
-                },
-            },
-            {
-                accessorKey: 'tour',
-                header: ({ column }) => (
-                    <SortableHeader column={column}>Tour</SortableHeader>
-                ),
-                enableSorting: true,
-                size: 200,
-                cell: ({ getValue, row }) => {
-                    const value = getValue() as string;
-                    return (
-                        <div
-                            className={cn(
-                                row.original.isDeleted && 'text-gray-400',
-                            )}
-                        >
-                            {value}
-                        </div>
-                    );
-                },
-            },
-            {
-                accessorKey: 'market',
-                header: ({ column }) => (
-                    <SortableHeader column={column}>Market</SortableHeader>
-                ),
-                enableSorting: true,
-                size: 150,
-                cell: ({ getValue, row }) => {
-                    const value = getValue() as string;
-                    return (
-                        <div
-                            className={cn(
-                                row.original.isDeleted && 'text-gray-400',
-                            )}
-                        >
-                            {value}
-                        </div>
-                    );
-                },
-            },
-            {
-                accessorKey: 'venue',
-                header: ({ column }) => (
-                    <SortableHeader column={column}>Venue</SortableHeader>
-                ),
-                enableSorting: true,
-                size: 200,
-                cell: ({ getValue, row }) => {
-                    const value = getValue() as string;
-                    return (
-                        <div
-                            className={cn(
-                                row.original.isDeleted && 'text-gray-400',
-                            )}
-                        >
-                            {value}
-                        </div>
-                    );
-                },
-            },
-            {
-                accessorKey: 'clientReference',
-                header: ({ column }) => (
-                    <SortableHeader column={column}>Ref</SortableHeader>
-                ),
-                enableSorting: true,
-                size: 150,
-                cell: ({ getValue, row }) => {
-                    const value = getValue() as string;
-                    return (
-                        <div
-                            className={cn(
-                                row.original.isDeleted && 'text-gray-400',
-                            )}
-                        >
-                            {value}
-                        </div>
-                    );
-                },
-            },
-            {
-                accessorKey: 'amount',
-                header: ({ column }) => (
-                    <SortableHeader column={column}>Amt</SortableHeader>
-                ),
-                enableSorting: true,
-                size: 120,
-                cell: ({ getValue, row }) => {
-                    const value = getValue() as number;
-                    return (
-                        <div
-                            className={cn(
-                                row.original.isDeleted && 'text-gray-400',
-                            )}
-                        >
-                            {formatCurrency(value)}
-                        </div>
-                    );
-                },
-            },
-            {
-                accessorFn: (row) => {
-                    // Calculate days between today and showDate for sorting using date-fns
-                    return getDaysRemaining(row.showDate);
-                },
-                id: 'daysToShow',
-                header: ({ column }) => {
-                    return (
-                        <SortableHeader column={column}>
-                            <div className="flex items-start gap-0.5">
-                                <span>Days</span>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <HelpCircle className="h-2 w-2 cursor-help text-blue-500" />
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <div className="space-y-1">
-                                            <div>DTS = Days To Show</div>
-                                            <div>
-                                                Aged = Days Since Released
-                                            </div>
-                                        </div>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </div>
-                        </SortableHeader>
-                    );
-                },
-                enableSorting: true,
-                size: 120,
-                cell: ({ row }) => {
-                    return getDayBadge(row.original);
-                },
-            },
-        ],
-        [sorting],
-    );
-
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getRowId: (row) => String(row.id),
-        enableColumnResizing: true,
-        enableSorting: true,
-        columnResizeMode: 'onChange',
-        onColumnSizingChange: setColumnSizing,
-        onSortingChange: setSorting,
-        state: {
-            columnSizing,
-            sorting,
-        },
-    });
-
     return (
         <div className="space-y-4">
             {/* Header Actions */}
@@ -477,6 +220,14 @@ function InvoicesTable() {
                 <InvoiceStatusFilters
                     filter={filter}
                     onFilterChange={setFilter}
+                    selectedCount={
+                        filter === 'released'
+                            ? selectedReleasedInvoiceIds.length
+                            : 0
+                    }
+                    onSendReminder={
+                        filter === 'released' ? handleSendReminder : undefined
+                    }
                 />
                 <InvoiceAdvancedFilters
                     countryFilter={countryFilter}
@@ -490,122 +241,18 @@ function InvoicesTable() {
             </div>
 
             {/* Table */}
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <TableHead
-                                        key={header.id}
-                                        style={{
-                                            width: header.getSize(),
-                                            position: 'relative',
-                                        }}
-                                        className={cn(
-                                            'relative px-2 py-0.5',
-                                            headerGroup.headers.indexOf(
-                                                header,
-                                            ) <
-                                                headerGroup.headers.length -
-                                                    1 &&
-                                                'border-r border-border',
-                                        )}
-                                    >
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                  header.column.columnDef
-                                                      .header,
-                                                  header.getContext(),
-                                              )}
-                                        {header.column.getCanResize() && (
-                                            <div
-                                                onMouseDown={header.getResizeHandler()}
-                                                onTouchStart={header.getResizeHandler()}
-                                                className={cn(
-                                                    'absolute top-0 right-0 z-10 h-full w-0.5 cursor-col-resize touch-none bg-border opacity-50 transition-opacity select-none hover:bg-primary hover:opacity-100',
-                                                    header.column.getIsResizing() &&
-                                                        'bg-primary opacity-100',
-                                                )}
-                                                style={{
-                                                    transform:
-                                                        header.column.getIsResizing()
-                                                            ? `translateX(${
-                                                                  table.getState()
-                                                                      .columnSizingInfo
-                                                                      .deltaOffset
-                                                              }px)`
-                                                            : undefined,
-                                                }}
-                                            />
-                                        )}
-                                    </TableHead>
-                                ))}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows.length ? (
-                            table.getRowModel().rows.map((row) => {
-                                const isSelected =
-                                    selectedInvoice?.id === row.original.id;
-
-                                return (
-                                    <TableRow
-                                        key={row.id}
-                                        className={cn(
-                                            'cursor-pointer hover:bg-red-50',
-                                            isSelected && 'bg-red-200',
-                                            row.original.isDeleted &&
-                                                'opacity-60',
-                                        )}
-                                        onClick={() => {
-                                            setSelectedInvoice(
-                                                isSelected
-                                                    ? null
-                                                    : row.original,
-                                            );
-                                        }}
-                                    >
-                                        {row
-                                            .getVisibleCells()
-                                            .map((cell, cellIndex, cells) => (
-                                                <TableCell
-                                                    key={cell.id}
-                                                    style={{
-                                                        width: cell.column.getSize(),
-                                                    }}
-                                                    className={cn(
-                                                        'px-2 py-0.5',
-                                                        cellIndex <
-                                                            cells.length - 1 &&
-                                                            'border-r border-border',
-                                                    )}
-                                                >
-                                                    {flexRender(
-                                                        cell.column.columnDef
-                                                            .cell,
-                                                        cell.getContext(),
-                                                    )}
-                                                </TableCell>
-                                            ))}
-                                    </TableRow>
-                                );
-                            })
-                        ) : (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={columns.length}
-                                    className="h-24 text-center"
-                                >
-                                    No results.
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </div>
+            {filter === 'released' ? (
+                <ReleasedInvoicesTable
+                    data={filteredData}
+                    onSelectionChange={setSelectedReleasedInvoiceIds}
+                />
+            ) : (
+                <HoldInvoicesTable
+                    data={filteredData}
+                    onInvoiceSelect={setSelectedInvoice}
+                    selectedInvoice={selectedInvoice}
+                />
+            )}
 
             {/* Invoice Detail Slide-out */}
             <InvoiceDetailSlideout
