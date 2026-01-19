@@ -5,9 +5,9 @@ import {
 } from '@/components/mockdata';
 import InvoiceAdvancedFilters from '@/components/pages/invoices/advanced-filters';
 import InvoiceDetailSlideout from '@/components/pages/invoices/detail-slideout';
-import HoldInvoicesTable from '@/components/pages/invoices/hold-invoices-table';
-import ReleasedInvoicesTable from '@/components/pages/invoices/released-invoices-table';
 import InvoiceStatusFilters from '@/components/pages/invoices/status-filters';
+import HoldInvoicesTable from '@/components/pages/invoices/tables/hold-invoices-table';
+import ReleasedInvoicesTable from '@/components/pages/invoices/tables/released-invoices-table';
 import {
     getDaysRemaining,
     getInvoiceAddress,
@@ -16,16 +16,6 @@ import { type Invoice } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
 
 function InvoicesTable() {
-    // TODO: Filter buttons -
-    //  -US (buttons) ✅
-    //  -International (buttons) ✅
-    //  -Days as date input if held use showday if reaseled use release_date quick buttons
-    //      -30, 60, 90 ✅
-    //      -custom ✅
-    // Component build: New table that is clickable and keeps on a list as a reminder for invoice payments (on release filter) ✅
-    // Data update: invoices have an address intially blank, if blank show company address from companies table (join) if filled out show invoice address ✅
-    // Change Released badge (Rule: Today -> Past ) to >-30 (Gray), >-60 (Yellow), >-90 (Red) ✅
-    // Change on hold badge (Rule: Today -> Future) to <30 (Red), <60 (Yellow), >60 (Gray) ✅
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(
         null,
     );
