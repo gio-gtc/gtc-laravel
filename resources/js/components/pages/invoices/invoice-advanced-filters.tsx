@@ -4,10 +4,11 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ExpandableSearch } from '@/components/utils/expandable-search';
 import DateRangePicker from '@/components/utils/date-range-picker';
+import Divider from '@/components/utils/divider';
+import { ExpandableSearch } from '@/components/utils/expandable-search';
 import { cn } from '@/lib/utils';
-import { Filter } from 'lucide-react';
+import { Filter, X } from 'lucide-react';
 import { useMemo } from 'react';
 
 interface InvoiceAdvancedFiltersProps {
@@ -68,6 +69,13 @@ export default function InvoiceAdvancedFilters({
         onDateRangeFilterChange({ startDate: null, endDate: null });
         // Toggle the days filter
         onDateFilterChange(dateFilter === value ? null : value);
+    };
+
+    const handleClearFilters = () => {
+        // Reset all filters to default values
+        onCountryFilterChange({ us: true, international: true });
+        onDateFilterChange(null);
+        onDateRangeFilterChange({ startDate: null, endDate: null });
     };
 
     return (
@@ -198,6 +206,20 @@ export default function InvoiceAdvancedFilters({
                                 placeholder="Select date range"
                                 allowReversedRange={allowReversedRange}
                             />
+                        </div>
+
+                        <Divider />
+                        {/* Clear Filters Section */}
+                        <div className="flex justify-end">
+                            <Button
+                                variant="ghost"
+                                onClick={handleClearFilters}
+                                disabled={!hasActiveFilters}
+                                className="cursor-pointer"
+                            >
+                                <X className="size-3" />
+                                Clear Filters
+                            </Button>
                         </div>
                     </div>
                 </DropdownMenuContent>
