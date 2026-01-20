@@ -91,9 +91,23 @@ function OrdersTable() {
     const toggleOrderExpansion = (orderId: number) => {
         setExpandedOrders((prev) => {
             const newSet = new Set(prev);
-            if (newSet.has(orderId)) {
+            const isCurrentlyExpanded = newSet.has(orderId);
+            
+            if (isCurrentlyExpanded) {
+                // Collapsing: clear selections for this order group
                 newSet.delete(orderId);
+                setSelectedVenueIds((prevSelected) => {
+                    // Get all venue IDs for this order
+                    const venueIdsForOrder = orderVenueData
+                        .filter((ov) => ov.order_id === orderId)
+                        .map((ov) => ov.id);
+                    // Remove any selected venues that belong to this order
+                    return prevSelected.filter(
+                        (id) => !venueIdsForOrder.includes(id),
+                    );
+                });
             } else {
+                // Expanding: just add to expanded set
                 newSet.add(orderId);
             }
             return newSet;
