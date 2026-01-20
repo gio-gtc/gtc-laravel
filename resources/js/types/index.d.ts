@@ -130,13 +130,21 @@ export interface Tour {
     high_def_only: 0 | 1;
 }
 
-export interface Order {
-    id: string | number;
-    tour_id: number;
-    venue: string;
-    dueDate: string;
-    client: User;
-    collaborators: User[];
+export interface Venue {
+    id: number;
+    name: string;
+    showDateStart: string;
+    showDateEnd: string;
+    address: string;
+    city: string;
+    state: string;
+    country_id: number;
     status: 'completed' | 'in-progress' | 'pending' | 'paused' | 'edit';
-    isGroupHeader?: boolean;
+    client: number;
+}
+
+export interface VenueCollaborator {
+    id: number;
+    venue_id: number;
+    mockUser_id: number;
 }

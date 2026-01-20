@@ -3,7 +3,8 @@ import {
     type Country,
     type Invoice,
     type InvoiceItem,
-    type Order,
+    type Venue,
+    type VenueCollaborator,
     type Tour,
     type User,
 } from '@/types';
@@ -658,78 +659,106 @@ export const tourData: Tour[] = [
     },
 ];
 
-// Mock orders grouped by artist
-export const ordersData: Order[] = [
+// Mock venues data
+export const venuesData: Venue[] = [
     {
-        id: '1',
-        tour_id: 1,
-        venue: '',
-        dueDate: '',
-        client: mockUsers[5], // Robert Taylor
-        collaborators: [mockUsers[5]],
-        status: 'completed',
-        isGroupHeader: true,
+        id: 1,
+        name: 'Maddison Square Garden',
+        showDateStart: '2024-11-08T19:00:00Z',
+        showDateEnd: '2024-11-08T23:00:00Z',
+        address: '4 Pennsylvania Plaza',
+        city: 'New York',
+        state: 'NY',
+        country_id: 1,
+        status: 'edit',
+        client: 7, // Amanda Brown
     },
     {
         id: 2,
-        tour_id: 1,
-        venue: 'Maddison Square Garden',
-        dueDate: 'Nov 8',
-        client: mockUsers[6], // Amanda Brown
-        collaborators: [mockUsers[5], mockUsers[6], mockUsers[7]],
-        status: 'edit',
-        isGroupHeader: false,
+        name: 'Sunset Amphitheater at McKinney, Texas',
+        showDateStart: '2024-11-08T18:00:00Z',
+        showDateEnd: '2024-11-08T22:30:00Z',
+        address: '2343 N Central Expy',
+        city: 'McKinney',
+        state: 'TX',
+        country_id: 1,
+        status: 'in-progress',
+        client: 9, // James Wilson
     },
     {
         id: 3,
-        tour_id: 1,
-        venue: 'Sunset Amphitheater at McKinney, Texas',
-        dueDate: 'Nov 8',
-        client: mockUsers[8], // James Wilson
-        collaborators: [mockUsers[5], mockUsers[6], mockUsers[7]],
+        name: 'Alys Robinson Stephens Performing Arts Center',
+        showDateStart: '2024-11-08T19:30:00Z',
+        showDateEnd: '2024-11-08T23:00:00Z',
+        address: '1200 10th Ave S',
+        city: 'Birmingham',
+        state: 'AL',
+        country_id: 1,
         status: 'in-progress',
-        isGroupHeader: false,
+        client: 10, // Lisa Anderson
     },
     {
         id: 4,
-        tour_id: 1,
-        venue: 'Alys Robinson Stephens Performing Arts Center',
-        dueDate: 'Nov 8',
-        client: mockUsers[9], // Lisa Anderson
-        collaborators: [mockUsers[5], mockUsers[6], mockUsers[7]],
-        status: 'in-progress',
-        isGroupHeader: false,
+        name: 'The Coca Cola Charlotte Harbor Event and Conference Center',
+        showDateStart: '2024-11-08T18:30:00Z',
+        showDateEnd: '2024-11-08T22:00:00Z',
+        address: '75 Taylor St',
+        city: 'Punta Gorda',
+        state: 'FL',
+        country_id: 1,
+        status: 'paused',
+        client: 11, // Christopher Lee
     },
     {
         id: 5,
-        tour_id: 1,
-        venue: 'The Coca Cola Charlotte Harbor Event and Conference Center',
-        dueDate: 'Nov 8',
-        client: mockUsers[10], // Christopher Lee
-        collaborators: [mockUsers[5], mockUsers[6], mockUsers[7]],
-        status: 'paused',
-        isGroupHeader: false,
-    },
-    {
-        id: '6',
-        tour_id: 2,
-        venue: 'Hollywood Bowl',
-        dueDate: 'Nov 15',
-        client: mockUsers[11], // Jennifer White
-        collaborators: [mockUsers[12], mockUsers[13]],
+        name: 'Hollywood Bowl',
+        showDateStart: '2024-11-15T19:00:00Z',
+        showDateEnd: '2024-11-15T23:30:00Z',
+        address: '2301 N Highland Ave',
+        city: 'Los Angeles',
+        state: 'CA',
+        country_id: 1,
         status: 'in-progress',
-        isGroupHeader: false,
+        client: 12, // Jennifer White
     },
     {
-        id: '7',
-        tour_id: 2,
-        venue: 'Chase Center',
-        dueDate: 'Nov 16',
-        client: mockUsers[14], // Kevin Miller
-        collaborators: [mockUsers[12], mockUsers[13]],
+        id: 6,
+        name: 'Chase Center',
+        showDateStart: '2024-11-16T19:30:00Z',
+        showDateEnd: '2024-11-16T23:00:00Z',
+        address: '1 Warriors Way',
+        city: 'San Francisco',
+        state: 'CA',
+        country_id: 1,
         status: 'pending',
-        isGroupHeader: false,
+        client: 15, // Kevin Miller
     },
+];
+
+// Mock venue collaborators data (many-to-many join table)
+export const venueCollaboratorData: VenueCollaborator[] = [
+    // Venue 1 (Maddison Square Garden) collaborators
+    { id: 1, venue_id: 1, mockUser_id: 6 }, // Robert Taylor
+    { id: 2, venue_id: 1, mockUser_id: 7 }, // Amanda Brown
+    { id: 3, venue_id: 1, mockUser_id: 8 }, // James Wilson
+    // Venue 2 (Sunset Amphitheater) collaborators
+    { id: 4, venue_id: 2, mockUser_id: 6 }, // Robert Taylor
+    { id: 5, venue_id: 2, mockUser_id: 7 }, // Amanda Brown
+    { id: 6, venue_id: 2, mockUser_id: 8 }, // James Wilson
+    // Venue 3 (Alys Robinson Stephens) collaborators
+    { id: 7, venue_id: 3, mockUser_id: 6 }, // Robert Taylor
+    { id: 8, venue_id: 3, mockUser_id: 7 }, // Amanda Brown
+    { id: 9, venue_id: 3, mockUser_id: 8 }, // James Wilson
+    // Venue 4 (Coca Cola Charlotte Harbor) collaborators
+    { id: 10, venue_id: 4, mockUser_id: 6 }, // Robert Taylor
+    { id: 11, venue_id: 4, mockUser_id: 7 }, // Amanda Brown
+    { id: 12, venue_id: 4, mockUser_id: 8 }, // James Wilson
+    // Venue 5 (Hollywood Bowl) collaborators
+    { id: 13, venue_id: 5, mockUser_id: 13 }, // Daniel Garcia
+    { id: 14, venue_id: 5, mockUser_id: 14 }, // Michelle Davis
+    // Venue 6 (Chase Center) collaborators
+    { id: 15, venue_id: 6, mockUser_id: 13 }, // Daniel Garcia
+    { id: 16, venue_id: 6, mockUser_id: 14 }, // Michelle Davis
 ];
 
 // Mock country data

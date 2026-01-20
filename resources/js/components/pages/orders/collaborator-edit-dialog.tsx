@@ -1,3 +1,7 @@
+import {
+    venueCollaboratorData,
+    mockUsers,
+} from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -6,44 +10,55 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { type User } from '@/types';
-import { useState } from 'react';
+import { type Venue, type User } from '@/types';
+import { useEffect, useMemo, useState } from 'react';
 import UserMultiSelect from './user-multi-select';
 
 interface CollaboratorEditDialogProps {
-    orderId: string;
-    order: {
-        id: string;
-        artist: string;
-        name: string;
-        venue: string;
-        dueDate: string;
-        client: User;
-        collaborators: User[];
-        status: string;
-        isGroupHeader?: boolean;
-    } | null;
+    venueId: number;
+    venue: Venue | null;
     isOpen: boolean;
     onClose: () => void;
 }
 
 function CollaboratorEditDialog({
-    orderId,
-    order,
+    venueId,
+    venue,
     isOpen,
     onClose,
 }: CollaboratorEditDialogProps) {
+    // Get current collaborators from join table
+    const currentCollaborators = useMemo(() => {
+        if (!venue) return [];
+        const collaboratorIds = venueCollaboratorData
+            .filter((vc) => vc.venue_id === venue.id)
+            .map((vc) => vc.mockUser_id);
+        return mockUsers.filter((user) =>
+            collaboratorIds.includes(user.id),
+        );
+    }, [venue]);
+
     const [selectedUsers, setSelectedUsers] = useState<User[]>(
-        order?.collaborators || [],
+        currentCollaborators,
     );
+
+    // Update selected users when venue changes
+    useEffect(() => {
+        setSelectedUsers(currentCollaborators);
+    }, [currentCollaborators]);
 
     const handleSave = () => {
         // TODO: Implement actual save logic with API call
-        console.log('Saving collaborators for order:', orderId, selectedUsers);
+        // This would update venueCollaboratorData join table
+        console.log(
+            'Saving collaborators for venue:',
+            venueId,
+            selectedUsers.map((u) => u.id),
+        );
         onClose();
     };
 
-    if (!order) return null;
+    if (!venue) return null;
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -51,7 +66,7 @@ function CollaboratorEditDialog({
                 <DialogHeader>
                     <DialogTitle>Edit Collaborators</DialogTitle>
                     <div className="text-sm text-muted-foreground">
-                        {order.name} - {order.venue}
+                        {venue.name}
                     </div>
                 </DialogHeader>
                 <div className="py-4">
