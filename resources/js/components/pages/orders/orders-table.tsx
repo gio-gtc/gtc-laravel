@@ -8,12 +8,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
     Table,
     TableBody,
     TableCell,
@@ -182,18 +176,7 @@ function OrdersTable() {
             {/* Header Actions */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline">
-                                Add New
-                                <ChevronDown className="ml-2 h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuItem>New Order</DropdownMenuItem>
-                            <DropdownMenuItem>New Tour</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button variant="outline">Add Vanue</Button>
                 </div>
                 <div className="flex items-center gap-2">
                     <Button variant="outline">
@@ -247,7 +230,7 @@ function OrdersTable() {
                                         {/* Order Group Header */}
                                         <TableRow
                                             key={`order-${group.order.id}`}
-                                            className="cursor-pointer font-semibold hover:bg-muted/50 text-lg"
+                                            className="cursor-pointer text-lg font-semibold hover:bg-muted/50"
                                             onClick={() =>
                                                 toggleOrderExpansion(
                                                     group.order.id,
@@ -294,9 +277,9 @@ function OrdersTable() {
                                                             'selected'
                                                         }
                                                         className={cn(
-                                                            'cursor-pointer hover:bg-muted/50',
+                                                            'cursor-pointer hover:bg-red-50',
                                                             venueIsSelected &&
-                                                                'bg-red-100 dark:bg-red-900/20',
+                                                                'data-[state=selected]:bg-red-200',
                                                         )}
                                                         onClick={() =>
                                                             handleVenueRowClick(
@@ -386,7 +369,7 @@ function OrdersTable() {
                                                                             client.name
                                                                         }
                                                                     />
-                                                                    <AvatarFallback className="bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                                    <AvatarFallback className="bg-neutral-200 text-black">
                                                                         {getInitials(
                                                                             client.name,
                                                                         )}
@@ -442,7 +425,7 @@ function OrdersTable() {
                                                                                             collab.name
                                                                                         }
                                                                                     />
-                                                                                    <AvatarFallback className="bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                                                    <AvatarFallback className="bg-neutral-200 text-black">
                                                                                         {getInitials(
                                                                                             collab.name,
                                                                                         )}

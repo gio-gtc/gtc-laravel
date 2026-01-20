@@ -16,7 +16,7 @@ import {
     useReactTable,
     type ColumnDef,
 } from '@tanstack/react-table';
-import { useState, type MouseEvent } from 'react';
+import { useState } from 'react';
 
 interface InvoiceTableBaseProps {
     data: Invoice[];
@@ -112,7 +112,7 @@ export function InvoiceTableBase({
                                 <TableRow
                                     key={row.id}
                                     className={cn(
-                                        'cursor-pointer hover:bg-red-50 select-none',
+                                        'cursor-pointer select-none hover:bg-red-50',
                                         isSelected && 'bg-red-200',
                                         row.original.isDeleted && 'opacity-60',
                                     )}
