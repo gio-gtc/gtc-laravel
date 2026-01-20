@@ -1047,7 +1047,7 @@ export const companiesData: Company[] = [
     },
 ];
 
-// Mock invoice data based on image
+// Mock invoice data
 export const invoicesData: Invoice[] = [
     {
         id: 1,
@@ -1497,7 +1497,8 @@ export const invoicesData: Invoice[] = [
         country_id: 1,
         delete_date: '2025-12-28T16:45:00Z',
         deleted_by: 5,
-        deleted_reason: 'Client requested cancellation due to scheduling conflict',
+        deleted_reason:
+            'Client requested cancellation due to scheduling conflict',
     },
     {
         id: 19,
