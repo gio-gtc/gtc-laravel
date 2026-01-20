@@ -5,7 +5,8 @@ import {
     type InvoiceItem,
     type Venue,
     type VenueCollaborator,
-    type Tour,
+    type Order,
+    type OrderVenue,
     type User,
 } from '@/types';
 
@@ -552,8 +553,8 @@ export const mockUsers: User[] = [
     },
 ];
 
-// Mock tour data
-export const tourData: Tour[] = [
+// Mock order data
+export const orderData: Order[] = [
     {
         id: 1,
         name: 'Matt Rife 2024',
@@ -566,6 +567,7 @@ export const tourData: Tour[] = [
             'All designs must be approved by tour manager before production. High priority on venue-specific branding.',
         gtc_rep_contact_id: 12,
         high_def_only: 1,
+        due_date: '2024-12-15T00:00:00Z',
     },
     {
         id: 2,
@@ -579,6 +581,7 @@ export const tourData: Tour[] = [
             'Classic rock aesthetic required. Coordinate with venue for load-in schedules.',
         gtc_rep_contact_id: 8,
         high_def_only: 0,
+        due_date: '2024-12-20T00:00:00Z',
     },
     {
         id: 3,
@@ -592,6 +595,7 @@ export const tourData: Tour[] = [
             'Multilingual signage required. Coordinate with international venues.',
         gtc_rep_contact_id: 14,
         high_def_only: 1,
+        due_date: '2024-12-10T00:00:00Z',
     },
     {
         id: 4,
@@ -604,6 +608,7 @@ export const tourData: Tour[] = [
         special_instructions: null,
         gtc_rep_contact_id: 18,
         high_def_only: 0,
+        due_date: '2024-12-25T00:00:00Z',
     },
     {
         id: 5,
@@ -617,6 +622,7 @@ export const tourData: Tour[] = [
             'VIP experience materials require special handling.',
         gtc_rep_contact_id: 7,
         high_def_only: 1,
+        due_date: '2025-01-05T00:00:00Z',
     },
     {
         id: 6,
@@ -630,6 +636,7 @@ export const tourData: Tour[] = [
             'Social media integration required for all materials.',
         gtc_rep_contact_id: 19,
         high_def_only: 0,
+        due_date: '2024-12-18T00:00:00Z',
     },
     {
         id: 7,
@@ -643,6 +650,7 @@ export const tourData: Tour[] = [
             'Winter-themed branding throughout. Ensure materials are weather-resistant.',
         gtc_rep_contact_id: 10,
         high_def_only: 1,
+        due_date: '2024-12-22T00:00:00Z',
     },
     {
         id: 8,
@@ -656,7 +664,209 @@ export const tourData: Tour[] = [
             'Portfolio showcase materials. Archive quality required.',
         gtc_rep_contact_id: 13,
         high_def_only: 1,
+        due_date: '2024-12-30T00:00:00Z',
     },
+];
+
+// Mock order-venue pivot data (many-to-many relationship)
+export const orderVenueData: OrderVenue[] = [
+    // Order 1 (Matt Rife 2024) connected to venues
+    {
+        id: 1,
+        order_id: 1,
+        venue_id: 1,
+        start_date: '2024-11-08T19:00:00Z',
+        end_date: '2024-11-08T23:00:00Z',
+        client: 7,
+        status: 'edit',
+    }, // Maddison Square Garden
+    {
+        id: 2,
+        order_id: 1,
+        venue_id: 2,
+        start_date: '2024-11-08T18:00:00Z',
+        end_date: '2024-11-08T22:30:00Z',
+        client: 9,
+        status: 'in-progress',
+    }, // Sunset Amphitheater
+    {
+        id: 3,
+        order_id: 1,
+        venue_id: 3,
+        start_date: '2024-11-08T19:30:00Z',
+        end_date: '2024-11-08T23:00:00Z',
+        client: 10,
+        status: 'in-progress',
+    }, // Alys Robinson Stephens
+    // Order 2 (Eagles Tour 2024) connected to venues
+    {
+        id: 4,
+        order_id: 2,
+        venue_id: 4,
+        start_date: '2024-11-08T18:30:00Z',
+        end_date: '2024-11-08T22:00:00Z',
+        client: 11,
+        status: 'paused',
+    }, // The Coca Cola Charlotte Harbor
+    {
+        id: 5,
+        order_id: 2,
+        venue_id: 5,
+        start_date: '2024-11-15T19:00:00Z',
+        end_date: '2024-11-15T23:30:00Z',
+        client: 12,
+        status: 'in-progress',
+    }, // Hollywood Bowl
+    // Order 3 (Cirque du Soleil Echo) connected to venues
+    {
+        id: 6,
+        order_id: 3,
+        venue_id: 1,
+        start_date: '2024-11-08T19:00:00Z',
+        end_date: '2024-11-08T23:00:00Z',
+        client: 7,
+        status: 'edit',
+    }, // Maddison Square Garden
+    {
+        id: 7,
+        order_id: 3,
+        venue_id: 5,
+        start_date: '2024-11-15T19:00:00Z',
+        end_date: '2024-11-15T23:30:00Z',
+        client: 12,
+        status: 'in-progress',
+    }, // Hollywood Bowl
+    {
+        id: 8,
+        order_id: 3,
+        venue_id: 6,
+        start_date: '2024-11-16T19:30:00Z',
+        end_date: '2024-11-16T23:00:00Z',
+        client: 15,
+        status: 'pending',
+    }, // Chase Center
+    // Order 4 (Live Nation Concerts) connected to venues
+    {
+        id: 9,
+        order_id: 4,
+        venue_id: 2,
+        start_date: '2024-11-08T18:00:00Z',
+        end_date: '2024-11-08T22:30:00Z',
+        client: 9,
+        status: 'in-progress',
+    }, // Sunset Amphitheater
+    {
+        id: 10,
+        order_id: 4,
+        venue_id: 3,
+        start_date: '2024-11-08T19:30:00Z',
+        end_date: '2024-11-08T23:00:00Z',
+        client: 10,
+        status: 'in-progress',
+    }, // Alys Robinson Stephens
+    {
+        id: 11,
+        order_id: 4,
+        venue_id: 4,
+        start_date: '2024-11-08T18:30:00Z',
+        end_date: '2024-11-08T22:00:00Z',
+        client: 11,
+        status: 'paused',
+    }, // The Coca Cola Charlotte Harbor
+    {
+        id: 12,
+        order_id: 4,
+        venue_id: 5,
+        start_date: '2024-11-15T19:00:00Z',
+        end_date: '2024-11-15T23:30:00Z',
+        client: 12,
+        status: 'in-progress',
+    }, // Hollywood Bowl
+    // Order 5 (Bon Jovi 2024) connected to venues
+    {
+        id: 13,
+        order_id: 5,
+        venue_id: 1,
+        start_date: '2024-11-08T19:00:00Z',
+        end_date: '2024-11-08T23:00:00Z',
+        client: 7,
+        status: 'edit',
+    }, // Maddison Square Garden
+    {
+        id: 14,
+        order_id: 5,
+        venue_id: 6,
+        start_date: '2024-11-16T19:30:00Z',
+        end_date: '2024-11-16T23:00:00Z',
+        client: 15,
+        status: 'pending',
+    }, // Chase Center
+    // Order 6 (Demi Lovato Tour) connected to venues
+    {
+        id: 15,
+        order_id: 6,
+        venue_id: 3,
+        start_date: '2024-11-08T19:30:00Z',
+        end_date: '2024-11-08T23:00:00Z',
+        client: 10,
+        status: 'in-progress',
+    }, // Alys Robinson Stephens
+    {
+        id: 16,
+        order_id: 6,
+        venue_id: 4,
+        start_date: '2024-11-08T18:30:00Z',
+        end_date: '2024-11-08T22:00:00Z',
+        client: 11,
+        status: 'paused',
+    }, // The Coca Cola Charlotte Harbor
+    // Order 7 (Renee Rapp - Snow Tour) connected to venues
+    {
+        id: 17,
+        order_id: 7,
+        venue_id: 2,
+        start_date: '2024-11-08T18:00:00Z',
+        end_date: '2024-11-08T22:30:00Z',
+        client: 9,
+        status: 'in-progress',
+    }, // Sunset Amphitheater
+    {
+        id: 18,
+        order_id: 7,
+        venue_id: 5,
+        start_date: '2024-11-15T19:00:00Z',
+        end_date: '2024-11-15T23:30:00Z',
+        client: 12,
+        status: 'in-progress',
+    }, // Hollywood Bowl
+    {
+        id: 19,
+        order_id: 7,
+        venue_id: 6,
+        start_date: '2024-11-16T19:30:00Z',
+        end_date: '2024-11-16T23:00:00Z',
+        client: 15,
+        status: 'pending',
+    }, // Chase Center
+    // Order 8 (Cirque du Soleil Portfolio) connected to venues
+    {
+        id: 20,
+        order_id: 8,
+        venue_id: 1,
+        start_date: '2024-11-08T19:00:00Z',
+        end_date: '2024-11-08T23:00:00Z',
+        client: 7,
+        status: 'edit',
+    }, // Maddison Square Garden
+    {
+        id: 21,
+        order_id: 8,
+        venue_id: 6,
+        start_date: '2024-11-16T19:30:00Z',
+        end_date: '2024-11-16T23:00:00Z',
+        client: 15,
+        status: 'pending',
+    }, // Chase Center
 ];
 
 // Mock venues data
@@ -664,74 +874,50 @@ export const venuesData: Venue[] = [
     {
         id: 1,
         name: 'Maddison Square Garden',
-        showDateStart: '2024-11-08T19:00:00Z',
-        showDateEnd: '2024-11-08T23:00:00Z',
         address: '4 Pennsylvania Plaza',
         city: 'New York',
         state: 'NY',
         country_id: 1,
-        status: 'edit',
-        client: 7, // Amanda Brown
     },
     {
         id: 2,
         name: 'Sunset Amphitheater at McKinney, Texas',
-        showDateStart: '2024-11-08T18:00:00Z',
-        showDateEnd: '2024-11-08T22:30:00Z',
         address: '2343 N Central Expy',
         city: 'McKinney',
         state: 'TX',
         country_id: 1,
-        status: 'in-progress',
-        client: 9, // James Wilson
     },
     {
         id: 3,
         name: 'Alys Robinson Stephens Performing Arts Center',
-        showDateStart: '2024-11-08T19:30:00Z',
-        showDateEnd: '2024-11-08T23:00:00Z',
         address: '1200 10th Ave S',
         city: 'Birmingham',
         state: 'AL',
         country_id: 1,
-        status: 'in-progress',
-        client: 10, // Lisa Anderson
     },
     {
         id: 4,
         name: 'The Coca Cola Charlotte Harbor Event and Conference Center',
-        showDateStart: '2024-11-08T18:30:00Z',
-        showDateEnd: '2024-11-08T22:00:00Z',
         address: '75 Taylor St',
         city: 'Punta Gorda',
         state: 'FL',
         country_id: 1,
-        status: 'paused',
-        client: 11, // Christopher Lee
     },
     {
         id: 5,
         name: 'Hollywood Bowl',
-        showDateStart: '2024-11-15T19:00:00Z',
-        showDateEnd: '2024-11-15T23:30:00Z',
         address: '2301 N Highland Ave',
         city: 'Los Angeles',
         state: 'CA',
         country_id: 1,
-        status: 'in-progress',
-        client: 12, // Jennifer White
     },
     {
         id: 6,
         name: 'Chase Center',
-        showDateStart: '2024-11-16T19:30:00Z',
-        showDateEnd: '2024-11-16T23:00:00Z',
         address: '1 Warriors Way',
         city: 'San Francisco',
         state: 'CA',
         country_id: 1,
-        status: 'pending',
-        client: 15, // Kevin Miller
     },
 ];
 

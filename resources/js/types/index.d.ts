@@ -117,7 +117,7 @@ export interface InvoiceItem {
     price: number;
 }
 
-export interface Tour {
+export interface Order {
     id: number;
     name: string;
     performer: string;
@@ -128,19 +128,26 @@ export interface Tour {
     special_instructions: string | null;
     gtc_rep_contact_id: number;
     high_def_only: 0 | 1;
+    due_date: string;
+}
+
+export interface OrderVenue {
+    id: number;
+    order_id: number;
+    venue_id: number;
+    start_date: string;
+    end_date: string;
+    client: number;
+    status: 'completed' | 'in-progress' | 'pending' | 'paused' | 'edit';
 }
 
 export interface Venue {
     id: number;
     name: string;
-    showDateStart: string;
-    showDateEnd: string;
     address: string;
     city: string;
     state: string;
     country_id: number;
-    status: 'completed' | 'in-progress' | 'pending' | 'paused' | 'edit';
-    client: number;
 }
 
 export interface VenueCollaborator {
