@@ -247,7 +247,7 @@ function OrdersTable() {
                                         {/* Order Group Header */}
                                         <TableRow
                                             key={`order-${group.order.id}`}
-                                            className="cursor-pointer font-semibold hover:bg-muted/50"
+                                            className="cursor-pointer font-semibold hover:bg-muted/50 text-lg"
                                             onClick={() =>
                                                 toggleOrderExpansion(
                                                     group.order.id,
@@ -255,13 +255,8 @@ function OrdersTable() {
                                             }
                                         >
                                             <TableCell
-                                                style={{
-                                                    width: columns[0].size,
-                                                }}
-                                                className={cn(
-                                                    'px-2 py-1',
-                                                    'border-r border-border',
-                                                )}
+                                                colSpan={6}
+                                                className="px-2 py-1"
                                             >
                                                 <div className="flex items-center gap-2">
                                                     {isExpanded ? (
@@ -274,48 +269,6 @@ function OrdersTable() {
                                                     </span>
                                                 </div>
                                             </TableCell>
-                                            <TableCell
-                                                style={{
-                                                    width: columns[1].size,
-                                                }}
-                                                className={cn(
-                                                    'px-2 py-1',
-                                                    'border-r border-border',
-                                                )}
-                                            />
-                                            <TableCell
-                                                style={{
-                                                    width: columns[2].size,
-                                                }}
-                                                className={cn(
-                                                    'px-2 py-1',
-                                                    'border-r border-border',
-                                                )}
-                                            />
-                                            <TableCell
-                                                style={{
-                                                    width: columns[3].size,
-                                                }}
-                                                className={cn(
-                                                    'px-2 py-1',
-                                                    'border-r border-border',
-                                                )}
-                                            />
-                                            <TableCell
-                                                style={{
-                                                    width: columns[4].size,
-                                                }}
-                                                className={cn(
-                                                    'px-2 py-1',
-                                                    'border-r border-border',
-                                                )}
-                                            />
-                                            <TableCell
-                                                style={{
-                                                    width: columns[5].size,
-                                                }}
-                                                className="px-2 py-1"
-                                            />
                                         </TableRow>
 
                                         {/* Venue Detail Rows */}
@@ -364,8 +317,7 @@ function OrdersTable() {
                                                                 'border-r border-border',
                                                             )}
                                                         >
-                                                            <div className="flex items-center gap-2">
-                                                                <ChevronRight className="h-4 w-4 text-gray-400" />
+                                                            <div className="flex items-center justify-between">
                                                                 <span>
                                                                     {
                                                                         venueItem
@@ -379,6 +331,7 @@ function OrdersTable() {
                                                                             .state
                                                                     }
                                                                 </span>
+                                                                <ChevronRight className="h-4 w-4 text-gray-400" />
                                                             </div>
                                                         </TableCell>
                                                         <TableCell
