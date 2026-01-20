@@ -1,5 +1,7 @@
 import {
     mockUsers,
+    orderData,
+    orderVenueData,
     venueCollaboratorData,
     venuesData,
 } from '@/components/mockdata';
@@ -21,27 +23,47 @@ import {
 } from '@/components/ui/table';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
-import { type User, type Venue } from '@/types';
+import { type Order, type OrderVenue, type User, type Venue } from '@/types';
 import {
-    flexRender,
-    getCoreRowModel,
-    useReactTable,
-    type ColumnDef,
-} from '@tanstack/react-table';
-import { ChevronDown, Filter, Search, SortAsc } from 'lucide-react';
+    ChevronDown,
+    ChevronRight,
+    Filter,
+    Search,
+    SortAsc,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
 import StatusIcon from './status-icon';
 
+type GroupedOrderData = {
+    order: Order;
+    venues: Array<{
+        orderVenue: OrderVenue;
+        venue: Venue;
+    }>;
+};
+
 function OrdersTable() {
-    const [rowSelection, setRowSelection] = useState<Record<string, boolean>>(
-        {},
+    const [expandedOrders, setExpandedOrders] = useState<Set<number>>(
+        new Set(),
     );
+    const [selectedVenueIds, setSelectedVenueIds] = useState<number[]>([]);
     const [editingVenueId, setEditingVenueId] = useState<number | null>(null);
-    const [columnSizing, setColumnSizing] = useState({});
     const getInitials = useInitials();
 
-    const data = useMemo(() => venuesData, []);
+    // Transform data into grouped structure
+    const groupedData = useMemo<GroupedOrderData[]>(() => {
+        return orderData.map((order) => ({
+            order,
+            venues: orderVenueData
+                .filter((ov) => ov.order_id === order.id)
+                .map((ov) => ({
+                    orderVenue: ov,
+                    venue: venuesData.find((v) => v.id === ov.venue_id)!,
+                }))
+                .filter((item) => item.venue !== undefined),
+        }));
+    }, []);
 
     // Helper function to get collaborators for a venue
     const getVenueCollaborators = useMemo(() => {
@@ -62,79 +84,80 @@ function OrdersTable() {
         };
     }, []);
 
-    // Helper function to format date
+    // Helper function to format date (short format: "Nov 8")
     const formatDate = (dateString: string): string => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', {
             month: 'short',
             day: 'numeric',
-            year: 'numeric',
         });
     };
 
-    const columns = useMemo<ColumnDef<Venue>[]>(
+    // Toggle order expansion
+    const toggleOrderExpansion = (orderId: number) => {
+        setExpandedOrders((prev) => {
+            const newSet = new Set(prev);
+            if (newSet.has(orderId)) {
+                newSet.delete(orderId);
+            } else {
+                newSet.add(orderId);
+            }
+            return newSet;
+        });
+    };
+
+    // Handle venue row selection
+    const handleVenueRowClick = (orderVenueId: number, orderId: number) => {
+        setSelectedVenueIds((prev) => {
+            // Check if any existing selection belongs to a different order group
+            const existingOrderId =
+                prev.length > 0
+                    ? orderVenueData.find((ov) => ov.id === prev[0])?.order_id
+                    : null;
+
+            // If selecting from a different group, clear and start fresh
+            if (existingOrderId !== null && existingOrderId !== orderId) {
+                return [orderVenueId];
+            }
+
+            // Toggle selection within the same group
+            if (prev.includes(orderVenueId)) {
+                return prev.filter((id) => id !== orderVenueId);
+            }
+            return [...prev, orderVenueId];
+        });
+    };
+
+    // Column definitions for table headers (used for sizing only)
+    const columns = useMemo(
         () => [
             {
-                accessorKey: 'name',
+                id: 'name',
                 header: 'Name',
                 size: 200,
                 minSize: 100,
                 maxSize: 500,
-                cell: ({ getValue }) => {
-                    return <div>{getValue() as string}</div>;
-                },
             },
             {
-                accessorKey: 'city',
-                header: 'Location',
-                size: 150,
-                minSize: 100,
-                maxSize: 300,
-                cell: ({ row }) => {
-                    return (
-                        <div>
-                            {row.original.city}, {row.original.state}
-                        </div>
-                    );
-                },
+                id: 'venue',
+                header: 'Venue',
+                size: 200,
+                minSize: 150,
+                maxSize: 400,
             },
             {
-                accessorKey: 'showDateStart',
-                header: 'Show Date',
+                id: 'dueDate',
+                header: 'Due Date',
                 size: 150,
                 minSize: 100,
                 maxSize: 200,
-                cell: ({ row }) => {
-                    const start = formatDate(row.original.showDateStart);
-                    const end = formatDate(row.original.showDateEnd);
-                    return (
-                        <div>{start === end ? start : `${start} - ${end}`}</div>
-                    );
-                },
             },
             {
-                accessorKey: 'client',
+                id: 'client',
                 header: 'Client',
                 size: 100,
                 minSize: 80,
                 maxSize: 200,
-                cell: ({ row }) => {
-                    const client = getClientUser(row.original.client);
-                    if (!client) return null;
-                    return (
-                        <div className="flex items-center">
-                            <Avatar className="h-7 w-7">
-                                <AvatarImage
-                                    src={client.avatar || undefined}
-                                    alt={client.name}
-                                />
-                                <AvatarFallback className="bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                    {getInitials(client.name)}
-                                </AvatarFallback>
-                            </Avatar>
-                        </div>
-                    );
-                },
             },
             {
                 id: 'collaborators',
@@ -142,74 +165,17 @@ function OrdersTable() {
                 size: 150,
                 minSize: 100,
                 maxSize: 300,
-                cell: ({ row }) => {
-                    const collaborators = getVenueCollaborators(
-                        row.original.id,
-                    );
-                    return (
-                        <div
-                            className="flex cursor-pointer items-center"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setEditingVenueId(row.original.id);
-                            }}
-                        >
-                            <div className="flex items-center">
-                                {collaborators
-                                    .slice(0, 3)
-                                    .map((collab, idx) => (
-                                        <Avatar
-                                            key={collab.id}
-                                            className="-ml-3 h-7 w-7 border-2 border-background first:ml-0"
-                                        >
-                                            <AvatarImage
-                                                src={collab.avatar || undefined}
-                                                alt={collab.name}
-                                            />
-                                            <AvatarFallback className="bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                                {getInitials(collab.name)}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                    ))}
-                            </div>
-                            {collaborators.length > 3 && (
-                                <span className="ml-2 text-xs text-muted-foreground">
-                                    +{collaborators.length - 3}
-                                </span>
-                            )}
-                        </div>
-                    );
-                },
             },
             {
-                accessorKey: 'status',
+                id: 'status',
                 header: 'Status',
                 size: 100,
                 minSize: 80,
                 maxSize: 150,
-                cell: ({ row }) => {
-                    return <StatusIcon status={row.original.status} />;
-                },
             },
         ],
-        [getInitials, getClientUser, getVenueCollaborators],
+        [],
     );
-
-    const table = useReactTable({
-        data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        getRowId: (row) => String(row.id),
-        enableRowSelection: true,
-        enableColumnResizing: true,
-        columnResizeMode: 'onChange',
-        onRowSelectionChange: setRowSelection,
-        onColumnSizingChange: setColumnSizing,
-        state: {
-            rowSelection,
-            columnSizing,
-        },
-    });
 
     return (
         <div className="space-y-4">
@@ -250,99 +216,317 @@ function OrdersTable() {
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <TableHead
-                                        key={header.id}
-                                        style={{
-                                            width: header.getSize(),
-                                            position: 'relative',
-                                        }}
-                                        className={cn(
-                                            'relative px-2 py-1',
-                                            headerGroup.headers.indexOf(
-                                                header,
-                                            ) <
-                                                headerGroup.headers.length -
-                                                    1 &&
-                                                'border-r border-border',
-                                        )}
-                                    >
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                  header.column.columnDef
-                                                      .header,
-                                                  header.getContext(),
-                                              )}
-                                        {header.column.getCanResize() && (
-                                            <div
-                                                onMouseDown={header.getResizeHandler()}
-                                                onTouchStart={header.getResizeHandler()}
-                                                className={cn(
-                                                    'absolute top-0 right-0 z-10 h-full w-0.5 cursor-col-resize touch-none bg-border opacity-50 transition-opacity select-none hover:bg-primary hover:opacity-100',
-                                                    header.column.getIsResizing() &&
-                                                        'bg-primary opacity-100',
-                                                )}
-                                                style={{
-                                                    transform:
-                                                        header.column.getIsResizing()
-                                                            ? `translateX(${
-                                                                  table.getState()
-                                                                      .columnSizingInfo
-                                                                      .deltaOffset
-                                                              }px)`
-                                                            : undefined,
-                                                }}
-                                            />
-                                        )}
-                                    </TableHead>
-                                ))}
-                            </TableRow>
-                        ))}
+                        <TableRow>
+                            {columns.map((column, index) => (
+                                <TableHead
+                                    key={column.id}
+                                    style={{
+                                        width: column.size,
+                                        position: 'relative',
+                                    }}
+                                    className={cn(
+                                        'relative px-2 py-1',
+                                        index < columns.length - 1 &&
+                                            'border-r border-border',
+                                    )}
+                                >
+                                    {column.header}
+                                </TableHead>
+                            ))}
+                        </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows.length ? (
-                            table.getRowModel().rows.map((row) => {
-                                const isSelected = row.getIsSelected();
+                        {groupedData.length > 0 ? (
+                            groupedData.map((group) => {
+                                const isExpanded = expandedOrders.has(
+                                    group.order.id,
+                                );
 
                                 return (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={isSelected && 'selected'}
-                                        className={cn(
-                                            'cursor-pointer hover:bg-muted/50',
-                                            isSelected &&
-                                                'data-[state=selected]:bg-red-100',
-                                        )}
-                                        onClick={() => {
-                                            row.toggleSelected();
-                                        }}
-                                    >
-                                        {row
-                                            .getVisibleCells()
-                                            .map((cell, cellIndex, cells) => (
-                                                <TableCell
-                                                    key={cell.id}
-                                                    style={{
-                                                        width: cell.column.getSize(),
-                                                    }}
-                                                    className={cn(
-                                                        'px-2 py-1 text-gray-500',
-                                                        cellIndex <
-                                                            cells.length - 1 &&
-                                                            'border-r border-border',
+                                    <>
+                                        {/* Order Group Header */}
+                                        <TableRow
+                                            key={`order-${group.order.id}`}
+                                            className="cursor-pointer font-semibold hover:bg-muted/50"
+                                            onClick={() =>
+                                                toggleOrderExpansion(
+                                                    group.order.id,
+                                                )
+                                            }
+                                        >
+                                            <TableCell
+                                                style={{
+                                                    width: columns[0].size,
+                                                }}
+                                                className={cn(
+                                                    'px-2 py-1',
+                                                    'border-r border-border',
+                                                )}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    {isExpanded ? (
+                                                        <ChevronDown className="h-4 w-4" />
+                                                    ) : (
+                                                        <ChevronRight className="h-4 w-4" />
                                                     )}
-                                                >
-                                                    {flexRender(
-                                                        cell.column.columnDef
-                                                            .cell,
-                                                        cell.getContext(),
-                                                    )}
-                                                </TableCell>
-                                            ))}
-                                    </TableRow>
+                                                    <span>
+                                                        {group.order.name}
+                                                    </span>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell
+                                                style={{
+                                                    width: columns[1].size,
+                                                }}
+                                                className={cn(
+                                                    'px-2 py-1',
+                                                    'border-r border-border',
+                                                )}
+                                            />
+                                            <TableCell
+                                                style={{
+                                                    width: columns[2].size,
+                                                }}
+                                                className={cn(
+                                                    'px-2 py-1',
+                                                    'border-r border-border',
+                                                )}
+                                            />
+                                            <TableCell
+                                                style={{
+                                                    width: columns[3].size,
+                                                }}
+                                                className={cn(
+                                                    'px-2 py-1',
+                                                    'border-r border-border',
+                                                )}
+                                            />
+                                            <TableCell
+                                                style={{
+                                                    width: columns[4].size,
+                                                }}
+                                                className={cn(
+                                                    'px-2 py-1',
+                                                    'border-r border-border',
+                                                )}
+                                            />
+                                            <TableCell
+                                                style={{
+                                                    width: columns[5].size,
+                                                }}
+                                                className="px-2 py-1"
+                                            />
+                                        </TableRow>
+
+                                        {/* Venue Detail Rows */}
+                                        {isExpanded &&
+                                            group.venues.map((venueItem) => {
+                                                const venueIsSelected =
+                                                    selectedVenueIds.includes(
+                                                        venueItem.orderVenue.id,
+                                                    );
+                                                const client = getClientUser(
+                                                    venueItem.orderVenue.client,
+                                                );
+                                                const collaborators =
+                                                    getVenueCollaborators(
+                                                        venueItem.venue.id,
+                                                    );
+
+                                                return (
+                                                    <TableRow
+                                                        key={`venue-${venueItem.orderVenue.id}`}
+                                                        data-state={
+                                                            venueIsSelected &&
+                                                            'selected'
+                                                        }
+                                                        className={cn(
+                                                            'cursor-pointer hover:bg-muted/50',
+                                                            venueIsSelected &&
+                                                                'bg-red-100 dark:bg-red-900/20',
+                                                        )}
+                                                        onClick={() =>
+                                                            handleVenueRowClick(
+                                                                venueItem
+                                                                    .orderVenue
+                                                                    .id,
+                                                                group.order.id,
+                                                            )
+                                                        }
+                                                    >
+                                                        <TableCell
+                                                            style={{
+                                                                width: columns[0]
+                                                                    .size,
+                                                            }}
+                                                            className={cn(
+                                                                'px-2 py-1 text-gray-500',
+                                                                'border-r border-border',
+                                                            )}
+                                                        >
+                                                            <div className="flex items-center gap-2">
+                                                                <ChevronRight className="h-4 w-4 text-gray-400" />
+                                                                <span>
+                                                                    {
+                                                                        venueItem
+                                                                            .venue
+                                                                            .city
+                                                                    }
+                                                                    ,{' '}
+                                                                    {
+                                                                        venueItem
+                                                                            .venue
+                                                                            .state
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell
+                                                            style={{
+                                                                width: columns[1]
+                                                                    .size,
+                                                            }}
+                                                            className={cn(
+                                                                'px-2 py-1 text-gray-500',
+                                                                'border-r border-border',
+                                                            )}
+                                                        >
+                                                            {
+                                                                venueItem.venue
+                                                                    .name
+                                                            }
+                                                        </TableCell>
+                                                        <TableCell
+                                                            style={{
+                                                                width: columns[2]
+                                                                    .size,
+                                                            }}
+                                                            className={cn(
+                                                                'px-2 py-1 text-gray-500',
+                                                                'border-r border-border',
+                                                            )}
+                                                        >
+                                                            {formatDate(
+                                                                venueItem
+                                                                    .orderVenue
+                                                                    .start_date,
+                                                            )}
+                                                        </TableCell>
+                                                        <TableCell
+                                                            style={{
+                                                                width: columns[3]
+                                                                    .size,
+                                                            }}
+                                                            className={cn(
+                                                                'px-2 py-1 text-gray-500',
+                                                                'border-r border-border',
+                                                            )}
+                                                        >
+                                                            {client && (
+                                                                <Avatar className="h-7 w-7">
+                                                                    <AvatarImage
+                                                                        src={
+                                                                            client.avatar ||
+                                                                            undefined
+                                                                        }
+                                                                        alt={
+                                                                            client.name
+                                                                        }
+                                                                    />
+                                                                    <AvatarFallback className="bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                                        {getInitials(
+                                                                            client.name,
+                                                                        )}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                            )}
+                                                        </TableCell>
+                                                        <TableCell
+                                                            style={{
+                                                                width: columns[4]
+                                                                    .size,
+                                                            }}
+                                                            className={cn(
+                                                                'px-2 py-1 text-gray-500',
+                                                                'border-r border-border',
+                                                            )}
+                                                        >
+                                                            <div
+                                                                className="flex cursor-pointer items-center"
+                                                                onClick={(
+                                                                    e,
+                                                                ) => {
+                                                                    e.stopPropagation();
+                                                                    setEditingVenueId(
+                                                                        venueItem
+                                                                            .venue
+                                                                            .id,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <div className="flex items-center">
+                                                                    {collaborators
+                                                                        .slice(
+                                                                            0,
+                                                                            3,
+                                                                        )
+                                                                        .map(
+                                                                            (
+                                                                                collab,
+                                                                            ) => (
+                                                                                <Avatar
+                                                                                    key={
+                                                                                        collab.id
+                                                                                    }
+                                                                                    className="-ml-3 h-7 w-7 border-2 border-background first:ml-0"
+                                                                                >
+                                                                                    <AvatarImage
+                                                                                        src={
+                                                                                            collab.avatar ||
+                                                                                            undefined
+                                                                                        }
+                                                                                        alt={
+                                                                                            collab.name
+                                                                                        }
+                                                                                    />
+                                                                                    <AvatarFallback className="bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                                                        {getInitials(
+                                                                                            collab.name,
+                                                                                        )}
+                                                                                    </AvatarFallback>
+                                                                                </Avatar>
+                                                                            ),
+                                                                        )}
+                                                                </div>
+                                                                {collaborators.length >
+                                                                    3 && (
+                                                                    <span className="ml-2 text-xs text-muted-foreground">
+                                                                        +
+                                                                        {collaborators.length -
+                                                                            3}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell
+                                                            style={{
+                                                                width: columns[5]
+                                                                    .size,
+                                                            }}
+                                                            className="px-2 py-1 text-gray-500"
+                                                        >
+                                                            <StatusIcon
+                                                                status={
+                                                                    venueItem
+                                                                        .orderVenue
+                                                                        .status
+                                                                }
+                                                            />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
+                                    </>
                                 );
                             })
                         ) : (
@@ -363,7 +547,9 @@ function OrdersTable() {
             {editingVenueId && (
                 <CollaboratorEditDialog
                     venueId={editingVenueId}
-                    venue={data.find((v) => v.id === editingVenueId) || null}
+                    venue={
+                        venuesData.find((v) => v.id === editingVenueId) || null
+                    }
                     isOpen={!!editingVenueId}
                     onClose={() => setEditingVenueId(null)}
                 />
