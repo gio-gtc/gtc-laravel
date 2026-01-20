@@ -1,7 +1,7 @@
 import {
-    venuesData,
-    venueCollaboratorData,
     mockUsers,
+    venueCollaboratorData,
+    venuesData,
 } from '@/components/mockdata';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -21,14 +21,14 @@ import {
 } from '@/components/ui/table';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
-import { type Venue, type User } from '@/types';
+import { type User, type Venue } from '@/types';
 import {
     flexRender,
     getCoreRowModel,
     useReactTable,
     type ColumnDef,
 } from '@tanstack/react-table';
-import { Filter, Search, SortAsc } from 'lucide-react';
+import { ChevronDown, Filter, Search, SortAsc } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
 import StatusIcon from './status-icon';
@@ -108,9 +108,7 @@ function OrdersTable() {
                     const start = formatDate(row.original.showDateStart);
                     const end = formatDate(row.original.showDateEnd);
                     return (
-                        <div>
-                            {start === end ? start : `${start} - ${end}`}
-                        </div>
+                        <div>{start === end ? start : `${start} - ${end}`}</div>
                     );
                 },
             },
@@ -157,20 +155,22 @@ function OrdersTable() {
                             }}
                         >
                             <div className="flex items-center">
-                                {collaborators.slice(0, 3).map((collab, idx) => (
-                                    <Avatar
-                                        key={collab.id}
-                                        className="-ml-3 h-7 w-7 border-2 border-background first:ml-0"
-                                    >
-                                        <AvatarImage
-                                            src={collab.avatar || undefined}
-                                            alt={collab.name}
-                                        />
-                                        <AvatarFallback className="bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                            {getInitials(collab.name)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                ))}
+                                {collaborators
+                                    .slice(0, 3)
+                                    .map((collab, idx) => (
+                                        <Avatar
+                                            key={collab.id}
+                                            className="-ml-3 h-7 w-7 border-2 border-background first:ml-0"
+                                        >
+                                            <AvatarImage
+                                                src={collab.avatar || undefined}
+                                                alt={collab.name}
+                                            />
+                                            <AvatarFallback className="bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                {getInitials(collab.name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    ))}
                             </div>
                             {collaborators.length > 3 && (
                                 <span className="ml-2 text-xs text-muted-foreground">
@@ -322,33 +322,26 @@ function OrdersTable() {
                                     >
                                         {row
                                             .getVisibleCells()
-                                            .map(
-                                                (
-                                                    cell,
-                                                    cellIndex,
-                                                    cells,
-                                                ) => (
-                                                    <TableCell
-                                                        key={cell.id}
-                                                        style={{
-                                                            width: cell.column.getSize(),
-                                                        }}
-                                                        className={cn(
-                                                            'px-2 py-1 text-gray-500',
-                                                            cellIndex <
-                                                                cells.length -
-                                                                    1 &&
-                                                                'border-r border-border',
-                                                        )}
-                                                    >
-                                                        {flexRender(
-                                                            cell.column
-                                                                .columnDef.cell,
-                                                            cell.getContext(),
-                                                        )}
-                                                    </TableCell>
-                                                ),
-                                            )}
+                                            .map((cell, cellIndex, cells) => (
+                                                <TableCell
+                                                    key={cell.id}
+                                                    style={{
+                                                        width: cell.column.getSize(),
+                                                    }}
+                                                    className={cn(
+                                                        'px-2 py-1 text-gray-500',
+                                                        cellIndex <
+                                                            cells.length - 1 &&
+                                                            'border-r border-border',
+                                                    )}
+                                                >
+                                                    {flexRender(
+                                                        cell.column.columnDef
+                                                            .cell,
+                                                        cell.getContext(),
+                                                    )}
+                                                </TableCell>
+                                            ))}
                                     </TableRow>
                                 );
                             })
