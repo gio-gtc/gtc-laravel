@@ -25,7 +25,7 @@ import {
     Search,
     SortAsc,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import AddVenueModal from './add-venue-modal';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
 import StatusIcon from './status-icon';
@@ -94,7 +94,7 @@ function OrdersTable() {
         setExpandedOrders((prev) => {
             const newSet = new Set(prev);
             const isCurrentlyExpanded = newSet.has(orderId);
-            
+
             if (isCurrentlyExpanded) {
                 // Collapsing: clear selections for this order group
                 newSet.delete(orderId);
@@ -145,7 +145,9 @@ function OrdersTable() {
             (ov) => ov.id === selectedVenueIds[0],
         );
         if (!firstSelectedVenue) return null;
-        return orderData.find((o) => o.id === firstSelectedVenue.order_id) || null;
+        return (
+            orderData.find((o) => o.id === firstSelectedVenue.order_id) || null
+        );
     }, [selectedVenueIds]);
 
     // Column definitions for table headers (used for sizing only)
@@ -258,10 +260,11 @@ function OrdersTable() {
                                 );
 
                                 return (
-                                    <>
+                                    <Fragment
+                                        key={`order-group-${group.order.id}`}
+                                    >
                                         {/* Order Group Header */}
                                         <TableRow
-                                            key={`order-${group.order.id}`}
                                             className="cursor-pointer text-lg font-semibold hover:bg-muted/50"
                                             onClick={() =>
                                                 toggleOrderExpansion(
@@ -285,7 +288,6 @@ function OrdersTable() {
                                                 </div>
                                             </TableCell>
                                         </TableRow>
-
                                         {/* Venue Detail Rows */}
                                         {isExpanded &&
                                             group.venues.map((venueItem) => {
@@ -494,7 +496,7 @@ function OrdersTable() {
                                                     </TableRow>
                                                 );
                                             })}
-                                    </>
+                                    </Fragment>
                                 );
                             })
                         ) : (
