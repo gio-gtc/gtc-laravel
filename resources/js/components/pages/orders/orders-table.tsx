@@ -26,6 +26,7 @@ import {
     SortAsc,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import AddVenueModal from './add-venue-modal';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
 import StatusIcon from './status-icon';
 
@@ -43,6 +44,7 @@ function OrdersTable() {
     );
     const [selectedVenueIds, setSelectedVenueIds] = useState<number[]>([]);
     const [editingVenueId, setEditingVenueId] = useState<number | null>(null);
+    const [isAddVenueModalOpen, setIsAddVenueModalOpen] = useState(false);
     const getInitials = useInitials();
 
     // Transform data into grouped structure
@@ -136,6 +138,16 @@ function OrdersTable() {
         });
     };
 
+    // Get selected order from first selected venue
+    const selectedOrder = useMemo(() => {
+        if (selectedVenueIds.length === 0) return null;
+        const firstSelectedVenue = orderVenueData.find(
+            (ov) => ov.id === selectedVenueIds[0],
+        );
+        if (!firstSelectedVenue) return null;
+        return orderData.find((o) => o.id === firstSelectedVenue.order_id) || null;
+    }, [selectedVenueIds]);
+
     // Column definitions for table headers (used for sizing only)
     const columns = useMemo(
         () => [
@@ -190,7 +202,13 @@ function OrdersTable() {
             {/* Header Actions */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    <Button variant="outline">Add Vanue</Button>
+                    <Button
+                        variant="outline"
+                        disabled={selectedVenueIds.length === 0}
+                        onClick={() => setIsAddVenueModalOpen(true)}
+                    >
+                        Add Venue
+                    </Button>
                 </div>
                 <div className="flex items-center gap-2">
                     <Button variant="outline">
@@ -504,6 +522,14 @@ function OrdersTable() {
                     onClose={() => setEditingVenueId(null)}
                 />
             )}
+
+            {/* Add Venue Modal */}
+            <AddVenueModal
+                isOpen={isAddVenueModalOpen}
+                onClose={() => setIsAddVenueModalOpen(false)}
+                orderId={selectedOrder?.id || 0}
+                order={selectedOrder}
+            />
         </div>
     );
 }
