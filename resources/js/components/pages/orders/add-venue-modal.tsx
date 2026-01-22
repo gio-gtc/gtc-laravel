@@ -7,8 +7,12 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import {
+    ColumnedRowsChild,
+    ColumnedRowsParent,
+} from '@/components/utils/column-row-layouts';
 import DateRangePicker from '@/components/utils/date-range-picker';
+import Divider from '@/components/utils/divider';
 import { type Order, type Venue } from '@/types';
 import { Calendar } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -107,21 +111,28 @@ export default function AddVenueModal({
                 <DialogHeader>
                     <DialogTitle>Add Venue</DialogTitle>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
+
+                <Divider />
+                <ColumnedRowsParent>
                     {/* Venue Name - Autocomplete */}
-                    <VenueAutocomplete
-                        value={selectedVenue}
-                        onChange={setSelectedVenue}
-                        label="Venue Name"
+                    <ColumnedRowsChild
+                        labelFor="venue-name"
+                        labelContent="Venue Name"
                         required
-                    />
+                    >
+                        <VenueAutocomplete
+                            value={selectedVenue}
+                            onChange={setSelectedVenue}
+                            required
+                        />
+                    </ColumnedRowsChild>
 
                     {/* Show Dates - Date Range */}
-                    <div>
-                        <Label>
-                            Show Dates
-                            <span className="text-destructive ml-1">*</span>
-                        </Label>
+                    <ColumnedRowsChild
+                        labelFor="show-dates"
+                        labelContent="Show Dates"
+                        required
+                    >
                         <DateRangePicker
                             startDate={showStartDate}
                             endDate={showEndDate}
@@ -132,14 +143,14 @@ export default function AddVenueModal({
                             placeholder="Select date range"
                             dialogTitle="Select Show Dates"
                         />
-                    </div>
+                    </ColumnedRowsChild>
 
                     {/* Due Date */}
-                    <div>
-                        <Label htmlFor="due-date">
-                            Due Date
-                            <span className="text-destructive ml-1">*</span>
-                        </Label>
+                    <ColumnedRowsChild
+                        labelFor="due-date"
+                        labelContent="Due Date"
+                        required
+                    >
                         <div className="relative">
                             <Input
                                 id="due-date"
@@ -163,13 +174,13 @@ export default function AddVenueModal({
                                 <Calendar className="h-4 w-4" />
                             </button>
                         </div>
-                    </div>
+                    </ColumnedRowsChild>
 
                     {/* Local Deliverables */}
-                    <div>
-                        <Label htmlFor="local-deliverables">
-                            Local Deliverables
-                        </Label>
+                    <ColumnedRowsChild
+                        labelFor="local-deliverables"
+                        labelContent="Local Deliverables"
+                    >
                         <Input
                             id="local-deliverables"
                             type="text"
@@ -179,8 +190,10 @@ export default function AddVenueModal({
                             }
                             placeholder="Enter local deliverables..."
                         />
-                    </div>
-                </div>
+                    </ColumnedRowsChild>
+                </ColumnedRowsParent>
+
+                <Divider />
                 <DialogFooter>
                     <Button variant="outline" onClick={onClose}>
                         Cancel
