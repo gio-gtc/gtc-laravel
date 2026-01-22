@@ -8,7 +8,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { ColumnedRowsChild } from '@/components/utils/column-row-layouts';
 import Divider from '@/components/utils/divider';
 import { useState } from 'react';
 
@@ -42,41 +42,38 @@ export default function InvoiceOrOrderModal({
 
                 <Divider />
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label htmlFor="tour" className="sm:flex-1">
-                            Tour <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="relative flex-1">
-                            <Input
-                                id="tour"
-                                name="tour"
-                                placeholder="Enter Tour"
-                                value={tour}
-                                onChange={(e) => setTour(e.target.value)}
-                                required
-                                className="border-gray-300"
-                            />
-                        </div>
+                    <ColumnedRowsChild
+                        labelFor="tour"
+                        labelContent="Tour"
+                        required
+                    >
+                        <Input
+                            id="tour"
+                            name="tour"
+                            placeholder="Enter Tour"
+                            value={tour}
+                            onChange={(e) => setTour(e.target.value)}
+                            required
+                            className="border-gray-300"
+                        />
                         <InputError message={undefined} />
-                    </div>
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label htmlFor="venue" className="sm:flex-1">
-                            Venue <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="relative flex-1">
-                            <Input
-                                id="venue"
-                                name="venue"
-                                placeholder="Enter Venue"
-                                value={venue}
-                                onChange={(e) => setVenue(e.target.value)}
-                                required
-                                className="border-gray-300"
-                            />
-                        </div>
+                    </ColumnedRowsChild>
+                    <ColumnedRowsChild
+                        labelFor="venue"
+                        labelContent="Venue"
+                        required
+                    >
+                        <Input
+                            id="venue"
+                            name="venue"
+                            placeholder="Enter Venue"
+                            value={venue}
+                            onChange={(e) => setVenue(e.target.value)}
+                            required
+                            className="border-gray-300"
+                        />
                         <InputError message={undefined} />
-                    </div>
-
+                    </ColumnedRowsChild>
                     <Divider />
                     <DialogFooter className="gap-3 sm:gap-2">
                         <Button
