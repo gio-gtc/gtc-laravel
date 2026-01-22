@@ -1,8 +1,10 @@
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import {
+    ColumnedRowsChild,
+    ColumnedRowsParent,
+} from '@/components/utils/column-row-layouts';
 import { type User } from '@/types';
 import DatePickerInput from './date-picker-input';
-import { ColumnedRowsParent, RowsColumnedChild } from './layout';
 
 interface InvoiceDetailsFormData {
     release_date: string;
@@ -23,28 +25,34 @@ export default function InvoiceDetailsForm({
 }: InvoiceDetailsFormProps) {
     return (
         <ColumnedRowsParent>
-            <RowsColumnedChild>
-                <Label htmlFor="release_date">Invoice Release Date</Label>
+            <ColumnedRowsChild
+                labelFor="release_date"
+                labelContent="Invoice Release Date"
+            >
                 <DatePickerInput
                     id="release_date"
                     label=""
                     value={formData.release_date}
                     onChange={(value) => onChange('release_date', value)}
                 />
-            </RowsColumnedChild>
+            </ColumnedRowsChild>
 
-            <RowsColumnedChild>
-                <Label htmlFor="payment_due">Invoice Due Date</Label>
+            <ColumnedRowsChild
+                labelFor="payment_due"
+                labelContent="Invoice Due Date"
+            >
                 <DatePickerInput
                     id="payment_due"
                     label=""
                     value={formData.payment_due}
                     onChange={(value) => onChange('payment_due', value)}
                 />
-            </RowsColumnedChild>
+            </ColumnedRowsChild>
 
-            <RowsColumnedChild>
-                <Label htmlFor="clientReference">Client Reference</Label>
+            <ColumnedRowsChild
+                labelFor="clientReference"
+                labelContent="Client Reference"
+            >
                 <Input
                     id="clientReference"
                     value={formData.clientReference}
@@ -52,17 +60,16 @@ export default function InvoiceDetailsForm({
                         onChange('clientReference', e.target.value)
                     }
                 />
-            </RowsColumnedChild>
+            </ColumnedRowsChild>
 
-            <RowsColumnedChild>
-                <Label htmlFor="orderedBy">Ordered By</Label>
+            <ColumnedRowsChild labelFor="orderedBy" labelContent="Ordered By">
                 <Input
                     id="orderedBy"
                     value={orderedByUser?.name || ''}
                     readOnly
                     className="bg-muted"
                 />
-            </RowsColumnedChild>
+            </ColumnedRowsChild>
         </ColumnedRowsParent>
     );
 }

@@ -1,6 +1,5 @@
 import { countriesData } from '@/components/mockdata';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -8,7 +7,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { ColumnedRowsParent, RowsColumnedChild } from './layout';
+import {
+    ColumnedRowsChild,
+    ColumnedRowsParent,
+} from '@/components/utils/column-row-layouts';
 
 interface AddressFormData {
     name: string;
@@ -30,21 +32,18 @@ export default function InvoiceAddressForm({
 }: InvoiceAddressFormProps) {
     return (
         <ColumnedRowsParent>
-            <RowsColumnedChild>
-                <Label htmlFor="name" className="pt-2">
-                    Company Name
-                </Label>
+            <ColumnedRowsChild labelFor="name" labelContent="Company Name">
                 <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => onChange('name', e.target.value)}
                 />
-            </RowsColumnedChild>
+            </ColumnedRowsChild>
 
-            <RowsColumnedChild>
-                <Label htmlFor="billing_address" className="pt-2">
-                    Billing Address
-                </Label>
+            <ColumnedRowsChild
+                labelFor="billing_address"
+                labelContent="Billing Address"
+            >
                 <textarea
                     id="billing_address"
                     className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
@@ -54,45 +53,33 @@ export default function InvoiceAddressForm({
                     }
                     rows={3}
                 />
-            </RowsColumnedChild>
+            </ColumnedRowsChild>
 
-            <RowsColumnedChild>
-                <Label htmlFor="city" className="pt-2">
-                    City
-                </Label>
+            <ColumnedRowsChild labelFor="city" labelContent="City">
                 <Input
                     id="city"
                     value={formData.city}
                     onChange={(e) => onChange('city', e.target.value)}
                 />
-            </RowsColumnedChild>
+            </ColumnedRowsChild>
 
-            <RowsColumnedChild>
-                <Label htmlFor="state" className="pt-2">
-                    State/Province
-                </Label>
+            <ColumnedRowsChild labelFor="state" labelContent="State/Province">
                 <Input
                     id="state"
                     value={formData.state}
                     onChange={(e) => onChange('state', e.target.value)}
                 />
-            </RowsColumnedChild>
+            </ColumnedRowsChild>
 
-            <RowsColumnedChild>
-                <Label htmlFor="zip" className="pt-2">
-                    ZIP/Postal Code
-                </Label>
+            <ColumnedRowsChild labelFor="zip" labelContent="ZIP/Postal Code">
                 <Input
                     id="zip"
                     value={formData.zip}
                     onChange={(e) => onChange('zip', e.target.value)}
                 />
-            </RowsColumnedChild>
+            </ColumnedRowsChild>
 
-            <RowsColumnedChild>
-                <Label htmlFor="country_id" className="pt-2">
-                    Country
-                </Label>
+            <ColumnedRowsChild labelFor="country_id" labelContent="Country">
                 <Select
                     value={formData.country_id}
                     onValueChange={(value) => onChange('country_id', value)}
@@ -111,7 +98,7 @@ export default function InvoiceAddressForm({
                         ))}
                     </SelectContent>
                 </Select>
-            </RowsColumnedChild>
+            </ColumnedRowsChild>
         </ColumnedRowsParent>
     );
 }
