@@ -72,7 +72,7 @@ function UserMultiSelect({
                             >
                                 <Avatar className="h-6 w-6">
                                     <AvatarImage
-                                        src={user.avatar}
+                                        src={user.avatar || ''}
                                         alt={user.name}
                                     />
                                     <AvatarFallback className="bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
@@ -122,7 +122,7 @@ function UserMultiSelect({
                                     />
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage
-                                            src={user.avatar}
+                                            src={user.avatar || ''}
                                             alt={user.name}
                                         />
                                         <AvatarFallback className="bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
