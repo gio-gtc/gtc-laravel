@@ -29,6 +29,7 @@ import { Fragment, useMemo, useState } from 'react';
 import AddVenueModal from './add-venue-modal';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
 import StatusIcon from './status-icon';
+import VenueDetailSlideout from './slideout/venue-detail-slideout';
 
 type GroupedOrderData = {
     order: Tour;
@@ -45,6 +46,11 @@ function OrdersTable() {
     const [selectedVenueIds, setSelectedVenueIds] = useState<number[]>([]);
     const [editingVenueId, setEditingVenueId] = useState<number | null>(null);
     const [isAddVenueModalOpen, setIsAddVenueModalOpen] = useState(false);
+    const [selectedVenueForSlideout, setSelectedVenueForSlideout] = useState<{
+        orderVenue: TourVenue;
+        venue: Venue;
+        order: Tour;
+    } | null>(null);
     const getInitials = useInitials();
 
     // Transform data into grouped structure
@@ -348,7 +354,18 @@ function OrdersTable() {
                                                                             .state
                                                                     }
                                                                 </span>
-                                                                <ChevronRight className="h-4 w-4 text-gray-400" />
+                                                                <ChevronRight
+                                                                    className="h-4 w-4 cursor-pointer text-gray-400 hover:text-gray-600"
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setSelectedVenueForSlideout({
+                                                                            orderVenue:
+                                                                                venueItem.orderVenue,
+                                                                            venue: venueItem.venue,
+                                                                            order: group.order,
+                                                                        });
+                                                                    }}
+                                                                />
                                                             </div>
                                                         </TableCell>
                                                         <TableCell
@@ -531,6 +548,21 @@ function OrdersTable() {
                 onClose={() => setIsAddVenueModalOpen(false)}
                 orderId={selectedOrder?.id || 0}
                 order={selectedOrder}
+            />
+
+            {/* Venue Detail Slideout */}
+            <VenueDetailSlideout
+                venueItem={
+                    selectedVenueForSlideout
+                        ? {
+                              orderVenue: selectedVenueForSlideout.orderVenue,
+                              venue: selectedVenueForSlideout.venue,
+                          }
+                        : null
+                }
+                order={selectedVenueForSlideout?.order || null}
+                isOpen={selectedVenueForSlideout !== null}
+                onClose={() => setSelectedVenueForSlideout(null)}
             />
         </div>
     );

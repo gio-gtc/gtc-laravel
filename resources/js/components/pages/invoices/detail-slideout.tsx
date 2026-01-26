@@ -1,8 +1,4 @@
-import {
-    companiesData,
-    itemsData,
-    mockUsers,
-} from '@/components/mockdata';
+import { companiesData, itemsData, mockUsers } from '@/components/mockdata';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { getInvoiceAddress } from '@/components/utils/functions';
@@ -92,9 +88,7 @@ export default function InvoiceDetailSlideout({
     // Get filtered invoice items for the current invoice
     const invoiceItems = useMemo(() => {
         if (!invoice) return [];
-        return itemsData.filter(
-            (item) => item.invoice_id === invoice.id,
-        );
+        return itemsData.filter((item) => item.invoice_id === invoice.id);
     }, [invoice]);
 
     // Use editable table hook
@@ -165,7 +159,7 @@ export default function InvoiceDetailSlideout({
                     market={invoice.market}
                 />
 
-                <div className="space-y-6 px-6 py-6">
+                <div className="space-y-6 p-4">
                     {/* Customer and Invoice Details Section */}
                     <div className="space-y-4">
                         <div className="flex flex-col gap-4 md:flex-row">
