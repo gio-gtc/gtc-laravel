@@ -13,7 +13,7 @@ import {
 } from '@/components/utils/column-row-layouts';
 import DateRangePicker from '@/components/utils/date-range-picker';
 import Divider from '@/components/utils/divider';
-import { type Order, type Venue } from '@/types';
+import { type Tour, type Venue } from '@/types';
 import { Calendar } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import VenueAutocomplete from './venue-autocomplete';
@@ -22,7 +22,7 @@ interface AddVenueModalProps {
     isOpen: boolean;
     onClose: () => void;
     orderId: number;
-    order: Order | null;
+    order: Tour | null;
 }
 
 function formatDateInput(value: string | undefined | null): string {
@@ -91,7 +91,7 @@ export default function AddVenueModal({
         }
 
         // TODO: Implement actual save logic with API call
-        // This would create a new OrderVenue entry in orderVenueData table
+        // This would create a new TourVenue entry in tourVenueData table
         console.log('Adding venue to order:', {
             orderId,
             venueId: selectedVenue.id,

@@ -108,8 +108,9 @@ export interface Invoice {
     deleted_reason: string | null;
 }
 
-export interface InvoiceItem {
+export interface Item {
     id: number;
+    order_id: number;
     invoice_id: number;
     code: string;
     description: string;
@@ -117,7 +118,7 @@ export interface InvoiceItem {
     price: number;
 }
 
-export interface Order {
+export interface Tour {
     id: number;
     name: string;
     performer: string;
@@ -131,14 +132,23 @@ export interface Order {
     due_date: string;
 }
 
-export interface OrderVenue {
+export interface TourVenue {
     id: number;
-    order_id: number;
+    tour_id: number;
     venue_id: number;
     start_date: string;
     end_date: string;
     client: number;
     status: 'completed' | 'in-progress' | 'pending' | 'paused' | 'edit';
+}
+
+export interface Order {
+    id: number;
+    tour_venue_id: number;
+    date: string;
+    hold_invoices: 0 | 1;
+    demo: 0 | 1;
+    hash: string;
 }
 
 export interface Venue {

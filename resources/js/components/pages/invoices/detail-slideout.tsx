@@ -1,13 +1,13 @@
 import {
     companiesData,
-    invoiceItemsData,
+    itemsData,
     mockUsers,
 } from '@/components/mockdata';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { getInvoiceAddress } from '@/components/utils/functions';
 import { useEditableTable } from '@/hooks/use-editable-table';
-import { type Invoice, type InvoiceItem } from '@/types';
+import { type Invoice, type Item } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
 import InvoiceActionButtons from './slideout/action-buttons';
 import InvoiceAddressForm from './slideout/address-form';
@@ -92,7 +92,7 @@ export default function InvoiceDetailSlideout({
     // Get filtered invoice items for the current invoice
     const invoiceItems = useMemo(() => {
         if (!invoice) return [];
-        return invoiceItemsData.filter(
+        return itemsData.filter(
             (item) => item.invoice_id === invoice.id,
         );
     }, [invoice]);
@@ -105,7 +105,7 @@ export default function InvoiceDetailSlideout({
         handleCellBlur,
         handleCellKeyDown,
         isEditing,
-    } = useEditableTable<InvoiceItem>({
+    } = useEditableTable<Item>({
         data: invoiceItems,
         getId: (item) => item.id,
     });

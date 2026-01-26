@@ -2,11 +2,12 @@ import {
     type Company,
     type Country,
     type Invoice,
-    type InvoiceItem,
+    type Item,
     type Venue,
     type VenueCollaborator,
     type Order,
-    type OrderVenue,
+    type Tour,
+    type TourVenue,
     type User,
 } from '@/types';
 
@@ -553,8 +554,8 @@ export const mockUsers: User[] = [
     },
 ];
 
-// Mock order data
-export const orderData: Order[] = [
+// Mock tour data
+export const tourData: Tour[] = [
     {
         id: 1,
         name: 'Matt Rife 2024',
@@ -668,12 +669,12 @@ export const orderData: Order[] = [
     },
 ];
 
-// Mock order-venue pivot data (many-to-many relationship)
-export const orderVenueData: OrderVenue[] = [
-    // Order 1 (Matt Rife 2024) connected to venues
+// Mock tour-venue pivot data (many-to-many relationship)
+export const tourVenueData: TourVenue[] = [
+    // Tour 1 (Matt Rife 2024) connected to venues
     {
         id: 1,
-        order_id: 1,
+        tour_id: 1,
         venue_id: 1,
         start_date: '2024-11-08T19:00:00Z',
         end_date: '2024-11-08T23:00:00Z',
@@ -682,7 +683,7 @@ export const orderVenueData: OrderVenue[] = [
     }, // Maddison Square Garden
     {
         id: 2,
-        order_id: 1,
+        tour_id: 1,
         venue_id: 2,
         start_date: '2024-11-08T18:00:00Z',
         end_date: '2024-11-08T22:30:00Z',
@@ -691,17 +692,17 @@ export const orderVenueData: OrderVenue[] = [
     }, // Sunset Amphitheater
     {
         id: 3,
-        order_id: 1,
+        tour_id: 1,
         venue_id: 3,
         start_date: '2024-11-08T19:30:00Z',
         end_date: '2024-11-08T23:00:00Z',
         client: 10,
         status: 'in-progress',
     }, // Alys Robinson Stephens
-    // Order 2 (Eagles Tour 2024) connected to venues
+    // Tour 2 (Eagles Tour 2024) connected to venues
     {
         id: 4,
-        order_id: 2,
+        tour_id: 2,
         venue_id: 4,
         start_date: '2024-11-08T18:30:00Z',
         end_date: '2024-11-08T22:00:00Z',
@@ -710,17 +711,17 @@ export const orderVenueData: OrderVenue[] = [
     }, // The Coca Cola Charlotte Harbor
     {
         id: 5,
-        order_id: 2,
+        tour_id: 2,
         venue_id: 5,
         start_date: '2024-11-15T19:00:00Z',
         end_date: '2024-11-15T23:30:00Z',
         client: 12,
         status: 'in-progress',
     }, // Hollywood Bowl
-    // Order 3 (Cirque du Soleil Echo) connected to venues
+    // Tour 3 (Cirque du Soleil Echo) connected to venues
     {
         id: 6,
-        order_id: 3,
+        tour_id: 3,
         venue_id: 1,
         start_date: '2024-11-08T19:00:00Z',
         end_date: '2024-11-08T23:00:00Z',
@@ -729,7 +730,7 @@ export const orderVenueData: OrderVenue[] = [
     }, // Maddison Square Garden
     {
         id: 7,
-        order_id: 3,
+        tour_id: 3,
         venue_id: 5,
         start_date: '2024-11-15T19:00:00Z',
         end_date: '2024-11-15T23:30:00Z',
@@ -738,17 +739,17 @@ export const orderVenueData: OrderVenue[] = [
     }, // Hollywood Bowl
     {
         id: 8,
-        order_id: 3,
+        tour_id: 3,
         venue_id: 6,
         start_date: '2024-11-16T19:30:00Z',
         end_date: '2024-11-16T23:00:00Z',
         client: 15,
         status: 'pending',
     }, // Chase Center
-    // Order 4 (Live Nation Concerts) connected to venues
+    // Tour 4 (Live Nation Concerts) connected to venues
     {
         id: 9,
-        order_id: 4,
+        tour_id: 4,
         venue_id: 2,
         start_date: '2024-11-08T18:00:00Z',
         end_date: '2024-11-08T22:30:00Z',
@@ -757,7 +758,7 @@ export const orderVenueData: OrderVenue[] = [
     }, // Sunset Amphitheater
     {
         id: 10,
-        order_id: 4,
+        tour_id: 4,
         venue_id: 3,
         start_date: '2024-11-08T19:30:00Z',
         end_date: '2024-11-08T23:00:00Z',
@@ -766,7 +767,7 @@ export const orderVenueData: OrderVenue[] = [
     }, // Alys Robinson Stephens
     {
         id: 11,
-        order_id: 4,
+        tour_id: 4,
         venue_id: 4,
         start_date: '2024-11-08T18:30:00Z',
         end_date: '2024-11-08T22:00:00Z',
@@ -775,17 +776,17 @@ export const orderVenueData: OrderVenue[] = [
     }, // The Coca Cola Charlotte Harbor
     {
         id: 12,
-        order_id: 4,
+        tour_id: 4,
         venue_id: 5,
         start_date: '2024-11-15T19:00:00Z',
         end_date: '2024-11-15T23:30:00Z',
         client: 12,
         status: 'in-progress',
     }, // Hollywood Bowl
-    // Order 5 (Bon Jovi 2024) connected to venues
+    // Tour 5 (Bon Jovi 2024) connected to venues
     {
         id: 13,
-        order_id: 5,
+        tour_id: 5,
         venue_id: 1,
         start_date: '2024-11-08T19:00:00Z',
         end_date: '2024-11-08T23:00:00Z',
@@ -794,17 +795,17 @@ export const orderVenueData: OrderVenue[] = [
     }, // Maddison Square Garden
     {
         id: 14,
-        order_id: 5,
+        tour_id: 5,
         venue_id: 6,
         start_date: '2024-11-16T19:30:00Z',
         end_date: '2024-11-16T23:00:00Z',
         client: 15,
         status: 'pending',
     }, // Chase Center
-    // Order 6 (Demi Lovato Tour) connected to venues
+    // Tour 6 (Demi Lovato Tour) connected to venues
     {
         id: 15,
-        order_id: 6,
+        tour_id: 6,
         venue_id: 3,
         start_date: '2024-11-08T19:30:00Z',
         end_date: '2024-11-08T23:00:00Z',
@@ -813,17 +814,17 @@ export const orderVenueData: OrderVenue[] = [
     }, // Alys Robinson Stephens
     {
         id: 16,
-        order_id: 6,
+        tour_id: 6,
         venue_id: 4,
         start_date: '2024-11-08T18:30:00Z',
         end_date: '2024-11-08T22:00:00Z',
         client: 11,
         status: 'paused',
     }, // The Coca Cola Charlotte Harbor
-    // Order 7 (Renee Rapp - Snow Tour) connected to venues
+    // Tour 7 (Renee Rapp - Snow Tour) connected to venues
     {
         id: 17,
-        order_id: 7,
+        tour_id: 7,
         venue_id: 2,
         start_date: '2024-11-08T18:00:00Z',
         end_date: '2024-11-08T22:30:00Z',
@@ -832,7 +833,7 @@ export const orderVenueData: OrderVenue[] = [
     }, // Sunset Amphitheater
     {
         id: 18,
-        order_id: 7,
+        tour_id: 7,
         venue_id: 5,
         start_date: '2024-11-15T19:00:00Z',
         end_date: '2024-11-15T23:30:00Z',
@@ -841,17 +842,17 @@ export const orderVenueData: OrderVenue[] = [
     }, // Hollywood Bowl
     {
         id: 19,
-        order_id: 7,
+        tour_id: 7,
         venue_id: 6,
         start_date: '2024-11-16T19:30:00Z',
         end_date: '2024-11-16T23:00:00Z',
         client: 15,
         status: 'pending',
     }, // Chase Center
-    // Order 8 (Cirque du Soleil Portfolio) connected to venues
+    // Tour 8 (Cirque du Soleil Portfolio) connected to venues
     {
         id: 20,
-        order_id: 8,
+        tour_id: 8,
         venue_id: 1,
         start_date: '2024-11-08T19:00:00Z',
         end_date: '2024-11-08T23:00:00Z',
@@ -860,7 +861,7 @@ export const orderVenueData: OrderVenue[] = [
     }, // Maddison Square Garden
     {
         id: 21,
-        order_id: 8,
+        tour_id: 8,
         venue_id: 6,
         start_date: '2024-11-16T19:30:00Z',
         end_date: '2024-11-16T23:00:00Z',
@@ -1767,11 +1768,213 @@ export const invoicesData: Invoice[] = [
     },
 ];
 
-// Mock invoice items data
-export const invoiceItemsData: InvoiceItem[] = [
+// Mock order data (new entity connecting tour_venues to items)
+export const orderData: Order[] = [
+    // Orders for tour_venue 1 (Matt Rife 2024 - Maddison Square Garden)
+    {
+        id: 1,
+        tour_venue_id: 1,
+        date: '2024-11-08T19:00:00Z',
+        hold_invoices: 1,
+        demo: 0,
+        hash: 'mattmsg001',
+    },
+    {
+        id: 2,
+        tour_venue_id: 1,
+        date: '2024-11-08T20:00:00Z',
+        hold_invoices: 0,
+        demo: 1,
+        hash: 'mattmsg002',
+    },
+    // Orders for tour_venue 2 (Matt Rife 2024 - Sunset Amphitheater)
+    {
+        id: 3,
+        tour_venue_id: 2,
+        date: '2024-11-08T18:00:00Z',
+        hold_invoices: 0,
+        demo: 0,
+        hash: 'mattsun001',
+    },
+    // Orders for tour_venue 3 (Matt Rife 2024 - Alys Robinson Stephens)
+    {
+        id: 4,
+        tour_venue_id: 3,
+        date: '2024-11-08T19:30:00Z',
+        hold_invoices: 1,
+        demo: 0,
+        hash: 'mattalys001',
+    },
+    // Orders for tour_venue 4 (Eagles Tour 2024 - The Coca Cola Charlotte Harbor)
+    {
+        id: 5,
+        tour_venue_id: 4,
+        date: '2024-11-08T18:30:00Z',
+        hold_invoices: 0,
+        demo: 0,
+        hash: 'eaglecoca001',
+    },
+    // Orders for tour_venue 5 (Eagles Tour 2024 - Hollywood Bowl)
+    {
+        id: 6,
+        tour_venue_id: 5,
+        date: '2024-11-15T19:00:00Z',
+        hold_invoices: 1,
+        demo: 0,
+        hash: 'eagleholly001',
+    },
+    // Orders for tour_venue 6 (Cirque du Soleil Echo - Maddison Square Garden)
+    {
+        id: 7,
+        tour_venue_id: 6,
+        date: '2024-11-08T19:00:00Z',
+        hold_invoices: 0,
+        demo: 0,
+        hash: 'cirquemsg001',
+    },
+    // Orders for tour_venue 7 (Cirque du Soleil Echo - Hollywood Bowl)
+    {
+        id: 8,
+        tour_venue_id: 7,
+        date: '2024-11-15T19:00:00Z',
+        hold_invoices: 1,
+        demo: 0,
+        hash: 'cirqueholly001',
+    },
+    // Orders for tour_venue 8 (Cirque du Soleil Echo - Chase Center)
+    {
+        id: 9,
+        tour_venue_id: 8,
+        date: '2024-11-16T19:30:00Z',
+        hold_invoices: 0,
+        demo: 0,
+        hash: 'cirquechase001',
+    },
+    // Orders for tour_venue 9 (Live Nation Concerts - Sunset Amphitheater)
+    {
+        id: 10,
+        tour_venue_id: 9,
+        date: '2024-11-08T18:00:00Z',
+        hold_invoices: 0,
+        demo: 0,
+        hash: 'livesun001',
+    },
+    // Orders for tour_venue 10 (Live Nation Concerts - Alys Robinson Stephens)
+    {
+        id: 11,
+        tour_venue_id: 10,
+        date: '2024-11-08T19:30:00Z',
+        hold_invoices: 1,
+        demo: 0,
+        hash: 'livealys001',
+    },
+    // Orders for tour_venue 11 (Live Nation Concerts - The Coca Cola Charlotte Harbor)
+    {
+        id: 12,
+        tour_venue_id: 11,
+        date: '2024-11-08T18:30:00Z',
+        hold_invoices: 0,
+        demo: 0,
+        hash: 'livecoca001',
+    },
+    // Orders for tour_venue 12 (Live Nation Concerts - Hollywood Bowl)
+    {
+        id: 13,
+        tour_venue_id: 12,
+        date: '2024-11-15T19:00:00Z',
+        hold_invoices: 0,
+        demo: 0,
+        hash: 'liveholly001',
+    },
+    // Orders for tour_venue 13 (Bon Jovi 2024 - Maddison Square Garden)
+    {
+        id: 14,
+        tour_venue_id: 13,
+        date: '2024-11-08T19:00:00Z',
+        hold_invoices: 1,
+        demo: 0,
+        hash: 'bonjovimsg001',
+    },
+    // Orders for tour_venue 14 (Bon Jovi 2024 - Chase Center)
+    {
+        id: 15,
+        tour_venue_id: 14,
+        date: '2024-11-16T19:30:00Z',
+        hold_invoices: 0,
+        demo: 0,
+        hash: 'bonjovichase001',
+    },
+    // Orders for tour_venue 15 (Demi Lovato Tour - Alys Robinson Stephens)
+    {
+        id: 16,
+        tour_venue_id: 15,
+        date: '2024-11-08T19:30:00Z',
+        hold_invoices: 1,
+        demo: 0,
+        hash: 'demialys001',
+    },
+    // Orders for tour_venue 16 (Demi Lovato Tour - The Coca Cola Charlotte Harbor)
+    {
+        id: 17,
+        tour_venue_id: 16,
+        date: '2024-11-08T18:30:00Z',
+        hold_invoices: 0,
+        demo: 0,
+        hash: 'demicoca001',
+    },
+    // Orders for tour_venue 17 (Renee Rapp - Snow Tour - Sunset Amphitheater)
+    {
+        id: 18,
+        tour_venue_id: 17,
+        date: '2024-11-08T18:00:00Z',
+        hold_invoices: 0,
+        demo: 0,
+        hash: 'reneesun001',
+    },
+    // Orders for tour_venue 18 (Renee Rapp - Snow Tour - Hollywood Bowl)
+    {
+        id: 19,
+        tour_venue_id: 18,
+        date: '2024-11-15T19:00:00Z',
+        hold_invoices: 1,
+        demo: 0,
+        hash: 'reneeholly001',
+    },
+    // Orders for tour_venue 19 (Renee Rapp - Snow Tour - Chase Center)
+    {
+        id: 20,
+        tour_venue_id: 19,
+        date: '2024-11-16T19:30:00Z',
+        hold_invoices: 0,
+        demo: 0,
+        hash: 'reneechase001',
+    },
+    // Orders for tour_venue 20 (Cirque du Soleil Portfolio - Maddison Square Garden)
+    {
+        id: 21,
+        tour_venue_id: 20,
+        date: '2024-11-08T19:00:00Z',
+        hold_invoices: 0,
+        demo: 1,
+        hash: 'portfoliomsg001',
+    },
+    // Orders for tour_venue 21 (Cirque du Soleil Portfolio - Chase Center)
+    {
+        id: 22,
+        tour_venue_id: 21,
+        date: '2024-11-16T19:30:00Z',
+        hold_invoices: 0,
+        demo: 0,
+        hash: 'portfoliochase001',
+    },
+];
+
+// Mock items data (was invoice items, now connects orders to invoices)
+export const itemsData: Item[] = [
     // Invoice 1 - 1 item (total: 8750.0)
     {
         id: 1,
+        order_id: 21,
         invoice_id: 1,
         code: 'Big Top',
         description: 'Large format tent structure rental',
@@ -1781,6 +1984,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     // Invoice 2 - 2 items (total: 7692.44)
     {
         id: 2,
+        order_id: 7,
         invoice_id: 2,
         code: 'TV',
         description: 'LED display screen rental - 65 inch',
@@ -1789,6 +1993,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 3,
+        order_id: 7,
         invoice_id: 2,
         code: 'Print',
         description: 'Printed promotional materials and banners',
@@ -1798,6 +2003,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     // Invoice 3 - 6 items (total: 9571.78)
     {
         id: 4,
+        order_id: 7,
         invoice_id: 3,
         code: 'Banner',
         description: 'Large format vinyl banner - 10ft x 20ft',
@@ -1806,6 +2012,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 5,
+        order_id: 7,
         invoice_id: 3,
         code: 'Signage',
         description: 'Directional signage set',
@@ -1814,6 +2021,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 6,
+        order_id: 7,
         invoice_id: 3,
         code: 'Digital Display',
         description: 'Digital display board rental',
@@ -1822,6 +2030,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 7,
+        order_id: 7,
         invoice_id: 3,
         code: 'Poster',
         description: 'Event posters - 24x36 inch',
@@ -1830,6 +2039,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 8,
+        order_id: 7,
         invoice_id: 3,
         code: 'Flyer',
         description: 'Promotional flyers - 8.5x11 inch',
@@ -1838,6 +2048,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 9,
+        order_id: 7,
         invoice_id: 3,
         code: 'Backdrop',
         description: 'Stage backdrop - custom printed',
@@ -1847,6 +2058,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     // Invoice 4 - 8 items (total: 9205.24)
     {
         id: 10,
+        order_id: 8,
         invoice_id: 4,
         code: 'LED Screen',
         description: 'LED video wall rental - 10x15ft',
@@ -1855,6 +2067,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 11,
+        order_id: 8,
         invoice_id: 4,
         code: 'TV',
         description: 'TV monitor rental - 55 inch',
@@ -1863,6 +2076,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 12,
+        order_id: 8,
         invoice_id: 4,
         code: 'Banner',
         description: 'Vinyl banner - 8ft x 16ft',
@@ -1871,6 +2085,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 13,
+        order_id: 8,
         invoice_id: 4,
         code: 'Signage',
         description: 'Wayfinding signage package',
@@ -1879,6 +2094,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 14,
+        order_id: 8,
         invoice_id: 4,
         code: 'Poster',
         description: 'Event posters - 18x24 inch',
@@ -1887,6 +2103,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 15,
+        order_id: 8,
         invoice_id: 4,
         code: 'Stage Set',
         description: 'Stage set pieces and props',
@@ -1895,6 +2112,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 16,
+        order_id: 8,
         invoice_id: 4,
         code: 'Backdrop',
         description: 'Custom printed backdrop - 20x30ft',
@@ -1903,6 +2121,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 17,
+        order_id: 8,
         invoice_id: 4,
         code: 'Print',
         description: 'Printed marketing materials',
@@ -1912,6 +2131,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     // Invoice 5 - 1 item (deleted invoice) (total: 3205.24)
     {
         id: 18,
+        order_id: 9,
         invoice_id: 5,
         code: 'Billboard',
         description: 'Outdoor billboard advertising',
@@ -1921,6 +2141,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     // Invoice 6 - 7 items (total: 9230.5)
     {
         id: 19,
+        order_id: 13,
         invoice_id: 6,
         code: 'Big Top',
         description: 'Large tent structure with setup',
@@ -1929,6 +2150,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 20,
+        order_id: 13,
         invoice_id: 6,
         code: 'LED Screen',
         description: 'LED video display - 12x20ft',
@@ -1937,6 +2159,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 21,
+        order_id: 13,
         invoice_id: 6,
         code: 'TV',
         description: 'TV monitor rental - 75 inch',
@@ -1945,6 +2168,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 22,
+        order_id: 13,
         invoice_id: 6,
         code: 'Banner',
         description: 'Custom vinyl banners - various sizes',
@@ -1953,6 +2177,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 23,
+        order_id: 13,
         invoice_id: 6,
         code: 'Signage',
         description: 'Event signage package',
@@ -1961,6 +2186,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 24,
+        order_id: 13,
         invoice_id: 6,
         code: 'Poster',
         description: 'Event posters - 24x36 inch',
@@ -1969,6 +2195,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 25,
+        order_id: 13,
         invoice_id: 6,
         code: 'Stage Set',
         description: 'Stage set design and installation',
@@ -1978,6 +2205,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     // Invoice 7 - 5 items (total: 8150.0)
     {
         id: 26,
+        order_id: 3,
         invoice_id: 7,
         code: 'Digital Display',
         description: 'Digital signage system rental',
@@ -1986,6 +2214,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 27,
+        order_id: 3,
         invoice_id: 7,
         code: 'TV',
         description: 'TV monitor rental - 65 inch',
@@ -1994,6 +2223,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 28,
+        order_id: 3,
         invoice_id: 7,
         code: 'Banner',
         description: 'Vinyl banner - 12ft x 24ft',
@@ -2002,6 +2232,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 29,
+        order_id: 3,
         invoice_id: 7,
         code: 'Print',
         description: 'Printed promotional materials',
@@ -2010,6 +2241,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 30,
+        order_id: 3,
         invoice_id: 7,
         code: 'Backdrop',
         description: 'Custom stage backdrop - 15x25ft',
@@ -2019,6 +2251,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     // Invoice 8 - 9 items (total: 9890.25)
     {
         id: 31,
+        order_id: 14,
         invoice_id: 8,
         code: 'Big Top',
         description: 'Premium tent structure rental',
@@ -2027,6 +2260,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 32,
+        order_id: 14,
         invoice_id: 8,
         code: 'LED Screen',
         description: 'LED video wall - 15x25ft',
@@ -2035,6 +2269,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 33,
+        order_id: 14,
         invoice_id: 8,
         code: 'TV',
         description: 'TV monitor rental - 85 inch',
@@ -2043,6 +2278,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 34,
+        order_id: 14,
         invoice_id: 8,
         code: 'Banner',
         description: 'Custom banners - various sizes',
@@ -2051,6 +2287,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 35,
+        order_id: 14,
         invoice_id: 8,
         code: 'Signage',
         description: 'Comprehensive signage package',
@@ -2059,6 +2296,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 36,
+        order_id: 14,
         invoice_id: 8,
         code: 'Poster',
         description: 'Event posters - 24x36 inch',
@@ -2067,6 +2305,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 37,
+        order_id: 14,
         invoice_id: 8,
         code: 'Flyer',
         description: 'Promotional flyers - 8.5x11 inch',
@@ -2075,6 +2314,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 38,
+        order_id: 14,
         invoice_id: 8,
         code: 'Stage Set',
         description: 'Premium stage set design',
@@ -2083,6 +2323,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 39,
+        order_id: 14,
         invoice_id: 8,
         code: 'Backdrop',
         description: 'Custom printed backdrop - 25x40ft',
@@ -2092,6 +2333,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     // Invoice 9 - 3 items (total: 8457.00)
     {
         id: 40,
+        order_id: 16,
         invoice_id: 9,
         code: 'Digital Display',
         description: 'Digital display board rental',
@@ -2100,6 +2342,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 41,
+        order_id: 16,
         invoice_id: 9,
         code: 'TV',
         description: 'TV monitor rental - 55 inch',
@@ -2108,6 +2351,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 42,
+        order_id: 16,
         invoice_id: 9,
         code: 'Print',
         description: 'Printed marketing materials package',
@@ -2117,6 +2361,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     // Invoice 10 - 4 items (total: 6945.33)
     {
         id: 43,
+        order_id: 18,
         invoice_id: 10,
         code: 'Banner',
         description: 'Vinyl banner - 10ft x 20ft',
@@ -2125,6 +2370,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 44,
+        order_id: 18,
         invoice_id: 10,
         code: 'Signage',
         description: 'Event signage set',
@@ -2133,6 +2379,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 45,
+        order_id: 18,
         invoice_id: 10,
         code: 'Poster',
         description: 'Event posters - 18x24 inch',
@@ -2141,6 +2388,7 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
     {
         id: 46,
+        order_id: 18,
         invoice_id: 10,
         code: 'Backdrop',
         description: 'Stage backdrop - 12x20ft',

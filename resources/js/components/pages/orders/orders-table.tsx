@@ -1,7 +1,7 @@
 import {
     mockUsers,
-    orderData,
-    orderVenueData,
+    tourData,
+    tourVenueData,
     venueCollaboratorData,
     venuesData,
 } from '@/components/mockdata';
@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/table';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
-import { type Order, type OrderVenue, type User, type Venue } from '@/types';
+import { type Tour, type TourVenue, type User, type Venue } from '@/types';
 import {
     ChevronDown,
     ChevronRight,
@@ -31,9 +31,9 @@ import CollaboratorEditDialog from './collaborator-edit-dialog';
 import StatusIcon from './status-icon';
 
 type GroupedOrderData = {
-    order: Order;
+    order: Tour;
     venues: Array<{
-        orderVenue: OrderVenue;
+        orderVenue: TourVenue;
         venue: Venue;
     }>;
 };
@@ -49,10 +49,10 @@ function OrdersTable() {
 
     // Transform data into grouped structure
     const groupedData = useMemo<GroupedOrderData[]>(() => {
-        return orderData.map((order) => ({
+        return tourData.map((order) => ({
             order,
-            venues: orderVenueData
-                .filter((ov) => ov.order_id === order.id)
+            venues: tourVenueData
+                .filter((ov) => ov.tour_id === order.id)
                 .map((ov) => ({
                     orderVenue: ov,
                     venue: venuesData.find((v) => v.id === ov.venue_id)!,
@@ -100,8 +100,8 @@ function OrdersTable() {
                 newSet.delete(orderId);
                 setSelectedVenueIds((prevSelected) => {
                     // Get all venue IDs for this order
-                    const venueIdsForOrder = orderVenueData
-                        .filter((ov) => ov.order_id === orderId)
+                    const venueIdsForOrder = tourVenueData
+                        .filter((ov) => ov.tour_id === orderId)
                         .map((ov) => ov.id);
                     // Remove any selected venues that belong to this order
                     return prevSelected.filter(
@@ -122,7 +122,7 @@ function OrdersTable() {
             // Check if any existing selection belongs to a different order group
             const existingOrderId =
                 prev.length > 0
-                    ? orderVenueData.find((ov) => ov.id === prev[0])?.order_id
+                    ? tourVenueData.find((ov) => ov.id === prev[0])?.tour_id
                     : null;
 
             // If selecting from a different group, clear and start fresh
@@ -141,12 +141,12 @@ function OrdersTable() {
     // Get selected order from first selected venue
     const selectedOrder = useMemo(() => {
         if (selectedVenueIds.length === 0) return null;
-        const firstSelectedVenue = orderVenueData.find(
+        const firstSelectedVenue = tourVenueData.find(
             (ov) => ov.id === selectedVenueIds[0],
         );
         if (!firstSelectedVenue) return null;
         return (
-            orderData.find((o) => o.id === firstSelectedVenue.order_id) || null
+            tourData.find((o) => o.id === firstSelectedVenue.tour_id) || null
         );
     }, [selectedVenueIds]);
 
