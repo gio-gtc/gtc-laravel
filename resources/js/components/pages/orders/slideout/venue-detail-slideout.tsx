@@ -1,7 +1,5 @@
-import { mockUsers, venueCollaboratorData } from '@/components/mockdata';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import Divider from '@/components/utils/divider';
-import { useInitials } from '@/hooks/use-initials';
 import { type Tour, type TourVenue, type Venue } from '@/types';
 import { useMemo } from 'react';
 import VenueSlideoutHeader from './venue-slideout-header';
@@ -22,47 +20,6 @@ export default function VenueDetailSlideout({
     isOpen,
     onClose,
 }: VenueDetailSlideoutProps) {
-    const getInitials = useInitials();
-
-    // Get client user
-    const client = useMemo(() => {
-        if (!venueItem) return undefined;
-        return mockUsers.find(
-            (user) => user.id === venueItem.orderVenue.client,
-        );
-    }, [venueItem]);
-
-    // Get collaborators for the venue
-    const collaborators = useMemo(() => {
-        if (!venueItem) return [];
-        const collaboratorIds = venueCollaboratorData
-            .filter((vc) => vc.venue_id === venueItem.venue.id)
-            .map((vc) => vc.mockUser_id);
-        return mockUsers.filter((user) => collaboratorIds.includes(user.id));
-    }, [venueItem]);
-
-    // Format date (full format with time)
-    const formatDateTime = (dateString: string): string => {
-        const date = new Date(dateString);
-        return new Intl.DateTimeFormat('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true,
-        }).format(date);
-    };
-
-    // Format date (short format: "Nov 8")
-    const formatDate = (dateString: string): string => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-        });
-    };
-
     // Format event dates for header (e.g., "Friday, July 12 2026 & Saturday, July 13, 2026")
     const formatEventDates = useMemo(() => {
         if (!venueItem) return undefined;
@@ -79,7 +36,6 @@ export default function VenueDetailSlideout({
         };
 
         const startFormatted = formatSingleDate(startDate);
-        const endFormatted = formatSingleDate(endDate);
 
         // If same day, just return one date
         if (startDate.toDateString() === endDate.toDateString()) {
