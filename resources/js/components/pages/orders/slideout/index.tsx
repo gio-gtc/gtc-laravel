@@ -115,30 +115,7 @@ export default function VenueDetailSlideout({
                 />
 
                 <Divider />
-                <SwitchView
-                    switchedView={
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold">
-                                Details View
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                                This is the switched view content. You can
-                                replace this with any component.
-                            </p>
-                        </div>
-                    }
-                    defaultView={
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold">
-                                Default View
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                                This is the default view content. You can
-                                replace this with any component.
-                            </p>
-                        </div>
-                    }
-                />
+                <SwitchView />
             </SheetContent>
         </Sheet>
     );
