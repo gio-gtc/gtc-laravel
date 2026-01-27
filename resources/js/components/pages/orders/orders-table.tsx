@@ -28,8 +28,8 @@ import {
 import { Fragment, useMemo, useState } from 'react';
 import AddVenueModal from './add-venue-modal';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
+import VenueDetailSlideout from './slideout';
 import StatusIcon from './status-icon';
-import VenueDetailSlideout from './slideout/venue-detail-slideout';
 
 type GroupedOrderData = {
     order: Tour;
@@ -356,14 +356,18 @@ function OrdersTable() {
                                                                 </span>
                                                                 <ChevronRight
                                                                     className="h-4 w-4 cursor-pointer text-gray-400 hover:text-gray-600"
-                                                                    onClick={(e) => {
+                                                                    onClick={(
+                                                                        e,
+                                                                    ) => {
                                                                         e.stopPropagation();
-                                                                        setSelectedVenueForSlideout({
-                                                                            orderVenue:
-                                                                                venueItem.orderVenue,
-                                                                            venue: venueItem.venue,
-                                                                            order: group.order,
-                                                                        });
+                                                                        setSelectedVenueForSlideout(
+                                                                            {
+                                                                                orderVenue:
+                                                                                    venueItem.orderVenue,
+                                                                                venue: venueItem.venue,
+                                                                                order: group.order,
+                                                                            },
+                                                                        );
                                                                     }}
                                                                 />
                                                             </div>

@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Dispatch, SetStateAction, useState, type ReactNode } from 'react';
+import Filters from './general-media/filters';
 
 interface SwitchViewProps {
     switchedView: ReactNode;
-    defaultView?: ReactNode;
+    defaultView: ReactNode;
     defaultToSwitched?: boolean;
 }
 
@@ -16,7 +17,7 @@ export default function SwitchView({
     const [isSwitched, setIsSwitched] = useState(defaultToSwitched);
 
     return (
-        <div className="space-y-4">
+        <>
             <div className="flex gap-1 rounded-lg bg-neutral-100 p-1">
                 <SwitchButton
                     title="General Media"
@@ -30,9 +31,10 @@ export default function SwitchView({
                 />
             </div>
             <div className="slide-out-container">
+                <Filters />
                 {isSwitched ? switchedView : defaultView}
             </div>
-        </div>
+        </>
     );
 }
 

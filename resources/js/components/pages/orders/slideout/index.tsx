@@ -100,7 +100,7 @@ export default function VenueDetailSlideout({
         <Sheet open={isOpen} onOpenChange={onClose}>
             <SheetContent
                 side="right"
-                className="w-full overflow-y-auto sm:max-w-5xl"
+                className="w-full gap-1 overflow-y-auto sm:max-w-5xl"
                 showExitBtn={false}
             >
                 <VenueSlideoutHeader
