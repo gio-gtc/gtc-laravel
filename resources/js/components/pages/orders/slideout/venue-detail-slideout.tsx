@@ -2,6 +2,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import Divider from '@/components/utils/divider';
 import { type Tour, type TourVenue, type Venue } from '@/types';
 import { useMemo } from 'react';
+import SwitchView from './switch-view';
 import VenueSlideoutHeader from './venue-slideout-header';
 
 interface VenueDetailSlideoutProps {
@@ -99,7 +100,7 @@ export default function VenueDetailSlideout({
         <Sheet open={isOpen} onOpenChange={onClose}>
             <SheetContent
                 side="right"
-                className="w-full overflow-y-auto px-4 pt-4 pb-4 sm:max-w-5xl"
+                className="w-full overflow-y-auto sm:max-w-5xl"
                 showExitBtn={false}
             >
                 <VenueSlideoutHeader
@@ -114,7 +115,30 @@ export default function VenueDetailSlideout({
                 />
 
                 <Divider />
-                <div className="space-y-2 p-4">Testing</div>
+                <SwitchView
+                    switchedView={
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-semibold">
+                                Details View
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                This is the switched view content. You can
+                                replace this with any component.
+                            </p>
+                        </div>
+                    }
+                    defaultView={
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-semibold">
+                                Default View
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                This is the default view content. You can
+                                replace this with any component.
+                            </p>
+                        </div>
+                    }
+                />
             </SheetContent>
         </Sheet>
     );

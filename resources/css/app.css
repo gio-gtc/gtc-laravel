@@ -155,4 +155,8 @@
         -moz-appearance: textfield;
         appearance: textfield;
     }
+
+    .slide-out-container {
+        @apply px-4 pt-4 pb-4;
+    }
 }
