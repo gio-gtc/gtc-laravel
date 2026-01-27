@@ -165,3 +165,32 @@ export interface VenueCollaborator {
     venue_id: number;
     mockUser_id: number;
 }
+
+export interface MediaTableRow {
+    id: string | number;
+    isci: string;
+    cutName: string;
+    duration: string; // e.g., ":45"
+    dueDate: string; // e.g., "1/15/25"
+    assigned: User | null;
+    status:
+        | 'Still in Cart'
+        | 'Client Review'
+        | 'In Production'
+        | 'Out for Delivery'
+        | 'Cancelled'
+        | 'Revision Requested'
+        | 'Unassigned';
+    previewIcons: React.ReactNode[]; // Array of icon components
+    deliverables?: {
+        onReject?: () => void;
+        onApprove?: () => void;
+    };
+}
+
+export interface MediaTableProps {
+    title: string; // Dynamic title (e.g., "Broadcast & Streaming Video")
+    data: MediaTableRow[];
+    defaultOpen?: boolean; // Default: true
+    onAdd?: () => void; // Optional callback for add button
+}
