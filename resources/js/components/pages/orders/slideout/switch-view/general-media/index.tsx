@@ -9,6 +9,7 @@ import {
 } from '@/types';
 import { Eye, Link } from 'lucide-react';
 import { useMemo } from 'react';
+import ChatIndex from '../reuse/chat';
 import SectionContainers from '../reuse/section-containers';
 import AttachmentsSection from './attachments-section';
 import BillingSection from './billing-section';
@@ -97,6 +98,11 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
             {/* Attachments Section */}
             <SectionContainers title="Attachments">
                 <AttachmentsSection />
+            </SectionContainers>
+
+            {/* Chat Section */}
+            <SectionContainers title="Comments">
+                <ChatIndex />
             </SectionContainers>
         </>
     );
