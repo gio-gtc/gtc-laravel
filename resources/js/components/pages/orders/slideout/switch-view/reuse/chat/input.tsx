@@ -38,11 +38,9 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         },
     });
 
+    console.log(editor);
     // Reset editor when disabled state changes (e.g., after send)
     useEffect(() => {
-        if (!disabled && editor) {
-            editor.commands.focus();
-        }
         if (disabled && editor) {
             editor.commands.clearContent();
         }

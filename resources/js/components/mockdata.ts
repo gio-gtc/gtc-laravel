@@ -3,12 +3,12 @@ import {
     type Country,
     type Invoice,
     type Item,
-    type Venue,
-    type VenueCollaborator,
     type Order,
     type Tour,
     type TourVenue,
     type User,
+    type Venue,
+    type VenueCollaborator,
 } from '@/types';
 
 // Mock data for mini charts - static data showing upward trend TODO: Delete and use actual mockdata schema (Anything without a type must go!)
@@ -153,7 +153,7 @@ export const salesByRepData = [
 // Mock users for clients and collaborators
 export const mockUsers: User[] = [
     {
-        id: 1,
+        id: 26,
         name: 'Sarah Johnson',
         email: 'sarah.johnson@example.com',
         avatar: null,
