@@ -10,6 +10,7 @@ import {
 import { Eye, Link } from 'lucide-react';
 import { useMemo } from 'react';
 import SectionContainers from '../reuse/section-containers';
+import AttachmentsSection from './attachments-section';
 import BillingSection from './billing-section';
 import Filters from './filters';
 import MediaTable from './media-table';
@@ -77,6 +78,8 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
                     data={exampleData}
                 />
             </div>
+
+            {/* Submit Order Buttons */}
             <div className="flex justify-center gap-1 rounded-lg bg-neutral-100 p-1">
                 <Button className="cursor-pointer bg-white text-gray-700 hover:bg-gray-200">
                     Cancel
@@ -89,6 +92,11 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
             {/* Billing Section */}
             <SectionContainers title="Billing Invoices">
                 <BillingSection billingInvoices={billingInvoices} />
+            </SectionContainers>
+
+            {/* Attachments Section */}
+            <SectionContainers title="Attachments">
+                <AttachmentsSection />
             </SectionContainers>
         </>
     );

@@ -2,21 +2,48 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-const Table = React.forwardRef<
-    HTMLTableElement,
-    React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-    <div className="relative w-full overflow-auto">
-        <table
-            ref={ref}
-            className={cn(
-                'w-full caption-bottom text-sm [&_td:not(:last-child)]:border-r [&_th:not(:last-child)]:border-r',
-                className,
-            )}
-            {...props}
-        />
-    </div>
-));
+const table_layouts = {
+    boxed: '[&_td:not(:last-child)]:border-r [&_th:not(:last-child)]:border-r',
+    dash: cn(
+        // TODO: Fix last column (5px to low)
+        // 1. Setup the parent cells (relative positioning is required)
+        '[&_td]:relative [&_th:not(:last-child)]:relative',
+        // 2. REQUIRED: Set content to empty string so the element actually renders
+        "[&_td:not(:last-child)]:after:content-[''] [&_th:not(:last-child)]:after:content-['']",
+        // 3. Position the line
+        '[&_td:not(:last-child)]:after:absolute [&_th:not(:last-child)]:after:absolute',
+        '[&_td:not(:last-child)]:after:right-0 [&_th:not(:last-child)]:after:right-0',
+        '[&_td:not(:last-child)]:after:top-1/2 [&_th:not(:last-child)]:after:top-1/2',
+        '[&_td:not(:last-child)]:after:-translate-y-1/2 [&_th:not(:last-child)]:after:-translate-y-1/2',
+        // 4. Dimensions (#% height, 1px width)
+        '[&_td:not(:last-child)]:after:h-[35%] [&_th:not(:last-child)]:after:h-[35%]',
+        '[&_td:not(:last-child)]:after:w-[1px] [&_th:not(:last-child)]:after:w-[1px]',
+        // 5. Coloring & Visibility
+        '[&_td:not(:last-child)]:after:bg-border [&_th:not(:last-child)]:after:bg-border',
+        // Ensure it sits above any row background colors
+        '[&_td:not(:last-child)]:after:z-10 [&_th:not(:last-child)]:after:z-10',
+    ),
+    none: '',
+};
+interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
+    layout?: 'boxed' | 'dash' | 'none';
+}
+
+const Table = React.forwardRef<HTMLTableElement, TableProps>(
+    ({ className, layout = 'boxed', ...props }, ref) => (
+        <div className="relative w-full overflow-auto">
+            <table
+                ref={ref}
+                className={cn(
+                    'w-full caption-bottom text-sm',
+                    table_layouts[layout],
+                    className,
+                )}
+                {...props}
+            />
+        </div>
+    ),
+);
 Table.displayName = 'Table';
 
 const TableHeader = React.forwardRef<
