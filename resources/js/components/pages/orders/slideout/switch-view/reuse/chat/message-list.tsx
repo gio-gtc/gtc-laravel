@@ -49,16 +49,31 @@ export default function MessageList({ messages, currentUserId }: Props) {
                 // CASE 2: Render Message Bubble
                 const isMe = item.sender_id === currentUserId;
 
-                // Parse Content: If it's JSON (Tiptap), extract text, otherwise print string
-                // Ideally, you'd use Tiptap's generateHTML here, but for now we fallback:
+                // otherwise print string.
                 let contentRender = 'Unsupported content';
                 if (typeof item.content === 'string') {
                     contentRender = item.content;
                 } else if (item.content?.type === 'doc') {
-                    // Simple fallback for JSON content if you don't have a renderer yet
+                    const blocks = item.content.content ?? [];
+                    const parts: string[] = [];
+
+                    blocks.forEach((block: any, blockIndex: number) => {
+                        const inner = block?.content ?? [];
+                        inner.forEach((node: any) => {
+                            if (node.type === 'text' && node.text) {
+                                parts.push(node.text);
+                            } else if (node.type === 'hardBreak') {
+                                parts.push('\n');
+                            }
+                        });
+                        // Add an extra line break between paragraphs
+                        if (blockIndex < blocks.length - 1) {
+                            parts.push('\n');
+                        }
+                    });
+
                     contentRender =
-                        item.content.content?.[0]?.content?.[0]?.text ||
-                        '(Empty)';
+                        parts.join('') === '' ? '(Empty)' : parts.join('');
                 }
 
                 return (

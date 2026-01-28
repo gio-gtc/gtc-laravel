@@ -26,11 +26,31 @@ export function useChat(channelId: string, currentUserId: number) {
                 { event: 'INSERT', schema: 'public', table: 'messages' },
                 (payload) => {
                     const newMessage = payload.new as Message;
-                    // Prevent duplicate if we added it optimistically
+
                     setMessages((prev) => {
+                        const last = prev[prev.length - 1];
+                        if (
+                            last &&
+                            last.sender_id === newMessage.sender_id &&
+                            last.status === 'sending'
+                        ) {
+                            const updated = [...prev];
+                            updated[updated.length - 1] = {
+                                ...newMessage,
+                                status: 'sent',
+                            };
+                            return updated;
+                        }
+
                         if (prev.find((m) => m.id === newMessage.id))
                             return prev;
-                        return [...prev, newMessage];
+                        return [
+                            ...prev,
+                            {
+                                ...newMessage,
+                                status: 'sent',
+                            },
+                        ];
                     });
                 },
             )
@@ -39,7 +59,7 @@ export function useChat(channelId: string, currentUserId: number) {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [channelId]);
+    }, [channelId, currentUserId]);
 
     // 3. Send Message (The "Store" method with Optimistic UI)
     const sendMessage = useCallback(
@@ -70,14 +90,6 @@ export function useChat(channelId: string, currentUserId: number) {
                 setMessages((prev) =>
                     prev.map((m) =>
                         m.id === tempId ? { ...m, status: 'error' } : m,
-                    ),
-                );
-            } else {
-                // The Realtime subscription will likely confirm this,
-                // but we can update status to 'sent' here to be sure.
-                setMessages((prev) =>
-                    prev.map((m) =>
-                        m.id === tempId ? { ...m, status: 'sent' } : m,
                     ),
                 );
             }
