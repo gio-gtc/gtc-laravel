@@ -59,7 +59,7 @@ export default function MediaTable({
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <div className="space-y-2">
                 {/* Collapsible Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
                     <CollapsibleTrigger asChild>
                         <button className="flex items-center gap-2 text-left hover:opacity-80">
                             {isOpen ? (
@@ -75,10 +75,10 @@ export default function MediaTable({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        className="size-4.5 rounded-full border-1 border-gray-400 text-gray-400"
                         onClick={onAdd || (() => {})}
                     >
-                        <Plus className="h-4 w-4" />
+                        <Plus className="size-3" />
                     </Button>
                 </div>
 
@@ -135,11 +135,11 @@ export default function MediaTable({
                                                     </span>
                                                 )}
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell className="text-center">
                                                 {getStatusBadge(row.status)}
                                             </TableCell>
                                             <TableCell>
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center justify-center gap-2">
                                                     {row.previewIcons.map(
                                                         (icon, index) => (
                                                             <span
@@ -153,13 +153,13 @@ export default function MediaTable({
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center justify-center gap-2">
                                                     {row.deliverables
                                                         ?.onReject && (
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className="h-6 w-6 rounded-full bg-red-500 text-white hover:bg-red-600"
+                                                            className="h-6 w-6 rounded-full border border-red-500 text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
                                                             onClick={
                                                                 row.deliverables
                                                                     ?.onReject
@@ -173,7 +173,7 @@ export default function MediaTable({
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            className="h-6 w-6 rounded-full bg-green-500 text-white hover:bg-green-600"
+                                                            className="h-6 w-6 rounded-full border border-green-500 text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
                                                             onClick={
                                                                 row.deliverables
                                                                     ?.onApprove

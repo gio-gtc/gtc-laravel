@@ -50,7 +50,7 @@ export default function VenueSlideoutHeader({
     return (
         <SheetHeader className="relative p-0">
             {/* Top row: Green icon on left, action buttons on right */}
-            <div className="slide-out-container mb-2 flex items-center justify-between">
+            <div className="slide-out-container flex items-center justify-between">
                 {/* Green document icon with plus (decorative) */}
                 <div className="flex h-8 w-8 items-center justify-center rounded-md bg-green-500">
                     <ClipboardPlus className="h-5 w-5 text-white" />
