@@ -1,10 +1,10 @@
+import { Button } from '@/components/ui/button';
 import { MediaTableRow } from '@/types';
 import { Eye, Link } from 'lucide-react';
 import Filters from './filters';
 import MediaTable from './media-table';
 
 function GeneralMediaView() {
-    // Example data - replace with actual data from props/state
     const exampleData: MediaTableRow[] = [
         {
             id: 1,
@@ -37,14 +37,30 @@ function GeneralMediaView() {
     ];
 
     return (
-        <div className="space-y-4">
-            <Filters />
-            <MediaTable
-                title="Broadcast & Streaming Video"
-                data={exampleData}
-                defaultOpen={true}
-            />
-        </div>
+        <>
+            <div className="slide-out-container space-y-4">
+                <Filters />
+                <MediaTable
+                    title="Broadcast & Streaming Video"
+                    data={exampleData}
+                />
+                <MediaTable title="Social Video" data={exampleData} />
+                <MediaTable title="Audio" data={exampleData} />
+                <MediaTable
+                    title="Key Art & Static Assets"
+                    data={exampleData}
+                />
+            </div>
+            <div className="flex justify-center gap-1 rounded-lg bg-neutral-100 p-1">
+                <Button className="cursor-pointer bg-white text-gray-700 hover:bg-gray-200">
+                    Cancel
+                </Button>
+                <Button className="cursor-pointer bg-brand-gtc-red hover:bg-brand-gtc-red/70">
+                    Submit Order
+                </Button>
+            </div>
+            <div className="slide-out-container space-y-4">Test</div>
+        </>
     );
 }
 

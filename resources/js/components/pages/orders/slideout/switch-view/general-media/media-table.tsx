@@ -170,7 +170,7 @@ export default function MediaTable({
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        className="h-6 w-6 cursor-pointer rounded-full border border-red-500 text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
+                                                        className="size-4 cursor-pointer rounded-full border border-red-500 text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
                                                         onClick={
                                                             row.deliverables
                                                                 ?.onReject ||
@@ -181,12 +181,12 @@ export default function MediaTable({
                                                                 ))
                                                         }
                                                     >
-                                                        <X className="h-3 w-3" />
+                                                        <X className="size-3" />
                                                     </Button>
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        className="h-6 w-6 cursor-pointer rounded-full border border-green-500 text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
+                                                        className="size-4 cursor-pointer rounded-full border border-green-500 text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
                                                         onClick={
                                                             row.deliverables
                                                                 ?.onApprove ||
@@ -197,7 +197,7 @@ export default function MediaTable({
                                                                 ))
                                                         }
                                                     >
-                                                        <Check className="h-3 w-3" />
+                                                        <Check className="size-3" />
                                                     </Button>
                                                 </div>
                                             </TableCell>

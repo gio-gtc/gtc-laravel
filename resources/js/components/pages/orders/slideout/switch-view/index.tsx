@@ -27,9 +27,7 @@ export default function SwitchView({
                     setIsSwitched={setIsSwitched}
                 />
             </div>
-            <div className="slide-out-container">
-                {isSwitched ? <LocalArtView /> : <GeneralMediaView />}
-            </div>
+            {isSwitched ? <LocalArtView /> : <GeneralMediaView />}
         </>
     );
 }
