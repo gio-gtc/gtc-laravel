@@ -112,10 +112,11 @@ export default function VenueDetailSlideout({
                     ticketSaleDate={mockTicketSaleDate}
                     website={mockWebsite}
                     presaleInfo={mockPresaleInfo}
+                    onClose={onClose}
                 />
 
                 <Divider />
-                <SwitchView />
+                <SwitchView order={order} venueItem={venueItem} />
             </SheetContent>
         </Sheet>
     );

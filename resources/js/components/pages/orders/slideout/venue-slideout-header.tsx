@@ -25,6 +25,7 @@ interface VenueSlideoutHeaderProps {
     onSend?: () => void;
     onMaximize?: () => void;
     onMore?: () => void;
+    onClose: () => void;
 }
 
 export default function VenueSlideoutHeader({
@@ -41,6 +42,7 @@ export default function VenueSlideoutHeader({
     onSend = () => console.log('Send clicked'),
     onMaximize = () => console.log('Maximize clicked'),
     onMore = () => console.log('More clicked'),
+    onClose,
 }: VenueSlideoutHeaderProps) {
     // Format venue display with city if available
     const venueDisplay = city
@@ -103,7 +105,7 @@ export default function VenueSlideoutHeader({
                         variant="ghost"
                         size="icon"
                         className="h-6 w-6"
-                        onClick={onMore}
+                        onClick={onClose}
                     >
                         <ArrowRightToLine className="h-4 w-4" />
                     </Button>

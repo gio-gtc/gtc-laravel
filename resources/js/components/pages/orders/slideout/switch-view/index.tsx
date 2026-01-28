@@ -1,15 +1,20 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { type Tour, type TourVenue, type Venue } from '@/types';
 import { Dispatch, SetStateAction, useState } from 'react';
 import GeneralMediaView from './general-media';
 import LocalArtView from './local-art';
 
 interface SwitchViewProps {
     defaultToSwitched?: boolean;
+    order: Tour | null;
+    venueItem: { orderVenue: TourVenue; venue: Venue } | null;
 }
 
 export default function SwitchView({
     defaultToSwitched = false,
+    order,
+    venueItem,
 }: SwitchViewProps) {
     const [isSwitched, setIsSwitched] = useState(defaultToSwitched);
 
@@ -27,7 +32,11 @@ export default function SwitchView({
                     setIsSwitched={setIsSwitched}
                 />
             </div>
-            {isSwitched ? <LocalArtView /> : <GeneralMediaView />}
+            {isSwitched ? (
+                <LocalArtView />
+            ) : (
+                <GeneralMediaView order={order} venueItem={venueItem} />
+            )}
         </>
     );
 }
