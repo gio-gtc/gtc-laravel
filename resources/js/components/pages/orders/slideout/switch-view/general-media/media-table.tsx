@@ -75,8 +75,10 @@ export default function MediaTable({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="size-4.5 rounded-full border-1 border-gray-400 text-gray-400"
-                        onClick={onAdd || (() => {})}
+                        className="size-4.5 cursor-pointer rounded-full border-1 border-gray-400 text-gray-400 hover:border-gray-500"
+                        onClick={
+                            onAdd || (() => console.log('Add button clicked'))
+                        }
                     >
                         <Plus className="size-3" />
                     </Button>
@@ -142,46 +144,61 @@ export default function MediaTable({
                                                 <div className="flex items-center justify-center gap-2">
                                                     {row.previewIcons.map(
                                                         (icon, index) => (
-                                                            <span
+                                                            <button
                                                                 key={index}
-                                                                className="text-gray-600"
+                                                                className="cursor-pointer text-gray-600 hover:text-gray-900"
+                                                                onClick={() =>
+                                                                    console.log(
+                                                                        'Preview icon clicked:',
+                                                                        {
+                                                                            rowId: row.id,
+                                                                            iconIndex:
+                                                                                index,
+                                                                            isci: row.isci,
+                                                                        },
+                                                                    )
+                                                                }
                                                             >
                                                                 {icon}
-                                                            </span>
+                                                            </button>
                                                         ),
                                                     )}
                                                 </div>
                                             </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center justify-center gap-2">
-                                                    {row.deliverables
-                                                        ?.onReject && (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-6 w-6 rounded-full border border-red-500 text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
-                                                            onClick={
-                                                                row.deliverables
-                                                                    ?.onReject
-                                                            }
-                                                        >
-                                                            <X className="h-3 w-3" />
-                                                        </Button>
-                                                    )}
-                                                    {row.deliverables
-                                                        ?.onApprove && (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-6 w-6 rounded-full border border-green-500 text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
-                                                            onClick={
-                                                                row.deliverables
-                                                                    ?.onApprove
-                                                            }
-                                                        >
-                                                            <Check className="h-3 w-3" />
-                                                        </Button>
-                                                    )}
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-6 w-6 cursor-pointer rounded-full border border-red-500 text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
+                                                        onClick={
+                                                            row.deliverables
+                                                                ?.onReject ||
+                                                            (() =>
+                                                                console.log(
+                                                                    'Reject clicked for row:',
+                                                                    row.id,
+                                                                ))
+                                                        }
+                                                    >
+                                                        <X className="h-3 w-3" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="h-6 w-6 cursor-pointer rounded-full border border-green-500 text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
+                                                        onClick={
+                                                            row.deliverables
+                                                                ?.onApprove ||
+                                                            (() =>
+                                                                console.log(
+                                                                    'Approve clicked for row:',
+                                                                    row.id,
+                                                                ))
+                                                        }
+                                                    >
+                                                        <Check className="h-3 w-3" />
+                                                    </Button>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
