@@ -1,10 +1,25 @@
+import { invoicesData } from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
-import { MediaTableRow } from '@/types';
+import {
+    type Invoice,
+    type MediaTableRow,
+    type Tour,
+    type TourVenue,
+    type Venue,
+} from '@/types';
 import { Eye, Link } from 'lucide-react';
+import { useMemo } from 'react';
+import SectionContainers from '../reuse/section-containers';
+import BillingSection from './billing-section';
 import Filters from './filters';
 import MediaTable from './media-table';
 
-function GeneralMediaView() {
+interface GeneralMediaViewProps {
+    order: Tour | null;
+    venueItem: { orderVenue: TourVenue; venue: Venue } | null;
+}
+
+function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
     const exampleData: MediaTableRow[] = [
         {
             id: 1,
@@ -23,7 +38,7 @@ function GeneralMediaView() {
             cutName: 'Generic Coming soon',
             duration: ':30',
             dueDate: '1/15/25',
-            assigned: null, // Replace with actual User object when available
+            assigned: null,
             status: 'Client Review',
             previewIcons: [
                 <Eye key="eye" className="h-4 w-4" />,
@@ -36,8 +51,19 @@ function GeneralMediaView() {
         },
     ];
 
+    const billingInvoices = useMemo((): Invoice[] => {
+        if (!order || !venueItem) return [];
+        return invoicesData.filter(
+            (inv) =>
+                !inv.isDeleted &&
+                inv.tour === order.name &&
+                inv.venue === venueItem.venue.name,
+        );
+    }, [order, venueItem]);
+
     return (
         <>
+            {/* Media tables */}
             <div className="slide-out-container space-y-4">
                 <Filters />
                 <MediaTable
@@ -59,7 +85,11 @@ function GeneralMediaView() {
                     Submit Order
                 </Button>
             </div>
-            <div className="slide-out-container space-y-4">Test</div>
+
+            {/* Billing Section */}
+            <SectionContainers title="Billing Invoices">
+                <BillingSection billingInvoices={billingInvoices} />
+            </SectionContainers>
         </>
     );
 }
