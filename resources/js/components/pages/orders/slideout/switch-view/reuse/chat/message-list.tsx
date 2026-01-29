@@ -1,19 +1,19 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useInitials } from '@/hooks/use-initials';
 import { groupMessagesByDate } from '@/lib/chat-utils';
-import { Message } from '@/types/chat';
+import { cn } from '@/lib/utils';
 import { User } from '@/types';
+import { Message } from '@/types/chat';
 import {
+    differenceInMinutes,
     format,
     formatDistanceToNow,
     isToday,
     isYesterday,
-    differenceInMinutes,
 } from 'date-fns';
+import { Check } from 'lucide-react';
 import { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
-import { cn } from '@/lib/utils';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { useInitials } from '@/hooks/use-initials';
-import { Check } from 'lucide-react';
 
 interface Props {
     messages: Message[];
@@ -81,7 +81,6 @@ export default function MessageList({
 
     return (
         <Virtuoso
-            style={{ height: '100%' }}
             data={flattenedData}
             initialTopMostItemIndex={flattenedData.length - 1} // Scroll to bottom
             followOutput={'auto'} // Stick to bottom on new messages
@@ -102,7 +101,9 @@ export default function MessageList({
                 // CASE 2: Render Message Bubble
                 const isMe = item.sender_id === currentUserId;
                 const sender = isMe ? currentUser : userMap.get(item.sender_id);
-                const senderName = isMe ? 'You' : sender?.name || 'Unknown User';
+                const senderName = isMe
+                    ? 'You'
+                    : sender?.name || 'Unknown User';
                 const timestamp = formatMessageTimestamp(
                     new Date(item.created_at),
                 );
@@ -136,10 +137,10 @@ export default function MessageList({
 
                 return (
                     <div className="mb-4 w-full px-4">
-                        {/* Sender name and timestamp above message */}
+                        {/* Sender Avatar */}
                         <div
                             className={cn(
-                                'mb-1 flex items-center gap-2 text-xs text-gray-600',
+                                'mb-1 flex items-center gap-2',
                                 isMe ? 'justify-end' : 'justify-start',
                             )}
                         >
@@ -154,39 +155,50 @@ export default function MessageList({
                                     </AvatarFallback>
                                 </Avatar>
                             )}
-                            <span className="font-medium">{senderName}</span>
-                            <span className="text-gray-500">{timestamp}</span>
-                            {isMe && item.status === 'sent' && (
-                                <Check className="h-3 w-3 text-red-500" />
-                            )}
-                            {item.status === 'sending' && (
-                                <span className="text-gray-400">
-                                    • sending...
-                                </span>
-                            )}
-                            {item.status === 'error' && (
-                                <span className="text-red-500">• failed</span>
-                            )}
                         </div>
 
-                        {/* Message bubble */}
+                        {/* Name & Message bubble */}
                         <div
                             className={cn(
                                 'flex w-full',
                                 isMe ? 'justify-end' : 'justify-start',
                             )}
                         >
-                            <div
-                                className={cn(
-                                    'max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm',
-                                    isMe
-                                        ? 'rounded-br-none bg-gray-100 text-gray-900'
-                                        : 'rounded-bl-none border border-gray-200 bg-white text-gray-900',
-                                    item.status === 'sending' && 'opacity-70',
-                                )}
-                            >
-                                <div className="leading-relaxed whitespace-pre-wrap">
-                                    {contentRender}
+                            <div className="max-w-[75%]">
+                                <div className="flex justify-between gap-2 pb-1 text-xs text-gray-600">
+                                    <span className="font-medium">
+                                        {senderName}
+                                    </span>
+                                    <span className="text-gray-500">
+                                        {timestamp}
+                                    </span>
+                                    {isMe && item.status === 'sent' && (
+                                        <Check className="h-3 w-3 text-red-500" />
+                                    )}
+                                    {item.status === 'sending' && (
+                                        <span className="text-gray-400">
+                                            • sending...
+                                        </span>
+                                    )}
+                                    {item.status === 'error' && (
+                                        <span className="text-red-500">
+                                            • failed
+                                        </span>
+                                    )}
+                                </div>
+                                <div
+                                    className={cn(
+                                        'rounded-2xl px-4 py-2 text-sm shadow-sm',
+                                        isMe
+                                            ? 'rounded-br-none border border-gray-200 bg-white text-gray-900'
+                                            : 'rounded-tl-none bg-gray-100 text-gray-900',
+                                        item.status === 'sending' &&
+                                            'opacity-70',
+                                    )}
+                                >
+                                    <div className="leading-relaxed whitespace-pre-wrap">
+                                        {contentRender}
+                                    </div>
                                 </div>
                             </div>
                         </div>
