@@ -1,20 +1,73 @@
 import { groupMessagesByDate } from '@/lib/chat-utils';
 import { Message } from '@/types/chat';
-import { format } from 'date-fns';
+import { User } from '@/types';
+import {
+    format,
+    formatDistanceToNow,
+    isToday,
+    isYesterday,
+    differenceInMinutes,
+} from 'date-fns';
 import { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
-
-// Simple helper to merge class names (if you don't have 'cn' from shadcn yet)
-function cn(...classes: (string | undefined | boolean)[]) {
-    return classes.filter(Boolean).join(' ');
-}
+import { cn } from '@/lib/utils';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useInitials } from '@/hooks/use-initials';
+import { Check } from 'lucide-react';
 
 interface Props {
     messages: Message[];
     currentUserId: number;
+    currentUser: User;
+    users: User[];
 }
 
-export default function MessageList({ messages, currentUserId }: Props) {
+// Helper function to format message timestamp
+function formatMessageTimestamp(date: Date): string {
+    const now = new Date();
+    const minutesDiff = differenceInMinutes(now, date);
+
+    // Less than 1 minute: "Just now"
+    if (minutesDiff < 1) {
+        return 'Just now';
+    }
+
+    // Less than 1 hour: Use relative time
+    if (minutesDiff < 60) {
+        return formatDistanceToNow(date, { addSuffix: true });
+    }
+
+    // Today: "Today {time}"
+    if (isToday(date)) {
+        return `Today ${format(date, 'h:mm a')}`;
+    }
+
+    // Yesterday: "Yesterday {time}"
+    if (isYesterday(date)) {
+        return `Yesterday ${format(date, 'h:mm a')}`;
+    }
+
+    // Older: Day name + time (e.g., "Thursday 11:41am")
+    return format(date, 'EEEE h:mm a');
+}
+
+export default function MessageList({
+    messages,
+    currentUserId,
+    currentUser,
+    users,
+}: Props) {
+    const getInitials = useInitials();
+
+    // Create user lookup map
+    const userMap = useMemo(() => {
+        const map = new Map<number, User>();
+        users.forEach((user) => {
+            map.set(user.id, user);
+        });
+        return map;
+    }, [users]);
+
     const grouped = useMemo(() => groupMessagesByDate(messages), [messages]);
 
     const flattenedData = useMemo(() => {
@@ -48,6 +101,11 @@ export default function MessageList({ messages, currentUserId }: Props) {
 
                 // CASE 2: Render Message Bubble
                 const isMe = item.sender_id === currentUserId;
+                const sender = isMe ? currentUser : userMap.get(item.sender_id);
+                const senderName = isMe ? 'You' : sender?.name || 'Unknown User';
+                const timestamp = formatMessageTimestamp(
+                    new Date(item.created_at),
+                );
 
                 // otherwise print string.
                 let contentRender = 'Unsupported content';
@@ -77,42 +135,59 @@ export default function MessageList({ messages, currentUserId }: Props) {
                 }
 
                 return (
-                    <div
-                        className={cn(
-                            'mb-4 flex w-full px-4',
-                            isMe ? 'justify-end' : 'justify-start',
-                        )}
-                    >
+                    <div className="mb-4 w-full px-4">
+                        {/* Sender name and timestamp above message */}
                         <div
                             className={cn(
-                                'max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm',
-                                isMe
-                                    ? 'rounded-br-none bg-blue-600 text-white'
-                                    : 'rounded-bl-none border border-gray-200 bg-white text-gray-900',
-                                item.status === 'sending' && 'opacity-70',
+                                'mb-1 flex items-center gap-2 text-xs text-gray-600',
+                                isMe ? 'justify-end' : 'justify-start',
                             )}
                         >
-                            <div className="leading-relaxed whitespace-pre-wrap">
-                                {contentRender}
-                            </div>
+                            {!isMe && sender && (
+                                <Avatar className="h-5 w-5 overflow-hidden rounded-full">
+                                    <AvatarImage
+                                        src={sender.avatar || undefined}
+                                        alt={senderName}
+                                    />
+                                    <AvatarFallback className="rounded-full bg-neutral-200 text-[10px] text-black">
+                                        {getInitials(senderName)}
+                                    </AvatarFallback>
+                                </Avatar>
+                            )}
+                            <span className="font-medium">{senderName}</span>
+                            <span className="text-gray-500">{timestamp}</span>
+                            {isMe && item.status === 'sent' && (
+                                <Check className="h-3 w-3 text-red-500" />
+                            )}
+                            {item.status === 'sending' && (
+                                <span className="text-gray-400">
+                                    • sending...
+                                </span>
+                            )}
+                            {item.status === 'error' && (
+                                <span className="text-red-500">• failed</span>
+                            )}
+                        </div>
 
+                        {/* Message bubble */}
+                        <div
+                            className={cn(
+                                'flex w-full',
+                                isMe ? 'justify-end' : 'justify-start',
+                            )}
+                        >
                             <div
                                 className={cn(
-                                    'mt-1 flex items-center gap-1 text-[10px]',
+                                    'max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm',
                                     isMe
-                                        ? 'justify-end text-blue-200'
-                                        : 'justify-start text-gray-400',
+                                        ? 'rounded-br-none bg-gray-100 text-gray-900'
+                                        : 'rounded-bl-none border border-gray-200 bg-white text-gray-900',
+                                    item.status === 'sending' && 'opacity-70',
                                 )}
                             >
-                                {format(new Date(item.created_at), 'h:mm a')}
-                                {item.status === 'sending' && (
-                                    <span>• sending...</span>
-                                )}
-                                {item.status === 'error' && (
-                                    <span className="text-red-300">
-                                        • failed
-                                    </span>
-                                )}
+                                <div className="leading-relaxed whitespace-pre-wrap">
+                                    {contentRender}
+                                </div>
                             </div>
                         </div>
                     </div>

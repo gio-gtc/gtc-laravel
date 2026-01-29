@@ -1,6 +1,7 @@
 import { useChat } from '@/hooks/use-chat'; // From previous step
 import { SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
+import { mockUsers } from '@/components/mockdata';
 import ChatInput from './input';
 import MessageList from './message-list';
 
@@ -20,7 +21,12 @@ export default function ChatIndex({ channelId = 'general' }: Props) {
     return (
         <div className="flex h-[calc(100vh-65px)] flex-col">
             <div className="flex-1 overflow-hidden">
-                <MessageList messages={messages} currentUserId={auth.user.id} />
+                <MessageList
+                    messages={messages}
+                    currentUserId={auth.user.id}
+                    currentUser={auth.user}
+                    users={mockUsers}
+                />
             </div>
 
             <ChatInput onSend={handleSend} />

@@ -1,7 +1,9 @@
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { Paperclip } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface ChatInputProps {
     onSend: (content: any) => void; // Accepts JSON or String
@@ -9,11 +11,13 @@ interface ChatInputProps {
 }
 
 export default function ChatInput({ onSend, disabled }: ChatInputProps) {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     const editor = useEditor({
         extensions: [
             StarterKit,
             Placeholder.configure({
-                placeholder: 'Type a message...',
+                placeholder: 'Message',
                 emptyEditorClass:
                     'is-editor-empty before:content-[attr(data-placeholder)] before:text-gray-400 before:float-left before:pointer-events-none',
             }),
@@ -21,7 +25,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         editorProps: {
             // Tailwind classes for the editor area
             attributes: {
-                class: 'prose prose-sm w-full max-w-none focus:outline-none min-h-[40px] max-h-[150px] overflow-y-auto px-3 py-2 text-gray-900',
+                class: 'prose prose-sm w-full max-w-none focus:outline-none min-h-[40px] max-h-[150px] overflow-y-auto px-3 pt-2 pb-10 text-gray-900',
             },
             // Handle "Enter" to send
             handleKeyDown: (view, event) => {
@@ -38,7 +42,6 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         },
     });
 
-    console.log(editor);
     // Reset editor when disabled state changes (e.g., after send)
     useEffect(() => {
         if (disabled && editor) {
@@ -56,22 +59,60 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         editor.commands.clearContent();
     };
 
+    const handleAttachClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            // Handle file attachment (for now just log, can be extended later)
+            console.log('Files selected:', files);
+            // Reset the input so the same file can be selected again
+            e.target.value = '';
+        }
+    };
+
     return (
         <form
             onSubmit={handleSubmit}
-            className="flex items-end gap-2 border-t bg-white p-4"
+            className="flex flex-col gap-2 bg-transparent px-4 pt-3 pb-4"
         >
-            <div className="flex-1 rounded-lg border bg-white shadow-sm transition-all focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500">
-                <EditorContent editor={editor} />
-            </div>
+            {/* Hidden file input */}
+            <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                onChange={handleFileChange}
+            />
 
-            <button
-                type="submit"
-                disabled={disabled || editor?.isEmpty}
-                className="inline-flex h-10 items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-blue-700 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-            >
-                Send
-            </button>
+            {/* Input box container */}
+            <div className="relative rounded-xl bg-gray-50 shadow-sm transition-all focus-within:shadow-md">
+                <EditorContent editor={editor} />
+
+                {/* Bottom right icons: Paper clip and Send */}
+                <div className="absolute bottom-2 right-2 flex items-center gap-2">
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
+                        onClick={handleAttachClick}
+                    >
+                        <Paperclip className="h-4 w-4" />
+                    </Button>
+
+                    <Button
+                        type="submit"
+                        variant="ghost"
+                        disabled={disabled || editor?.isEmpty}
+                        className="h-auto px-3 py-1 text-sm font-medium text-brand-gtc-red hover:bg-brand-gtc-red/10 disabled:pointer-events-none disabled:opacity-50"
+                    >
+                        Send
+                    </Button>
+                </div>
+            </div>
         </form>
     );
 }
