@@ -19,6 +19,7 @@ import { groupMessagesByDate } from '@/lib/chat-utils';
 import { cn } from '@/lib/utils';
 import { User } from '@/types';
 import { Message } from '@/types/chat';
+import { generateHTML } from '@tiptap/core';
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -58,6 +59,18 @@ function getMessageContentText(content: any): string {
         return parts.join('') === '' ? '(Empty)' : parts.join('');
     }
     return 'Unsupported content';
+}
+
+function getMessageContentHTML(content: any): string | null {
+    if (typeof content === 'string') return null;
+    if (content?.type !== 'doc') return null;
+    try {
+        const html = generateHTML(content, [StarterKit]);
+        const trimmed = html.replace(/<[^>]+>/g, '').trim();
+        return trimmed === '' ? null : html;
+    } catch {
+        return null;
+    }
 }
 
 function InlineMessageEditor({
@@ -271,6 +284,7 @@ export default function MessageList({
                         );
                     }
 
+                    const htmlContent = getMessageContentHTML(item.content);
                     const contentRender = getMessageContentText(item.content);
 
                     const bubbleDiv = (
@@ -284,9 +298,18 @@ export default function MessageList({
                                 canEditDelete && 'cursor-pointer',
                             )}
                         >
-                            <div className="leading-relaxed whitespace-pre-wrap">
-                                {contentRender}
-                            </div>
+                            {htmlContent ? (
+                                <div
+                                    className="prose prose-sm max-w-none leading-relaxed [&_p]:my-0 [&_p:first-child]:mt-0 [&_p:last-child]:mb-0"
+                                    dangerouslySetInnerHTML={{
+                                        __html: htmlContent,
+                                    }}
+                                />
+                            ) : (
+                                <div className="leading-relaxed whitespace-pre-wrap">
+                                    {contentRender}
+                                </div>
+                            )}
                         </div>
                     );
 
