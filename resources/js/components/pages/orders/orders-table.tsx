@@ -1,5 +1,4 @@
 import {
-    mockUsers,
     tourData,
     tourVenueData,
     venueCollaboratorData,
@@ -16,6 +15,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { useInitials } from '@/hooks/use-initials';
+import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
 import { type Tour, type TourVenue, type User, type Venue } from '@/types';
 import {
@@ -52,6 +52,7 @@ function OrdersTable() {
         order: Tour;
     } | null>(null);
     const getInitials = useInitials();
+    const usersWithFallback = useUsersWithFallback();
 
     // Transform data into grouped structure
     const groupedData = useMemo<GroupedOrderData[]>(() => {
@@ -73,18 +74,18 @@ function OrdersTable() {
             const collaboratorIds = venueCollaboratorData
                 .filter((vc) => vc.venue_id === venueId)
                 .map((vc) => vc.mockUser_id);
-            return mockUsers.filter((user) =>
+            return usersWithFallback.filter((user) =>
                 collaboratorIds.includes(user.id),
             );
         };
-    }, []);
+    }, [usersWithFallback]);
 
     // Helper function to get client user by ID
     const getClientUser = useMemo(() => {
         return (clientId: number): User | undefined => {
-            return mockUsers.find((user) => user.id === clientId);
+            return usersWithFallback.find((user) => user.id === clientId);
         };
-    }, []);
+    }, [usersWithFallback]);
 
     // Helper function to format date (short format: "Nov 8")
     const formatDate = (dateString: string): string => {

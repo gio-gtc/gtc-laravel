@@ -1,7 +1,4 @@
-import {
-    venueCollaboratorData,
-    mockUsers,
-} from '@/components/mockdata';
+import { venueCollaboratorData } from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -10,6 +7,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { type Venue, type User } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
 import UserMultiSelect from './user-multi-select';
@@ -27,16 +25,18 @@ function CollaboratorEditDialog({
     isOpen,
     onClose,
 }: CollaboratorEditDialogProps) {
+    const usersWithFallback = useUsersWithFallback();
+
     // Get current collaborators from join table
     const currentCollaborators = useMemo(() => {
         if (!venue) return [];
         const collaboratorIds = venueCollaboratorData
             .filter((vc) => vc.venue_id === venue.id)
             .map((vc) => vc.mockUser_id);
-        return mockUsers.filter((user) =>
+        return usersWithFallback.filter((user) =>
             collaboratorIds.includes(user.id),
         );
-    }, [venue]);
+    }, [venue, usersWithFallback]);
 
     const [selectedUsers, setSelectedUsers] = useState<User[]>(
         currentCollaborators,
@@ -73,6 +73,7 @@ function CollaboratorEditDialog({
                     <UserMultiSelect
                         selectedUsers={selectedUsers}
                         onSelectionChange={setSelectedUsers}
+                        availableUsers={usersWithFallback}
                     />
                 </div>
                 <DialogFooter>

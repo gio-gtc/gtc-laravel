@@ -1,7 +1,7 @@
-import { useChat } from '@/hooks/use-chat'; // From previous step
+import { useChat } from '@/hooks/use-chat';
+import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
-import { mockUsers } from '@/components/mockdata';
 import ChatInput from './input';
 import MessageList from './message-list';
 
@@ -11,9 +11,9 @@ interface Props {
 
 export default function ChatIndex({ channelId = 'general' }: Props) {
     const { auth } = usePage<SharedData>().props;
+    const usersWithFallback = useUsersWithFallback();
     const { messages, sendMessage } = useChat(channelId, auth.user.id);
 
-    // 2. Handle Send
     const handleSend = async (content: any) => {
         await sendMessage(content);
     };
@@ -25,7 +25,7 @@ export default function ChatIndex({ channelId = 'general' }: Props) {
                     messages={messages}
                     currentUserId={auth.user.id}
                     currentUser={auth.user}
-                    users={mockUsers}
+                    users={usersWithFallback}
                 />
             </div>
 

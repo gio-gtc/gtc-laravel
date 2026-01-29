@@ -169,7 +169,7 @@ export const mockUsers: User[] = [
         trend: { direction: 'up' as const, percentage: 5 },
     },
     {
-        id: 2,
+        id: 27,
         name: 'Michael Chen',
         email: 'michael.chen@example.com',
         avatar: null,

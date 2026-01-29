@@ -1,8 +1,9 @@
-import { companiesData, itemsData, mockUsers } from '@/components/mockdata';
+import { companiesData, itemsData } from '@/components/mockdata';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { getInvoiceAddress } from '@/components/utils/functions';
 import { useEditableTable } from '@/hooks/use-editable-table';
+import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { type Invoice, type Item } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
 import InvoiceActionButtons from './slideout/action-buttons';
@@ -24,6 +25,8 @@ export default function InvoiceDetailSlideout({
     isOpen,
     onClose,
 }: InvoiceDetailSlideoutProps) {
+    const usersWithFallback = useUsersWithFallback();
+
     // Look up company data from companiesData (before hooks to avoid hook order issues)
     const company = invoice
         ? companiesData.find((c) => c.id === invoice.company_id)
@@ -110,10 +113,12 @@ export default function InvoiceDetailSlideout({
     }
 
     // Find user by user_id
-    const orderedByUser = mockUsers.find((user) => user.id === invoice.user_id);
+    const orderedByUser = usersWithFallback.find(
+        (user) => user.id === invoice.user_id,
+    );
 
     // Find user who deleted the invoice
-    const deletedByUser = mockUsers.find(
+    const deletedByUser = usersWithFallback.find(
         (user) => user.id === invoice.deleted_by,
     );
 

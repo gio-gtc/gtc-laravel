@@ -1,4 +1,3 @@
-import { mockUsers } from '@/components/mockdata';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     Pagination,
@@ -19,6 +18,8 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { useInitials } from '@/hooks/use-initials';
+import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
+import type { User } from '@/types';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
@@ -27,17 +28,30 @@ type SortDirection = 'asc' | 'desc';
 
 const ITEMS_PER_PAGE = 7;
 
+const defaultTrend = { direction: 'up' as const, percentage: 0 };
+
 function DesignerStatsTable() {
     const getInitials = useInitials();
+    const usersWithFallback = useUsersWithFallback();
     const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
     const [currentPage, setCurrentPage] = useState(1);
 
-    // Sort data
+    // Sort data (mock-only fields use fallbacks for real users)
     const sortedData = useMemo(() => {
-        if (!sortColumn) return mockUsers;
+        if (!sortColumn) return usersWithFallback;
 
-        return [...mockUsers].sort((a, b) => {
+        return [...usersWithFallback].sort((a, b) => {
+            const aUser = a as User & {
+                assetsAssigned?: number;
+                assetsUploaded?: number;
+                rolling30DayAccuracy?: number;
+            };
+            const bUser = b as User & {
+                assetsAssigned?: number;
+                assetsUploaded?: number;
+                rolling30DayAccuracy?: number;
+            };
             let aValue: string | number;
             let bValue: string | number;
 
@@ -47,16 +61,16 @@ function DesignerStatsTable() {
                     bValue = b.name.toLowerCase();
                     break;
                 case 'assetsAssigned':
-                    aValue = a.assetsAssigned;
-                    bValue = b.assetsAssigned;
+                    aValue = aUser.assetsAssigned ?? 0;
+                    bValue = bUser.assetsAssigned ?? 0;
                     break;
                 case 'assetsUploaded':
-                    aValue = a.assetsUploaded;
-                    bValue = b.assetsUploaded;
+                    aValue = aUser.assetsUploaded ?? 0;
+                    bValue = bUser.assetsUploaded ?? 0;
                     break;
                 case 'accuracy':
-                    aValue = a.rolling30DayAccuracy;
-                    bValue = b.rolling30DayAccuracy;
+                    aValue = aUser.rolling30DayAccuracy ?? 0;
+                    bValue = bUser.rolling30DayAccuracy ?? 0;
                     break;
                 default:
                     return 0;
@@ -66,7 +80,7 @@ function DesignerStatsTable() {
             if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
             return 0;
         });
-    }, [sortColumn, sortDirection]);
+    }, [sortColumn, sortDirection, usersWithFallback]);
 
     // Paginate data
     const paginatedData = useMemo(() => {
@@ -190,61 +204,70 @@ function DesignerStatsTable() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {paginatedData.map((designer, index) => (
-                        <TableRow key={index}>
-                            <TableCell>
-                                <div className="flex items-center gap-3">
-                                    <Avatar className="h-10 w-10 overflow-hidden rounded-full">
-                                        <AvatarImage
-                                            src={designer.avatar || undefined}
-                                            alt={designer.name}
-                                        />
-                                        <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                            {getInitials(designer.name)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div className="flex flex-col">
-                                        <span className="font-medium">
-                                            {designer.name}
-                                        </span>
-                                        <span className="text-sm text-muted-foreground">
-                                            {designer.email}
-                                        </span>
-                                    </div>
-                                </div>
-                            </TableCell>
-                            <TableCell>{designer.assetsAssigned}</TableCell>
-                            <TableCell>{designer.assetsUploaded}</TableCell>
-                            <TableCell>
-                                <div className="flex items-center gap-3">
-                                    <div className="flex-1">
-                                        <Progress
-                                            value={
-                                                designer.rolling30DayAccuracy
-                                            }
-                                            className="h-2"
-                                        />
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <span className="text-sm font-medium">
-                                            {designer.rolling30DayAccuracy}
-                                        </span>
-                                        <div className="inline-flex items-center gap-1 rounded-md border-1 p-0.5 text-xs">
-                                            {designer.trend.direction ===
-                                            'up' ? (
-                                                <ArrowUp className="h-3 w-3 text-green-600" />
-                                            ) : (
-                                                <ArrowDown className="h-3 w-3 text-red-600" />
-                                            )}
-                                            <span>
-                                                {designer.trend.percentage}%
+                    {paginatedData.map((designer, index) => {
+                        const d = designer as User & {
+                            assetsAssigned?: number;
+                            assetsUploaded?: number;
+                            rolling30DayAccuracy?: number;
+                            trend?: { direction: 'up' | 'down'; percentage: number };
+                        };
+                        const assetsAssigned = d.assetsAssigned ?? 0;
+                        const assetsUploaded = d.assetsUploaded ?? 0;
+                        const rolling30DayAccuracy = d.rolling30DayAccuracy ?? 0;
+                        const trend = d.trend ?? defaultTrend;
+                        return (
+                            <TableRow key={designer.id}>
+                                <TableCell>
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="h-10 w-10 overflow-hidden rounded-full">
+                                            <AvatarImage
+                                                src={designer.avatar || undefined}
+                                                alt={designer.name}
+                                            />
+                                            <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                {getInitials(designer.name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex flex-col">
+                                            <span className="font-medium">
+                                                {designer.name}
+                                            </span>
+                                            <span className="text-sm text-muted-foreground">
+                                                {designer.email}
                                             </span>
                                         </div>
                                     </div>
-                                </div>
-                            </TableCell>
-                        </TableRow>
-                    ))}
+                                </TableCell>
+                                <TableCell>{assetsAssigned}</TableCell>
+                                <TableCell>{assetsUploaded}</TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex-1">
+                                            <Progress
+                                                value={rolling30DayAccuracy}
+                                                className="h-2"
+                                            />
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <span className="text-sm font-medium">
+                                                {rolling30DayAccuracy}
+                                            </span>
+                                            <div className="inline-flex items-center gap-1 rounded-md border-1 p-0.5 text-xs">
+                                                {trend.direction === 'up' ? (
+                                                    <ArrowUp className="h-3 w-3 text-green-600" />
+                                                ) : (
+                                                    <ArrowDown className="h-3 w-3 text-red-600" />
+                                                )}
+                                                <span>
+                                                    {trend.percentage}%
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
                 </TableBody>
             </Table>
             {totalPages > 1 && (

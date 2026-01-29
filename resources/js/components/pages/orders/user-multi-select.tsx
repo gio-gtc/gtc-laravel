@@ -1,9 +1,9 @@
-import { mockUsers } from '@/components/mockdata';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { useInitials } from '@/hooks/use-initials';
+import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
 import { type User } from '@/types';
 import { Search, X } from 'lucide-react';
@@ -18,8 +18,10 @@ interface UserMultiSelectProps {
 function UserMultiSelect({
     selectedUsers,
     onSelectionChange,
-    availableUsers = mockUsers as unknown as User[],
+    availableUsers: availableUsersProp,
 }: UserMultiSelectProps) {
+    const usersWithFallback = useUsersWithFallback();
+    const availableUsers = availableUsersProp ?? usersWithFallback;
     const [searchQuery, setSearchQuery] = useState('');
     const getInitials = useInitials();
 

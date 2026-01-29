@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -38,6 +39,14 @@ class HandleInertiaRequests extends Middleware
     {
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
+        $users = $request->user()
+            ? User::query()
+                ->get()
+                ->map(fn (User $user) => array_merge($user->toArray(), ['company_id' => 0]))
+                ->values()
+                ->all()
+            : [];
+
         return [
             ...parent::share($request),
             'name' => config('app.name'),
@@ -45,6 +54,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'users' => $users,
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
     }
