@@ -15,48 +15,32 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useInitials } from '@/hooks/use-initials';
-import { groupMessagesByDate } from '@/lib/chat-utils';
+import {
+    CHAT_EDITOR_CLASS,
+    chatEditorBaseExtensions,
+    createChatEditorKeyDown,
+} from '@/lib/chat-editor';
+import {
+    formatMessageTimestamp,
+    groupMessagesByDate,
+    messageContentToText,
+} from '@/lib/chat-utils';
 import { cn } from '@/lib/utils';
 import { User } from '@/types';
 import { Message } from '@/types/chat';
 import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import {
-    differenceInMinutes,
-    format,
-    formatDistanceToNow,
-    isToday,
-    isYesterday,
-} from 'date-fns';
 import { Check, Pencil, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+const DROPDOWN_OFFSET_WHEN_EDITED = -20;
+
 interface Props {
     messages: Message[];
     currentUserId: number;
-    currentUser: User;
     users: User[];
     onEditMessage?: (id: string, content: any) => void;
     onDeleteMessage?: (id: string) => void;
-}
-
-function getMessageContentText(content: any): string {
-    if (typeof content === 'string') return content;
-    if (content?.type === 'doc') {
-        const blocks = content.content ?? [];
-        const parts: string[] = [];
-        blocks.forEach((block: any, blockIndex: number) => {
-            const inner = block?.content ?? [];
-            inner.forEach((node: any) => {
-                if (node.type === 'text' && node.text) parts.push(node.text);
-                else if (node.type === 'hardBreak') parts.push('\n');
-            });
-            if (blockIndex < blocks.length - 1) parts.push('\n');
-        });
-        return parts.join('') === '' ? '(Empty)' : parts.join('');
-    }
-    return 'Unsupported content';
 }
 
 function InlineMessageEditor({
@@ -69,24 +53,18 @@ function InlineMessageEditor({
     onCancel: () => void;
 }) {
     const editor = useEditor({
-        extensions: [StarterKit],
+        extensions: chatEditorBaseExtensions,
         content: content ?? undefined,
         editorProps: {
             attributes: {
-                class: 'prose prose-sm w-full max-w-none focus:outline-none min-h-[40px] max-h-[120px] overflow-y-auto px-3 py-2 text-gray-900 rounded-xl border',
+                class: CHAT_EDITOR_CLASS.inline,
             },
-            handleKeyDown: (_, event) => {
-                if (event.key === 'Escape') {
-                    onCancel();
-                    return true;
-                }
-                if (event.key === 'Enter' && !event.shiftKey) {
-                    event.preventDefault();
-                    if (!editor?.isEmpty) onSave(editor.getJSON());
-                    return true;
-                }
-                return false;
-            },
+            handleKeyDown: createChatEditorKeyDown({
+                onEnter: () => {
+                    if (editor && !editor.isEmpty) onSave(editor.getJSON());
+                },
+                onEscape: onCancel,
+            }),
         },
     });
 
@@ -127,39 +105,9 @@ function InlineMessageEditor({
     );
 }
 
-// Helper function to format message timestamp
-function formatMessageTimestamp(date: Date): string {
-    const now = new Date();
-    const minutesDiff = differenceInMinutes(now, date);
-
-    // Less than 1 minute: "Just now"
-    if (minutesDiff < 1) {
-        return 'Just now';
-    }
-
-    // Less than 1 hour: Use relative time
-    if (minutesDiff < 60) {
-        return formatDistanceToNow(date, { addSuffix: true });
-    }
-
-    // Today: "Today {time}"
-    if (isToday(date)) {
-        return `Today ${format(date, 'h:mm a')}`;
-    }
-
-    // Yesterday: "Yesterday {time}"
-    if (isYesterday(date)) {
-        return `Yesterday ${format(date, 'h:mm a')}`;
-    }
-
-    // Older: Day name + time (e.g., "Thursday 11:41am")
-    return format(date, 'EEEE h:mm a');
-}
-
 export default function MessageList({
     messages,
     currentUserId,
-    currentUser,
     users,
     onEditMessage,
     onDeleteMessage,
@@ -175,7 +123,6 @@ export default function MessageList({
         string | null
     >(null);
 
-    // Create user lookup map
     const userMap = useMemo(() => {
         const map = new Map<number, User>();
         users.forEach((user) => {
@@ -183,6 +130,11 @@ export default function MessageList({
         });
         return map;
     }, [users]);
+
+    const currentUser = useMemo(
+        () => users.find((u) => u.id === currentUserId) ?? null,
+        [users, currentUserId],
+    );
 
     const grouped = useMemo(() => groupMessagesByDate(messages), [messages]);
 
@@ -222,7 +174,7 @@ export default function MessageList({
                         : userMap.get(item.sender_id);
                     const senderName = isMe
                         ? 'You'
-                        : sender?.name || 'Unknown User';
+                        : (sender?.name ?? 'Unknown User');
                     const timestamp = formatMessageTimestamp(
                         new Date(item.created_at),
                     );
@@ -234,16 +186,14 @@ export default function MessageList({
 
                     if (item.status === 'deleted') {
                         return (
-                            <div className="flex w-full gap-2 px-4 pb-4">
-                                <div
-                                    className={cn(
-                                        'flex w-full',
-                                        isMe ? 'justify-end' : 'justify-start',
-                                    )}
-                                >
-                                    <div className="max-w-[85%] rounded-2xl px-4 py-2 text-sm text-gray-400 italic">
-                                        Message deleted
-                                    </div>
+                            <div
+                                className={cn(
+                                    'flex w-full px-4 pb-4',
+                                    isMe ? 'justify-end' : 'justify-start',
+                                )}
+                            >
+                                <div className="max-w-[85%] rounded-2xl px-4 py-2 text-sm text-gray-400 italic">
+                                    Message deleted
                                 </div>
                             </div>
                         );
@@ -263,7 +213,7 @@ export default function MessageList({
                         );
                     }
 
-                    const contentRender = getMessageContentText(item.content);
+                    const contentRender = messageContentToText(item.content);
 
                     const bubbleDiv = (
                         <div
@@ -387,7 +337,7 @@ export default function MessageList({
                                                 align="end"
                                                 sideOffset={
                                                     item.status === 'edited'
-                                                        ? -20
+                                                        ? DROPDOWN_OFFSET_WHEN_EDITED
                                                         : 0
                                                 }
                                             >
@@ -450,7 +400,7 @@ export default function MessageList({
                             Cancel
                         </Button>
                         <Button
-                            className="bg-brand-gtc-red hover:bg-brand-gtc-red/90"
+                            className="bg-brand-gtc-red hover:bg-brand-gtc-red/80"
                             onClick={() => {
                                 if (deleteConfirmMessageId && onDeleteMessage) {
                                     onDeleteMessage(deleteConfirmMessageId);

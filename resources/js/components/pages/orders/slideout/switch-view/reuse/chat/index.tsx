@@ -17,24 +17,19 @@ export default function ChatIndex({ channelId = 'general' }: Props) {
         auth.user.id,
     );
 
-    const handleSend = async (content: any) => {
-        await sendMessage(content);
-    };
-
     return (
         <div className="flex h-[calc(100vh-65px)] flex-col">
             <div className="flex-1 overflow-hidden">
                 <MessageList
                     messages={messages}
                     currentUserId={auth.user.id}
-                    currentUser={auth.user}
                     users={usersWithFallback}
                     onEditMessage={editMessage}
                     onDeleteMessage={deleteMessage}
                 />
             </div>
 
-            <ChatInput onSend={handleSend} />
+            <ChatInput onSend={sendMessage} />
         </div>
     );
 }
