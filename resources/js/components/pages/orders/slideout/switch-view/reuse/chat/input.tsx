@@ -94,17 +94,17 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
             />
 
             <div className="relative rounded-xl bg-gray-50 shadow-sm transition-all focus-within:shadow-md">
-                <EditorContent editor={editor} />
+                <EditorContent editor={editor} className="pt-0 pb-7" />
 
-                <div className="absolute right-2 bottom-2 flex items-center gap-2">
+                <div className="absolute right-1 bottom-1 flex items-center gap-1">
                     <Button
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
+                        className="size-6 text-gray-500 hover:bg-gray-500/80"
                         onClick={handleAttachClick}
                     >
-                        <Paperclip className="h-4 w-4" />
+                        <Paperclip className="size-3.5" />
                     </Button>
                     <Button
                         type="submit"
