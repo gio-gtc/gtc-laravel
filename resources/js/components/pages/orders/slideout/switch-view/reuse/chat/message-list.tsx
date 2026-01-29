@@ -136,16 +136,16 @@ export default function MessageList({
                 }
 
                 return (
-                    <div className="mb-4 w-full px-4">
+                    <div className="mb-4 flex w-full gap-2 px-4">
                         {/* Sender Avatar */}
                         <div
                             className={cn(
-                                'mb-1 flex items-center gap-2',
+                                'mb-1 flex gap-2',
                                 isMe ? 'justify-end' : 'justify-start',
                             )}
                         >
                             {!isMe && sender && (
-                                <Avatar className="h-5 w-5 overflow-hidden rounded-full">
+                                <Avatar className="size-8 overflow-hidden rounded-full">
                                     <AvatarImage
                                         src={sender.avatar || undefined}
                                         alt={senderName}
@@ -164,17 +164,19 @@ export default function MessageList({
                                 isMe ? 'justify-end' : 'justify-start',
                             )}
                         >
-                            <div className="max-w-[75%]">
+                            <div className="max-w-[85%]">
                                 <div className="flex justify-between gap-2 pb-1 text-xs text-gray-600">
                                     <span className="font-medium">
                                         {senderName}
                                     </span>
-                                    <span className="text-gray-500">
-                                        {timestamp}
+                                    <span className="flex gap-1">
+                                        <span className="text-gray-500">
+                                            {timestamp}
+                                        </span>
+                                        {isMe && item.status === 'sent' && (
+                                            <Check className="h-3 w-3 text-red-500" />
+                                        )}
                                     </span>
-                                    {isMe && item.status === 'sent' && (
-                                        <Check className="h-3 w-3 text-red-500" />
-                                    )}
                                     {item.status === 'sending' && (
                                         <span className="text-gray-400">
                                             • sending...
