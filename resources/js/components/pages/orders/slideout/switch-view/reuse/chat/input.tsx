@@ -1,9 +1,9 @@
+import { Button } from '@/components/ui/button';
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { useEffect, useRef } from 'react';
 import { Paperclip } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useRef } from 'react';
 
 interface ChatInputProps {
     onSend: (content: any) => void; // Accepts JSON or String
@@ -17,9 +17,9 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         extensions: [
             StarterKit,
             Placeholder.configure({
-                placeholder: 'Message',
+                placeholder: 'Type a message...',
                 emptyEditorClass:
-                    'is-editor-empty before:content-[attr(data-placeholder)] before:text-gray-400 before:float-left before:pointer-events-none',
+                    'is-editor-empty before:content-[attr(data-placeholder)] before:text-gray-400 before:absolute before:pointer-events-none',
             }),
         ],
         editorProps: {
@@ -92,7 +92,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
                 <EditorContent editor={editor} />
 
                 {/* Bottom right icons: Paper clip and Send */}
-                <div className="absolute bottom-2 right-2 flex items-center gap-2">
+                <div className="absolute right-2 bottom-2 flex items-center gap-2">
                     <Button
                         type="button"
                         variant="ghost"
