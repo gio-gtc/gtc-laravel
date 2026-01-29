@@ -12,7 +12,10 @@ interface Props {
 export default function ChatIndex({ channelId = 'general' }: Props) {
     const { auth } = usePage<SharedData>().props;
     const usersWithFallback = useUsersWithFallback();
-    const { messages, sendMessage } = useChat(channelId, auth.user.id);
+    const { messages, sendMessage, editMessage, deleteMessage } = useChat(
+        channelId,
+        auth.user.id,
+    );
 
     const handleSend = async (content: any) => {
         await sendMessage(content);
@@ -26,6 +29,8 @@ export default function ChatIndex({ channelId = 'general' }: Props) {
                     currentUserId={auth.user.id}
                     currentUser={auth.user}
                     users={usersWithFallback}
+                    onEditMessage={editMessage}
+                    onDeleteMessage={deleteMessage}
                 />
             </div>
 

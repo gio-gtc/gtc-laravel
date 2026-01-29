@@ -1,6 +1,19 @@
-import { supabase } from '@/lib/supabase'; // Your initialized client
+import { supabase } from '@/lib/supabase';
 import { Message } from '@/types/chat';
 import { useCallback, useEffect, useState } from 'react';
+
+function getCsrfHeaders(): Record<string, string> {
+    const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('XSRF-TOKEN='))
+        ?.split('=')[1];
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+    };
+    if (token) headers['X-XSRF-TOKEN'] = decodeURIComponent(token);
+    return headers;
+}
 
 export function useChat(channelId: string, currentUserId: number) {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -18,7 +31,7 @@ export function useChat(channelId: string, currentUserId: number) {
         };
         fetchMessages();
 
-        // 2. Realtime Subscription (The "Listener")
+        // 2. Realtime Subscription (INSERT + UPDATE)
         const channel = supabase
             .channel(`chat:${channelId}`)
             .on(
@@ -52,6 +65,21 @@ export function useChat(channelId: string, currentUserId: number) {
                             },
                         ];
                     });
+                },
+            )
+            .on(
+                'postgres_changes',
+                { event: 'UPDATE', schema: 'public', table: 'messages' },
+                (payload) => {
+                    const updated = payload.new as Message;
+
+                    setMessages((prev) =>
+                        prev.map((m) =>
+                            m.id === updated.id
+                                ? { ...updated, status: updated.status ?? m.status }
+                                : m,
+                        ),
+                    );
                 },
             )
             .subscribe();
@@ -97,5 +125,68 @@ export function useChat(channelId: string, currentUserId: number) {
         [channelId, currentUserId],
     );
 
-    return { messages, sendMessage };
+    const editMessage = useCallback(
+        async (id: string, content: any) => {
+            const prev = messages.find((m) => m.id === id);
+            if (!prev) return;
+
+            setMessages((p) =>
+                p.map((m) =>
+                    m.id === id
+                        ? { ...m, content, status: 'edited' as const }
+                        : m,
+                ),
+            );
+
+            const res = await fetch(
+                `/api/channels/${encodeURIComponent(channelId)}/messages/${encodeURIComponent(id)}`,
+                {
+                    method: 'PATCH',
+                    headers: getCsrfHeaders(),
+                    body: JSON.stringify({ content }),
+                    credentials: 'same-origin',
+                },
+            );
+
+            if (!res.ok) {
+                setMessages((p) =>
+                    p.map((m) =>
+                        m.id === id ? { ...prev, status: 'error' as const } : m,
+                    ),
+                );
+            }
+        },
+        [channelId, messages],
+    );
+
+    const deleteMessage = useCallback(
+        async (id: string) => {
+            const prev = messages.find((m) => m.id === id);
+            if (!prev) return;
+
+            setMessages((p) =>
+                p.map((m) =>
+                    m.id === id ? { ...m, status: 'deleted' as const } : m,
+                ),
+            );
+
+            const res = await fetch(
+                `/api/channels/${encodeURIComponent(channelId)}/messages/${encodeURIComponent(id)}`,
+                {
+                    method: 'DELETE',
+                    headers: getCsrfHeaders(),
+                    credentials: 'same-origin',
+                },
+            );
+
+            if (!res.ok) {
+                setMessages((p) =>
+                    p.map((m) => (m.id === id ? { ...prev } : m)),
+                );
+            }
+        },
+        [channelId, messages],
+    );
+
+    return { messages, sendMessage, editMessage, deleteMessage };
 }

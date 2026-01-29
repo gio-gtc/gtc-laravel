@@ -1,9 +1,27 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useInitials } from '@/hooks/use-initials';
 import { groupMessagesByDate } from '@/lib/chat-utils';
 import { cn } from '@/lib/utils';
 import { User } from '@/types';
 import { Message } from '@/types/chat';
+import Placeholder from '@tiptap/extension-placeholder';
+import { EditorContent, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 import {
     differenceInMinutes,
     format,
@@ -11,8 +29,8 @@ import {
     isToday,
     isYesterday,
 } from 'date-fns';
-import { Check } from 'lucide-react';
-import { useMemo } from 'react';
+import { Check, Pencil, Trash2 } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 interface Props {
@@ -20,6 +38,101 @@ interface Props {
     currentUserId: number;
     currentUser: User;
     users: User[];
+    onEditMessage?: (id: string, content: any) => void;
+    onDeleteMessage?: (id: string) => void;
+}
+
+function getMessageContentText(content: any): string {
+    if (typeof content === 'string') return content;
+    if (content?.type === 'doc') {
+        const blocks = content.content ?? [];
+        const parts: string[] = [];
+        blocks.forEach((block: any, blockIndex: number) => {
+            const inner = block?.content ?? [];
+            inner.forEach((node: any) => {
+                if (node.type === 'text' && node.text) parts.push(node.text);
+                else if (node.type === 'hardBreak') parts.push('\n');
+            });
+            if (blockIndex < blocks.length - 1) parts.push('\n');
+        });
+        return parts.join('') === '' ? '(Empty)' : parts.join('');
+    }
+    return 'Unsupported content';
+}
+
+function InlineMessageEditor({
+    content,
+    onSave,
+    onCancel,
+}: {
+    content: any;
+    onSave: (content: any) => void;
+    onCancel: () => void;
+}) {
+    const editor = useEditor({
+        extensions: [
+            StarterKit,
+            Placeholder.configure({
+                placeholder: 'Message',
+                emptyEditorClass:
+                    'is-editor-empty before:content-[attr(data-placeholder)] before:text-gray-400 before:float-left',
+            }),
+        ],
+        content: content ?? undefined,
+        editorProps: {
+            attributes: {
+                class: 'prose prose-sm w-full max-w-none focus:outline-none min-h-[40px] max-h-[120px] overflow-y-auto px-3 py-2 text-gray-900 rounded-xl border',
+            },
+            handleKeyDown: (_, event) => {
+                if (event.key === 'Escape') {
+                    onCancel();
+                    return true;
+                }
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    if (!editor?.isEmpty) onSave(editor.getJSON());
+                    return true;
+                }
+                return false;
+            },
+        },
+    });
+
+    useEffect(() => {
+        if (editor && content) editor.commands.setContent(content);
+    }, [editor, content]);
+
+    const handleSave = useCallback(() => {
+        if (editor && !editor.isEmpty) onSave(editor.getJSON());
+    }, [editor, onSave]);
+
+    return (
+        <div className="flex w-full justify-end gap-2 px-4 pb-4">
+            <div className="flex max-w-[85%] flex-col gap-2 rounded-2xl border border-gray-200 bg-white px-2 py-2">
+                <EditorContent editor={editor} />
+                <div className="flex justify-end gap-1">
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 text-xs"
+                        onClick={onCancel}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="default"
+                        size="sm"
+                        className="h-8 text-xs"
+                        onClick={handleSave}
+                    >
+                        Save
+                    </Button>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 // Helper function to format message timestamp
@@ -56,8 +169,19 @@ export default function MessageList({
     currentUserId,
     currentUser,
     users,
+    onEditMessage,
+    onDeleteMessage,
 }: Props) {
     const getInitials = useInitials();
+    const [editingMessageId, setEditingMessageId] = useState<string | null>(
+        null,
+    );
+    const [openMenuMessageId, setOpenMenuMessageId] = useState<string | null>(
+        null,
+    );
+    const [deleteConfirmMessageId, setDeleteConfirmMessageId] = useState<
+        string | null
+    >(null);
 
     // Create user lookup map
     const userMap = useMemo(() => {
@@ -110,37 +234,77 @@ export default function MessageList({
                     const timestamp = formatMessageTimestamp(
                         new Date(item.created_at),
                     );
+                    const canEditDelete =
+                        isMe &&
+                        item.status !== 'deleted' &&
+                        onEditMessage &&
+                        onDeleteMessage;
 
-                    // otherwise print string.
-                    let contentRender = 'Unsupported content';
-                    if (typeof item.content === 'string') {
-                        contentRender = item.content;
-                    } else if (item.content?.type === 'doc') {
-                        const blocks = item.content.content ?? [];
-                        const parts: string[] = [];
-
-                        blocks.forEach((block: any, blockIndex: number) => {
-                            const inner = block?.content ?? [];
-                            inner.forEach((node: any) => {
-                                if (node.type === 'text' && node.text) {
-                                    parts.push(node.text);
-                                } else if (node.type === 'hardBreak') {
-                                    parts.push('\n');
-                                }
-                            });
-                            // Add an extra line break between paragraphs
-                            if (blockIndex < blocks.length - 1) {
-                                parts.push('\n');
-                            }
-                        });
-
-                        contentRender =
-                            parts.join('') === '' ? '(Empty)' : parts.join('');
+                    if (item.status === 'deleted') {
+                        return (
+                            <div className="flex w-full gap-2 px-4 pb-4">
+                                <div
+                                    className={cn(
+                                        'flex w-full',
+                                        isMe ? 'justify-end' : 'justify-start',
+                                    )}
+                                >
+                                    <div className="max-w-[85%] rounded-2xl px-4 py-2 text-sm text-gray-400 italic">
+                                        Message deleted
+                                    </div>
+                                </div>
+                            </div>
+                        );
                     }
 
+                    if (isMe && editingMessageId === item.id && onEditMessage) {
+                        return (
+                            <InlineMessageEditor
+                                key={item.id}
+                                content={item.content}
+                                onSave={(content) => {
+                                    onEditMessage(item.id, content);
+                                    setEditingMessageId(null);
+                                }}
+                                onCancel={() => setEditingMessageId(null)}
+                            />
+                        );
+                    }
+
+                    const contentRender = getMessageContentText(item.content);
+
+                    const bubbleDiv = (
+                        <div
+                            className={cn(
+                                'rounded-2xl px-4 py-2 text-sm shadow-sm',
+                                isMe
+                                    ? 'rounded-br-none border border-gray-200 bg-white text-gray-900'
+                                    : 'rounded-tl-none bg-gray-100 text-gray-900',
+                                item.status === 'sending' && 'opacity-70',
+                                canEditDelete && 'cursor-pointer',
+                            )}
+                        >
+                            <div className="leading-relaxed whitespace-pre-wrap">
+                                {contentRender}
+                            </div>
+                        </div>
+                    );
+
+                    const bubbleWithEdited = (
+                        <div
+                            className={cn('flex flex-col', isMe && 'items-end')}
+                        >
+                            {bubbleDiv}
+                            {item.status === 'edited' && (
+                                <span className="mt-0.5 text-xs text-muted-foreground italic">
+                                    edited
+                                </span>
+                            )}
+                        </div>
+                    );
+
                     return (
-                        <div className="flex w-full gap-2 px-4 pb-4">
-                            {/* Sender Avatar */}
+                        <div className="group flex w-full gap-2 px-4 pb-4">
                             <div
                                 className={cn(
                                     'flex gap-2 pb-1',
@@ -160,7 +324,6 @@ export default function MessageList({
                                 )}
                             </div>
 
-                            {/* Name & Message bubble */}
                             <div
                                 className={cn(
                                     'flex w-full',
@@ -172,45 +335,142 @@ export default function MessageList({
                                         <span className="font-medium">
                                             {senderName}
                                         </span>
-                                        <span className="flex gap-1">
+                                        <span className="flex items-center gap-1">
                                             <span className="text-gray-500">
                                                 {timestamp}
                                             </span>
-                                            {isMe && item.status === 'sent' && (
-                                                <Check className="h-3 w-3 text-red-500" />
+                                            {isMe &&
+                                                (item.status === 'sent' ||
+                                                    item.status ===
+                                                        'edited') && (
+                                                    <Check className="h-3 w-3 text-red-500" />
+                                                )}
+                                            {item.status === 'sending' && (
+                                                <span className="text-gray-400">
+                                                    • sending...
+                                                </span>
+                                            )}
+                                            {item.status === 'error' && (
+                                                <span className="text-red-500">
+                                                    • failed
+                                                </span>
                                             )}
                                         </span>
-                                        {item.status === 'sending' && (
-                                            <span className="text-gray-400">
-                                                • sending...
-                                            </span>
-                                        )}
-                                        {item.status === 'error' && (
-                                            <span className="text-red-500">
-                                                • failed
-                                            </span>
-                                        )}
                                     </div>
-                                    <div
-                                        className={cn(
-                                            'rounded-2xl px-4 py-2 text-sm shadow-sm',
-                                            isMe
-                                                ? 'rounded-br-none border border-gray-200 bg-white text-gray-900'
-                                                : 'rounded-tl-none bg-gray-100 text-gray-900',
-                                            item.status === 'sending' &&
-                                                'opacity-70',
-                                        )}
-                                    >
-                                        <div className="leading-relaxed whitespace-pre-wrap">
-                                            {contentRender}
-                                        </div>
-                                    </div>
+                                    {canEditDelete ? (
+                                        <DropdownMenu
+                                            open={openMenuMessageId === item.id}
+                                            onOpenChange={(open) =>
+                                                !open &&
+                                                setOpenMenuMessageId(null)
+                                            }
+                                        >
+                                            <DropdownMenuTrigger asChild>
+                                                <div
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    onDoubleClick={(e) => {
+                                                        e.preventDefault();
+                                                        setOpenMenuMessageId(
+                                                            item.id,
+                                                        );
+                                                    }}
+                                                    onKeyDown={(e) => {
+                                                        if (
+                                                            e.key === 'Enter' ||
+                                                            e.key === ' '
+                                                        ) {
+                                                            e.preventDefault();
+                                                            setOpenMenuMessageId(
+                                                                item.id,
+                                                            );
+                                                        }
+                                                    }}
+                                                    className="select-none"
+                                                >
+                                                    {bubbleWithEdited}
+                                                </div>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent
+                                                align="end"
+                                                sideOffset={
+                                                    item.status === 'edited'
+                                                        ? -20
+                                                        : 0
+                                                }
+                                            >
+                                                <div className="flex flex-row items-center gap-1">
+                                                    <DropdownMenuItem
+                                                        onClick={() => {
+                                                            setEditingMessageId(
+                                                                item.id,
+                                                            );
+                                                            setOpenMenuMessageId(
+                                                                null,
+                                                            );
+                                                        }}
+                                                    >
+                                                        <Pencil className="h-4 w-4" />
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="text-red-600 focus:text-red-600"
+                                                        onClick={() => {
+                                                            setDeleteConfirmMessageId(
+                                                                item.id,
+                                                            );
+                                                            setOpenMenuMessageId(
+                                                                null,
+                                                            );
+                                                        }}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </DropdownMenuItem>
+                                                </div>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    ) : (
+                                        bubbleWithEdited
+                                    )}
                                 </div>
                             </div>
                         </div>
                     );
                 }}
             />
+            <Dialog
+                open={deleteConfirmMessageId !== null}
+                onOpenChange={(open) =>
+                    !open && setDeleteConfirmMessageId(null)
+                }
+            >
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Delete message</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to delete this message?
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeleteConfirmMessageId(null)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            className="bg-brand-gtc-red hover:bg-brand-gtc-red/90"
+                            onClick={() => {
+                                if (deleteConfirmMessageId && onDeleteMessage) {
+                                    onDeleteMessage(deleteConfirmMessageId);
+                                    setDeleteConfirmMessageId(null);
+                                }
+                            }}
+                        >
+                            Delete
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

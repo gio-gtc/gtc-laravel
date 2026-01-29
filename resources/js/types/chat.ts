@@ -4,7 +4,7 @@ export interface Message {
     content: any; // JSON for Tiptap, or string
     sender_id: number; // Matches Laravel User ID
     created_at: string; // ISO String
-    status: 'sending' | 'sent' | 'error'; // Optimistic UI states
+    status: 'sending' | 'sent' | 'edited' | 'deleted' | 'error'; // Optimistic UI + DB states
     type: 'text' | 'system' | 'revision_request'; // Polymorphic types
 }
 
