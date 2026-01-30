@@ -6,7 +6,8 @@ import {
 } from '@/lib/chat-editor';
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor, useEditorState } from '@tiptap/react';
-import { Paperclip } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Paperclip, Type } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import FormatToolbar from './format-toolbar';
 
@@ -118,11 +119,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
             />
 
             <div className="relative rounded-xl bg-gray-50 shadow-sm transition-all focus-within:shadow-md">
-                <FormatToolbar
-                    editor={editor}
-                    visible={toolbarOpen}
-                    onToggleVisible={() => setToolbarOpen((v) => !v)}
-                />
+                <FormatToolbar editor={editor} visible={toolbarOpen} />
                 {(isBulletList || isOrderedList) && (
                     <div className="border-b border-gray-200/60 px-2 py-1.5 text-xs text-gray-500">
                         {isOrderedList ? 'Numbered list' : 'Bullet list'}
@@ -131,6 +128,21 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
                 <EditorContent editor={editor} className="pt-0 pb-7" />
 
                 <div className="absolute right-1 bottom-1 flex items-center gap-1">
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                            'size-6 shrink-0',
+                            toolbarOpen
+                                ? 'text-gray-600 hover:bg-gray-200'
+                                : 'text-gray-500 hover:bg-gray-500/80',
+                        )}
+                        onClick={() => setToolbarOpen((v) => !v)}
+                        title={toolbarOpen ? 'Hide formatting' : 'Show formatting'}
+                    >
+                        <Type className="size-3.5" />
+                    </Button>
                     <Button
                         type="button"
                         variant="ghost"
