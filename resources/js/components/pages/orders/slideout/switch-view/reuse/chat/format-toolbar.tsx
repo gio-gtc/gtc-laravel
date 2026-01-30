@@ -31,36 +31,12 @@ interface FormatToolbarProps {
     visible: boolean;
 }
 
+type Chain = ReturnType<Editor['chain']>;
+
 export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
     if (!editor) return;
-    const focus = editor.chain().focus();
-    const isBold = useEditorState({
-        editor,
-        selector: (ctx) => (ctx.editor ? ctx.editor.isActive('bold') : false),
-        equalityFn: (a, b) => a === b,
-    });
-    const isItalic = useEditorState({
-        editor,
-        selector: (ctx) => (ctx.editor ? ctx.editor.isActive('italic') : false),
-        equalityFn: (a, b) => a === b,
-    });
-    const isCode = useEditorState({
-        editor,
-        selector: (ctx) => (ctx.editor ? ctx.editor.isActive('code') : false),
-        equalityFn: (a, b) => a === b,
-    });
-    const isBulletList = useEditorState({
-        editor,
-        selector: (ctx) =>
-            ctx.editor ? ctx.editor.isActive('bulletList') : false,
-        equalityFn: (a, b) => a === b,
-    });
-    const isOrderedList = useEditorState({
-        editor,
-        selector: (ctx) =>
-            ctx.editor ? ctx.editor.isActive('orderedList') : false,
-        equalityFn: (a, b) => a === b,
-    });
+    const runChain = (fn: (c: Chain) => Chain) => () =>
+        fn(editor.chain().focus()).run();
 
     return (
         <Collapsible open={visible}>
@@ -71,36 +47,41 @@ export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
                 <div className="flex min-h-0 items-center gap-0.5 border-b border-gray-200/80 bg-gray-50/80 px-1 py-1">
                     <RichTextButton
                         title="Bold (Ctrl+B)"
-                        active={isBold}
-                        run={focus.toggleBold().run}
+                        editor={editor}
+                        activeName={'bold'}
+                        run={runChain((c) => c.toggleBold())}
                         icon={Bold}
                     />
 
                     <RichTextButton
                         title="Italic (Ctrl+I)"
-                        active={isItalic}
-                        run={focus.toggleItalic().run}
+                        editor={editor}
+                        activeName={'italic'}
+                        run={runChain((c) => c.toggleItalic())}
                         icon={Italic}
                     />
 
                     <RichTextButton
                         title="Code (Ctrl+E)"
-                        active={isCode}
-                        run={focus.toggleCode().run}
+                        editor={editor}
+                        activeName={'code'}
+                        run={runChain((c) => c.toggleCode())}
                         icon={Code}
                     />
 
                     <RichTextButton
                         title="Bullet list (Ctrl+Shift+8)"
-                        active={isBulletList}
-                        run={focus.toggleBulletList().run}
+                        editor={editor}
+                        activeName={'bulletList'}
+                        run={runChain((c) => c.toggleBulletList())}
                         icon={List}
                     />
 
                     <RichTextButton
                         title="Numbered list (Ctrl+Shift+7)"
-                        active={isOrderedList}
-                        run={focus.toggleOrderedList().run}
+                        editor={editor}
+                        activeName={'orderedList'}
+                        run={runChain((c) => c.toggleOrderedList())}
                         icon={ListOrdered}
                     />
 
@@ -147,15 +128,24 @@ export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
 
 function RichTextButton({
     title,
-    active,
+    editor,
     run,
     icon: Icon,
+    activeName,
 }: {
     title: string;
-    active: boolean | null;
+    editor: Editor | null;
+    activeName: string;
     run: () => boolean;
     icon: LucideIcon;
 }) {
+    const isActive = useEditorState({
+        editor,
+        selector: (ctx) =>
+            ctx.editor ? ctx.editor.isActive(activeName) : false,
+        equalityFn: (a, b) => a === b,
+    });
+
     return (
         <Button
             type="button"
@@ -163,9 +153,9 @@ function RichTextButton({
             size="icon"
             className={cn(
                 'size-7 shrink-0',
-                active && 'bg-gray-200 text-gray-900',
+                isActive && 'bg-gray-200 text-gray-900',
             )}
-            onClick={() => run()}
+            onClick={run}
             title={title}
         >
             <Icon className="size-3.5" />

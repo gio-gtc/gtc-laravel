@@ -6,7 +6,6 @@ import {
 } from '@/lib/chat-editor';
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor, useEditorState } from '@tiptap/react';
-import { cn } from '@/lib/utils';
 import { Paperclip, Type } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import FormatToolbar from './format-toolbar';
@@ -48,7 +47,20 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
                     if (form) form.requestSubmit();
                 },
                 submitOnEnterWhen: (view) => {
-                    const state = (view as { state: { selection: { $from: { depth: number; node: (d: number) => { type: { name: string } } } } } })?.state;
+                    const state = (
+                        view as {
+                            state: {
+                                selection: {
+                                    $from: {
+                                        depth: number;
+                                        node: (d: number) => {
+                                            type: { name: string };
+                                        };
+                                    };
+                                };
+                            };
+                        }
+                    )?.state;
                     if (!state) return true;
                     const $from = state.selection.$from;
                     for (let d = $from.depth; d > 0; d--) {
@@ -70,12 +82,14 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
 
     const isBulletList = useEditorState({
         editor,
-        selector: (ctx) => (ctx.editor ? ctx.editor.isActive('bulletList') : false),
+        selector: (ctx) =>
+            ctx.editor ? ctx.editor.isActive('bulletList') : false,
         equalityFn: (a, b) => a === b,
     });
     const isOrderedList = useEditorState({
         editor,
-        selector: (ctx) => (ctx.editor ? ctx.editor.isActive('orderedList') : false),
+        selector: (ctx) =>
+            ctx.editor ? ctx.editor.isActive('orderedList') : false,
         equalityFn: (a, b) => a === b,
     });
 
@@ -132,14 +146,11 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className={cn(
-                            'size-6 shrink-0',
-                            toolbarOpen
-                                ? 'text-gray-600 hover:bg-gray-200'
-                                : 'text-gray-500 hover:bg-gray-500/80',
-                        )}
+                        className="size-6 shrink-0 text-gray-500 hover:bg-gray-500/80"
                         onClick={() => setToolbarOpen((v) => !v)}
-                        title={toolbarOpen ? 'Hide formatting' : 'Show formatting'}
+                        title={
+                            toolbarOpen ? 'Hide formatting' : 'Show formatting'
+                        }
                     >
                         <Type className="size-3.5" />
                     </Button>
