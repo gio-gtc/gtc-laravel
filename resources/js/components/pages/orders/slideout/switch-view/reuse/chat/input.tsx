@@ -68,6 +68,12 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
             ctx.editor ? ctx.editor.isActive('orderedList') : false,
         equalityFn: (a, b) => a === b,
     });
+    const isTaskList = useEditorState({
+        editor,
+        selector: (ctx) =>
+            ctx.editor ? ctx.editor.isActive('taskList') : false,
+        equalityFn: (a, b) => a === b,
+    });
 
     // Reset editor when disabled state changes (e.g., after send)
     useEffect(() => {
@@ -110,11 +116,6 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
 
             <div className="relative rounded-xl bg-gray-50 shadow-sm transition-all focus-within:shadow-md">
                 <FormatToolbar editor={editor} visible={toolbarOpen} />
-                {(isBulletList || isOrderedList) && (
-                    <div className="border-b border-gray-200/60 px-2 py-1.5 text-xs text-gray-500">
-                        {isOrderedList ? 'Numbered list' : 'Bullet list'}
-                    </div>
-                )}
                 <EditorContent editor={editor} className="pt-0 pb-7" />
 
                 <div className="absolute right-1 bottom-1 flex items-center gap-1">

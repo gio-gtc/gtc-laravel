@@ -84,6 +84,44 @@ function BlockNode({ node }: { node: any }) {
                     ))}
                 </ol>
             );
+        case 'taskList':
+            return (
+                <ul className="list-none pl-0 space-y-0.5" data-type="taskList">
+                    {children.map((child: any, i: number) => (
+                        <BlockNode key={i} node={child} />
+                    ))}
+                </ul>
+            );
+        case 'taskItem': {
+            const checked = !!node.attrs?.checked;
+            return (
+                <li
+                    className="flex items-start gap-2 my-0.5"
+                    data-type="taskItem"
+                    data-checked={checked}
+                >
+                    <span
+                        className="mt-0.5 shrink-0 inline-flex size-4 items-center justify-center rounded border border-gray-400 bg-white text-gray-700"
+                        aria-hidden
+                    >
+                        {checked ? (
+                            <span className="text-xs leading-none">✓</span>
+                        ) : null}
+                    </span>
+                    <span
+                        className={
+                            checked
+                                ? 'text-gray-500 line-through whitespace-pre-wrap'
+                                : 'whitespace-pre-wrap'
+                        }
+                    >
+                        {children.map((child: any, i: number) => (
+                            <BlockNode key={i} node={child} />
+                        ))}
+                    </span>
+                </li>
+            );
+        }
         case 'listItem':
             return (
                 <li className="whitespace-pre-wrap">

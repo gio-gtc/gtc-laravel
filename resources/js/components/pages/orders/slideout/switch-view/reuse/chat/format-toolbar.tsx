@@ -11,7 +11,7 @@ import type { Editor } from '@tiptap/core';
 import { useEditorState } from '@tiptap/react';
 import {
     Bold,
-    Code,
+    CheckSquare,
     HelpCircle,
     Italic,
     Link,
@@ -26,18 +26,18 @@ import {
 } from 'lucide-react';
 
 const SHORTCUTS = [
+    // TODO: Test all het keys to see if they evebn work
     { label: 'Send message', keys: 'Cmd+Enter (Ctrl+Enter)' },
     { label: 'New line (same block)', keys: 'Shift+Enter' },
     { label: 'New block', keys: 'Enter' },
-    { label: 'Bold', keys: 'Ctrl+B' },
-    { label: 'Italic', keys: 'Ctrl+I' },
-    { label: 'Code', keys: 'Ctrl+E' },
-    { label: 'Strikethrough', keys: 'Ctrl+Shift+X' },
-    { label: 'Underline', keys: 'Ctrl+U' },
-    { label: 'Bullet list', keys: 'Ctrl+Shift+8' },
-    { label: 'Numbered list', keys: 'Ctrl+Shift+7' },
-    { label: 'Blockquote', keys: 'Ctrl+Shift+B' },
-    { label: 'Link', keys: 'Ctrl+K' },
+    { label: 'Bold', keys: 'Cmd+B' },
+    { label: 'Italic', keys: 'Cmd+I' },
+    { label: 'Strikethrough', keys: 'Cmd+Shift+S' },
+    { label: 'Underline', keys: 'Cmd+U' },
+    { label: 'Bullet list', keys: 'Cmd+Shift+8' },
+    { label: 'Numbered list', keys: 'Cmd+Shift+7' },
+    { label: 'Task list', keys: 'Cmd+Shift+9' },
+    { label: 'Blockquote', keys: 'Cmd+Shift+B' },
 ] as const;
 
 const HEADING_OPTIONS = [
@@ -66,8 +66,10 @@ export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
                 forceMount
             >
                 <div className="flex min-h-0 items-center gap-0.5 border-b border-gray-200/80 bg-gray-50/80 px-1 py-1">
+                    <HeadingDropdown editor={editor} />
+
                     <RichTextButton
-                        title="Bold (Ctrl+B)"
+                        title="Bold (Cmd+B)"
                         editor={editor}
                         activeName={'bold'}
                         run={runChain((c) => c.toggleBold())}
@@ -75,7 +77,7 @@ export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
                     />
 
                     <RichTextButton
-                        title="Italic (Ctrl+I)"
+                        title="Italic (Cmd+I)"
                         editor={editor}
                         activeName={'italic'}
                         run={runChain((c) => c.toggleItalic())}
@@ -83,15 +85,7 @@ export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
                     />
 
                     <RichTextButton
-                        title="Code (Ctrl+E)"
-                        editor={editor}
-                        activeName={'code'}
-                        run={runChain((c) => c.toggleCode())}
-                        icon={Code}
-                    />
-
-                    <RichTextButton
-                        title="Strikethrough (Ctrl+Shift+X)"
+                        title="Strikethrough (Cmd+Shift+S)"
                         editor={editor}
                         activeName={'strike'}
                         run={runChain((c) => c.toggleStrike())}
@@ -99,7 +93,7 @@ export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
                     />
 
                     <RichTextButton
-                        title="Underline (Ctrl+U)"
+                        title="Underline (Cmd+U)"
                         editor={editor}
                         activeName={'underline'}
                         run={runChain((c) => c.toggleUnderline())}
@@ -107,15 +101,15 @@ export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
                     />
 
                     <RichTextButton
-                        title="Bullet list (Ctrl+Shift+8)"
+                        title="Task list (Cmd+Shift+9)"
                         editor={editor}
-                        activeName={'bulletList'}
-                        run={runChain((c) => c.toggleBulletList())}
-                        icon={List}
+                        activeName={'taskList'}
+                        run={runChain((c) => c.toggleTaskList())}
+                        icon={CheckSquare}
                     />
 
                     <RichTextButton
-                        title="Numbered list (Ctrl+Shift+7)"
+                        title="Numbered list (Cmd+Shift+7)"
                         editor={editor}
                         activeName={'orderedList'}
                         run={runChain((c) => c.toggleOrderedList())}
@@ -123,7 +117,15 @@ export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
                     />
 
                     <RichTextButton
-                        title="Blockquote (Ctrl+Shift+B)"
+                        title="Bullet list (Cmd+Shift+8)"
+                        editor={editor}
+                        activeName={'bulletList'}
+                        run={runChain((c) => c.toggleBulletList())}
+                        icon={List}
+                    />
+
+                    <RichTextButton
+                        title="Blockquote (Cmd+Shift+B)"
                         editor={editor}
                         activeName={'blockquote'}
                         run={runChain((c) => c.toggleBlockquote())}
@@ -133,12 +135,10 @@ export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
                     <RichTextButton
                         title="Horizontal rule"
                         editor={editor}
-                        activeName={''}
+                        activeName={'horizontalRule'}
                         run={runChain((c) => c.setHorizontalRule())}
                         icon={Minus}
                     />
-
-                    <HeadingDropdown editor={editor} runChain={runChain} />
 
                     <LinkButton editor={editor} runChain={runChain} />
 
@@ -183,13 +183,7 @@ export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
     );
 }
 
-function HeadingDropdown({
-    editor,
-    runChain,
-}: {
-    editor: Editor;
-    runChain: (fn: (c: Chain) => Chain) => () => boolean;
-}) {
+function HeadingDropdown({ editor }: { editor: Editor }) {
     const currentBlock = useEditorState({
         editor,
         selector: (ctx) => {
@@ -280,7 +274,7 @@ function LinkButton({
             variant="ghost"
             size="icon"
             className="size-7 shrink-0 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
-            title="Add link (Ctrl+K)"
+            title="Add link"
             onClick={() => {
                 const url =
                     window.prompt('Enter URL:', 'https://')?.trim() || '';

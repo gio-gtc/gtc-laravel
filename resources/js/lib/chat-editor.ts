@@ -1,5 +1,7 @@
 import type { AnyExtension } from '@tiptap/core';
 import Emoji from '@tiptap/extension-emoji';
+import TaskItem from '@tiptap/extension-task-item';
+import TaskList from '@tiptap/extension-task-list';
 import Typography from '@tiptap/extension-typography';
 import StarterKit from '@tiptap/starter-kit';
 
@@ -10,10 +12,12 @@ export const chatEditorBaseExtensions: AnyExtension[] = [
     StarterKit,
     Typography,
     Emoji.configure({ enableEmoticons: true }),
+    TaskItem.configure({ nested: false }),
+    TaskList,
 ];
 
 const listStyles =
-    '[&_ul]:list-disc [&_ul]:list-outside [&_ul]:pl-5 [&_ul]:my-1 [&_ul_li]:list-item [&_ul_li]:min-h-[1.25em] [&_ol]:list-decimal [&_ol]:list-outside [&_ol]:pl-5 [&_ol]:my-1 [&_ol_li]:list-item [&_ol_li]:min-h-[1.25em] [&_li]:my-0.5';
+    '[&_ul]:list-disc [&_ul]:list-outside [&_ul]:pl-5 [&_ul]:my-1 [&_ul_li]:list-item [&_ul_li]:min-h-[1.25em] [&_ol]:list-decimal [&_ol]:list-outside [&_ol]:pl-5 [&_ol]:my-1 [&_ol_li]:list-item [&_ol_li]:min-h-[1.25em] [&_li]:my-0.5 [&_ul[data-type="taskList"]_label]:-ml-3.5 [&_ul[data-type="taskList"]_li]:flex [&_ul[data-type="taskList"]_li]:items-start [&_ul[data-type="taskList"]_li]:gap-1 [&_ul[data-type="taskList"]_li]:my-0.5';
 
 const blockStyles =
     '[&_blockquote]:border-l-4 [&_blockquote]:border-gray-300 [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-gray-700 [&_h1]:text-lg [&_h1]:font-bold [&_h2]:text-base [&_h2]:font-semibold [&_h3]:text-sm [&_h3]:font-semibold [&_h4]:text-sm [&_h4]:font-medium [&_h5]:text-xs [&_h5]:font-medium [&_h6]:text-xs [&_h6]:font-medium [&_hr]:my-2 [&_hr]:border-gray-200';
