@@ -40,35 +40,11 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
                 class: CHAT_EDITOR_CLASS.input,
             },
             handleKeyDown: createChatEditorKeyDown({
-                onEnter: (view) => {
+                onSubmit: (view) => {
                     const form = (view as { dom: HTMLElement }).dom.closest(
                         'form',
                     );
                     if (form) form.requestSubmit();
-                },
-                submitOnEnterWhen: (view) => {
-                    const state = (
-                        view as {
-                            state: {
-                                selection: {
-                                    $from: {
-                                        depth: number;
-                                        node: (d: number) => {
-                                            type: { name: string };
-                                        };
-                                    };
-                                };
-                            };
-                        }
-                    )?.state;
-                    if (!state) return true;
-                    const $from = state.selection.$from;
-                    for (let d = $from.depth; d > 0; d--) {
-                        const name = $from.node(d).type.name;
-                        if (name === 'bulletList' || name === 'orderedList')
-                            return false;
-                    }
-                    return true;
                 },
             }),
         },
@@ -168,6 +144,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
                         variant="ghost"
                         disabled={disabled || !canSubmit}
                         className="h-auto px-3 py-1 text-sm font-medium text-brand-gtc-red hover:bg-brand-gtc-red disabled:pointer-events-none disabled:opacity-50"
+                        title="Send (Cmd+Enter or Ctrl+Enter)"
                     >
                         Send
                     </Button>

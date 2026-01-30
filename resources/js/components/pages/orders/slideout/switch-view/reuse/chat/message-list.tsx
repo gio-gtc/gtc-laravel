@@ -60,7 +60,7 @@ function InlineMessageEditor({
                 class: CHAT_EDITOR_CLASS.inline,
             },
             handleKeyDown: createChatEditorKeyDown({
-                onEnter: () => {
+                onSubmit: () => {
                     if (editor && !editor.isEmpty) onSave(editor.getJSON());
                 },
                 onEscape: onCancel,

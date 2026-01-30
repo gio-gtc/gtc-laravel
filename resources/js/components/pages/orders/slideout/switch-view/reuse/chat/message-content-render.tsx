@@ -1,4 +1,5 @@
-import type { ReactNode } from 'react';
+import { emojis, shortcodeToEmoji } from '@tiptap/extension-emoji';
+import React, { createElement, type ReactNode } from 'react';
 
 /** Renders TipTap JSON doc as React with bold, italic, code, lists preserved. */
 export function MessageContentRender({ content }: { content: any }) {
@@ -28,10 +29,39 @@ function BlockNode({ node }: { node: any }) {
     switch (node.type) {
         case 'paragraph':
             return <p className="whitespace-pre-wrap">{inner}</p>;
-        case 'heading':
-            return (
-                <p className="whitespace-pre-wrap font-semibold">{inner}</p>
+        case 'heading': {
+            const level = Math.min(
+                6,
+                Math.max(1, node.attrs?.level ?? 1),
+            ) as 1 | 2 | 3 | 4 | 5 | 6;
+            const headingClass =
+                level === 1
+                    ? 'text-lg font-bold'
+                    : level === 2
+                      ? 'text-base font-semibold'
+                      : level === 3
+                        ? 'text-sm font-semibold'
+                        : level === 4
+                          ? 'text-sm font-medium'
+                          : 'text-xs font-medium';
+            return createElement(
+                `h${level}`,
+                {
+                    className: `whitespace-pre-wrap ${headingClass}`,
+                },
+                inner,
             );
+        }
+        case 'blockquote':
+            return (
+                <blockquote className="border-l-4 border-gray-300 pl-3 italic text-gray-700">
+                    {children.map((child: any, i: number) => (
+                        <BlockNode key={i} node={child} />
+                    ))}
+                </blockquote>
+            );
+        case 'horizontalRule':
+            return <hr className="my-2 border-gray-200" />;
         case 'codeBlock':
             return (
                 <pre className="overflow-x-auto rounded bg-gray-100 px-2 py-1 font-mono text-xs">
@@ -81,9 +111,31 @@ function InlineNode({ node }: { node: any }): ReactNode {
                         {el}
                     </code>
                 );
+            else if (mark.type === 'strike') el = <s>{el}</s>;
+            else if (mark.type === 'underline') el = <u>{el}</u>;
+            else if (mark.type === 'link')
+                el = (
+                    <a
+                        href={mark.attrs?.href ?? '#'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-brand-gtc-red underline"
+                    >
+                        {el}
+                    </a>
+                );
         }
         return el;
     }
     if (node.type === 'hardBreak') return <br />;
+    if (node.type === 'emoji') {
+        const shortcode = node.attrs?.name;
+        const item = shortcode ? shortcodeToEmoji(shortcode, emojis) : null;
+        return (
+            <span data-type="emoji" data-name={shortcode}>
+                {item?.emoji ?? (shortcode ? `:${shortcode}:` : '')}
+            </span>
+        );
+    }
     return null;
 }

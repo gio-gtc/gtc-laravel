@@ -3,6 +3,7 @@ import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import {
     DropdownMenu,
     DropdownMenuContent,
+    DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
@@ -13,17 +14,37 @@ import {
     Code,
     HelpCircle,
     Italic,
+    Link,
     List,
     ListOrdered,
     type LucideIcon,
+    Minus,
+    Quote,
+    Strikethrough,
+    Underline,
+    Unlink,
 } from 'lucide-react';
 
 const SHORTCUTS = [
+    { label: 'Send message', keys: 'Cmd+Enter (Ctrl+Enter)' },
+    { label: 'New line (same block)', keys: 'Shift+Enter' },
+    { label: 'New block', keys: 'Enter' },
     { label: 'Bold', keys: 'Ctrl+B' },
     { label: 'Italic', keys: 'Ctrl+I' },
     { label: 'Code', keys: 'Ctrl+E' },
+    { label: 'Strikethrough', keys: 'Ctrl+Shift+X' },
+    { label: 'Underline', keys: 'Ctrl+U' },
     { label: 'Bullet list', keys: 'Ctrl+Shift+8' },
     { label: 'Numbered list', keys: 'Ctrl+Shift+7' },
+    { label: 'Blockquote', keys: 'Ctrl+Shift+B' },
+    { label: 'Link', keys: 'Ctrl+K' },
+] as const;
+
+const HEADING_OPTIONS = [
+    { label: 'Paragraph', level: null as number | null },
+    { label: 'Heading 1', level: 1 },
+    { label: 'Heading 2', level: 2 },
+    { label: 'Heading 3', level: 3 },
 ] as const;
 
 interface FormatToolbarProps {
@@ -70,6 +91,22 @@ export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
                     />
 
                     <RichTextButton
+                        title="Strikethrough (Ctrl+Shift+X)"
+                        editor={editor}
+                        activeName={'strike'}
+                        run={runChain((c) => c.toggleStrike())}
+                        icon={Strikethrough}
+                    />
+
+                    <RichTextButton
+                        title="Underline (Ctrl+U)"
+                        editor={editor}
+                        activeName={'underline'}
+                        run={runChain((c) => c.toggleUnderline())}
+                        icon={Underline}
+                    />
+
+                    <RichTextButton
                         title="Bullet list (Ctrl+Shift+8)"
                         editor={editor}
                         activeName={'bulletList'}
@@ -84,6 +121,26 @@ export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
                         run={runChain((c) => c.toggleOrderedList())}
                         icon={ListOrdered}
                     />
+
+                    <RichTextButton
+                        title="Blockquote (Ctrl+Shift+B)"
+                        editor={editor}
+                        activeName={'blockquote'}
+                        run={runChain((c) => c.toggleBlockquote())}
+                        icon={Quote}
+                    />
+
+                    <RichTextButton
+                        title="Horizontal rule"
+                        editor={editor}
+                        activeName={''}
+                        run={runChain((c) => c.setHorizontalRule())}
+                        icon={Minus}
+                    />
+
+                    <HeadingDropdown editor={editor} runChain={runChain} />
+
+                    <LinkButton editor={editor} runChain={runChain} />
 
                     <div className="mx-0.5 h-4 w-px bg-gray-200" aria-hidden />
                     <DropdownMenu>
@@ -123,6 +180,117 @@ export default function FormatToolbar({ editor, visible }: FormatToolbarProps) {
                 </div>
             </CollapsibleContent>
         </Collapsible>
+    );
+}
+
+function HeadingDropdown({
+    editor,
+    runChain,
+}: {
+    editor: Editor;
+    runChain: (fn: (c: Chain) => Chain) => () => boolean;
+}) {
+    const currentBlock = useEditorState({
+        editor,
+        selector: (ctx) => {
+            if (!ctx.editor) return { label: 'Paragraph', level: null };
+            for (let level = 3; level >= 1; level--) {
+                if (ctx.editor.isActive('heading', { level }))
+                    return {
+                        label: `Heading ${level}`,
+                        level,
+                    };
+            }
+            return { label: 'Paragraph', level: null };
+        },
+        equalityFn: (a, b) =>
+            a.label === (b?.label ?? null) && a.level === (b?.level ?? null),
+    });
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 min-w-0 px-2 text-xs text-gray-600 hover:bg-gray-200 hover:text-gray-900"
+                    title="Block type"
+                >
+                    {currentBlock.label}
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+                {HEADING_OPTIONS.map(({ label, level }) => (
+                    <DropdownMenuItem
+                        key={label}
+                        onSelect={() => {
+                            if (level === null) {
+                                editor.chain().focus().setParagraph().run();
+                            } else {
+                                editor
+                                    .chain()
+                                    .focus()
+                                    .toggleHeading({
+                                        level: level as 1 | 2 | 3 | 4 | 5 | 6,
+                                    })
+                                    .run();
+                            }
+                        }}
+                    >
+                        {label}
+                    </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+}
+
+function LinkButton({
+    editor,
+    runChain,
+}: {
+    editor: Editor;
+    runChain: (fn: (c: Chain) => Chain) => () => boolean;
+}) {
+    const isLink = useEditorState({
+        editor,
+        selector: (ctx) => (ctx.editor ? ctx.editor.isActive('link') : false),
+        equalityFn: (a, b) => a === b,
+    });
+
+    if (isLink) {
+        return (
+            <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-7 shrink-0 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
+                title="Remove link"
+                onClick={() => runChain((c) => c.unsetLink())()}
+            >
+                <Unlink className="size-3.5" />
+            </Button>
+        );
+    }
+
+    return (
+        <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="size-7 shrink-0 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
+            title="Add link (Ctrl+K)"
+            onClick={() => {
+                const url =
+                    window.prompt('Enter URL:', 'https://')?.trim() || '';
+                if (url) {
+                    editor.chain().focus().setLink({ href: url }).run();
+                }
+            }}
+        >
+            <Link className="size-3.5" />
+        </Button>
     );
 }
 
