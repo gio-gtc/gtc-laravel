@@ -7,7 +7,8 @@ import {
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor, useEditorState } from '@tiptap/react';
 import { Paperclip } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import FormatToolbar from './format-toolbar';
 
 function hasMeaningfulContent(
     editor: { getText: () => string } | null,
@@ -23,6 +24,7 @@ interface ChatInputProps {
 
 export default function ChatInput({ onSend, disabled }: ChatInputProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [toolbarOpen, setToolbarOpen] = useState(false);
 
     const editor = useEditor({
         extensions: [
@@ -44,6 +46,17 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
                     );
                     if (form) form.requestSubmit();
                 },
+                submitOnEnterWhen: (view) => {
+                    const state = (view as { state: { selection: { $from: { depth: number; node: (d: number) => { type: { name: string } } } } } })?.state;
+                    if (!state) return true;
+                    const $from = state.selection.$from;
+                    for (let d = $from.depth; d > 0; d--) {
+                        const name = $from.node(d).type.name;
+                        if (name === 'bulletList' || name === 'orderedList')
+                            return false;
+                    }
+                    return true;
+                },
             }),
         },
     });
@@ -51,6 +64,17 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
     const canSubmit = useEditorState({
         editor,
         selector: (ctx) => hasMeaningfulContent(ctx.editor),
+        equalityFn: (a, b) => a === b,
+    });
+
+    const isBulletList = useEditorState({
+        editor,
+        selector: (ctx) => (ctx.editor ? ctx.editor.isActive('bulletList') : false),
+        equalityFn: (a, b) => a === b,
+    });
+    const isOrderedList = useEditorState({
+        editor,
+        selector: (ctx) => (ctx.editor ? ctx.editor.isActive('orderedList') : false),
         equalityFn: (a, b) => a === b,
     });
 
@@ -94,6 +118,16 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
             />
 
             <div className="relative rounded-xl bg-gray-50 shadow-sm transition-all focus-within:shadow-md">
+                <FormatToolbar
+                    editor={editor}
+                    visible={toolbarOpen}
+                    onToggleVisible={() => setToolbarOpen((v) => !v)}
+                />
+                {(isBulletList || isOrderedList) && (
+                    <div className="border-b border-gray-200/60 px-2 py-1.5 text-xs text-gray-500">
+                        {isOrderedList ? 'Numbered list' : 'Bullet list'}
+                    </div>
+                )}
                 <EditorContent editor={editor} className="pt-0 pb-7" />
 
                 <div className="absolute right-1 bottom-1 flex items-center gap-1">

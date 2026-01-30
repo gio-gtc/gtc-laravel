@@ -23,8 +23,8 @@ import {
 import {
     formatMessageTimestamp,
     groupMessagesByDate,
-    messageContentToText,
 } from '@/lib/chat-utils';
+import { MessageContentRender } from './message-content-render';
 import { cn } from '@/lib/utils';
 import { User } from '@/types';
 import { Message } from '@/types/chat';
@@ -213,8 +213,6 @@ export default function MessageList({
                         );
                     }
 
-                    const contentRender = messageContentToText(item.content);
-
                     const bubbleDiv = (
                         <div
                             className={cn(
@@ -226,9 +224,7 @@ export default function MessageList({
                                 canEditDelete && 'cursor-pointer',
                             )}
                         >
-                            <div className="leading-relaxed whitespace-pre-wrap">
-                                {contentRender}
-                            </div>
+                            <MessageContentRender content={item.content} />
                         </div>
                     );
 
