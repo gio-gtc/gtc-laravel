@@ -9,12 +9,12 @@ import {
 } from '@/types';
 import { Eye, Link } from 'lucide-react';
 import { useMemo } from 'react';
-import ChatIndex from '../reuse/chat';
+import AttachmentsSection from '../reuse/attachments-section';
+import ChatBox from '../reuse/chat';
+import MediaTable from '../reuse/media-table';
 import SectionContainers from '../reuse/section-containers';
-import AttachmentsSection from './attachments-section';
 import BillingSection from './billing-section';
 import Filters from './filters';
-import MediaTable from './media-table';
 
 interface GeneralMediaViewProps {
     order: Tour | null;
@@ -102,7 +102,7 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
 
             {/* Chat Section */}
             <SectionContainers title="Comments">
-                <ChatIndex />
+                <ChatBox />
             </SectionContainers>
         </>
     );

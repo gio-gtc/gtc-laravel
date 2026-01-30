@@ -18,7 +18,7 @@ export default function ChatIndex({ channelId = 'general' }: Props) {
     );
 
     return (
-        <div className="flex h-[calc(100vh-65px)] flex-col">
+        <div className="flex h-[calc(100vh-75px)] flex-col">
             <div className="flex-1 overflow-hidden">
                 <MessageList
                     messages={messages}
