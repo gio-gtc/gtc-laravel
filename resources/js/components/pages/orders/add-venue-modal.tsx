@@ -44,16 +44,12 @@ export default function AddVenueModal({
     const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
     const [showStartDate, setShowStartDate] = useState<string | null>(null);
     const [showEndDate, setShowEndDate] = useState<string | null>(null);
-    const [dueDate, setDueDate] = useState<string>('');
+    const [dueDate, setDueDate] = useState<string>();
     const [localDeliverables, setLocalDeliverables] = useState<string>('');
 
     // Initialize due date with order's due_date when modal opens or order changes
     useEffect(() => {
-        if (isOpen && order) {
-            setDueDate(formatDateInput(order.due_date));
-        } else if (isOpen && !order) {
-            setDueDate('');
-        }
+        setDueDate(new Date().toISOString().split('T')[0]);
     }, [isOpen, order]);
 
     // Reset form when modal closes
