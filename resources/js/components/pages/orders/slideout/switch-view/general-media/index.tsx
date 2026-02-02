@@ -16,6 +16,7 @@ import MediaTable from '../reuse/dynamic-media-table';
 import SectionContainers from '../reuse/section-containers';
 import StaticAssetsMediaTable from '../reuse/static-assets-media-table';
 import AddBroadcastStreamingModal from './add-broadcast-streaming-modal';
+import AddSocialVideoModal from './add-social-video-modal';
 import BillingSection from './billing-section';
 import Filters from './filters';
 
@@ -222,6 +223,7 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
     ];
 
     const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
+    const [socialVideoModalOpen, setSocialVideoModalOpen] = useState(false);
 
     const billingInvoices = useMemo((): Invoice[] => {
         if (!order || !venueItem) return [];
@@ -243,7 +245,11 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
                     data={exampleData}
                     onAdd={() => setBroadcastModalOpen(true)}
                 />
-                <MediaTable title="Social Video" data={exampleData} />
+                <MediaTable
+                    title="Social Video"
+                    data={exampleData}
+                    onAdd={() => setSocialVideoModalOpen(true)}
+                />
                 <MediaTable title="Audio" data={exampleData} />
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
@@ -279,6 +285,10 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
             <AddBroadcastStreamingModal
                 isOpen={broadcastModalOpen}
                 onClose={() => setBroadcastModalOpen(false)}
+            />
+            <AddSocialVideoModal
+                isOpen={socialVideoModalOpen}
+                onClose={() => setSocialVideoModalOpen(false)}
             />
         </>
     );
