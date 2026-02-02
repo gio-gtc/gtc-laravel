@@ -9,12 +9,13 @@ import {
     type Venue,
 } from '@/types';
 import { Eye, Link } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import AttachmentsSection from '../reuse/attachments-section';
 import ChatBox from '../reuse/chat';
 import MediaTable from '../reuse/dynamic-media-table';
 import SectionContainers from '../reuse/section-containers';
 import StaticAssetsMediaTable from '../reuse/static-assets-media-table';
+import AddBroadcastStreamingModal from './add-broadcast-streaming-modal';
 import BillingSection from './billing-section';
 import Filters from './filters';
 
@@ -220,6 +221,8 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
         },
     ];
 
+    const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
+
     const billingInvoices = useMemo((): Invoice[] => {
         if (!order || !venueItem) return [];
         return invoicesData.filter(
@@ -238,6 +241,7 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
                 <MediaTable
                     title="Broadcast & Streaming Video"
                     data={exampleData}
+                    onAdd={() => setBroadcastModalOpen(true)}
                 />
                 <MediaTable title="Social Video" data={exampleData} />
                 <MediaTable title="Audio" data={exampleData} />
@@ -271,6 +275,11 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
             <SectionContainers title="Comments">
                 <ChatBox />
             </SectionContainers>
+
+            <AddBroadcastStreamingModal
+                isOpen={broadcastModalOpen}
+                onClose={() => setBroadcastModalOpen(false)}
+            />
         </>
     );
 }
