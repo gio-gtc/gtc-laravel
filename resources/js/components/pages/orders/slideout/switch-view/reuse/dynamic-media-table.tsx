@@ -102,107 +102,154 @@ export default function MediaTable({
                             </TableHeader>
                             <TableBody>
                                 {data.length > 0 ? (
-                                    data.map((row) => (
-                                        <TableRow key={row.id}>
-                                            <TableCell>{row.isci}</TableCell>
-                                            <TableCell>{row.cutName}</TableCell>
-                                            <TableCell>
-                                                {row.duration}
-                                            </TableCell>
-                                            <TableCell>{row.dueDate}</TableCell>
-                                            <TableCell>
-                                                {row.assigned ? (
-                                                    <Avatar className="size-5 overflow-hidden rounded-full">
-                                                        <AvatarImage
-                                                            src={
-                                                                row.assigned
-                                                                    .avatar ||
-                                                                undefined
-                                                            }
-                                                            alt={
-                                                                row.assigned
-                                                                    .name
-                                                            }
-                                                        />
-                                                        <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                                            {getInitials(
-                                                                row.assigned
-                                                                    .name,
+                                    data.map((row) => {
+                                        const isDisabledRow =
+                                            row.status === 'Cancelled' ||
+                                            row.status === 'Revision Requested';
+                                        const hideDeliverablesButtons =
+                                            isDisabledRow ||
+                                            row.status === 'Unassigned';
+                                        return (
+                                            <TableRow key={row.id}>
+                                                <TableCell
+                                                    className={cn(
+                                                        isDisabledRow &&
+                                                            'text-muted-foreground opacity-70',
+                                                    )}
+                                                >
+                                                    {row.isci}
+                                                </TableCell>
+                                                <TableCell
+                                                    className={cn(
+                                                        isDisabledRow &&
+                                                            'text-muted-foreground opacity-70',
+                                                    )}
+                                                >
+                                                    {row.cutName}
+                                                </TableCell>
+                                                <TableCell
+                                                    className={cn(
+                                                        isDisabledRow &&
+                                                            'text-muted-foreground opacity-70',
+                                                    )}
+                                                >
+                                                    {row.duration}
+                                                </TableCell>
+                                                <TableCell
+                                                    className={cn(
+                                                        isDisabledRow &&
+                                                            'text-muted-foreground opacity-70',
+                                                    )}
+                                                >
+                                                    {row.dueDate}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {row.assigned ? (
+                                                        <Avatar className="size-5 overflow-hidden rounded-full">
+                                                            <AvatarImage
+                                                                src={
+                                                                    row.assigned
+                                                                        .avatar ||
+                                                                    undefined
+                                                                }
+                                                                alt={
+                                                                    row.assigned
+                                                                        .name
+                                                                }
+                                                            />
+                                                            <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                                {getInitials(
+                                                                    row.assigned
+                                                                        .name,
+                                                                )}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                    ) : (
+                                                        <span className="text-muted-foreground"></span>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-center">
+                                                    {getStatusBadge(row.status)}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {isDisabledRow ? (
+                                                        <span className="text-muted-foreground"></span>
+                                                    ) : (
+                                                        <div className="flex items-center justify-center gap-2">
+                                                            {row.previewIcons.map(
+                                                                (
+                                                                    icon,
+                                                                    index,
+                                                                ) => (
+                                                                    <button
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        className="cursor-pointer text-gray-600 hover:text-gray-900"
+                                                                        onClick={() =>
+                                                                            console.log(
+                                                                                'Preview icon clicked:',
+                                                                                {
+                                                                                    rowId: row.id,
+                                                                                    iconIndex:
+                                                                                        index,
+                                                                                    isci: row.isci,
+                                                                                },
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        {icon}
+                                                                    </button>
+                                                                ),
                                                             )}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                ) : (
-                                                    <span className="text-muted-foreground">
-                                                        —
-                                                    </span>
-                                                )}
-                                            </TableCell>
-                                            <TableCell className="text-center">
-                                                {getStatusBadge(row.status)}
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center justify-center gap-2">
-                                                    {row.previewIcons.map(
-                                                        (icon, index) => (
-                                                            <button
-                                                                key={index}
-                                                                className="cursor-pointer text-gray-600 hover:text-gray-900"
-                                                                onClick={() =>
-                                                                    console.log(
-                                                                        'Preview icon clicked:',
-                                                                        {
-                                                                            rowId: row.id,
-                                                                            iconIndex:
-                                                                                index,
-                                                                            isci: row.isci,
-                                                                        },
-                                                                    )
+                                                        </div>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {hideDeliverablesButtons ? (
+                                                        <span className="text-muted-foreground"></span>
+                                                    ) : (
+                                                        <div className="flex items-center justify-center gap-2">
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="size-4 cursor-pointer rounded-full border border-red-500 text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
+                                                                onClick={
+                                                                    row
+                                                                        .deliverables
+                                                                        ?.onReject ||
+                                                                    (() =>
+                                                                        console.log(
+                                                                            'Reject clicked for row:',
+                                                                            row.id,
+                                                                        ))
                                                                 }
                                                             >
-                                                                {icon}
-                                                            </button>
-                                                        ),
+                                                                <X className="size-3" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="size-4 cursor-pointer rounded-full border border-green-500 text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
+                                                                onClick={
+                                                                    row
+                                                                        .deliverables
+                                                                        ?.onApprove ||
+                                                                    (() =>
+                                                                        console.log(
+                                                                            'Approve clicked for row:',
+                                                                            row.id,
+                                                                        ))
+                                                                }
+                                                            >
+                                                                <Check className="size-3" />
+                                                            </Button>
+                                                        </div>
                                                     )}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center justify-center gap-2">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="size-4 cursor-pointer rounded-full border border-red-500 text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
-                                                        onClick={
-                                                            row.deliverables
-                                                                ?.onReject ||
-                                                            (() =>
-                                                                console.log(
-                                                                    'Reject clicked for row:',
-                                                                    row.id,
-                                                                ))
-                                                        }
-                                                    >
-                                                        <X className="size-3" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="size-4 cursor-pointer rounded-full border border-green-500 text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
-                                                        onClick={
-                                                            row.deliverables
-                                                                ?.onApprove ||
-                                                            (() =>
-                                                                console.log(
-                                                                    'Approve clicked for row:',
-                                                                    row.id,
-                                                                ))
-                                                        }
-                                                    >
-                                                        <Check className="size-3" />
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })
                                 ) : (
                                     <TableRow>
                                         <TableCell

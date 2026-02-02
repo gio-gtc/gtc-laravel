@@ -112,76 +112,118 @@ export default function StaticAssetsMediaTable({
                             </TableHeader>
                             <TableBody>
                                 {data.length > 0 ? (
-                                    data.map((row) => (
-                                        <TableRow key={row.id}>
-                                            <TableCell>{row.cutName}</TableCell>
-                                            <TableCell>{row.width}</TableCell>
-                                            <TableCell>{row.height}</TableCell>
-                                            <TableCell>{row.dueDate}</TableCell>
-                                            <TableCell>
-                                                {row.assigned ? (
-                                                    <Avatar className="size-5.5 overflow-hidden rounded-full">
-                                                        <AvatarImage
-                                                            src={
-                                                                row.assigned
-                                                                    .avatar ||
-                                                                undefined
-                                                            }
-                                                            alt={
-                                                                row.assigned
-                                                                    .name
-                                                            }
-                                                        />
-                                                        <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                                            {getInitials(
-                                                                row.assigned
-                                                                    .name,
-                                                            )}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                ) : (
-                                                    <span className="text-muted-foreground">
-                                                        —
-                                                    </span>
-                                                )}
-                                            </TableCell>
-
-                                            <TableCell>
-                                                <p className="flex justify-center rounded-full focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 focus:outline-none">
-                                                    {getStatusBadge(row.status)}
-                                                </p>
-                                            </TableCell>
-
-                                            <TableCell className="flex items-center justify-center gap-2">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="size-6 cursor-pointer rounded-full text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
-                                                    onClick={() =>
-                                                        console.log(
-                                                            'Reject/refresh clicked',
-                                                            row.id,
-                                                        )
-                                                    }
+                                    data.map((row) => {
+                                        const isDisabledRow =
+                                            row.status === 'Cancelled' ||
+                                            row.status === 'Revision Requested';
+                                        const hideDeliverablesButtons =
+                                            isDisabledRow ||
+                                            row.status === 'Unassigned';
+                                        return (
+                                            <TableRow key={row.id}>
+                                                <TableCell
+                                                    className={cn(
+                                                        isDisabledRow &&
+                                                            'text-muted-foreground opacity-70',
+                                                    )}
                                                 >
-                                                    <RefreshCw className="size-4.5" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="size-6 cursor-pointer rounded-full text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
-                                                    onClick={() =>
-                                                        console.log(
-                                                            'Download clicked',
-                                                            row.id,
-                                                        )
-                                                    }
+                                                    {row.cutName}
+                                                </TableCell>
+                                                <TableCell
+                                                    className={cn(
+                                                        isDisabledRow &&
+                                                            'text-muted-foreground opacity-70',
+                                                    )}
                                                 >
-                                                    <Download className="size-4.5" />
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
+                                                    {row.width}
+                                                </TableCell>
+                                                <TableCell
+                                                    className={cn(
+                                                        isDisabledRow &&
+                                                            'text-muted-foreground opacity-70',
+                                                    )}
+                                                >
+                                                    {row.height}
+                                                </TableCell>
+                                                <TableCell
+                                                    className={cn(
+                                                        isDisabledRow &&
+                                                            'text-muted-foreground opacity-70',
+                                                    )}
+                                                >
+                                                    {row.dueDate}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {row.assigned ? (
+                                                        <Avatar className="size-5.5 overflow-hidden rounded-full">
+                                                            <AvatarImage
+                                                                src={
+                                                                    row.assigned
+                                                                        .avatar ||
+                                                                    undefined
+                                                                }
+                                                                alt={
+                                                                    row.assigned
+                                                                        .name
+                                                                }
+                                                            />
+                                                            <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                                                {getInitials(
+                                                                    row.assigned
+                                                                        .name,
+                                                                )}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                    ) : (
+                                                        <span className="text-muted-foreground"></span>
+                                                    )}
+                                                </TableCell>
+
+                                                <TableCell>
+                                                    <p className="flex justify-center rounded-full focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 focus:outline-none">
+                                                        {getStatusBadge(
+                                                            row.status,
+                                                        )}
+                                                    </p>
+                                                </TableCell>
+
+                                                <TableCell className="flex items-center justify-center gap-2">
+                                                    {hideDeliverablesButtons ? (
+                                                        <span className="text-muted-foreground"></span>
+                                                    ) : (
+                                                        <>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="size-6 cursor-pointer rounded-full text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
+                                                                onClick={() =>
+                                                                    console.log(
+                                                                        'Reject/refresh clicked',
+                                                                        row.id,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <RefreshCw className="size-4.5" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="size-6 cursor-pointer rounded-full text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
+                                                                onClick={() =>
+                                                                    console.log(
+                                                                        'Download clicked',
+                                                                        row.id,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <Download className="size-4.5" />
+                                                            </Button>
+                                                        </>
+                                                    )}
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })
                                 ) : (
                                     <TableRow>
                                         <TableCell
