@@ -15,11 +15,22 @@ import {
 } from '@/components/ui/table';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
-import { MediaTableProps, MediaTableRow } from '@/types';
-import { Check, ChevronDown, ChevronRight, Plus, X } from 'lucide-react';
+import type {
+    StaticAssetsMediaTableProps,
+    StaticAssetsTableRow,
+} from '@/types';
+import {
+    ChevronDown,
+    ChevronRight,
+    Download,
+    Plus,
+    RefreshCw,
+} from 'lucide-react';
 import { useState } from 'react';
 
-function getStatusBadge(status: MediaTableRow['status']): React.ReactNode {
+function getStatusBadge(
+    status: StaticAssetsTableRow['status'],
+): React.ReactNode {
     const baseClasses =
         'inline-flex items-center rounded-full border-2 border-solid px-2.5 py-0.5 text-xs font-medium';
 
@@ -46,12 +57,12 @@ function getStatusBadge(status: MediaTableRow['status']): React.ReactNode {
     return <span className={cn(baseClasses, colorClasses)}>{status}</span>;
 }
 
-export default function MediaTable({
+export default function StaticAssetsMediaTable({
     title,
     data,
     defaultOpen = true,
     onAdd,
-}: MediaTableProps) {
+}: StaticAssetsMediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const getInitials = useInitials();
 
@@ -90,13 +101,12 @@ export default function MediaTable({
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>ISCI</TableHead>
                                     <TableHead>Cut Name</TableHead>
-                                    <TableHead>Duration</TableHead>
+                                    <TableHead>W</TableHead>
+                                    <TableHead>H</TableHead>
                                     <TableHead>Due Date</TableHead>
                                     <TableHead>Assigned</TableHead>
                                     <TableHead>Status</TableHead>
-                                    <TableHead>Preview</TableHead>
                                     <TableHead>Deliverables</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -104,15 +114,13 @@ export default function MediaTable({
                                 {data.length > 0 ? (
                                     data.map((row) => (
                                         <TableRow key={row.id}>
-                                            <TableCell>{row.isci}</TableCell>
                                             <TableCell>{row.cutName}</TableCell>
-                                            <TableCell>
-                                                {row.duration}
-                                            </TableCell>
+                                            <TableCell>{row.width}</TableCell>
+                                            <TableCell>{row.height}</TableCell>
                                             <TableCell>{row.dueDate}</TableCell>
                                             <TableCell>
                                                 {row.assigned ? (
-                                                    <Avatar className="h-8 w-8 overflow-hidden rounded-full">
+                                                    <Avatar className="size-5.5 overflow-hidden rounded-full">
                                                         <AvatarImage
                                                             src={
                                                                 row.assigned
@@ -137,76 +145,47 @@ export default function MediaTable({
                                                     </span>
                                                 )}
                                             </TableCell>
-                                            <TableCell className="text-center">
-                                                {getStatusBadge(row.status)}
-                                            </TableCell>
+
                                             <TableCell>
-                                                <div className="flex items-center justify-center gap-2">
-                                                    {row.previewIcons.map(
-                                                        (icon, index) => (
-                                                            <button
-                                                                key={index}
-                                                                className="cursor-pointer text-gray-600 hover:text-gray-900"
-                                                                onClick={() =>
-                                                                    console.log(
-                                                                        'Preview icon clicked:',
-                                                                        {
-                                                                            rowId: row.id,
-                                                                            iconIndex:
-                                                                                index,
-                                                                            isci: row.isci,
-                                                                        },
-                                                                    )
-                                                                }
-                                                            >
-                                                                {icon}
-                                                            </button>
-                                                        ),
-                                                    )}
-                                                </div>
+                                                <p className="flex justify-center rounded-full focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 focus:outline-none">
+                                                    {getStatusBadge(row.status)}
+                                                </p>
                                             </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center justify-center gap-2">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="size-4 cursor-pointer rounded-full border border-red-500 text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
-                                                        onClick={
-                                                            row.deliverables
-                                                                ?.onReject ||
-                                                            (() =>
-                                                                console.log(
-                                                                    'Reject clicked for row:',
-                                                                    row.id,
-                                                                ))
-                                                        }
-                                                    >
-                                                        <X className="size-3" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="size-4 cursor-pointer rounded-full border border-green-500 text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
-                                                        onClick={
-                                                            row.deliverables
-                                                                ?.onApprove ||
-                                                            (() =>
-                                                                console.log(
-                                                                    'Approve clicked for row:',
-                                                                    row.id,
-                                                                ))
-                                                        }
-                                                    >
-                                                        <Check className="size-3" />
-                                                    </Button>
-                                                </div>
+
+                                            <TableCell className="flex items-center justify-center gap-2">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="size-6 cursor-pointer rounded-full text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
+                                                    onClick={() =>
+                                                        console.log(
+                                                            'Reject/refresh clicked',
+                                                            row.id,
+                                                        )
+                                                    }
+                                                >
+                                                    <RefreshCw className="size-4.5" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="size-6 cursor-pointer rounded-full text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
+                                                    onClick={() =>
+                                                        console.log(
+                                                            'Download clicked',
+                                                            row.id,
+                                                        )
+                                                    }
+                                                >
+                                                    <Download className="size-4.5" />
+                                                </Button>
                                             </TableCell>
                                         </TableRow>
                                     ))
                                 ) : (
                                     <TableRow>
                                         <TableCell
-                                            colSpan={8}
+                                            colSpan={7}
                                             className="h-24 text-center"
                                         >
                                             No data available.

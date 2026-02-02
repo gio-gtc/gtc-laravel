@@ -195,3 +195,27 @@ export interface MediaTableProps {
     defaultOpen?: boolean; // Default: true
     onAdd?: () => void; // Optional callback for add button
 }
+
+export interface StaticAssetsTableRow {
+    id: string | number;
+    cutName: string;
+    width: number;
+    height: number;
+    dueDate: string; // e.g., "1/15/25"
+    assigned: User | null;
+    status:
+        | 'Still in Cart'
+        | 'Client Review'
+        | 'In Production'
+        | 'Out for Delivery'
+        | 'Cancelled'
+        | 'Revision Requested'
+        | 'Unassigned';
+}
+
+export interface StaticAssetsMediaTableProps {
+    title: string;
+    data: StaticAssetsTableRow[];
+    defaultOpen?: boolean;
+    onAdd?: () => void;
+}

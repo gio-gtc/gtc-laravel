@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import {
     type Invoice,
     type MediaTableRow,
+    type StaticAssetsTableRow,
     type Tour,
     type TourVenue,
     type Venue,
@@ -11,8 +12,9 @@ import { Eye, Link } from 'lucide-react';
 import { useMemo } from 'react';
 import AttachmentsSection from '../reuse/attachments-section';
 import ChatBox from '../reuse/chat';
-import MediaTable from '../reuse/media-table';
+import MediaTable from '../reuse/dynamic-media-table';
 import SectionContainers from '../reuse/section-containers';
+import StaticAssetsMediaTable from '../reuse/static-assets-media-table';
 import BillingSection from './billing-section';
 import Filters from './filters';
 
@@ -53,6 +55,52 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
         },
     ];
 
+    const staticAssetsExampleData: StaticAssetsTableRow[] = [
+        {
+            id: 1,
+            cutName: 'Key Art Package',
+            width: 1400,
+            height: 400,
+            dueDate: '1/15/25',
+            assigned: {
+                id: 1,
+                name: 'Jane Doe',
+                email: 'jane@example.com',
+                email_verified_at: null,
+                company_id: 1,
+                created_at: '',
+                updated_at: '',
+            },
+            status: 'Revision Requested',
+        },
+        {
+            id: 2,
+            cutName: 'Key Art Package',
+            width: 1400,
+            height: 400,
+            dueDate: '1/15/25',
+            assigned: {
+                id: 2,
+                name: 'Jane Doe',
+                email: 'jane@example.com',
+                email_verified_at: null,
+                company_id: 1,
+                created_at: '',
+                updated_at: '',
+            },
+            status: 'Out for Delivery',
+        },
+        {
+            id: 3,
+            cutName: 'Socials & Web Banners',
+            width: 1400,
+            height: 400,
+            dueDate: '1/15/25',
+            assigned: null,
+            status: 'Unassigned',
+        },
+    ];
+
     const billingInvoices = useMemo((): Invoice[] => {
         if (!order || !venueItem) return [];
         return invoicesData.filter(
@@ -74,9 +122,9 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
                 />
                 <MediaTable title="Social Video" data={exampleData} />
                 <MediaTable title="Audio" data={exampleData} />
-                <MediaTable
+                <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
-                    data={exampleData}
+                    data={staticAssetsExampleData}
                 />
             </div>
 
