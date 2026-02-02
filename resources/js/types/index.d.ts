@@ -219,3 +219,20 @@ export interface StaticAssetsMediaTableProps {
     defaultOpen?: boolean;
     onAdd?: () => void;
 }
+
+export interface LocalizedArtTableRow {
+    id: string | number;
+    description: string;
+    width: number;
+    height: number;
+    cta: string;
+    dueDate: string;
+    assigned: User | null;
+}
+
+export interface LocalizedArtTableProps {
+    title: string;
+    data: LocalizedArtTableRow[];
+    defaultOpen?: boolean;
+    onAdd?: () => void;
+}

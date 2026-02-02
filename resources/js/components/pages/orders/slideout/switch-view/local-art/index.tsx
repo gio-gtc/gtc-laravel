@@ -1,11 +1,11 @@
-import { StaticAssetsTableRow } from '@/types';
+import { LocalizedArtTableRow } from '@/types';
 import AttachmentsSection from '../reuse/attachments-section';
 import ChatBox from '../reuse/chat';
+import LocalizedArtTable from '../reuse/localised-media-table';
 import SectionContainers from '../reuse/section-containers';
-import MediaTable from '../reuse/static-assets-media-table';
 
 function LocalArtView() {
-    const staticAssetsMockUser = {
+    const mockUser = {
         id: 1,
         name: 'Jane Doe',
         email: 'jane@example.com',
@@ -15,77 +15,42 @@ function LocalArtView() {
         updated_at: '',
     };
 
-    const staticAssetsExampleData: StaticAssetsTableRow[] = [
+    const localizedArtExampleData: LocalizedArtTableRow[] = [
         {
             id: 1,
-            cutName: 'Key Art – Still in Cart',
+            description: 'Advert for FFFFFFFF',
             width: 1400,
             height: 400,
+            cta: 'Save the Date',
             dueDate: '1/15/25',
-            assigned: null,
-            status: 'Still in Cart',
+            assigned: mockUser,
         },
         {
             id: 2,
-            cutName: 'Key Art – Client Review',
+            description: 'Advert for FFFFFFFF',
             width: 1400,
             height: 400,
+            cta: 'Last Chance',
             dueDate: '1/15/25',
-            assigned: staticAssetsMockUser,
-            status: 'Client Review',
+            assigned: mockUser,
         },
         {
             id: 3,
-            cutName: 'Key Art – In Production',
+            description: 'Advert for FFFFFFFF',
             width: 1400,
             height: 400,
-            dueDate: '1/18/25',
-            assigned: staticAssetsMockUser,
-            status: 'In Production',
-        },
-        {
-            id: 4,
-            cutName: 'Key Art – Out for Delivery',
-            width: 1400,
-            height: 400,
-            dueDate: '1/20/25',
-            assigned: staticAssetsMockUser,
-            status: 'Out for Delivery',
-        },
-        {
-            id: 5,
-            cutName: 'Key Art – Cancelled',
-            width: 1400,
-            height: 400,
-            dueDate: '1/22/25',
-            assigned: null,
-            status: 'Cancelled',
-        },
-        {
-            id: 6,
-            cutName: 'Key Art – Revision Requested',
-            width: 1400,
-            height: 400,
-            dueDate: '1/25/25',
-            assigned: staticAssetsMockUser,
-            status: 'Revision Requested',
-        },
-        {
-            id: 7,
-            cutName: 'Socials & Web Banners – Unassigned',
-            width: 1400,
-            height: 400,
-            dueDate: '1/28/25',
-            assigned: null,
-            status: 'Unassigned',
+            cta: 'Black Friday Sale',
+            dueDate: '1/15/25',
+            assigned: mockUser,
         },
     ];
+
     return (
         <>
             <div className="slide-out-container space-y-4">
-                <MediaTable
-                    title="Localized Art "
-                    data={staticAssetsExampleData}
+                <LocalizedArtTable
+                    title="Localized Art"
+                    data={localizedArtExampleData}
                 />
             </div>
 
