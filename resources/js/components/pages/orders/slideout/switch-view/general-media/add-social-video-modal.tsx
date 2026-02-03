@@ -70,33 +70,31 @@ export default function AddSocialVideoModal({
         onClose();
     };
 
-    const pillBase =
-        'w-fit rounded-full border px-3 py-1.5 text-sm font-medium transition-colors';
+    const pillBase = 'w-fit rounded-md transition-colors text-xs';
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="gap-6 sm:max-w-2xl">
+            <DialogContent className="gap-3 sm:max-w-lg">
                 <DialogHeader>
-                    <DialogTitle className="text-xl font-bold text-gray-900">
+                    <DialogTitle className="font-bold text-gray-900">
                         Add Social Video
                     </DialogTitle>
                 </DialogHeader>
 
                 <Divider />
-
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="flex flex-col gap-2 text-xs sm:flex-row">
                     {/* Type */}
-                    <div className="flex flex-col gap-1.5">
+                    <div className="flex flex-3 flex-col gap-1.5">
                         <Label htmlFor="type" className="text-gray-900">
                             Type
                         </Label>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-gray-500">
                             Select the type of Social Video
                         </p>
                         <Select value={type} onValueChange={setType}>
                             <SelectTrigger
                                 id="type"
-                                className="rounded-md border-gray-300 bg-white"
+                                className="rounded-md border-gray-300 bg-white text-xs"
                             >
                                 <SelectValue placeholder="Select the type of Social Video" />
                             </SelectTrigger>
@@ -106,87 +104,92 @@ export default function AddSocialVideoModal({
                         </Select>
                     </div>
 
-                    {/* Card Holder */}
-                    <div className="flex flex-col gap-2">
-                        <Label className="text-gray-900">Card Holder</Label>
+                    <div className="flex flex-row justify-center gap-2 text-xs">
+                        {/* Card Holder */}
                         <div className="flex flex-col gap-2">
-                            {CARD_HOLDER_OPTIONS.map((option) => (
-                                <Button
-                                    key={option}
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    className={cn(
-                                        pillBase,
-                                        'border-gray-300 bg-white text-gray-900 hover:bg-gray-50',
-                                        cardHolder.includes(option) &&
-                                            'border-brand-gtc-red bg-brand-gtc-red text-white hover:bg-brand-gtc-red/90 hover:text-white',
-                                    )}
-                                    onClick={() =>
-                                        setCardHolder((prev) =>
-                                            toggleInArray(prev, option),
-                                        )
-                                    }
-                                >
-                                    {option}
-                                </Button>
-                            ))}
+                            <Label className="text-gray-900">Card Holder</Label>
+                            <p className="hidden pt-2 sm:block"> </p>
+                            <div className="flex flex-col gap-2">
+                                {CARD_HOLDER_OPTIONS.map((option) => (
+                                    <Button
+                                        key={option}
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        className={cn(
+                                            pillBase,
+                                            'border-gray-300 bg-white text-gray-900 hover:bg-brand-gtc-red/80',
+                                            cardHolder.includes(option) &&
+                                                'bg-brand-gtc-red/70 text-white hover:bg-brand-gtc-red/60 hover:text-white',
+                                        )}
+                                        onClick={() =>
+                                            setCardHolder((prev) =>
+                                                toggleInArray(prev, option),
+                                            )
+                                        }
+                                    >
+                                        {option}
+                                    </Button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Duration */}
-                    <div className="flex flex-col gap-2">
-                        <Label className="text-gray-900">Duration</Label>
+                        {/* Duration */}
                         <div className="flex flex-col gap-2">
-                            {DURATION_OPTIONS.map((d) => (
-                                <Button
-                                    key={d}
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    className={cn(
-                                        pillBase,
-                                        'border-gray-300 bg-white text-gray-900 hover:bg-gray-50',
-                                        duration.includes(d) &&
-                                            'border-brand-gtc-red bg-brand-gtc-red text-white hover:bg-brand-gtc-red/90 hover:text-white',
-                                    )}
-                                    onClick={() =>
-                                        setDuration((prev) =>
-                                            toggleInArray(prev, d),
-                                        )
-                                    }
-                                >
-                                    {d}
-                                </Button>
-                            ))}
+                            <Label className="text-gray-900">Duration</Label>
+                            <p className="hidden pt-2 sm:block"> </p>
+                            <div className="flex flex-col gap-2">
+                                {DURATION_OPTIONS.map((d) => (
+                                    <Button
+                                        key={d}
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        className={cn(
+                                            pillBase,
+                                            'border-gray-300 bg-white text-gray-900 hover:bg-brand-gtc-red/80',
+                                            duration.includes(d) &&
+                                                'bg-brand-gtc-red/70 text-white hover:bg-brand-gtc-red/60 hover:text-white',
+                                        )}
+                                        onClick={() =>
+                                            setDuration((prev) =>
+                                                toggleInArray(prev, d),
+                                            )
+                                        }
+                                    >
+                                        {d}
+                                    </Button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Language */}
-                    <div className="flex flex-col gap-2">
-                        <Label className="text-gray-900">Language</Label>
+                        {/* Language */}
                         <div className="flex flex-col gap-2">
-                            {LANGUAGE_OPTIONS.map((lang) => (
-                                <Button
-                                    key={lang}
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    className={cn(
-                                        pillBase,
-                                        'border-gray-300 bg-white text-gray-900 hover:bg-gray-50',
-                                        language.includes(lang) &&
-                                            'border-brand-gtc-red bg-brand-gtc-red text-white hover:bg-brand-gtc-red/90 hover:text-white',
-                                    )}
-                                    onClick={() =>
-                                        setLanguage((prev) =>
-                                            toggleInArray(prev, lang),
-                                        )
-                                    }
-                                >
-                                    {lang}
-                                </Button>
-                            ))}
+                            <Label className="text-gray-900">Language</Label>
+                            <p className="hidden pt-2 sm:block"> </p>
+                            <div className="flex flex-col gap-2">
+                                {LANGUAGE_OPTIONS.map((lang) => (
+                                    <Button
+                                        key={lang}
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        className={cn(
+                                            pillBase,
+                                            'border-gray-300 bg-white text-gray-900 hover:bg-brand-gtc-red/80',
+                                            language.includes(lang) &&
+                                                'bg-brand-gtc-red/70 text-white hover:bg-brand-gtc-red/60 hover:text-white',
+                                        )}
+                                        onClick={() =>
+                                            setLanguage((prev) =>
+                                                toggleInArray(prev, lang),
+                                            )
+                                        }
+                                    >
+                                        {lang}
+                                    </Button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -197,7 +200,7 @@ export default function AddSocialVideoModal({
                     <Button
                         variant="outline"
                         onClick={onClose}
-                        className="border-gray-300 bg-white text-gray-900 hover:bg-gray-50"
+                        className="border-gray-300 bg-white text-gray-900 hover:bg-gray-50 hover:text-gray-900"
                     >
                         Cancel
                     </Button>
