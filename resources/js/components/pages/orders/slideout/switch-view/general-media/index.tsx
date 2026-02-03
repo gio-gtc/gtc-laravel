@@ -21,6 +21,7 @@ import AddKeyArtStaticAssetsModal from './add-key-art-static-assets-modal';
 import AddSocialVideoModal from './add-social-video-modal';
 import BillingSection from './billing-section';
 import Filters from './filters';
+import RevisionRequestModal from './revision-request-modal';
 
 interface GeneralMediaViewProps {
     order: Tour | null;
@@ -28,125 +29,152 @@ interface GeneralMediaViewProps {
 }
 
 function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
-    const mockUser = {
-        id: 1,
-        name: 'Jane Doe',
-        email: 'jane@example.com',
-        email_verified_at: null as string | null,
-        company_id: 1,
-        created_at: '',
-        updated_at: '',
-    };
-
-    const exampleData: MediaTableRow[] = [
-        {
+    const mockUser = useMemo(
+        () => ({
             id: 1,
-            isci: 'GTC1818843',
-            cutName: 'Generic Presale',
-            duration: ':45',
-            dueDate: '1/15/25',
-            assigned: null,
-            status: 'Still in Cart',
-            previewIcons: [
-                <Eye key="e1" className="h-4 w-4" />,
-                <Link key="l1" className="h-4 w-4" />,
-            ],
-            deliverables: {
-                onReject: () => console.log('Reject'),
-                onApprove: () => console.log('Approve'),
+            name: 'Jane Doe',
+            email: 'jane@example.com',
+            email_verified_at: null as string | null,
+            company_id: 1,
+            created_at: '',
+            updated_at: '',
+        }),
+        [],
+    );
+
+    const [revisionModalOpen, setRevisionModalOpen] = useState(false);
+    const [revisionRequestRow, setRevisionRequestRow] =
+        useState<MediaTableRow | null>(null);
+
+    const baseExampleData = useMemo(
+        (): MediaTableRow[] => [
+            {
+                id: 1,
+                isci: 'GTC1818843',
+                cutName: 'Generic Presale',
+                duration: ':45',
+                dueDate: '1/15/25',
+                assigned: null,
+                status: 'Still in Cart',
+                previewIcons: [
+                    <Eye key="e1" className="h-4 w-4" />,
+                    <Link key="l1" className="h-4 w-4" />,
+                ],
+                deliverables: {
+                    onReject: () => {},
+                    onApprove: () => console.log('Approve'),
+                },
             },
-        },
-        {
-            id: 2,
-            isci: 'GTC1818847',
-            cutName: 'Generic Coming soon',
-            duration: ':30',
-            dueDate: '1/15/25',
-            assigned: mockUser,
-            status: 'Client Review',
-            previewIcons: [
-                <Eye key="e2" className="h-4 w-4" />,
-                <Link key="l2" className="h-4 w-4" />,
-            ],
-            deliverables: {
-                onReject: () => console.log('Reject'),
-                onApprove: () => console.log('Approve'),
+            {
+                id: 2,
+                isci: 'GTC1818847',
+                cutName: 'Generic Coming soon',
+                duration: ':30',
+                dueDate: '1/15/25',
+                assigned: mockUser,
+                status: 'Client Review',
+                previewIcons: [
+                    <Eye key="e2" className="h-4 w-4" />,
+                    <Link key="l2" className="h-4 w-4" />,
+                ],
+                deliverables: {
+                    onReject: () => {},
+                    onApprove: () => console.log('Approve'),
+                },
             },
-        },
-        {
-            id: 3,
-            isci: 'GTC1818848',
-            cutName: 'Generic Teaser',
-            duration: ':15',
-            dueDate: '1/18/25',
-            assigned: mockUser,
-            status: 'In Production',
-            previewIcons: [
-                <Eye key="e3" className="h-4 w-4" />,
-                <Link key="l3" className="h-4 w-4" />,
-            ],
-            deliverables: {
-                onReject: () => console.log('Reject'),
-                onApprove: () => console.log('Approve'),
+            {
+                id: 3,
+                isci: 'GTC1818848',
+                cutName: 'Generic Teaser',
+                duration: ':15',
+                dueDate: '1/18/25',
+                assigned: mockUser,
+                status: 'In Production',
+                previewIcons: [
+                    <Eye key="e3" className="h-4 w-4" />,
+                    <Link key="l3" className="h-4 w-4" />,
+                ],
+                deliverables: {
+                    onReject: () => {},
+                    onApprove: () => console.log('Approve'),
+                },
             },
-        },
-        {
-            id: 4,
-            isci: 'GTC1818849',
-            cutName: 'Generic Final',
-            duration: ':60',
-            dueDate: '1/20/25',
-            assigned: mockUser,
-            status: 'Out for Delivery',
-            previewIcons: [
-                <Eye key="e4" className="h-4 w-4" />,
-                <Link key="l4" className="h-4 w-4" />,
-            ],
-            deliverables: {
-                onReject: () => console.log('Reject'),
-                onApprove: () => console.log('Approve'),
+            {
+                id: 4,
+                isci: 'GTC1818849',
+                cutName: 'Generic Final',
+                duration: ':60',
+                dueDate: '1/20/25',
+                assigned: mockUser,
+                status: 'Out for Delivery',
+                previewIcons: [
+                    <Eye key="e4" className="h-4 w-4" />,
+                    <Link key="l4" className="h-4 w-4" />,
+                ],
+                deliverables: {
+                    onReject: () => {},
+                    onApprove: () => console.log('Approve'),
+                },
             },
-        },
-        {
-            id: 5,
-            isci: 'GTC1818850',
-            cutName: 'Generic Dropped',
-            duration: ':30',
-            dueDate: '1/22/25',
-            assigned: null,
-            status: 'Cancelled',
-            previewIcons: [],
-            deliverables: undefined,
-        },
-        {
-            id: 6,
-            isci: 'GTC1818851',
-            cutName: 'Generic Revise',
-            duration: ':45',
-            dueDate: '1/25/25',
-            assigned: mockUser,
-            status: 'Revision Requested',
-            previewIcons: [
-                <Eye key="e6" className="h-4 w-4" />,
-                <Link key="l6" className="h-4 w-4" />,
-            ],
-            deliverables: {
-                onReject: () => console.log('Reject'),
-                onApprove: () => console.log('Approve'),
+            {
+                id: 5,
+                isci: 'GTC1818850',
+                cutName: 'Generic Dropped',
+                duration: ':30',
+                dueDate: '1/22/25',
+                assigned: null,
+                status: 'Cancelled',
+                previewIcons: [],
+                deliverables: undefined,
             },
-        },
-        {
-            id: 7,
-            isci: 'GTC1818852',
-            cutName: 'Generic Unassigned',
-            duration: ':20',
-            dueDate: '1/28/25',
-            assigned: null,
-            status: 'Unassigned',
-            previewIcons: [],
-            deliverables: undefined,
-        },
-    ];
+            {
+                id: 6,
+                isci: 'GTC1818851',
+                cutName: 'Generic Revise',
+                duration: ':45',
+                dueDate: '1/25/25',
+                assigned: mockUser,
+                status: 'Revision Requested',
+                previewIcons: [
+                    <Eye key="e6" className="h-4 w-4" />,
+                    <Link key="l6" className="h-4 w-4" />,
+                ],
+                deliverables: {
+                    onReject: () => {},
+                    onApprove: () => console.log('Approve'),
+                },
+            },
+            {
+                id: 7,
+                isci: 'GTC1818852',
+                cutName: 'Generic Unassigned',
+                duration: ':20',
+                dueDate: '1/28/25',
+                assigned: null,
+                status: 'Unassigned',
+                previewIcons: [],
+                deliverables: undefined,
+            },
+        ],
+        [mockUser],
+    );
+
+    const exampleData = useMemo(
+        () =>
+            baseExampleData.map((row) => ({
+                ...row,
+                deliverables: row.deliverables
+                    ? {
+                          ...row.deliverables,
+                          onReject: () => {
+                              setRevisionRequestRow(row);
+                              setRevisionModalOpen(true);
+                          },
+                      }
+                    : undefined,
+            })),
+        [baseExampleData],
+    );
 
     const staticAssetsMockUser = {
         id: 1,
@@ -306,6 +334,19 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
             <AddKeyArtStaticAssetsModal
                 isOpen={keyArtModalOpen}
                 onClose={() => setKeyArtModalOpen(false)}
+            />
+            <RevisionRequestModal
+                isOpen={revisionModalOpen}
+                onClose={() => {
+                    setRevisionModalOpen(false);
+                    setRevisionRequestRow(null);
+                }}
+                onSubmit={(revisionText) => {
+                    console.log('Revision request:', {
+                        row: revisionRequestRow,
+                        text: revisionText,
+                    });
+                }}
             />
         </>
     );
