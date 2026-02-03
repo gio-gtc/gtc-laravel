@@ -15,13 +15,13 @@ import ChatBox from '../reuse/chat';
 import MediaTable from '../reuse/dynamic-media-table';
 import SectionContainers from '../reuse/section-containers';
 import StaticAssetsMediaTable from '../reuse/static-assets-media-table';
-import AddAudioModal from './add-audio-modal';
-import AddBroadcastStreamingModal from './add-broadcast-streaming-modal';
-import AddKeyArtStaticAssetsModal from './add-key-art-static-assets-modal';
-import AddSocialVideoModal from './add-social-video-modal';
 import BillingSection from './billing-section';
 import Filters from './filters';
-import RevisionRequestModal from './revision-request-modal';
+import AddAudioModal from './modals/add-audio-modal';
+import AddBroadcastStreamingModal from './modals/add-broadcast-streaming-modal';
+import AddKeyArtStaticAssetsModal from './modals/add-key-art-static-assets-modal';
+import AddSocialVideoModal from './modals/add-social-video-modal';
+import RevisionRequestModal from './modals/revision-request-modal';
 
 interface GeneralMediaViewProps {
     order: Tour | null;
