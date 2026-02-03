@@ -6,6 +6,12 @@ import {
     CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
     Table,
     TableBody,
     TableCell,
@@ -16,7 +22,16 @@ import {
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import { MediaTableProps, MediaTableRow } from '@/types';
-import { Check, ChevronDown, ChevronRight, Plus, X } from 'lucide-react';
+import {
+    AudioLines,
+    Check,
+    ChevronDown,
+    ChevronRight,
+    Download,
+    Plus,
+    RefreshCw,
+    X,
+} from 'lucide-react';
 import { useState } from 'react';
 
 function getStatusBadge(status: MediaTableRow['status']): React.ReactNode {
@@ -51,6 +66,7 @@ export default function MediaTable({
     data,
     defaultOpen = true,
     onAdd,
+    previewVariant = 'default',
 }: MediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const getInitials = useInitials();
@@ -117,7 +133,77 @@ export default function MediaTable({
                                                             'text-muted-foreground opacity-70',
                                                     )}
                                                 >
-                                                    {row.isci}
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger
+                                                            asChild
+                                                        >
+                                                            <button
+                                                                type="button"
+                                                                className="cursor-pointer text-left hover:underline focus:ring-0 focus:outline-none"
+                                                            >
+                                                                {row.isci}
+                                                            </button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent
+                                                            align="start"
+                                                            className="min-w-[10rem]"
+                                                        >
+                                                            <DropdownMenuItem
+                                                                onClick={() =>
+                                                                    console.log(
+                                                                        'Upload',
+                                                                        {
+                                                                            rowId: row.id,
+                                                                            isci: row.isci,
+                                                                        },
+                                                                    )
+                                                                }
+                                                            >
+                                                                Upload
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={() =>
+                                                                    console.log(
+                                                                        'Edit Order',
+                                                                        {
+                                                                            rowId: row.id,
+                                                                            isci: row.isci,
+                                                                        },
+                                                                    )
+                                                                }
+                                                            >
+                                                                Edit Order
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={() =>
+                                                                    console.log(
+                                                                        'Edit ISCI',
+                                                                        {
+                                                                            rowId: row.id,
+                                                                            isci: row.isci,
+                                                                        },
+                                                                    )
+                                                                }
+                                                            >
+                                                                Edit ISCI
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                onClick={async () => {
+                                                                    try {
+                                                                        await navigator.clipboard.writeText(
+                                                                            row.isci,
+                                                                        );
+                                                                    } catch {
+                                                                        console.warn(
+                                                                            'Clipboard copy failed',
+                                                                        );
+                                                                    }
+                                                                }}
+                                                            >
+                                                                Copy File Name
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
                                                 </TableCell>
                                                 <TableCell
                                                     className={cn(
@@ -174,6 +260,25 @@ export default function MediaTable({
                                                 <TableCell>
                                                     {isDisabledRow ? (
                                                         <span className="text-muted-foreground"></span>
+                                                    ) : previewVariant ===
+                                                      'audio' ? (
+                                                        <div className="flex items-center justify-center gap-2">
+                                                            <button
+                                                                type="button"
+                                                                className="cursor-pointer text-gray-600 hover:text-gray-900"
+                                                                onClick={() =>
+                                                                    console.log(
+                                                                        'Preview (sound) clicked:',
+                                                                        {
+                                                                            rowId: row.id,
+                                                                            isci: row.isci,
+                                                                        },
+                                                                    )
+                                                                }
+                                                            >
+                                                                <AudioLines className="h-4 w-4" />
+                                                            </button>
+                                                        </div>
                                                     ) : (
                                                         <div className="flex items-center justify-center gap-2">
                                                             {row.previewIcons.map(
@@ -205,9 +310,47 @@ export default function MediaTable({
                                                         </div>
                                                     )}
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className="flex items-center justify-center gap-2">
                                                     {hideDeliverablesButtons ? (
                                                         <span className="text-muted-foreground"></span>
+                                                    ) : row.status ===
+                                                      'Out for Delivery' ? (
+                                                        <>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="size-6 cursor-pointer rounded-full text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
+                                                                onClick={
+                                                                    row
+                                                                        .deliverables
+                                                                        ?.onReject ||
+                                                                    (() =>
+                                                                        console.log(
+                                                                            'Reject/refresh clicked',
+                                                                            row.id,
+                                                                        ))
+                                                                }
+                                                            >
+                                                                <RefreshCw className="size-4.5" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="size-6 cursor-pointer rounded-full text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
+                                                                onClick={
+                                                                    row
+                                                                        .deliverables
+                                                                        ?.onApprove ||
+                                                                    (() =>
+                                                                        console.log(
+                                                                            'Download clicked',
+                                                                            row.id,
+                                                                        ))
+                                                                }
+                                                            >
+                                                                <Download className="size-4.5" />
+                                                            </Button>
+                                                        </>
                                                     ) : (
                                                         <div className="flex items-center justify-center gap-2">
                                                             <Button
@@ -227,23 +370,49 @@ export default function MediaTable({
                                                             >
                                                                 <X className="size-3" />
                                                             </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="size-4 cursor-pointer rounded-full border border-green-500 text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
-                                                                onClick={
-                                                                    row
-                                                                        .deliverables
-                                                                        ?.onApprove ||
-                                                                    (() =>
-                                                                        console.log(
-                                                                            'Approve clicked for row:',
-                                                                            row.id,
-                                                                        ))
-                                                                }
-                                                            >
-                                                                <Check className="size-3" />
-                                                            </Button>
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger
+                                                                    asChild
+                                                                >
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        className="size-4 cursor-pointer rounded-full border border-green-500 text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
+                                                                    >
+                                                                        <Check className="size-3" />
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent
+                                                                    align="end"
+                                                                    className="min-w-[7rem]"
+                                                                >
+                                                                    <DropdownMenuItem
+                                                                        onClick={() => {
+                                                                            row.deliverables?.onApprove?.();
+                                                                            console.log(
+                                                                                'Approve',
+                                                                                {
+                                                                                    rowId: row.id,
+                                                                                },
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        Approve
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuItem
+                                                                        onClick={() => {
+                                                                            console.log(
+                                                                                'Cancel',
+                                                                                {
+                                                                                    rowId: row.id,
+                                                                                },
+                                                                            );
+                                                                        }}
+                                                                    >
+                                                                        Cancel
+                                                                    </DropdownMenuItem>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
                                                         </div>
                                                     )}
                                                 </TableCell>

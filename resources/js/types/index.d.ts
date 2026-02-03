@@ -194,6 +194,8 @@ export interface MediaTableProps {
     data: MediaTableRow[];
     defaultOpen?: boolean; // Default: true
     onAdd?: () => void; // Optional callback for add button
+    /** When 'audio', preview column shows a single sound icon instead of row.previewIcons */
+    previewVariant?: 'default' | 'audio';
 }
 
 export interface StaticAssetsTableRow {

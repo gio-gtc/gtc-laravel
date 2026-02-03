@@ -286,6 +286,7 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
                     title="Audio"
                     data={exampleData}
                     onAdd={() => setAudioModalOpen(true)}
+                    previewVariant="audio"
                 />
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
