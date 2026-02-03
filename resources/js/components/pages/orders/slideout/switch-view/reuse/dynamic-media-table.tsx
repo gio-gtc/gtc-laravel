@@ -67,6 +67,7 @@ export default function MediaTable({
     defaultOpen = true,
     onAdd,
     previewVariant = 'default',
+    onUploadRow,
 }: MediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const getInitials = useInitials();
@@ -150,12 +151,8 @@ export default function MediaTable({
                                                         >
                                                             <DropdownMenuItem
                                                                 onClick={() =>
-                                                                    console.log(
-                                                                        'Upload',
-                                                                        {
-                                                                            rowId: row.id,
-                                                                            isci: row.isci,
-                                                                        },
+                                                                    onUploadRow?.(
+                                                                        row,
                                                                     )
                                                                 }
                                                             >

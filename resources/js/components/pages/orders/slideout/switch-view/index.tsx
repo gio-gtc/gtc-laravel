@@ -9,12 +9,17 @@ interface SwitchViewProps {
     defaultToSwitched?: boolean;
     order: Tour | null;
     venueItem: { orderVenue: TourVenue; venue: Venue } | null;
+    onOpenAttachModal?: (context?: {
+        rowId: string | number;
+        isci: string;
+    }) => void;
 }
 
 export default function SwitchView({
     defaultToSwitched = false,
     order,
     venueItem,
+    onOpenAttachModal,
 }: SwitchViewProps) {
     const [isSwitched, setIsSwitched] = useState(defaultToSwitched);
 
@@ -35,7 +40,11 @@ export default function SwitchView({
             {isSwitched ? (
                 <LocalArtView />
             ) : (
-                <GeneralMediaView order={order} venueItem={venueItem} />
+                <GeneralMediaView
+                    order={order}
+                    venueItem={venueItem}
+                    onOpenAttachModal={onOpenAttachModal}
+                />
             )}
         </>
     );

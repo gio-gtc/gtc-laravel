@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
+import { DropBox } from '@/components/ui/icons';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import Divider from '@/components/utils/divider';
 import {
     ArrowRightToLine,
     ClipboardPlus,
-    Cloud,
     Maximize2,
     MoreHorizontal,
     Paperclip,
@@ -74,7 +74,7 @@ export default function VenueSlideoutHeader({
                         className="h-6 w-6"
                         onClick={onCloud}
                     >
-                        <Cloud className="h-4 w-4" />
+                        <DropBox className="h-4 w-4" />
                     </Button>
                     <Button
                         variant="ghost"

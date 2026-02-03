@@ -196,6 +196,8 @@ export interface MediaTableProps {
     onAdd?: () => void; // Optional callback for add button
     /** When 'audio', preview column shows a single sound icon instead of row.previewIcons */
     previewVariant?: 'default' | 'audio';
+    /** Called when user chooses "Upload" from the ISCI column dropdown */
+    onUploadRow?: (row: MediaTableRow) => void;
 }
 
 export interface StaticAssetsTableRow {

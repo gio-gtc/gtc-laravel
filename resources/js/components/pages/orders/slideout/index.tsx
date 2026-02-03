@@ -1,8 +1,11 @@
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import Divider from '@/components/utils/divider';
 import { type Tour, type TourVenue, type Venue } from '@/types';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import SwitchView from './switch-view';
+import AttachFileOrDropboxModal, {
+    type AttachFileModalContext,
+} from './switch-view/general-media/modals/attach-file-or-dropbox-modal';
 import VenueSlideoutHeader from './venue-slideout-header';
 
 interface VenueDetailSlideoutProps {
@@ -92,6 +95,10 @@ export default function VenueDetailSlideout({
     // Mock website
     const mockWebsite = 'LiveNation.com';
 
+    const [attachModalOpen, setAttachModalOpen] = useState(false);
+    const [attachModalContext, setAttachModalContext] =
+        useState<AttachFileModalContext | null>(null);
+
     if (!venueItem || !order) {
         return null;
     }
@@ -112,11 +119,31 @@ export default function VenueDetailSlideout({
                     ticketSaleDate={mockTicketSaleDate}
                     website={mockWebsite}
                     presaleInfo={mockPresaleInfo}
+                    onAttach={() => {
+                        setAttachModalContext(null);
+                        setAttachModalOpen(true);
+                    }}
                     onClose={onClose}
                 />
 
                 <Divider />
-                <SwitchView order={order} venueItem={venueItem} />
+                <SwitchView
+                    order={order}
+                    venueItem={venueItem}
+                    onOpenAttachModal={(ctx) => {
+                        setAttachModalContext(ctx ?? null);
+                        setAttachModalOpen(true);
+                    }}
+                />
+
+                <AttachFileOrDropboxModal
+                    isOpen={attachModalOpen}
+                    onClose={() => {
+                        setAttachModalOpen(false);
+                        setAttachModalContext(null);
+                    }}
+                    context={attachModalContext}
+                />
             </SheetContent>
         </Sheet>
     );

@@ -26,9 +26,17 @@ import RevisionRequestModal from './modals/revision-request-modal';
 interface GeneralMediaViewProps {
     order: Tour | null;
     venueItem: { orderVenue: TourVenue; venue: Venue } | null;
+    onOpenAttachModal?: (context?: {
+        rowId: string | number;
+        isci: string;
+    }) => void;
 }
 
-function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
+function GeneralMediaView({
+    order,
+    venueItem,
+    onOpenAttachModal,
+}: GeneralMediaViewProps) {
     const mockUser = useMemo(
         () => ({
             id: 1,
@@ -276,17 +284,26 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
                     title="Broadcast & Streaming Video"
                     data={exampleData}
                     onAdd={() => setBroadcastModalOpen(true)}
+                    onUploadRow={(row) =>
+                        onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
+                    }
                 />
                 <MediaTable
                     title="Social Video"
                     data={exampleData}
                     onAdd={() => setSocialVideoModalOpen(true)}
+                    onUploadRow={(row) =>
+                        onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
+                    }
                 />
                 <MediaTable
                     title="Audio"
                     data={exampleData}
                     onAdd={() => setAudioModalOpen(true)}
                     previewVariant="audio"
+                    onUploadRow={(row) =>
+                        onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
+                    }
                 />
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
