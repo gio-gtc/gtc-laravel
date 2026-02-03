@@ -15,7 +15,9 @@ import ChatBox from '../reuse/chat';
 import MediaTable from '../reuse/dynamic-media-table';
 import SectionContainers from '../reuse/section-containers';
 import StaticAssetsMediaTable from '../reuse/static-assets-media-table';
+import AddAudioModal from './add-audio-modal';
 import AddBroadcastStreamingModal from './add-broadcast-streaming-modal';
+import AddKeyArtStaticAssetsModal from './add-key-art-static-assets-modal';
 import AddSocialVideoModal from './add-social-video-modal';
 import BillingSection from './billing-section';
 import Filters from './filters';
@@ -222,7 +224,9 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
         },
     ];
 
+    const [audioModalOpen, setAudioModalOpen] = useState(false);
     const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
+    const [keyArtModalOpen, setKeyArtModalOpen] = useState(false);
     const [socialVideoModalOpen, setSocialVideoModalOpen] = useState(false);
 
     const billingInvoices = useMemo((): Invoice[] => {
@@ -250,10 +254,15 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
                     data={exampleData}
                     onAdd={() => setSocialVideoModalOpen(true)}
                 />
-                <MediaTable title="Audio" data={exampleData} />
+                <MediaTable
+                    title="Audio"
+                    data={exampleData}
+                    onAdd={() => setAudioModalOpen(true)}
+                />
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
                     data={staticAssetsExampleData}
+                    onAdd={() => setKeyArtModalOpen(true)}
                 />
             </div>
 
@@ -289,6 +298,14 @@ function GeneralMediaView({ order, venueItem }: GeneralMediaViewProps) {
             <AddSocialVideoModal
                 isOpen={socialVideoModalOpen}
                 onClose={() => setSocialVideoModalOpen(false)}
+            />
+            <AddAudioModal
+                isOpen={audioModalOpen}
+                onClose={() => setAudioModalOpen(false)}
+            />
+            <AddKeyArtStaticAssetsModal
+                isOpen={keyArtModalOpen}
+                onClose={() => setKeyArtModalOpen(false)}
             />
         </>
     );
