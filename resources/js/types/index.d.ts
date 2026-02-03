@@ -183,6 +183,8 @@ export interface MediaTableRow {
         | 'Revision Requested'
         | 'Unassigned';
     previewIcons: React.ReactNode[]; // Array of icon components
+    /** Optional video URL for the preview (eye) modal. When absent, a default placeholder video is used. */
+    previewVideoUrl?: string | null;
     deliverables?: {
         onReject?: () => void;
         onApprove?: () => void;
@@ -198,6 +200,8 @@ export interface MediaTableProps {
     previewVariant?: 'default' | 'audio';
     /** Called when user chooses "Upload" from the ISCI column dropdown */
     onUploadRow?: (row: MediaTableRow) => void;
+    /** Called when a preview icon is clicked (row, iconIndex). Index 0 is typically the eye/preview icon. */
+    onPreviewClick?: (row: MediaTableRow, iconIndex: number) => void;
 }
 
 export interface StaticAssetsTableRow {

@@ -48,9 +48,7 @@ export default function LocalizedArtTable({
                         variant="ghost"
                         size="icon"
                         className="size-4.5 cursor-pointer rounded-full border border-gray-300 text-gray-400 hover:border-gray-400 hover:text-gray-500"
-                        onClick={
-                            onAdd || (() => console.log('Add button clicked'))
-                        }
+                        onClick={onAdd ?? undefined}
                     >
                         <Plus className="size-3" />
                     </Button>
@@ -132,12 +130,7 @@ export default function LocalizedArtTable({
                                                     variant="ghost"
                                                     size="icon"
                                                     className="size-5 cursor-pointer rounded-full border border-gray-300 text-gray-400 hover:border-gray-400"
-                                                    onClick={() =>
-                                                        console.log(
-                                                            'Notes clicked',
-                                                            row.id,
-                                                        )
-                                                    }
+                                                    onClick={() => {}}
                                                 >
                                                     <Plus className="size-3.5" />
                                                 </Button>
@@ -148,12 +141,7 @@ export default function LocalizedArtTable({
                                                     variant="ghost"
                                                     size="icon"
                                                     className="size-5 cursor-pointer rounded-full text-gray-400 hover:border-gray-400"
-                                                    onClick={() =>
-                                                        console.log(
-                                                            'Download clicked',
-                                                            row.id,
-                                                        )
-                                                    }
+                                                    onClick={() => {}}
                                                 >
                                                     <Paperclip className="size-3.5" />
                                                 </Button>

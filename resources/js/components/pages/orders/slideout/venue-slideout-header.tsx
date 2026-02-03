@@ -37,11 +37,11 @@ export default function VenueSlideoutHeader({
     ticketSaleDate,
     website,
     presaleInfo,
-    onAttach = () => console.log('Attach clicked'),
-    onCloud = () => console.log('Cloud clicked'),
-    onSend = () => console.log('Send clicked'),
-    onMaximize = () => console.log('Maximize clicked'),
-    onMore = () => console.log('More clicked'),
+    onAttach = () => {},
+    onCloud = () => {},
+    onSend = () => {},
+    onMaximize = () => {},
+    onMore = () => {},
     onClose,
 }: VenueSlideoutHeaderProps) {
     // Format venue display with city if available

@@ -63,12 +63,12 @@ function getFileIcon(type: AttachmentFileType) {
 }
 
 export default function AttachmentsSection() {
-    function handleDownload(file: AttachmentRow) {
-        console.log('Download clicked for attachment:', file);
+    function handleDownload(_file: AttachmentRow) {
+        /* TODO: wire to download handler */
     }
 
-    function handleDelete(file: AttachmentRow) {
-        console.log('Delete clicked for attachment:', file);
+    function handleDelete(_file: AttachmentRow) {
+        /* TODO: wire to delete handler */
     }
 
     return (

@@ -68,6 +68,7 @@ export default function MediaTable({
     onAdd,
     previewVariant = 'default',
     onUploadRow,
+    onPreviewClick,
 }: MediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const getInitials = useInitials();
@@ -93,9 +94,7 @@ export default function MediaTable({
                         variant="ghost"
                         size="icon"
                         className="size-4.5 cursor-pointer rounded-full border-1 border-gray-400 text-gray-400 hover:border-gray-500"
-                        onClick={
-                            onAdd || (() => console.log('Add button clicked'))
-                        }
+                        onClick={onAdd ?? undefined}
                     >
                         <Plus className="size-3" />
                     </Button>
@@ -158,30 +157,10 @@ export default function MediaTable({
                                                             >
                                                                 Upload
                                                             </DropdownMenuItem>
-                                                            <DropdownMenuItem
-                                                                onClick={() =>
-                                                                    console.log(
-                                                                        'Edit Order',
-                                                                        {
-                                                                            rowId: row.id,
-                                                                            isci: row.isci,
-                                                                        },
-                                                                    )
-                                                                }
-                                                            >
+                                                            <DropdownMenuItem>
                                                                 Edit Order
                                                             </DropdownMenuItem>
-                                                            <DropdownMenuItem
-                                                                onClick={() =>
-                                                                    console.log(
-                                                                        'Edit ISCI',
-                                                                        {
-                                                                            rowId: row.id,
-                                                                            isci: row.isci,
-                                                                        },
-                                                                    )
-                                                                }
-                                                            >
+                                                            <DropdownMenuItem>
                                                                 Edit ISCI
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem
@@ -191,9 +170,7 @@ export default function MediaTable({
                                                                             row.isci,
                                                                         );
                                                                     } catch {
-                                                                        console.warn(
-                                                                            'Clipboard copy failed',
-                                                                        );
+                                                                        /* clipboard not available or denied */
                                                                     }
                                                                 }}
                                                             >
@@ -264,13 +241,7 @@ export default function MediaTable({
                                                                 type="button"
                                                                 className="cursor-pointer text-gray-600 hover:text-gray-900"
                                                                 onClick={() =>
-                                                                    console.log(
-                                                                        'Preview (sound) clicked:',
-                                                                        {
-                                                                            rowId: row.id,
-                                                                            isci: row.isci,
-                                                                        },
-                                                                    )
+                                                                    onPreviewClick?.(row, 0)
                                                                 }
                                                             >
                                                                 <AudioLines className="h-4 w-4" />
@@ -284,19 +255,12 @@ export default function MediaTable({
                                                                     index,
                                                                 ) => (
                                                                     <button
-                                                                        key={
-                                                                            index
-                                                                        }
+                                                                        key={`${row.id}-preview-${index}`}
                                                                         className="cursor-pointer text-gray-600 hover:text-gray-900"
                                                                         onClick={() =>
-                                                                            console.log(
-                                                                                'Preview icon clicked:',
-                                                                                {
-                                                                                    rowId: row.id,
-                                                                                    iconIndex:
-                                                                                        index,
-                                                                                    isci: row.isci,
-                                                                                },
+                                                                            onPreviewClick?.(
+                                                                                row,
+                                                                                index,
                                                                             )
                                                                         }
                                                                     >
@@ -320,12 +284,7 @@ export default function MediaTable({
                                                                 onClick={
                                                                     row
                                                                         .deliverables
-                                                                        ?.onReject ||
-                                                                    (() =>
-                                                                        console.log(
-                                                                            'Reject/refresh clicked',
-                                                                            row.id,
-                                                                        ))
+                                                                        ?.onReject
                                                                 }
                                                             >
                                                                 <RefreshCw className="size-4.5" />
@@ -337,12 +296,7 @@ export default function MediaTable({
                                                                 onClick={
                                                                     row
                                                                         .deliverables
-                                                                        ?.onApprove ||
-                                                                    (() =>
-                                                                        console.log(
-                                                                            'Download clicked',
-                                                                            row.id,
-                                                                        ))
+                                                                        ?.onApprove
                                                                 }
                                                             >
                                                                 <Download className="size-4.5" />
@@ -357,12 +311,7 @@ export default function MediaTable({
                                                                 onClick={
                                                                     row
                                                                         .deliverables
-                                                                        ?.onReject ||
-                                                                    (() =>
-                                                                        console.log(
-                                                                            'Reject clicked for row:',
-                                                                            row.id,
-                                                                        ))
+                                                                        ?.onReject
                                                                 }
                                                             >
                                                                 <X className="size-3" />
@@ -384,28 +333,13 @@ export default function MediaTable({
                                                                     className="min-w-[7rem]"
                                                                 >
                                                                     <DropdownMenuItem
-                                                                        onClick={() => {
-                                                                            row.deliverables?.onApprove?.();
-                                                                            console.log(
-                                                                                'Approve',
-                                                                                {
-                                                                                    rowId: row.id,
-                                                                                },
-                                                                            );
-                                                                        }}
+                                                                        onClick={() =>
+                                                                            row.deliverables?.onApprove?.()
+                                                                        }
                                                                     >
                                                                         Approve
                                                                     </DropdownMenuItem>
-                                                                    <DropdownMenuItem
-                                                                        onClick={() => {
-                                                                            console.log(
-                                                                                'Cancel',
-                                                                                {
-                                                                                    rowId: row.id,
-                                                                                },
-                                                                            );
-                                                                        }}
-                                                                    >
+                                                                    <DropdownMenuItem>
                                                                         Cancel
                                                                     </DropdownMenuItem>
                                                                 </DropdownMenuContent>

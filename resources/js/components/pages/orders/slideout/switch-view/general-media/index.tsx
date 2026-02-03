@@ -22,6 +22,7 @@ import AddBroadcastStreamingModal from './modals/add-broadcast-streaming-modal';
 import AddKeyArtStaticAssetsModal from './modals/add-key-art-static-assets-modal';
 import AddSocialVideoModal from './modals/add-social-video-modal';
 import RevisionRequestModal from './modals/revision-request-modal';
+import VideoPlayerModal from './modals/video-player-modal';
 
 interface GeneralMediaViewProps {
     order: Tour | null;
@@ -70,7 +71,7 @@ function GeneralMediaView({
                 ],
                 deliverables: {
                     onReject: () => {},
-                    onApprove: () => console.log('Approve'),
+                    onApprove: () => {},
                 },
             },
             {
@@ -87,7 +88,7 @@ function GeneralMediaView({
                 ],
                 deliverables: {
                     onReject: () => {},
-                    onApprove: () => console.log('Approve'),
+                    onApprove: () => {},
                 },
             },
             {
@@ -104,7 +105,7 @@ function GeneralMediaView({
                 ],
                 deliverables: {
                     onReject: () => {},
-                    onApprove: () => console.log('Approve'),
+                    onApprove: () => {},
                 },
             },
             {
@@ -121,7 +122,7 @@ function GeneralMediaView({
                 ],
                 deliverables: {
                     onReject: () => {},
-                    onApprove: () => console.log('Approve'),
+                    onApprove: () => {},
                 },
             },
             {
@@ -149,7 +150,7 @@ function GeneralMediaView({
                 ],
                 deliverables: {
                     onReject: () => {},
-                    onApprove: () => console.log('Approve'),
+                    onApprove: () => {},
                 },
             },
             {
@@ -264,6 +265,9 @@ function GeneralMediaView({
     const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
     const [keyArtModalOpen, setKeyArtModalOpen] = useState(false);
     const [socialVideoModalOpen, setSocialVideoModalOpen] = useState(false);
+    const [videoPlayerModalOpen, setVideoPlayerModalOpen] = useState(false);
+    const [videoPreviewRow, setVideoPreviewRow] =
+        useState<MediaTableRow | null>(null);
 
     const billingInvoices = useMemo((): Invoice[] => {
         if (!order || !venueItem) return [];
@@ -287,6 +291,12 @@ function GeneralMediaView({
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
+                    onPreviewClick={(row, iconIndex) => {
+                        if (iconIndex === 0) {
+                            setVideoPreviewRow(row);
+                            setVideoPlayerModalOpen(true);
+                        }
+                    }}
                 />
                 <MediaTable
                     title="Social Video"
@@ -295,6 +305,12 @@ function GeneralMediaView({
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
+                    onPreviewClick={(row, iconIndex) => {
+                        if (iconIndex === 0) {
+                            setVideoPreviewRow(row);
+                            setVideoPlayerModalOpen(true);
+                        }
+                    }}
                 />
                 <MediaTable
                     title="Audio"
@@ -359,12 +375,20 @@ function GeneralMediaView({
                     setRevisionModalOpen(false);
                     setRevisionRequestRow(null);
                 }}
-                onSubmit={(revisionText) => {
-                    console.log('Revision request:', {
-                        row: revisionRequestRow,
-                        text: revisionText,
-                    });
+                onSubmit={() => {}}
+            />
+            <VideoPlayerModal
+                isOpen={videoPlayerModalOpen}
+                onClose={() => {
+                    setVideoPlayerModalOpen(false);
+                    setVideoPreviewRow(null);
                 }}
+                videoSrc={videoPreviewRow?.previewVideoUrl ?? undefined}
+                label={
+                    videoPreviewRow
+                        ? `${videoPreviewRow.isci} – ${videoPreviewRow.cutName}`
+                        : undefined
+                }
             />
         </>
     );
