@@ -97,6 +97,7 @@ export default function VideoPlayerModal({
     const [posterImage, setPosterImage] = useState<string | null>(null);
     const [userActive, setUserActive] = useState(true);
     const [containerReady, setContainerReady] = useState(false);
+    const [hiddenVideoReady, setHiddenVideoReady] = useState(false);
 
     const effectiveSrc = videoSrc ?? PLACEHOLDER_VIDEO_SRC;
     const hasVideo = Boolean(effectiveSrc);
@@ -149,7 +150,7 @@ export default function VideoPlayerModal({
             el.removeEventListener('seeked', handleSeeked);
             el.removeEventListener('loadeddata', handleLoadedData);
         };
-    }, [isOpen, hasVideo, isAudio, effectiveSrc, posterImage, capturePosterFrame]);
+    }, [isOpen, hasVideo, isAudio, effectiveSrc, posterImage, capturePosterFrame, hiddenVideoReady]);
 
     useEffect(() => {
         if (
@@ -222,6 +223,7 @@ export default function VideoPlayerModal({
             setPosterImage(null);
             setUserActive(true);
             setContainerReady(false);
+            setHiddenVideoReady(false);
             posterCapturedForSrc.current = null;
         }
     }, [isOpen]);
@@ -239,7 +241,10 @@ export default function VideoPlayerModal({
                 <div className="video-player-modal relative aspect-video w-full overflow-hidden rounded-xl bg-black">
                     {hasVideo && !isAudio && isOpen && (
                         <video
-                            ref={hiddenVideoRef}
+                            ref={(el) => {
+                                hiddenVideoRef.current = el;
+                                setHiddenVideoReady(!!el);
+                            }}
                             src={effectiveSrc}
                             preload="auto"
                             className="pointer-events-none absolute h-0 w-0 opacity-0"
