@@ -111,7 +111,7 @@ const CreateDropdown = ({
     onInvoiceClick: () => void;
 }) => {
     return (
-        <MenubarContent className="text-white">
+        <MenubarContent>
             <MenubarItem onClick={onOrganizationClick}>
                 Organization
             </MenubarItem>
