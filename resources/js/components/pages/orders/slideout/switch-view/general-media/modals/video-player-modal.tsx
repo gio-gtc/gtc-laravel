@@ -1,12 +1,9 @@
 'use client';
 
-import {
-    Dialog,
-    DialogContent,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import { Maximize2, Pause, Play, Volume2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import videojs from 'video.js';
+import 'video.js/dist/video-js.css';
 
 const PLACEHOLDER_IMAGE =
     'data:image/svg+xml,' +
@@ -14,22 +11,21 @@ const PLACEHOLDER_IMAGE =
         '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360"><rect fill="%23e5e7eb" width="640" height="360"/><g fill="%239ca3af"><circle cx="320" cy="180" r="48"/><path d="M308 160v40l32-20-32-20z"/></g></svg>',
     );
 
-/** Default video used when no per-row URL is provided (demo/placeholder). */
-const DEFAULT_VIDEO_SRC = '/videos/auth-login.mp4';
+/** Login page video, used as placeholder when no per-row URL is provided. */
+const PLACEHOLDER_VIDEO_SRC = '/videos/auth-login.mp4';
+
+/** Poster image for audio (mp3) sources. Replace with a local image path when available. */
+const AUDIO_POSTER_URL = 'https://picsum.photos/200/300';
+
+function isAudioSrc(src: string): boolean {
+    return src.toLowerCase().endsWith('.mp3');
+}
 
 interface VideoPlayerModalProps {
     isOpen: boolean;
     onClose: () => void;
-    /** Optional video URL (e.g. from row.previewVideoUrl). When not provided, default placeholder video is used. */
     videoSrc?: string | null;
-    /** Optional label for the preview (e.g. cut name or ISCI). */
     label?: string;
-}
-
-function formatTime(seconds: number): string {
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60);
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
 export default function VideoPlayerModal({
@@ -38,27 +34,19 @@ export default function VideoPlayerModal({
     videoSrc,
     label,
 }: VideoPlayerModalProps) {
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(0);
-    const [volume, setVolume] = useState(1);
-    const [isMuted, setIsMuted] = useState(false);
-    const [scrubHoverTime, setScrubHoverTime] = useState<number | null>(null);
-    const [scrubHoverX, setScrubHoverX] = useState(0);
+    const videoJsContainerRef = useRef<HTMLDivElement>(null);
+    const playerRef = useRef<ReturnType<typeof videojs> | null>(null);
+    const hiddenVideoRef = useRef<HTMLVideoElement>(null);
+    const posterCapturedForSrc = useRef<string | null>(null);
+
     const [posterImage, setPosterImage] = useState<string | null>(null);
-    const [controlsVisible, setControlsVisible] = useState(true);
-    const progressRef = useRef<HTMLDivElement>(null);
-    const volumeBeforeMute = useRef(1);
-    const hideControlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-        null,
-    );
+    const [userActive, setUserActive] = useState(true);
+    const [containerReady, setContainerReady] = useState(false);
 
-    const effectiveSrc = videoSrc ?? DEFAULT_VIDEO_SRC;
+    const effectiveSrc = videoSrc ?? PLACEHOLDER_VIDEO_SRC;
     const hasVideo = Boolean(effectiveSrc);
+    const isAudio = isAudioSrc(effectiveSrc);
 
-    /** Capture a frame from the video and set as poster so we don't show a black screen. */
     const capturePosterFrame = useCallback((videoEl: HTMLVideoElement) => {
         const w = videoEl.videoWidth;
         const h = videoEl.videoHeight;
@@ -77,156 +65,9 @@ export default function VideoPlayerModal({
         }
     }, []);
 
-    const togglePlay = useCallback(() => {
-        const el = videoRef.current;
-        if (!el) return;
-        if (el.paused) {
-            el.play().catch(() => {});
-            setIsPlaying(true);
-        } else {
-            el.pause();
-            setIsPlaying(false);
-        }
-    }, []);
-
-    const handleTimeUpdate = useCallback(() => {
-        if (videoRef.current) setCurrentTime(videoRef.current.currentTime);
-    }, []);
-
-    const handleLoadedMetadata = useCallback(() => {
-        if (videoRef.current) setDuration(videoRef.current.duration);
-    }, []);
-
-    const handleEnded = useCallback(() => {
-        setIsPlaying(false);
-        setCurrentTime(0);
-        if (videoRef.current) videoRef.current.currentTime = 0;
-    }, []);
-
-    const handleProgressClick = useCallback(
-        (e: React.MouseEvent<HTMLDivElement>) => {
-            if (!videoRef.current || !progressRef.current || duration <= 0)
-                return;
-            const rect = progressRef.current.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width;
-            const t = Math.max(0, Math.min(1, x)) * duration;
-            videoRef.current.currentTime = t;
-            setCurrentTime(t);
-        },
-        [duration],
-    );
-
-    const handleProgressMouseMove = useCallback(
-        (e: React.MouseEvent<HTMLDivElement>) => {
-            if (!progressRef.current || duration <= 0) {
-                setScrubHoverTime(null);
-                return;
-            }
-            const rect = progressRef.current.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width;
-            const t = Math.max(0, Math.min(1, x)) * duration;
-            setScrubHoverTime(t);
-            setScrubHoverX(e.clientX - rect.left);
-        },
-        [duration],
-    );
-
-    const handleProgressMouseLeave = useCallback(() => {
-        setScrubHoverTime(null);
-    }, []);
-
-    const toggleMute = useCallback(() => {
-        if (!videoRef.current) return;
-        if (isMuted) {
-            videoRef.current.volume = volumeBeforeMute.current;
-            setIsMuted(false);
-        } else {
-            volumeBeforeMute.current = videoRef.current.volume;
-            videoRef.current.volume = 0;
-            setIsMuted(true);
-        }
-    }, [isMuted]);
-
-    const handleVolumeChange = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const v = parseFloat(e.target.value);
-            setVolume(v);
-            if (videoRef.current) {
-                videoRef.current.volume = v;
-                if (v > 0) setIsMuted(false);
-            }
-        },
-        [],
-    );
-
-    const toggleFullscreen = useCallback(() => {
-        if (!containerRef.current) return;
-        if (!document.fullscreenElement) {
-            containerRef.current.requestFullscreen?.();
-        } else {
-            document.exitFullscreen?.();
-        }
-    }, []);
-
-    const hiddenVideoRef = useRef<HTMLVideoElement>(null);
-    const posterCapturedForSrc = useRef<string | null>(null);
-
-    const scheduleHideControls = useCallback(() => {
-        if (hideControlsTimeoutRef.current) {
-            clearTimeout(hideControlsTimeoutRef.current);
-        }
-        hideControlsTimeoutRef.current = setTimeout(() => {
-            setControlsVisible(false);
-            hideControlsTimeoutRef.current = null;
-        }, 5000);
-    }, []);
-
-    const handleContainerMouseEnter = useCallback(() => {
-        setControlsVisible(true);
-        if (hideControlsTimeoutRef.current) {
-            clearTimeout(hideControlsTimeoutRef.current);
-            hideControlsTimeoutRef.current = null;
-        }
-    }, []);
-
-    const handleContainerMouseLeave = useCallback(() => {
-        scheduleHideControls();
-    }, [scheduleHideControls]);
-
+    // For video: capture first frame as poster. Not used for audio (mp3).
     useEffect(() => {
-        if (!isOpen) {
-            setIsPlaying(false);
-            setCurrentTime(0);
-            setDuration(0);
-            setScrubHoverTime(null);
-            setPosterImage(null);
-            setControlsVisible(true);
-            posterCapturedForSrc.current = null;
-            if (hideControlsTimeoutRef.current) {
-                clearTimeout(hideControlsTimeoutRef.current);
-                hideControlsTimeoutRef.current = null;
-            }
-            return;
-        }
-        // When modal opens, start 5s timer so controls hide after 5s if user doesn't interact
-        scheduleHideControls();
-        return () => {
-            if (hideControlsTimeoutRef.current) {
-                clearTimeout(hideControlsTimeoutRef.current);
-                hideControlsTimeoutRef.current = null;
-            }
-        };
-    }, [isOpen, scheduleHideControls]);
-
-    useEffect(() => {
-        return () => {
-            if (hideControlsTimeoutRef.current)
-                clearTimeout(hideControlsTimeoutRef.current);
-        };
-    }, []);
-
-    useEffect(() => {
-        if (!isOpen || !hasVideo || posterImage !== null) return;
+        if (!isOpen || !hasVideo || isAudio || posterImage !== null) return;
         const el = hiddenVideoRef.current;
         if (!el || posterCapturedForSrc.current === effectiveSrc) return;
 
@@ -253,70 +94,119 @@ export default function VideoPlayerModal({
             el.removeEventListener('seeked', handleSeeked);
             el.removeEventListener('loadeddata', handleLoadedData);
         };
-    }, [isOpen, hasVideo, effectiveSrc, posterImage, capturePosterFrame]);
+    }, [isOpen, hasVideo, isAudio, effectiveSrc, posterImage, capturePosterFrame]);
 
     useEffect(() => {
-        if (!videoRef.current || !hasVideo) return;
-        const v = videoRef.current;
-        v.volume = isMuted ? 0 : volume;
-    }, [hasVideo, isMuted, volume]);
+        if (
+            !isOpen ||
+            !hasVideo ||
+            !containerReady ||
+            !videoJsContainerRef.current
+        ) {
+            return;
+        }
 
-    const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+        const container = videoJsContainerRef.current;
+        const videoEl = document.createElement('video-js');
+        videoEl.classList.add('vjs-big-play-centered');
+        container.appendChild(videoEl);
+
+        const posterUrl = isAudio
+            ? AUDIO_POSTER_URL
+            : (posterImage ?? PLACEHOLDER_IMAGE);
+        const sourceType = isAudio ? 'audio/mpeg' : 'video/mp4';
+
+        const player = videojs(videoEl, {
+            fluid: true,
+            controls: true,
+            responsive: true,
+            inactivityTimeout: 2000,
+            sources: [{ src: effectiveSrc, type: sourceType }],
+            poster: posterUrl,
+            playbackRates: [0.5, 1, 1.5, 2],
+        });
+
+        playerRef.current = player;
+
+        const handleUserActive = () => setUserActive(true);
+        const handleUserInactive = () => setUserActive(false);
+
+        player.on('useractive', handleUserActive);
+        player.on('userinactive', handleUserInactive);
+
+        return () => {
+            player.off('useractive', handleUserActive);
+            player.off('userinactive', handleUserInactive);
+            if (!player.isDisposed()) {
+                player.dispose();
+            }
+            playerRef.current = null;
+        };
+    }, [isOpen, hasVideo, containerReady, effectiveSrc, isAudio]);
+
+    // When we capture the first frame (video), update the player poster
+    useEffect(() => {
+        if (isAudio || !posterImage) return;
+        const player = playerRef.current;
+        if (player && !player.isDisposed()) {
+            player.poster(posterImage);
+        }
+    }, [isAudio, posterImage]);
+
+    // Reset state when modal closes
+    useEffect(() => {
+        if (!isOpen) {
+            setPosterImage(null);
+            setUserActive(true);
+            setContainerReady(false);
+            posterCapturedForSrc.current = null;
+        }
+    }, [isOpen]);
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
-                className="max-w-[min(90vw,768px)] gap-0 overflow-hidden rounded-xl border-0 bg-white p-0 shadow-2xl"
+                className="min-w-[min(90vw,768px)] gap-0 overflow-hidden rounded-xl border-0 bg-white p-0 shadow-2xl"
                 onPointerDownOutside={onClose}
                 onEscapeKeyDown={onClose}
             >
                 <DialogTitle className="sr-only">
                     {label ?? 'Video preview'}
                 </DialogTitle>
-                <div
-                    ref={containerRef}
-                    className="relative aspect-video w-full overflow-hidden rounded-xl bg-black"
-                    onMouseEnter={handleContainerMouseEnter}
-                    onMouseLeave={handleContainerMouseLeave}
-                >
-                    {/* Hidden video used only to capture a frame for the poster */}
-                    {hasVideo && isOpen && (
+                <div className="video-player-modal relative aspect-video w-full overflow-hidden rounded-xl bg-black">
+                    {hasVideo && !isAudio && isOpen && (
                         <video
                             ref={hiddenVideoRef}
                             src={effectiveSrc}
                             preload="auto"
                             className="pointer-events-none absolute h-0 w-0 opacity-0"
+                            aria-hidden
                         />
                     )}
-                    {/* Video or placeholder - fills container */}
                     {hasVideo ? (
                         <>
-                            <video
-                                ref={videoRef}
-                                className="absolute inset-0 h-full w-full object-contain"
-                                src={effectiveSrc}
-                                poster={posterImage ?? PLACEHOLDER_IMAGE}
-                                onClick={togglePlay}
-                                onTimeUpdate={handleTimeUpdate}
-                                onLoadedMetadata={handleLoadedMetadata}
-                                onEnded={handleEnded}
-                                playsInline
+                            <div
+                                ref={(el) => {
+                                    videoJsContainerRef.current = el;
+                                    setContainerReady(!!el);
+                                }}
+                                className="video-js-container h-full w-full"
+                                data-vjs-player
                             />
-                            {/* Poster overlay: screenshot from video so it's not a black screen; hide once playing */}
-                            {!isPlaying && (
-                                <img
-                                    src={posterImage ?? PLACEHOLDER_IMAGE}
-                                    alt=""
-                                    className="pointer-events-none absolute inset-0 h-full w-full object-contain"
-                                    aria-hidden
-                                />
+                            {label && (
+                                <div
+                                    className={`absolute top-0 left-0 p-2 text-xs text-white/90 drop-shadow transition-opacity duration-300 ${
+                                        userActive
+                                            ? 'pointer-events-none opacity-100'
+                                            : 'pointer-events-none opacity-0'
+                                    }`}
+                                >
+                                    {label}
+                                </div>
                             )}
                         </>
                     ) : (
-                        <div
-                            className="absolute inset-0 flex items-center justify-center bg-neutral-200"
-                            onClick={togglePlay}
-                        >
+                        <div className="absolute inset-0 flex items-center justify-center bg-neutral-200">
                             <img
                                 src={PLACEHOLDER_IMAGE}
                                 alt="Video placeholder"
@@ -324,143 +214,6 @@ export default function VideoPlayerModal({
                             />
                         </div>
                     )}
-
-                    {/* Optional label overlay - top left */}
-                    {label && (
-                        <div className="absolute top-0 left-0 p-2 text-xs text-white/90 drop-shadow">
-                            {label}
-                        </div>
-                    )}
-
-                    {/* Centered play/pause button - hides with controls after 5s inactivity */}
-                    <div
-                        className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
-                            controlsVisible
-                                ? 'opacity-100 pointer-events-none'
-                                : 'opacity-0 pointer-events-none'
-                        }`}
-                    >
-                        <button
-                            type="button"
-                            className="pointer-events-auto flex size-14 items-center justify-center rounded-full bg-black/50 text-white shadow-lg transition-colors hover:bg-black/70 hover:scale-105"
-                            onClick={togglePlay}
-                            aria-label={isPlaying ? 'Pause' : 'Play'}
-                        >
-                            {isPlaying ? (
-                                <Pause className="size-8" fill="currentColor" />
-                            ) : (
-                                <Play className="size-8" fill="currentColor" />
-                            )}
-                        </button>
-                    </div>
-
-                    {/* Controls overlay - transparent dark bar at bottom; 40% smaller, hides after 5s when not hovered */}
-                    <div
-                        className={`absolute inset-x-0 bottom-0 flex items-center gap-1.5 bg-gradient-to-t from-black/85 to-black/40 px-2 py-1.5 transition-opacity duration-300 ${
-                            controlsVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                        }`}
-                    >
-                        <button
-                            type="button"
-                            className="flex size-7 shrink-0 items-center justify-center rounded-full text-white transition-colors hover:bg-white/25"
-                            onClick={togglePlay}
-                            aria-label={isPlaying ? 'Pause' : 'Play'}
-                        >
-                            {isPlaying ? (
-                                <Pause className="size-3.5" fill="currentColor" />
-                            ) : (
-                                <Play className="size-3.5" fill="currentColor" />
-                            )}
-                        </button>
-
-                        {hasVideo && (
-                            <div className="flex items-center gap-1">
-                                <button
-                                    type="button"
-                                    className="flex size-6 shrink-0 items-center justify-center text-white transition-colors hover:bg-white/20"
-                                    onClick={toggleMute}
-                                    aria-label={isMuted ? 'Unmute' : 'Mute'}
-                                >
-                                    <Volume2 className="size-3" />
-                                </button>
-                                <input
-                                    type="range"
-                                    min={0}
-                                    max={1}
-                                    step={0.05}
-                                    value={isMuted ? 0 : volume}
-                                    onChange={handleVolumeChange}
-                                    className="h-1 w-10 accent-white"
-                                />
-                            </div>
-                        )}
-
-                        {hasVideo && (
-                            <span className="min-w-[2.25rem] shrink-0 text-right text-xs text-white tabular-nums">
-                                {formatTime(currentTime)}
-                            </span>
-                        )}
-
-                        {/* Progress bar with scrubber */}
-                        <div
-                            ref={progressRef}
-                            className="relative flex flex-1 cursor-pointer items-center py-1"
-                            onClick={handleProgressClick}
-                            onMouseMove={handleProgressMouseMove}
-                            onMouseLeave={handleProgressMouseLeave}
-                        >
-                            <div className="relative h-1 w-full overflow-hidden rounded-full bg-white/35">
-                                <div
-                                    className="h-full rounded-full bg-white"
-                                    style={{ width: `${progress}%` }}
-                                />
-                                {hasVideo && duration > 0 && (
-                                    <div
-                                        className="absolute top-1/2 size-3 -translate-y-1/2 rounded-full border-2 border-white bg-white shadow-md"
-                                        style={{
-                                            left: `calc(${progress}% - 6px)`,
-                                        }}
-                                    />
-                                )}
-                            </div>
-                            {scrubHoverTime !== null &&
-                                hasVideo &&
-                                duration > 0 && (
-                                    <div
-                                        className="pointer-events-none absolute bottom-full z-10 mb-1"
-                                        style={{
-                                            left: scrubHoverX,
-                                            transform: 'translateX(-50%)',
-                                        }}
-                                    >
-                                        <div className="rounded border border-white/20 bg-black/90 px-2 py-1 shadow-lg">
-                                            <span className="text-[10px] font-medium text-white tabular-nums">
-                                                {formatTime(scrubHoverTime)} |{' '}
-                                                {formatTime(duration)}
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
-                        </div>
-
-                        {hasVideo && (
-                            <span className="min-w-[2.25rem] shrink-0 text-left text-xs text-white tabular-nums">
-                                -
-                                {formatTime(
-                                    Math.max(0, duration - currentTime),
-                                )}
-                            </span>
-                        )}
-
-                        <button
-                            type="button"
-                            className="flex size-7 shrink-0 items-center justify-center rounded text-white transition-colors hover:bg-white/25"
-                            onClick={toggleFullscreen}
-                            aria-label="Full screen"
-                        >
-                            <Maximize2 className="size-3.5" />
-                        </button>
-                    </div>
                 </div>
             </DialogContent>
         </Dialog>
