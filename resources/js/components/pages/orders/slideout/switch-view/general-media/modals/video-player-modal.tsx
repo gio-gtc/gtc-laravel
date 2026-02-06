@@ -5,6 +5,61 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 
+const COMPONENT_NAME = 'ElapsedTimeDisplay';
+
+type VideoJsPlayer = ReturnType<typeof videojs>;
+type ControlBarLike = {
+    getChild: (name: string) => unknown;
+    children_: unknown[];
+    addChild: (
+        name: string,
+        opts?: Record<string, unknown>,
+        index?: number,
+    ) => unknown;
+};
+
+function registerElapsedTimeDisplay() {
+    if (videojs.getComponent(COMPONENT_NAME)) return;
+    const Component = videojs.getComponent('Component');
+    class ElapsedTimeDisplay extends Component {
+        declare contentEl_: HTMLElement | null;
+
+        constructor(
+            player: VideoJsPlayer,
+            options?: Record<string, unknown>,
+        ) {
+            super(player, options);
+            (this as unknown as { on: (t: unknown, e: string | string[], f: () => void) => void }).on(
+                player,
+                ['timeupdate', 'durationchange'],
+                () => this.updateContent(),
+            );
+            this.updateContent();
+        }
+        createEl() {
+            const el = super.createEl('div', {
+                className: 'vjs-elapsed-time vjs-time-control vjs-control',
+            });
+            const span = document.createElement('span');
+            span.className = 'vjs-elapsed-time-display';
+            span.setAttribute('role', 'presentation');
+            this.contentEl_ = span;
+            el.appendChild(span);
+            return el;
+        }
+        updateContent() {
+            if (!this.contentEl_) return;
+            const t = this.player_?.currentTime() ?? 0;
+            this.contentEl_.textContent = videojs.formatTime(t);
+        }
+        dispose() {
+            this.contentEl_ = null;
+            super.dispose();
+        }
+    }
+    videojs.registerComponent(COMPONENT_NAME, ElapsedTimeDisplay);
+}
+
 const PLACEHOLDER_IMAGE =
     'data:image/svg+xml,' +
     encodeURIComponent(
@@ -127,6 +182,14 @@ export default function VideoPlayerModal({
         });
 
         playerRef.current = player;
+
+        registerElapsedTimeDisplay();
+        const controlBar = player.getChild('controlBar') as ControlBarLike;
+        const volumePanel = controlBar.getChild('volumePanel');
+        const volumeIndex =
+            volumePanel != null ? controlBar.children_.indexOf(volumePanel) : -1;
+        const insertIndex = volumeIndex >= 0 ? volumeIndex + 1 : 0;
+        controlBar.addChild(COMPONENT_NAME, {}, insertIndex);
 
         const handleUserActive = () => setUserActive(true);
         const handleUserInactive = () => setUserActive(false);
