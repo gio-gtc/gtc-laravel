@@ -268,6 +268,7 @@ function GeneralMediaView({
     const [videoPlayerModalOpen, setVideoPlayerModalOpen] = useState(false);
     const [videoPreviewRow, setVideoPreviewRow] =
         useState<MediaTableRow | null>(null);
+    const [audioPlaceholderMode, setAudioPlaceholderMode] = useState(false);
 
     const billingInvoices = useMemo((): Invoice[] => {
         if (!order || !venueItem) return [];
@@ -294,6 +295,7 @@ function GeneralMediaView({
                     onPreviewClick={(row, iconIndex) => {
                         if (iconIndex === 0) {
                             setVideoPreviewRow(row);
+                            setAudioPlaceholderMode(false);
                             setVideoPlayerModalOpen(true);
                         }
                     }}
@@ -308,6 +310,7 @@ function GeneralMediaView({
                     onPreviewClick={(row, iconIndex) => {
                         if (iconIndex === 0) {
                             setVideoPreviewRow(row);
+                            setAudioPlaceholderMode(false);
                             setVideoPlayerModalOpen(true);
                         }
                     }}
@@ -320,6 +323,13 @@ function GeneralMediaView({
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
+                    onPreviewClick={(row, iconIndex) => {
+                        if (iconIndex === 0) {
+                            setVideoPreviewRow(row);
+                            setAudioPlaceholderMode(true);
+                            setVideoPlayerModalOpen(true);
+                        }
+                    }}
                 />
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
@@ -382,8 +392,10 @@ function GeneralMediaView({
                 onClose={() => {
                     setVideoPlayerModalOpen(false);
                     setVideoPreviewRow(null);
+                    setAudioPlaceholderMode(false);
                 }}
                 videoSrc={videoPreviewRow?.previewVideoUrl ?? undefined}
+                useAudioPlaceholder={audioPlaceholderMode}
                 label={
                     videoPreviewRow
                         ? `${videoPreviewRow.isci} – ${videoPreviewRow.cutName}`

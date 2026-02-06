@@ -72,6 +72,9 @@ const PLACEHOLDER_VIDEO_SRC = '/videos/auth-login.mp4';
 /** Poster image for audio (mp3) sources. Replace with a local image path when available. */
 const AUDIO_POSTER_URL = 'https://picsum.photos/200/300';
 
+/** Audio source when previewing from the Audio table (placeholder tune). */
+const AUDIO_PLACEHOLDER_SRC = 'https://placeholder.guru/api/audio?type=tune';
+
 function isAudioSrc(src: string): boolean {
     return src.toLowerCase().endsWith('.mp3');
 }
@@ -81,6 +84,8 @@ interface VideoPlayerModalProps {
     onClose: () => void;
     videoSrc?: string | null;
     label?: string;
+    /** When true, use the placeholder tune as the playing content (e.g. when opening from Audio table). */
+    useAudioPlaceholder?: boolean;
 }
 
 export default function VideoPlayerModal({
@@ -88,6 +93,7 @@ export default function VideoPlayerModal({
     onClose,
     videoSrc,
     label,
+    useAudioPlaceholder = false,
 }: VideoPlayerModalProps) {
     const videoJsContainerRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<ReturnType<typeof videojs> | null>(null);
@@ -99,9 +105,11 @@ export default function VideoPlayerModal({
     const [containerReady, setContainerReady] = useState(false);
     const [hiddenVideoReady, setHiddenVideoReady] = useState(false);
 
-    const effectiveSrc = videoSrc ?? PLACEHOLDER_VIDEO_SRC;
+    const effectiveSrc = useAudioPlaceholder
+        ? AUDIO_PLACEHOLDER_SRC
+        : (videoSrc ?? PLACEHOLDER_VIDEO_SRC);
     const hasVideo = Boolean(effectiveSrc);
-    const isAudio = isAudioSrc(effectiveSrc);
+    const isAudio = useAudioPlaceholder || isAudioSrc(effectiveSrc);
 
     const capturePosterFrame = useCallback((videoEl: HTMLVideoElement) => {
         const w = videoEl.videoWidth;
@@ -176,7 +184,7 @@ export default function VideoPlayerModal({
             fluid: true,
             controls: true,
             responsive: true,
-            inactivityTimeout: 2000,
+            inactivityTimeout: isAudio ? 0 : 2000,
             sources: [{ src: effectiveSrc, type: sourceType }],
             poster: posterUrl,
             playbackRates: [0.5, 1, 1.5, 2],
@@ -238,7 +246,12 @@ export default function VideoPlayerModal({
                 <DialogTitle className="sr-only">
                     {label ?? 'Video preview'}
                 </DialogTitle>
-                <div className="video-player-modal relative aspect-video w-full overflow-hidden rounded-xl bg-black">
+                <div
+                    className={`video-player-modal relative aspect-video w-full overflow-hidden rounded-xl bg-black ${isAudio ? 'is-audio' : ''}`}
+                >
+                    {isAudio && (
+                        <style>{`.video-player-modal.is-audio .vjs-poster { display: block !important; }`}</style>
+                    )}
                     {hasVideo && !isAudio && isOpen && (
                         <video
                             ref={(el) => {
@@ -264,7 +277,7 @@ export default function VideoPlayerModal({
                             {label && (
                                 <div
                                     className={`absolute top-0 left-0 p-2 text-xs text-white/90 drop-shadow transition-opacity duration-300 ${
-                                        userActive
+                                        isAudio || userActive
                                             ? 'pointer-events-none opacity-100'
                                             : 'pointer-events-none opacity-0'
                                     }`}
