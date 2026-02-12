@@ -1,4 +1,4 @@
-import { NavMain } from '@/components/globals/navigation/nav-main';
+import { NavMain } from '@/components/globals/navigation/';
 import { Sidebar, SidebarContent } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';

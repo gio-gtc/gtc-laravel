@@ -1,6 +1,6 @@
-import InvoiceOrOrderModal from '@/components/globals/navigation/nav-main/invoice-or-order-modal';
-import OrganizationModal from '@/components/globals/navigation/nav-main/organization-modal';
-import TourModal from '@/components/globals/navigation/nav-main/tour-modal';
+import InvoiceOrOrderModal from '@/components/globals/navigation/invoice-or-order-modal';
+import OrganizationModal from '@/components/globals/navigation/organization-modal';
+import TourModal from '@/components/globals/navigation/tour-modal';
 import UserInfoModal from '@/components/modals/user-info-modal';
 import {
     Menubar,
