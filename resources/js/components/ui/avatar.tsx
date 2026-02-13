@@ -5,8 +5,17 @@ import { cn } from '@/lib/utils';
 
 function Avatar({
     className,
+    children,
     ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Root>) {
+    const keyedChildren = React.Children.map(children, (child, index) => {
+        if (React.isValidElement(child) && child.key == null) {
+            return React.cloneElement(child, {
+                key: `avatar-child-${index}`,
+            } as React.Attributes);
+        }
+        return child;
+    });
     return (
         <AvatarPrimitive.Root
             data-slot="avatar"
@@ -15,7 +24,9 @@ function Avatar({
                 className,
             )}
             {...props}
-        />
+        >
+            {keyedChildren}
+        </AvatarPrimitive.Root>
     );
 }
 

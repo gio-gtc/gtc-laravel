@@ -2,13 +2,14 @@ import { Button } from '@/components/ui/button';
 import { DropBox } from '@/components/ui/icons';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import Divider from '@/components/utils/divider';
+import type { LucideIcon } from 'lucide-react';
 import {
     ArrowRightToLine,
     ClipboardPlus,
-    Maximize2,
-    MoreHorizontal,
-    Paperclip,
-    Send,
+    Maximize2Icon,
+    MoreHorizontalIcon,
+    PaperclipIcon,
+    SendIcon,
 } from 'lucide-react';
 
 interface VenueSlideoutHeaderProps {
@@ -60,55 +61,13 @@ export default function VenueSlideoutHeader({
 
                 {/* Action buttons */}
                 <div className="flex items-center gap-0.5 text-slate-500">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={onAttach}
-                    >
-                        <Paperclip className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={onCloud}
-                    >
-                        <DropBox className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={onSend}
-                    >
-                        <Send className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={onMaximize}
-                    >
-                        <Maximize2 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={onMore}
-                    >
-                        <MoreHorizontal className="h-4 w-4" />
-                    </Button>
+                    <ActionButton onClick={onAttach} icon={PaperclipIcon} />
+                    <ActionButton onClick={onCloud} icon={DropBox} />
+                    <ActionButton onClick={onSend} icon={SendIcon} />
+                    <ActionButton onClick={onMaximize} icon={Maximize2Icon} />
+                    <ActionButton onClick={onMore} icon={MoreHorizontalIcon} />
 
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={onClose}
-                    >
-                        <ArrowRightToLine className="h-4 w-4" />
-                    </Button>
+                    <ActionButton onClick={onClose} icon={ArrowRightToLine} />
                 </div>
             </div>
 
@@ -127,5 +86,23 @@ export default function VenueSlideoutHeader({
                 </div>
             </div>
         </SheetHeader>
+    );
+}
+
+interface ActionButtonProps {
+    onClick: () => void;
+    icon: LucideIcon;
+}
+
+function ActionButton({ onClick, icon: Icon }: ActionButtonProps) {
+    return (
+        <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6"
+            onClick={onClick}
+        >
+            <Icon className="h-4 w-4" />
+        </Button>
     );
 }
