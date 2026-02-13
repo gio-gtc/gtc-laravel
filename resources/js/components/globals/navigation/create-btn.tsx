@@ -24,7 +24,7 @@ export const CreateBtn = () => {
     const centerIcon = notCollapsedOrMobile ? '' : 'justify-center';
     const hiddenString = notCollapsedOrMobile ? '' : 'hidden';
     const hiddenBackhground = notCollapsedOrMobile
-        ? 'bg-input focus:bg-input border border-transparent focus:border-transparent data-[state=open]:border-button-border'
+        ? 'bg-sidebar-accent focus:bg-sidebar-accent border border-transparent focus:border-transparent data-[state=open]:border-button-border'
         : 'focus:bg-transparent data-[state=open]:bg-brand-gtc-red/20 p-1';
     const [isOrganizationModalOpen, setIsOrganizationModalOpen] =
         useState(false);
@@ -39,18 +39,17 @@ export const CreateBtn = () => {
                 <Menubar className={`flex ${centerIcon}`}>
                     <MenubarMenu>
                         <MenubarTrigger
-                            className={`flex max-w-[100px] cursor-pointer gap-1.5 rounded-4xl p-2 align-middle ${hiddenBackhground}`}
+                            className={`max-w-[100px] cursor-pointer rounded-4xl p-2 ${hiddenBackhground}`}
                         >
-                            <TooltipTrigger asChild>
+                            <TooltipTrigger asChild className="flex gap-1.5">
                                 <span>
-                                    <div className="flex items-center justify-center rounded-full bg-brand-gtc-red">
-                                        <Plus
-                                            style={{
-                                                width: 'calc(var(--spacing) * 4)',
-                                                height: 'calc(var(--spacing) * 4)',
-                                            }}
-                                        />
-                                    </div>
+                                    <Plus
+                                        className="rounded-full bg-brand-gtc-red"
+                                        style={{
+                                            width: 'calc(var(--spacing) * 4)',
+                                            height: 'calc(var(--spacing) * 4)',
+                                        }}
+                                    />
                                     <span className={`text-sm ${hiddenString}`}>
                                         Create
                                     </span>

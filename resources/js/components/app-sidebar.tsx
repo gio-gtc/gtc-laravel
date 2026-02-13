@@ -1,6 +1,6 @@
 import { NavMain } from '@/components/globals/navigation/';
 import { Sidebar, SidebarContent } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard, invoices, orders } from '@/routes';
 import { type NavItem } from '@/types';
 import { ClipboardCheck, House, Receipt } from 'lucide-react';
 import { ClipboardClock } from './ui/icons';
@@ -13,18 +13,18 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Orders',
-        href: '/orders',
+        href: orders(),
         icon: ClipboardClock,
     },
     {
         title: 'My Tasks',
-        href: '/#',
+        href: orders(),
         icon: ClipboardCheck,
     },
     // TODO: only seen by managers and Russ/James/David
     {
         title: 'Invoices',
-        href: '/invoices',
+        href: invoices(),
         icon: Receipt,
     },
 ];

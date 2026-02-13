@@ -13,7 +13,8 @@
     /* GTC Colors */
     --color-brand-gtc-red: #ec1a29;
     --color-custom-background: #252628;
-    --color-custom-input: #444446;
+    --color-dark-input: #444446;
+    --color-light-accent: #e9eaeb;
     --color-button-border: #d5d7da;
 
     --radius-lg: var(--radius);
@@ -78,12 +79,12 @@
     --secondary-foreground: oklch(0.205 0 0);
     --muted: oklch(0.97 0 0);
     --muted-foreground: oklch(0.556 0 0);
-    --accent: #e9eaeb;
+    --accent: var(--color-light-accent);
     --accent-foreground: oklch(0.985 0 0);
     --destructive: oklch(0.577 0.245 27.325);
     --destructive-foreground: oklch(0.577 0.245 27.325);
     --border: oklch(0.872 0.01 258.338);
-    --input: var(--color-custom-input);
+    --input: var(--color-light-accent);
     --ring: oklch(0.87 0 0);
     --chart-1: oklch(0.646 0.222 41.116);
     --chart-2: oklch(0.6 0.118 184.704);
@@ -95,7 +96,7 @@
     --sidebar-foreground: oklch(1 0 0);
     --sidebar-primary: oklch(1 0 0);
     --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: var(--color-custom-input);
+    --sidebar-accent: var(--color-dark-input);
     --sidebar-accent-foreground: oklch(1 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.87 0 0);

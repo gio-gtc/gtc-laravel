@@ -49,7 +49,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                             <Search className="h-3.5 w-3.5" />
                         </button>
                         <input
-                            className="h-6 w-full rounded-4xl bg-input pl-7 text-sm focus:outline-none"
+                            className="h-6 w-full rounded-4xl bg-dark-input pl-7 text-sm focus:outline-none"
                             type="search"
                             name="search"
                             placeholder="Search"
