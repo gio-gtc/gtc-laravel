@@ -31,7 +31,13 @@ interface DateRangePickerProps {
         startDate: string | null;
         endDate: string | null;
     }) => void;
-    buttonVariant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link' | 'destructive';
+    buttonVariant?:
+        | 'default'
+        | 'outline'
+        | 'secondary'
+        | 'ghost'
+        | 'link'
+        | 'destructive';
     buttonSize?: 'default' | 'sm' | 'lg' | 'icon';
     buttonClassName?: string;
     placeholder?: string;
@@ -90,7 +96,7 @@ export default function DateRangePicker({
                     size={buttonSize}
                     className={`gap-2 ${buttonClassName}`}
                 >
-                    <Calendar className="h-4 w-4" />
+                    <Calendar className="h-4 w-4 text-accent" />
                     {startDate && endDate
                         ? `${formattedStartDate} - ${formattedEndDate}`
                         : placeholder}
@@ -109,11 +115,18 @@ export default function DateRangePicker({
                             value={tempStartDate}
                             onChange={(e) => {
                                 setTempStartDate(e.target.value);
-                                if (!allowReversedRange && e.target.value > tempEndDate) {
+                                if (
+                                    !allowReversedRange &&
+                                    e.target.value > tempEndDate
+                                ) {
                                     setTempEndDate(e.target.value);
                                 }
                             }}
-                            max={allowReversedRange ? undefined : (tempEndDate || undefined)}
+                            max={
+                                allowReversedRange
+                                    ? undefined
+                                    : tempEndDate || undefined
+                            }
                         />
                     </div>
                     <div className="grid gap-2">
@@ -124,11 +137,18 @@ export default function DateRangePicker({
                             value={tempEndDate}
                             onChange={(e) => {
                                 setTempEndDate(e.target.value);
-                                if (!allowReversedRange && e.target.value < tempStartDate) {
+                                if (
+                                    !allowReversedRange &&
+                                    e.target.value < tempStartDate
+                                ) {
                                     setTempStartDate(e.target.value);
                                 }
                             }}
-                            min={allowReversedRange ? undefined : (tempStartDate || undefined)}
+                            min={
+                                allowReversedRange
+                                    ? undefined
+                                    : tempStartDate || undefined
+                            }
                         />
                     </div>
                 </div>

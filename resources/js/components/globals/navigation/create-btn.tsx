@@ -21,8 +21,11 @@ import { useState } from 'react';
 export const CreateBtn = () => {
     const { isMobile, state } = useSidebar();
     const notCollapsedOrMobile = state !== 'collapsed' || isMobile;
+    const centerIcon = notCollapsedOrMobile ? '' : 'justify-center';
     const hiddenString = notCollapsedOrMobile ? '' : 'hidden';
-    const hiddenBackhground = notCollapsedOrMobile ? 'bg-input' : '';
+    const hiddenBackhground = notCollapsedOrMobile
+        ? 'bg-input focus:bg-input border border-transparent focus:border-button-border'
+        : 'focus:bg-brand-gtc-red/20 p-1';
     const [isOrganizationModalOpen, setIsOrganizationModalOpen] =
         useState(false);
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -33,7 +36,7 @@ export const CreateBtn = () => {
     return (
         <>
             <Tooltip>
-                <Menubar>
+                <Menubar className={`flex ${centerIcon}`}>
                     <MenubarMenu>
                         <TooltipTrigger asChild>
                             <MenubarTrigger

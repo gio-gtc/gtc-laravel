@@ -29,7 +29,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                 <div className="flex h-[50px] items-center justify-center gap-1 px-2">
                     {/* Menu */}
                     <div className="flex w-full items-center max-sm:w-1/3 sm:gap-3">
-                        <SidebarTrigger className="mr-2 h-[34px] w-[34px] cursor-pointer" />
+                        <SidebarTrigger className="mr-2 h-[34px] w-[34px] cursor-pointer hover:bg-[#333] active:bg-[#666]" />
 
                         <Link
                             href={dashboard()}

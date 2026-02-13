@@ -117,7 +117,6 @@ export default function Dashboard() {
                         startDate={dateRange.startDate}
                         endDate={dateRange.endDate}
                         onDateRangeChange={setDateRange}
-                        buttonVariant="outline"
                     />
                 </div>
 
