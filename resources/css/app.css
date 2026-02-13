@@ -16,6 +16,7 @@
     --color-dark-input: #444446;
     --color-light-accent: #e9eaeb;
     --color-button-border: #d5d7da;
+    --color-gray-icon: #a4a7ae;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);

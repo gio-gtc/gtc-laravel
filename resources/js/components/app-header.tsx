@@ -46,7 +46,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
                             type="submit"
                             className="absolute top-1.5 left-2.5 cursor-pointer"
                         >
-                            <Search className="h-3.5 w-3.5" />
+                            <Search className="h-3.5 w-3.5 text-gray-icon" />
                         </button>
                         <input
                             className="h-6 w-full rounded-4xl bg-dark-input pl-7 text-sm focus:outline-none"

@@ -96,7 +96,7 @@ export default function DateRangePicker({
                     size={buttonSize}
                     className={`gap-2 ${buttonClassName}`}
                 >
-                    <Calendar className="h-4 w-4 text-[#a4a7ae]" />
+                    <Calendar className="h-4 w-4 text-gray-icon" />
                     {startDate && endDate
                         ? `${formattedStartDate} - ${formattedEndDate}`
                         : placeholder}
