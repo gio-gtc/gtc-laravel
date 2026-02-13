@@ -66,7 +66,6 @@ export default function OrganizationModal({
                                 name="organization_name"
                                 placeholder="Enter Organization Name"
                                 required
-                                className="border-gray-300"
                             />
                         </div>
                         <InputError message={undefined} />
@@ -82,7 +81,7 @@ export default function OrganizationModal({
                         </Label>
                         <div className="relative flex-1">
                             <Select name="organization_type" required>
-                                <SelectTrigger className="border-gray-300">
+                                <SelectTrigger>
                                     <SelectValue placeholder="Select Organization Type" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -118,7 +117,6 @@ export default function OrganizationModal({
                                 name="street_address"
                                 placeholder="Street Address"
                                 required
-                                className="border-gray-300"
                             />
                             <div className="flex gap-2">
                                 <Input
@@ -126,25 +124,25 @@ export default function OrganizationModal({
                                     name="city"
                                     placeholder="City"
                                     required
-                                    className="flex-[2] border-gray-300"
+                                    className="flex-[2]"
                                 />
                                 <Input
                                     id="state"
                                     name="state"
                                     placeholder="State"
                                     required
-                                    className="flex-1 border-gray-300"
+                                    className="flex-1"
                                 />
                                 <Input
                                     id="zip"
                                     name="zip"
                                     placeholder="ZIP"
                                     required
-                                    className="flex-1 border-gray-300"
+                                    className="flex-1"
                                 />
                             </div>
                             <Select name="country" required>
-                                <SelectTrigger className="border-gray-300">
+                                <SelectTrigger>
                                     <SelectValue placeholder="Select Country" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -199,7 +197,6 @@ export default function OrganizationModal({
                                 type="number"
                                 placeholder="Enter Terms"
                                 required
-                                className="border-gray-300"
                             />
                         </div>
                         <InputError message={undefined} />
@@ -215,7 +212,7 @@ export default function OrganizationModal({
                         </Label>
                         <div className="relative flex-1">
                             <Select name="preferred_currency" required>
-                                <SelectTrigger className="border-gray-300">
+                                <SelectTrigger>
                                     <SelectValue
                                         placeholder="USD"
                                         defaultValue="usd"
@@ -259,7 +256,7 @@ export default function OrganizationModal({
                                 id="ap_contact"
                                 name="ap_contact"
                                 placeholder="Contact Name"
-                                className="border-gray-300 pl-9"
+                                className="pl-9"
                             />
                         </div>
                         <InputError message={undefined} />
