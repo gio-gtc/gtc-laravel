@@ -271,9 +271,7 @@ export default function OrganizationModal({
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" className="bg-brand-gtc-red">
-                            Save
-                        </Button>
+                        <Button type="submit">Save</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
