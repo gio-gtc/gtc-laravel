@@ -222,16 +222,16 @@ function OrdersTable() {
                 <div className="flex items-center gap-2">
                     <Button variant="outline">
                         My Tours, US, +4
-                        <span className="ml-2">×</span>
+                        <span className="ml-2">x</span>
                     </Button>
-                    <Button variant="outline" size="icon">
-                        <Filter className="h-4 w-4" />
+                    <Button variant="outline">
+                        <Filter className="size-3.5" />
                     </Button>
-                    <Button variant="outline" size="icon">
-                        <SortAsc className="h-4 w-4" />
+                    <Button variant="outline">
+                        <SortAsc className="size-3.5" />
                     </Button>
-                    <Button variant="outline" size="icon">
-                        <Search className="h-4 w-4" />
+                    <Button variant="outline">
+                        <Search className="size-3.5" />
                     </Button>
                 </div>
             </div>
