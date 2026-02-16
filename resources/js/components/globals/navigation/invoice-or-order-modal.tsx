@@ -54,7 +54,6 @@ export default function InvoiceOrOrderModal({
                             value={tour}
                             onChange={(e) => setTour(e.target.value)}
                             required
-                            className="border-gray-300"
                         />
                         <InputError message={undefined} />
                     </ColumnedRowsChild>
@@ -70,7 +69,6 @@ export default function InvoiceOrOrderModal({
                             value={venue}
                             onChange={(e) => setVenue(e.target.value)}
                             required
-                            className="border-gray-300"
                         />
                         <InputError message={undefined} />
                     </ColumnedRowsChild>

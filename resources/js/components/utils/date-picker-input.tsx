@@ -1,6 +1,5 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Calendar } from 'lucide-react';
 
 function formatDateInput(value: string | undefined | null): string {
     if (!value) return '';
@@ -12,12 +11,15 @@ function formatDateInput(value: string | undefined | null): string {
     return `${year}-${month}-${day}`;
 }
 
+// invoice slideout, add tour modal, add venue modal, profile modal
+
 interface DatePickerInputProps {
     id: string;
     label: string;
     value: string;
     onChange: (value: string) => void;
     className?: string;
+    required?: boolean;
 }
 
 export default function DatePickerInput({
@@ -26,6 +28,7 @@ export default function DatePickerInput({
     value,
     onChange,
     className,
+    required = false,
 }: DatePickerInputProps) {
     return (
         <div className={className}>
@@ -38,21 +41,8 @@ export default function DatePickerInput({
                     type="date"
                     value={formatDateInput(value)}
                     onChange={(e) => onChange(e.target.value)}
+                    required={required}
                 />
-                <button
-                    type="button"
-                    onClick={() => {
-                        const el = document.getElementById(
-                            id,
-                        ) as HTMLInputElement | null;
-                        el?.showPicker?.();
-                        el?.focus();
-                        el?.click();
-                    }}
-                    className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                    <Calendar className="h-4 w-4" />
-                </button>
             </div>
         </div>
     );

@@ -24,6 +24,7 @@ function formatDateLabel(value: string | null) {
     }).format(date);
 }
 
+// TODO: Delete this component has been replaced by "date-range-picker"
 interface DateRangePickerProps {
     startDate: string | null;
     endDate: string | null;

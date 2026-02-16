@@ -3,8 +3,8 @@ import {
     ColumnedRowsChild,
     ColumnedRowsParent,
 } from '@/components/utils/column-row-layouts';
+import DatePickerInput from '@/components/utils/date-picker-input';
 import { type User } from '@/types';
-import DatePickerInput from './date-picker-input';
 
 interface InvoiceDetailsFormData {
     release_date: string;

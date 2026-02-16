@@ -17,9 +17,10 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import DatePickerInput from '@/components/utils/date-picker-input';
 import Divider from '@/components/utils/divider';
 import DollarInput from '@/components/utils/dollar-input';
-import { Calendar, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { useState } from 'react';
 
 interface TourModalProps {
@@ -61,7 +62,6 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 name="tour_name"
                                 placeholder="Tour Name"
                                 required
-                                className="border-gray-300"
                             />
                         </div>
                         <InputError message={undefined} />
@@ -74,29 +74,13 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                             <span className="text-destructive">*</span>
                         </Label>
                         <div className="relative flex-2">
-                            <Input
+                            <DatePickerInput
                                 id="start_date"
-                                name="start_date"
-                                type="date"
+                                label=""
                                 value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
                                 required
-                                className="border-gray-300"
+                                onChange={(value) => setStartDate(value)}
                             />
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    const el = document.getElementById(
-                                        'start_date',
-                                    ) as HTMLInputElement | null;
-                                    el?.showPicker?.();
-                                    el?.focus();
-                                    el?.click();
-                                }}
-                                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                            >
-                                <Calendar className="h-4 w-4" />
-                            </button>
                         </div>
                         <InputError message={undefined} />
                     </div>
@@ -110,30 +94,15 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                             Expire On Sale Now Cuts
                         </Label>
                         <div className="relative flex-2">
-                            <Input
+                            <DatePickerInput
                                 id="expire_on_sale_now_cuts"
-                                name="expire_on_sale_now_cuts"
-                                type="date"
+                                label=""
                                 value={expireOnSaleNowCuts}
-                                onChange={(e) =>
-                                    setExpireOnSaleNowCuts(e.target.value)
+                                required
+                                onChange={(value) =>
+                                    setExpireOnSaleNowCuts(value)
                                 }
-                                className="border-gray-300"
                             />
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    const el = document.getElementById(
-                                        'expire_on_sale_now_cuts',
-                                    ) as HTMLInputElement | null;
-                                    el?.showPicker?.();
-                                    el?.focus();
-                                    el?.click();
-                                }}
-                                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                            >
-                                <Calendar className="h-4 w-4" />
-                            </button>
                         </div>
                         <InputError message={undefined} />
                     </div>
@@ -154,7 +123,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                     Voice Over
                                 </span>
                                 <Select name="voice_over">
-                                    <SelectTrigger className="border-gray-300">
+                                    <SelectTrigger>
                                         <SelectValue placeholder="Voice Over" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -223,7 +192,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                     type="email"
                                     placeholder="Client Approval Email"
                                     required
-                                    className="border-gray-300 pl-9"
+                                    className="pl-9"
                                 />
                             </div>
                             <InputError message={undefined} />
@@ -240,7 +209,6 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 id="tour_sponsor"
                                 name="tour_sponsor"
                                 placeholder="Tour Sponsor"
-                                className="border-gray-300"
                             />
                         </div>
                         <InputError message={undefined} />
@@ -259,7 +227,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 id="special_instructions"
                                 name="special_instructions"
                                 placeholder="Special Instructions"
-                                className="flex min-h-28 w-full resize-y rounded-md border border-gray-300 bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm"
+                                className="flex min-h-28 w-full resize-y rounded-md border bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm"
                             />
                         </div>
                         <InputError message={undefined} />
@@ -312,7 +280,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                         </Label>
                         <div className="relative flex-2">
                             <Select name="gtc_department" required>
-                                <SelectTrigger className="border-gray-300">
+                                <SelectTrigger>
                                     <SelectValue placeholder="GTC Department" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -342,7 +310,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                         </Label>
                         <div className="relative flex-2">
                             <Select name="gtc_representative" required>
-                                <SelectTrigger className="border-gray-300">
+                                <SelectTrigger>
                                     <SelectValue placeholder="GTC Represenitive" />
                                 </SelectTrigger>
                                 <SelectContent>
