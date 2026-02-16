@@ -24,7 +24,7 @@ export const CreateBtn = () => {
     const centerIcon = notCollapsedOrMobile ? '' : 'justify-center';
     const hiddenString = notCollapsedOrMobile ? '' : 'hidden';
     const hiddenBackhground = notCollapsedOrMobile
-        ? 'bg-sidebar-accent focus:bg-sidebar-accent border border-transparent focus:border-transparent data-[state=open]:border-button-border'
+        ? 'bg-sidebar-accent focus:bg-sidebar-accent border border-transparent focus:border-transparent focus:text-white data-[state=open]:border-button-border data-[state=open]:text-white'
         : 'focus:bg-transparent data-[state=open]:bg-brand-gtc-red/20 p-1';
     const [isOrganizationModalOpen, setIsOrganizationModalOpen] =
         useState(false);
