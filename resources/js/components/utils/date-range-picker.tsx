@@ -7,10 +7,10 @@ import {
     PopoverTitle,
     PopoverTrigger,
 } from '@/components/ui/popover';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, startOfDay } from 'date-fns';
 import { Calendar } from 'lucide-react';
-import type { DateRange } from 'react-day-picker';
 import { useState } from 'react';
+import type { DateRange } from 'react-day-picker';
 
 function formatDateLabel(value: string | null) {
     if (!value) return 'Select date';
@@ -53,7 +53,7 @@ interface DateRangePickerProps {
     buttonClassName?: string;
     placeholder?: string;
     dialogTitle?: string;
-    allowReversedRange?: boolean;
+    forwardOnlyFromToday?: boolean;
 }
 
 export default function DateRangePicker({
@@ -65,17 +65,11 @@ export default function DateRangePicker({
     buttonClassName = '',
     placeholder = 'Select date range',
     dialogTitle = 'Select Date Range',
-    allowReversedRange = false,
+    forwardOnlyFromToday = false,
 }: DateRangePickerProps) {
     const [open, setOpen] = useState(false);
     const [tempRange, setTempRange] = useState<DateRange | undefined>(() =>
         toDateRange(startDate, endDate),
-    );
-    const [tempStartDate, setTempStartDate] = useState<Date | undefined>(() =>
-        startDate ? parseISO(startDate) : undefined,
-    );
-    const [tempEndDate, setTempEndDate] = useState<Date | undefined>(() =>
-        endDate ? parseISO(endDate) : undefined,
     );
 
     const formattedStartDate = formatDateLabel(startDate);
@@ -84,8 +78,6 @@ export default function DateRangePicker({
     const handleOpenChange = (isOpen: boolean) => {
         if (isOpen) {
             setTempRange(toDateRange(startDate, endDate));
-            setTempStartDate(startDate ? parseISO(startDate) : undefined);
-            setTempEndDate(endDate ? parseISO(endDate) : undefined);
         }
         setOpen(isOpen);
     };
@@ -106,27 +98,6 @@ export default function DateRangePicker({
 
     const handleClearRange = () => {
         setTempRange(undefined);
-    };
-
-    const handleClearReversed = () => {
-        setTempStartDate(undefined);
-        setTempEndDate(undefined);
-    };
-
-    const handleSingleStartSelect = (date: Date | undefined) => {
-        setTempStartDate(date);
-    };
-
-    const handleSingleEndSelect = (date: Date | undefined) => {
-        setTempEndDate(date);
-    };
-
-    const handleSaveReversed = () => {
-        onDateRangeChange({
-            startDate: tempStartDate ? toISOString(tempStartDate) : null,
-            endDate: tempEndDate ? toISOString(tempEndDate) : null,
-        });
-        setOpen(false);
     };
 
     const displayRangeText =
@@ -152,73 +123,34 @@ export default function DateRangePicker({
                         <PopoverTitle>{dialogTitle}</PopoverTitle>
                     </PopoverHeader>
                 )}
-                {allowReversedRange ? (
-                    <div className="flex flex-col gap-4 p-4">
-                        <div className="flex justify-center gap-4">
-                            <div className="space-y-2">
-                                <p className="text-sm font-medium text-muted-foreground">
-                                    Start Date
-                                </p>
-                                <CalendarComponent
-                                    mode="single"
-                                    selected={tempStartDate}
-                                    onSelect={handleSingleStartSelect}
-                                    initialFocus
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <p className="text-sm font-medium text-muted-foreground">
-                                    End Date
-                                </p>
-                                <CalendarComponent
-                                    mode="single"
-                                    selected={tempEndDate}
-                                    onSelect={handleSingleEndSelect}
-                                />
-                            </div>
-                        </div>
-                        <div className="flex justify-end gap-2 pt-2">
-                            <Button
-                                variant="outline"
-                                onClick={handleClearReversed}
-                            >
-                                Clear
-                            </Button>
-                            <Button
-                                onClick={handleSaveReversed}
-                                disabled={!tempStartDate || !tempEndDate}
-                            >
-                                Save
-                            </Button>
-                        </div>
+                <div className="p-4">
+                    <CalendarComponent
+                        mode="range"
+                        selected={tempRange}
+                        onSelect={handleRangeSelect}
+                        numberOfMonths={2}
+                        initialFocus
+                        disabled={
+                            forwardOnlyFromToday
+                                ? { before: startOfDay(new Date()) }
+                                : undefined
+                        }
+                    />
+                    <div className="flex justify-end gap-2 pt-4">
+                        <Button
+                            variant="outline"
+                            onClick={handleClearRange}
+                        >
+                            Clear
+                        </Button>
+                        <Button
+                            onClick={handleSaveRange}
+                            disabled={!tempRange?.from || !tempRange?.to}
+                        >
+                            Save
+                        </Button>
                     </div>
-                ) : (
-                    <div className="p-4">
-                        <CalendarComponent
-                            mode="range"
-                            selected={tempRange}
-                            onSelect={handleRangeSelect}
-                            numberOfMonths={2}
-                            initialFocus
-                        />
-                        <div className="flex justify-end gap-2 pt-4">
-                            <Button
-                                variant="outline"
-                                onClick={handleClearRange}
-                            >
-                                Clear
-                            </Button>
-                            <Button
-                                onClick={handleSaveRange}
-                                disabled={
-                                    !tempRange?.from || !tempRange?.to
-                                }
-                            >
-                                Save
-                            </Button>
-                        </div>
-                    </div>
-                )}
+                </div>
             </PopoverContent>
         </Popover>
     );

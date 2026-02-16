@@ -36,9 +36,6 @@ export default function InvoiceAdvancedFilters({
     onDateRangeFilterChange,
     onSearchChange,
 }: InvoiceAdvancedFiltersProps) {
-    // Allow reversed date ranges (start date can be after end date)
-    const allowReversedRange = true;
-
     // Check if any filters are active
     const hasActiveFilters = useMemo(() => {
         // Country filter is active if not both are selected
@@ -204,7 +201,6 @@ export default function InvoiceAdvancedFilters({
                                 buttonSize="sm"
                                 buttonClassName="w-full justify-start"
                                 placeholder="Select date range"
-                                allowReversedRange={allowReversedRange}
                             />
                         </div>
 
