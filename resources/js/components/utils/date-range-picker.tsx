@@ -50,7 +50,7 @@ export default function DateRangePicker({
     endDate,
     onDateRangeChange,
     buttonVariant = 'outline',
-    buttonSize = 'default',
+    buttonSize = 'sm',
     buttonClassName = '',
     placeholder = 'Select date range',
     dialogTitle = 'Select Date Range',

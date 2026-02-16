@@ -14,7 +14,6 @@ import {
 import DateRangePicker from '@/components/utils/date-range-picker';
 import Divider from '@/components/utils/divider';
 import { type Tour, type Venue } from '@/types';
-import { Calendar } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import VenueAutocomplete from './venue-autocomplete';
 
@@ -155,20 +154,6 @@ export default function AddVenueModal({
                                 onChange={(e) => setDueDate(e.target.value)}
                                 required
                             />
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    const el = document.getElementById(
-                                        'due-date',
-                                    ) as HTMLInputElement | null;
-                                    el?.showPicker?.();
-                                    el?.focus();
-                                    el?.click();
-                                }}
-                                className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                            >
-                                <Calendar className="h-4 w-4" />
-                            </button>
                         </div>
                     </ColumnedRowsChild>
 

@@ -83,7 +83,7 @@ export function ExpandableSearch({
                 <>
                     <Search
                         className={cn(
-                            'pointer-events-none absolute left-3 z-10 h-4 w-4 text-muted-foreground transition-opacity ease-in-out',
+                            'pointer-events-none absolute left-2 z-10 size-3.5 text-muted-foreground transition-opacity ease-in-out',
                             isSearchExpanded ? 'opacity-100' : 'opacity-0',
                         )}
                         style={transitionStyle}
@@ -94,7 +94,7 @@ export function ExpandableSearch({
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className={cn(
-                            'h-9 w-full pr-9 pl-9 transition-opacity ease-in-out',
+                            'h-6.5 w-full pr-6.5 pl-6.5 transition-opacity ease-in-out',
                             isSearchExpanded ? 'opacity-100' : 'opacity-0',
                         )}
                         style={transitionStyle}
@@ -102,25 +102,23 @@ export function ExpandableSearch({
                     />
                     <Button
                         variant="ghost"
-                        size="icon"
                         className={cn(
-                            'absolute right-1 z-10 h-7 w-7 transition-opacity ease-in-out',
+                            'absolute right-1 z-10 size-3.5 h-5 transition-opacity ease-in-out',
                             isSearchExpanded ? 'opacity-100' : 'opacity-0',
                         )}
                         style={transitionStyle}
                         onClick={handleClear}
                     >
-                        <X className="h-4 w-4" />
+                        <X className="size-3.5" />
                     </Button>
                 </>
             ) : (
                 <Button
                     variant="outline"
-                    size="icon"
                     className="w-9"
                     onClick={() => setIsSearchExpanded(true)}
                 >
-                    <Search className="h-4 w-4" />
+                    <Search className="size-3.5" />
                 </Button>
             )}
         </div>
