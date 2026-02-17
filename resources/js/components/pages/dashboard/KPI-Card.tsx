@@ -47,12 +47,12 @@ function KPICard({
     chartData: { name: string; value: number }[];
 }) {
     return (
-        <Card className="gap-1 border-gray-300 bg-gray-50 py-0">
+        <Card className="gap-1 bg-gray-50 py-0">
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="text-sm font-medium">{title}</CardTitle>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button variant="ghost" className="h-8 w-8">
                             <MoreVertical className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
@@ -62,7 +62,7 @@ function KPICard({
                     </DropdownMenuContent>
                 </DropdownMenu>
             </CardHeader>
-            <CardContent className="rounded-xl border-t-1 border-gray-300 bg-white py-2">
+            <CardContent className="rounded-xl border-t-1 bg-white py-2">
                 <div className="flex flex-col justify-between lg:flex-row">
                     <div className="text-2xl font-bold">{value}</div>
                     <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">

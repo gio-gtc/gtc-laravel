@@ -1,7 +1,6 @@
 import { venuesData } from '@/components/mockdata';
 import { Input } from '@/components/ui/input';
 import { type Venue } from '@/types';
-import { Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 interface VenueAutocompleteProps {
@@ -63,7 +62,6 @@ export default function VenueAutocomplete({
 
     return (
         <div className="relative">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
                 id="venue-name"
                 type="text"
@@ -72,7 +70,6 @@ export default function VenueAutocomplete({
                 onFocus={handleInputFocus}
                 onBlur={handleInputBlur}
                 placeholder="Search venues..."
-                className="pl-9"
                 required={required}
             />
             {isOpen && filteredVenues.length > 0 && (
@@ -81,13 +78,11 @@ export default function VenueAutocomplete({
                         <button
                             key={venue.id}
                             type="button"
-                            className="w-full px-4 py-2 text-left hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none"
+                            className="w-full px-4 py-2 text-left hover:bg-accent focus:bg-accent focus:text-accent-foreground focus:outline-none"
                             onClick={() => handleVenueSelect(venue)}
                         >
-                            <div className="font-medium text-white">
-                                {venue.name}
-                            </div>
-                            <div className="text-sm text-muted-foreground">
+                            <div className="font-medium">{venue.name}</div>
+                            <div className="text-sm">
                                 {venue.city}, {venue.state}
                             </div>
                         </button>

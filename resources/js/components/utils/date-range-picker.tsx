@@ -129,7 +129,6 @@ export default function DateRangePicker({
                         selected={tempRange}
                         onSelect={handleRangeSelect}
                         numberOfMonths={2}
-                        initialFocus
                         disabled={
                             forwardOnlyFromToday
                                 ? { before: startOfDay(new Date()) }
@@ -137,10 +136,7 @@ export default function DateRangePicker({
                         }
                     />
                     <div className="flex justify-end gap-2 pt-4">
-                        <Button
-                            variant="outline"
-                            onClick={handleClearRange}
-                        >
+                        <Button variant="outline" onClick={handleClearRange}>
                             Clear
                         </Button>
                         <Button

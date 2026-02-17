@@ -80,6 +80,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 value={startDate}
                                 required
                                 onChange={(value) => setStartDate(value)}
+                                buttonClassName="w-full justify-start"
                             />
                         </div>
                         <InputError message={undefined} />
@@ -102,6 +103,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 onChange={(value) =>
                                     setExpireOnSaleNowCuts(value)
                                 }
+                                buttonClassName="w-full justify-start"
                             />
                         </div>
                         <InputError message={undefined} />

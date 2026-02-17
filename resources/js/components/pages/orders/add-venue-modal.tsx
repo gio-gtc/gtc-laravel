@@ -11,6 +11,7 @@ import {
     ColumnedRowsChild,
     ColumnedRowsParent,
 } from '@/components/utils/column-row-layouts';
+import DatePickerInput from '@/components/utils/date-picker-input';
 import DateRangePicker from '@/components/utils/date-range-picker';
 import Divider from '@/components/utils/divider';
 import { type Tour, type Venue } from '@/types';
@@ -22,16 +23,6 @@ interface AddVenueModalProps {
     onClose: () => void;
     orderId: number;
     order: Tour | null;
-}
-
-function formatDateInput(value: string | undefined | null): string {
-    if (!value) return '';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return '';
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
 }
 
 export default function AddVenueModal({
@@ -146,15 +137,14 @@ export default function AddVenueModal({
                         labelContent="Due Date"
                         required
                     >
-                        <div className="relative">
-                            <Input
-                                id="due-date"
-                                type="date"
-                                value={dueDate}
-                                onChange={(e) => setDueDate(e.target.value)}
-                                required
-                            />
-                        </div>
+                        <DatePickerInput
+                            id="due-date"
+                            label=""
+                            value={dueDate || ''}
+                            onChange={(value) => setDueDate(value)}
+                            required
+                            buttonClassName="w-full justify-start"
+                        />
                     </ColumnedRowsChild>
 
                     {/* Local Deliverables */}

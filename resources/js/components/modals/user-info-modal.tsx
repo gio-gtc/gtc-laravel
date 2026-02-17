@@ -204,7 +204,6 @@ export default function UserInfoModal({
                                                 </span>
                                             </Label>
                                             <Input
-                                                className="border-gray-300"
                                                 id="first_name"
                                                 name="first_name"
                                                 defaultValue={
@@ -226,7 +225,6 @@ export default function UserInfoModal({
                                                 </span>
                                             </Label>
                                             <Input
-                                                className="border-gray-300"
                                                 id="last_name"
                                                 name="last_name"
                                                 defaultValue={
@@ -250,7 +248,6 @@ export default function UserInfoModal({
                                                 </span>
                                             </Label>
                                             <Input
-                                                className="border-gray-300"
                                                 id="organization"
                                                 name="organization"
                                                 defaultValue={
@@ -268,7 +265,6 @@ export default function UserInfoModal({
                                                 Job Title
                                             </Label>
                                             <Input
-                                                className="border-gray-300"
                                                 id="job_title"
                                                 name="job_title"
                                                 defaultValue={
@@ -291,7 +287,6 @@ export default function UserInfoModal({
                                                 </span>
                                             </Label>
                                             <Input
-                                                className="border-gray-300"
                                                 id="email"
                                                 name="email"
                                                 type="email"
@@ -314,7 +309,6 @@ export default function UserInfoModal({
                                                 Department or Team
                                             </Label>
                                             <Input
-                                                className="border-gray-300"
                                                 id="department"
                                                 name="department"
                                                 defaultValue={
@@ -337,7 +331,6 @@ export default function UserInfoModal({
                                                 </span>
                                             </Label>
                                             <Input
-                                                className="border-gray-300"
                                                 id="phone_number"
                                                 name="phone_number"
                                                 defaultValue={
@@ -359,7 +352,6 @@ export default function UserInfoModal({
                                                 <HelpCircle className="h-4 w-4 text-muted-foreground" />
                                             </div>
                                             <Input
-                                                className="border-gray-300"
                                                 id="permissions_level"
                                                 name="permissions_level"
                                                 defaultValue={
@@ -385,7 +377,7 @@ export default function UserInfoModal({
                                     name="about_me"
                                     defaultValue={defaults.about_me}
                                     placeholder="Enter a description..."
-                                    className="flex min-h-28 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm"
+                                    className="flex min-h-28 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm"
                                 />
                                 <InputError message={errors.about_me} />
                             </div>
@@ -538,7 +530,7 @@ export default function UserInfoModal({
                                                         el?.focus();
                                                         el?.click();
                                                     }}
-                                                    className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-background px-3 py-1 text-sm hover:bg-muted"
+                                                    className="inline-flex items-center gap-2 rounded-md border bg-background px-3 py-1 text-sm hover:bg-muted"
                                                 >
                                                     <Calendar className="h-4 w-4 text-muted-foreground" />
                                                     {formatDateLabel(
@@ -562,7 +554,7 @@ export default function UserInfoModal({
                                                         el?.focus();
                                                         el?.click();
                                                     }}
-                                                    className="inline-flex items-center gap-2 rounded-md border border-gray-300 bg-background px-3 py-1 text-sm hover:bg-muted"
+                                                    className="inline-flex items-center gap-2 rounded-md border bg-background px-3 py-1 text-sm hover:bg-muted"
                                                 >
                                                     <Calendar className="h-4 w-4 text-muted-foreground" />
                                                     {formatDateLabel(
