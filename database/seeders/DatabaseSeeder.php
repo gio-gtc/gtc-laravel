@@ -23,5 +23,14 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+
+        User::firstOrCreate(
+            ['email' => 'Ben@test.com'],
+            [
+                'name' => 'Ben',
+                'password' => 'password',
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }
