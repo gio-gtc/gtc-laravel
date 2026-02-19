@@ -46,12 +46,12 @@ export default function AuthVideoLayout({
                         href={home()}
                         className="mx-auto flex w-fit items-center gap-2 font-medium text-white"
                     >
-                        <div className="flex h-9 w-9 items-center justify-center">
+                        <div className="flex items-center justify-center">
                             <AppLogoIcon className="size-9 fill-current text-white" />
                         </div>
                     </Link>
 
-                    <div className="mt-6 rounded-2xl border border-white/20 bg-white/10 p-8 text-white shadow-2xl backdrop-blur-sm">
+                    <div className="mt-6 max-w-[400px] rounded-2xl border border-white/20 bg-white/10 px-6 py-8 text-white shadow-2xl backdrop-blur-sm">
                         <div className="space-y-2 text-center">
                             <h1 className="text-xl font-semibold tracking-tight">
                                 {title}
