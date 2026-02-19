@@ -26,12 +26,23 @@ COPY . /var/www/html
 # 7. Grab Composer safely from the official Docker image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 8. Install PHP dependencies (ignoring strict version mismatches and prompts)
+# 8. Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction --ignore-platform-reqs
 
-# 9. Build React/Vite frontend assets
+# 9. INJECT RENDER VARIABLES INTO DOCKER BUILD
+# This pulls the variables from the Render Dashboard through the Docker wall
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_PUBLISHABLE_KEY
+ARG VITE_SUPABASE_ANON_KEY
+
+# This assigns them to the environment so Vite can see them
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
+
+# 10. Build React/Vite frontend assets
 RUN npm install
 RUN npm run build
 
-# 10. Give Laravel permission to write to its own folders
+# 11. Give Laravel permission to write to its own folders
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
