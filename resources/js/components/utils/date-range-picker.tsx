@@ -113,7 +113,7 @@ export default function DateRangePicker({
                     size={buttonSize}
                     className={`gap-2 ${buttonClassName}`}
                 >
-                    <Calendar className="h-4 w-4 text-gray-icon" />
+                    <Calendar className="h-4 w-4 text-gray-400" />
                     {displayRangeText}
                 </Button>
             </PopoverTrigger>

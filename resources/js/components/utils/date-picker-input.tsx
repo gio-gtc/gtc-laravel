@@ -114,7 +114,7 @@ export default function DatePickerInput({
     };
 
     const calendarIcon = (
-        <Calendar className="h-4 w-4 text-gray-icon" aria-hidden />
+        <Calendar className="h-4 w-4 text-gray-400" aria-hidden />
     );
 
     const calendarButton = (
