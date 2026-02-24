@@ -10,6 +10,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useInitials } from '@/hooks/use-initials';
 import { type SharedData, type User } from '@/types';
@@ -375,12 +376,12 @@ export default function UserInfoModal({
 
                             <div className="grid gap-2">
                                 <Label htmlFor="about_me">About Me</Label>
-                                <textarea
+                                <Textarea
                                     id="about_me"
                                     name="about_me"
                                     defaultValue={defaults.about_me}
                                     placeholder="Enter a description..."
-                                    className="flex min-h-28 w-full rounded-md border bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm"
+                                    className="min-h-28"
                                 />
                                 <InputError message={errors.about_me} />
                             </div>

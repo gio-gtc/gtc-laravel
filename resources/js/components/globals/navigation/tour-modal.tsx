@@ -8,6 +8,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import {
     Select,
@@ -217,11 +218,11 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                             labelFor="special_instructions"
                             labelContent="Special Instructions"
                         >
-                            <textarea
+                            <Textarea
                                 id="special_instructions"
                                 name="special_instructions"
                                 placeholder="Special Instructions"
-                                className="flex min-h-28 w-full resize-y rounded-md border bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm"
+                                className="min-h-28"
                             />
                             <InputError message={undefined} />
                         </ColumnedRowsChild>

@@ -1,3 +1,4 @@
+import { Textarea } from '@/components/ui/textarea';
 import { useEffect, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
 
@@ -38,9 +39,9 @@ export default function RevisionRequestModal({
             maxWidth="2xl"
         >
             <div className="flex flex-col gap-2 text-xs">
-                <textarea
+                <Textarea
                     id="revision-request"
-                    className="min-h-[120px] w-full resize-y rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-xs transition-[color,box-shadow] outline-none placeholder:text-gray-500 focus-visible:border-gray-400 focus-visible:ring-[3px] focus-visible:ring-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="min-h-[120px]"
                     value={revisionText}
                     onChange={(e) => setRevisionText(e.target.value)}
                     placeholder={PLACEHOLDER}
