@@ -22,7 +22,10 @@ export function ColumnedRowsChild({
     return (
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
             {labelFor && labelContent ? (
-                <Label className="sm:flex-1" htmlFor={labelFor}>
+                <Label
+                    className="font-semibold text-gray-700 sm:flex-1"
+                    htmlFor={labelFor}
+                >
                     {labelContent}
                     {required && (
                         <span className="ml-0.5 text-destructive">*</span>
