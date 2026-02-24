@@ -27,9 +27,9 @@ function RevanueTable() {
     return (
         <div className="space-y-4 px-4 py-2">
             <h3 className="text-lg font-semibold">Revenue by Tour</h3>
-            <Table>
+            <Table layout="none">
                 <TableHeader>
-                    <TableRow>
+                    <TableRow className="text-xs">
                         <TableHead>Tour</TableHead>
                         <TableHead className="text-right">
                             CURRENT MONTH
@@ -38,23 +38,25 @@ function RevanueTable() {
                         <TableHead className="text-right">TOTAL</TableHead>
                     </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody className="text-gray-900">
                     {tourRevenueData.map((tour, index) => (
                         <TableRow key={index}>
-                            <TableCell>{tour.tour}</TableCell>
-                            <TableCell className="text-right">
+                            <TableCell className="font-medium">
+                                {tour.tour}
+                            </TableCell>
+                            <TableCell className="text-right font-semibold">
                                 {formatCurrency(tour.currentMonth)}
                             </TableCell>
-                            <TableCell className="text-right">
+                            <TableCell className="text-right font-semibold">
                                 {formatCurrency(tour.ytd)}
                             </TableCell>
-                            <TableCell className="text-right">
+                            <TableCell className="text-right font-semibold">
                                 {formatCurrency(tour.total)}
                             </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
-                <TableFooter className="bg-white">
+                <TableFooter className="bg-white text-gray-900">
                     <TableRow>
                         <TableCell className="font-semibold">Total</TableCell>
                         <TableCell className="text-right text-lg font-semibold">

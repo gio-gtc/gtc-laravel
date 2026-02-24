@@ -161,6 +161,12 @@
         @apply bg-background text-foreground;
     }
 
+    h1,
+    h2,
+    h3 {
+        @apply text-gray-900;
+    }
+
     input[type='number']::-webkit-outer-spin-button,
     input[type='number']::-webkit-inner-spin-button {
         -webkit-appearance: none;

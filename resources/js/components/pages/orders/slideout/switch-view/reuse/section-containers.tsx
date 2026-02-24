@@ -7,7 +7,7 @@ function SectionContainers({
 }) {
     return (
         <div className="slide-out-container space-y-4">
-            <h3 className="font-semibold text-gray-900">{title}</h3>
+            <h3 className="font-semibold">{title}</h3>
             <div className="overflow-x-auto rounded-lg border">{children}</div>
         </div>
     );
