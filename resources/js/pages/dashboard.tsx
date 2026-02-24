@@ -7,7 +7,7 @@ import {
 import CardLink from '@/components/pages/dashboard/card-link';
 import DesignerStatsTable from '@/components/pages/dashboard/designer-stats-table';
 import KPICard from '@/components/pages/dashboard/KPI-Card';
-import RevanueTable from '@/components/pages/dashboard/revanue-table';
+import RevenueTable from '@/components/pages/dashboard/revenue-table';
 import SalesByRepTable from '@/components/pages/dashboard/sales-by-rep-table';
 import { Button } from '@/components/ui/button';
 import DateRangePicker from '@/components/utils/date-range-picker';
@@ -213,7 +213,7 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-                <RevanueTable />
+                <RevenueTable />
 
                 <SalesByRepTable />
 

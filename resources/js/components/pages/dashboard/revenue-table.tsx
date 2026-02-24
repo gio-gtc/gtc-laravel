@@ -11,7 +11,7 @@ import {
 import { formatCurrency } from '@/components/utils/functions';
 import { useMemo } from 'react';
 
-function RevanueTable() {
+function RevenueTable() {
     // Calculate totals for each column
     const totals = useMemo(() => {
         return tourRevenueData.reduce(
@@ -75,4 +75,4 @@ function RevanueTable() {
     );
 }
 
-export default RevanueTable;
+export default RevenueTable;
