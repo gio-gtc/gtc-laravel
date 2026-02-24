@@ -26,7 +26,7 @@ function MiniChart({ data }: { data: { name: string; value: number }[] }) {
                 <Line
                     type="monotone"
                     dataKey="value"
-                    stroke="#9333ea"
+                    stroke="#9e77ed"
                     strokeWidth={2}
                     dot={false}
                 />
@@ -46,14 +46,18 @@ function KPICard({
     change: string;
     chartData: { name: string; value: number }[];
 }) {
+    const matchingStyles = 'px-4 py-2.5';
+
     return (
         <Card className="gap-1 bg-gray-50 py-0">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="text-sm font-medium">{title}</CardTitle>
+            <CardHeader
+                className={`flex flex-row items-center justify-between space-y-0 ${matchingStyles}`}
+            >
+                <CardTitle className="text-sm font-semibold">{title}</CardTitle>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8">
-                            <MoreVertical className="h-4 w-4" />
+                        <Button variant="ghost" className="size-4">
+                            <MoreVertical className="size-3" />
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -62,10 +66,12 @@ function KPICard({
                     </DropdownMenuContent>
                 </DropdownMenu>
             </CardHeader>
-            <CardContent className="rounded-xl border-t-1 bg-white py-2">
+            <CardContent
+                className={`rounded-xl border-t-1 bg-white py-2 ${matchingStyles}`}
+            >
                 <div className="flex flex-col justify-between lg:flex-row">
-                    <div className="text-2xl font-bold">{value}</div>
-                    <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                    <div className="text-3xl font-semibold">{value}</div>
+                    <div className="flex items-center gap-1 text-sm font-medium text-green-700">
                         <ArrowUp className="h-3 w-3" />
                         {change}
                     </div>

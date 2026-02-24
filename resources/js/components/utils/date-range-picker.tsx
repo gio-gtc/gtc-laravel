@@ -111,7 +111,7 @@ export default function DateRangePicker({
                 <Button
                     variant={buttonVariant}
                     size={buttonSize}
-                    className={`gap-2 ${buttonClassName}`}
+                    className={`gap-2 font-semibold text-gray-700 ${buttonClassName}`}
                 >
                     <Calendar className="h-4 w-4 text-gray-400" />
                     {displayRangeText}

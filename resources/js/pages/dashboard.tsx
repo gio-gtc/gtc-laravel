@@ -106,7 +106,7 @@ export default function Dashboard() {
                                     'rounded-md border-0 transition-all',
                                     selectedPeriod === period.value
                                         ? 'border-gray-200 bg-white text-foreground shadow-sm hover:bg-white hover:text-foreground'
-                                        : 'text-muted-foreground hover:bg-white hover:text-foreground',
+                                        : 'text-gray-500 hover:bg-white hover:text-foreground',
                                 )}
                             >
                                 {period.label}
