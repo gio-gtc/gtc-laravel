@@ -8,7 +8,10 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { ColumnedRowsChild } from '@/components/utils/column-row-layouts';
+import {
+    ColumnedRowsChild,
+    ColumnedRowsParent,
+} from '@/components/utils/column-row-layouts';
 import Divider from '@/components/utils/divider';
 import { useState } from 'react';
 
@@ -42,36 +45,38 @@ export default function InvoiceOrOrderModal({
 
                 <Divider />
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <ColumnedRowsChild
-                        labelFor="tour"
-                        labelContent="Tour"
-                        required
-                    >
-                        <Input
-                            id="tour"
-                            name="tour"
-                            placeholder="Enter Tour"
-                            value={tour}
-                            onChange={(e) => setTour(e.target.value)}
+                    <ColumnedRowsParent>
+                        <ColumnedRowsChild
+                            labelFor="tour"
+                            labelContent="Tour"
                             required
-                        />
-                        <InputError message={undefined} />
-                    </ColumnedRowsChild>
-                    <ColumnedRowsChild
-                        labelFor="venue"
-                        labelContent="Venue"
-                        required
-                    >
-                        <Input
-                            id="venue"
-                            name="venue"
-                            placeholder="Enter Venue"
-                            value={venue}
-                            onChange={(e) => setVenue(e.target.value)}
+                        >
+                            <Input
+                                id="tour"
+                                name="tour"
+                                placeholder="Enter Tour"
+                                value={tour}
+                                onChange={(e) => setTour(e.target.value)}
+                                required
+                            />
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
+                        <ColumnedRowsChild
+                            labelFor="venue"
+                            labelContent="Venue"
                             required
-                        />
-                        <InputError message={undefined} />
-                    </ColumnedRowsChild>
+                        >
+                            <Input
+                                id="venue"
+                                name="venue"
+                                placeholder="Enter Venue"
+                                value={venue}
+                                onChange={(e) => setVenue(e.target.value)}
+                                required
+                            />
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
+                    </ColumnedRowsParent>
                     <Divider />
                     <DialogFooter className="gap-3 sm:gap-2">
                         <Button

@@ -8,7 +8,6 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     Select,
     SelectContent,
@@ -16,6 +15,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import {
+    ColumnedRowsChild,
+    ColumnedRowsParent,
+} from '@/components/utils/column-row-layouts';
 import Divider from '@/components/utils/divider';
 import DollarInput from '@/components/utils/dollar-input';
 import InputAdditions from '@/components/utils/input-additions';
@@ -52,34 +55,26 @@ export default function OrganizationModal({
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Organization Information Section */}
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label
-                            htmlFor="organization_name"
-                            className="sm:flex-1"
+                    <ColumnedRowsParent>
+                        <ColumnedRowsChild
+                            labelFor="organization_name"
+                            labelContent="Organization Name"
+                            required
                         >
-                            Organization Name
-                            <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="relative flex-1">
                             <Input
                                 id="organization_name"
                                 name="organization_name"
                                 placeholder="Enter Organization Name"
                                 required
                             />
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
 
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label
-                            htmlFor="organization_type"
-                            className="sm:flex-1"
+                        <ColumnedRowsChild
+                            labelFor="organization_type"
+                            labelContent="Organization Type"
+                            required
                         >
-                            Organization Type{' '}
-                            <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="relative flex-1">
                             <Select name="organization_type" required>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select Organization Type" />
@@ -100,18 +95,19 @@ export default function OrganizationModal({
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
+                    </ColumnedRowsParent>
 
                     <Divider />
                     {/* Address Section */}
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label htmlFor="address" className="sm:flex-1">
-                            Address
-                            <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="flex flex-1 flex-col gap-4">
+                    <ColumnedRowsParent>
+                        <ColumnedRowsChild
+                            labelFor="street_address"
+                            labelContent="Address"
+                            required
+                            multiInput
+                        >
                             <Input
                                 id="street_address"
                                 name="street_address"
@@ -159,37 +155,49 @@ export default function OrganizationModal({
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
+                    </ColumnedRowsParent>
 
                     <Divider />
                     {/* Financial Details Section */}
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label htmlFor="credit_limit" className="sm:flex-1">
-                            Credit Limit
-                            <span className="text-destructive">*</span>
-                            <span className="block text-xs font-normal text-muted-foreground">
-                                In US Dollars
-                            </span>
-                        </Label>
-                        <DollarInput
-                            id={'credit_limit'}
-                            containerClassNames="flex-1"
-                            placeholder="Enter Credit Limit"
-                        />
-                        <InputError message={undefined} />
-                    </div>
+                    <ColumnedRowsParent>
+                        <ColumnedRowsChild
+                            labelFor="credit_limit"
+                            labelContent={
+                                <>
+                                    Credit Limit
+                                    <span className="ml-0.5 text-destructive">
+                                        *
+                                    </span>
+                                    <span className="block font-normal text-gray-600">
+                                        In US Dollars
+                                    </span>
+                                </>
+                            }
+                        >
+                            <DollarInput
+                                id="credit_limit"
+                                containerClassNames="flex-1"
+                                placeholder="Enter Credit Limit"
+                            />
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
 
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label className="sm:flex-1" htmlFor="credit_terms">
-                            Credit Terms
-                            <span className="text-destructive">*</span>
-                            <span className="block text-xs font-normal text-muted-foreground">
-                                Number of days
-                            </span>
-                        </Label>
-                        <div className="relative flex-1">
+                        <ColumnedRowsChild
+                            labelFor="credit_terms"
+                            labelContent={
+                                <>
+                                    Credit Terms
+                                    <span className="ml-0.5 text-destructive">
+                                        *
+                                    </span>
+                                    <span className="block font-normal text-gray-600">
+                                        Number of days
+                                    </span>
+                                </>
+                            }
+                        >
                             <Input
                                 id="credit_terms"
                                 name="credit_terms"
@@ -198,19 +206,14 @@ export default function OrganizationModal({
                                 placeholder="Enter Terms"
                                 required
                             />
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
 
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label
-                            className="sm:flex-1"
-                            htmlFor="preferred_currency"
+                        <ColumnedRowsChild
+                            labelFor="preferred_currency"
+                            labelContent="Preferred Currency"
+                            required
                         >
-                            Preferred Currency
-                            <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="relative flex-1">
                             <Select name="preferred_currency" required>
                                 <SelectTrigger>
                                     <SelectValue
@@ -226,41 +229,42 @@ export default function OrganizationModal({
                                     <SelectItem value="aud">AUD</SelectItem>
                                 </SelectContent>
                             </Select>
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
+                    </ColumnedRowsParent>
 
                     <Divider />
                     {/* Accounts Payable Section */}
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label className="sm:flex-1" htmlFor="ap_email">
-                            Accounts Payable Email
-                            <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="relative flex flex-1 flex-col gap-1">
+                    <ColumnedRowsParent>
+                        <ColumnedRowsChild
+                            labelFor="ap_email"
+                            labelContent="Accounts Payable Email"
+                            required
+                            multiInput
+                        >
                             <InputAdditions
                                 inputList={apEmails}
                                 setInputList={setApEmails}
                             />
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
 
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label className="sm:flex-1" htmlFor="ap_contact">
-                            Accounts Payable Contact
-                        </Label>
-                        <div className="relative flex-1">
-                            <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                            <Input
-                                id="ap_contact"
-                                name="ap_contact"
-                                placeholder="Contact Name"
-                                className="pl-9"
-                            />
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                        <ColumnedRowsChild
+                            labelFor="ap_contact"
+                            labelContent="Accounts Payable Contact"
+                        >
+                            <div className="relative">
+                                <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                <Input
+                                    id="ap_contact"
+                                    name="ap_contact"
+                                    placeholder="Contact Name"
+                                    className="pl-9"
+                                />
+                            </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
+                    </ColumnedRowsParent>
 
                     <Divider />
                     <DialogFooter className="gap-3 sm:gap-2">

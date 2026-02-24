@@ -166,7 +166,7 @@ export default function DatePickerInput({
                     onBlur={handleInputBlur}
                     placeholder={placeholder}
                     required={required}
-                    className="min-w-0 flex-1 border-0 p-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="min-w-0 flex-1 border-0 px-0 py-2 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
                     aria-label={placeholder}
                 />
                 {iconPosition === 'end' ? calendarButton : null}

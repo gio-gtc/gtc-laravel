@@ -17,6 +17,10 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import {
+    ColumnedRowsChild,
+    ColumnedRowsParent,
+} from '@/components/utils/column-row-layouts';
 import DatePickerInput from '@/components/utils/date-picker-input';
 import Divider from '@/components/utils/divider';
 import DollarInput from '@/components/utils/dollar-input';
@@ -50,30 +54,26 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                 </DialogHeader>
                 <Divider />
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Tour Name Section */}
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label htmlFor="tour_name" className="sm:flex-1">
-                            Tour Name
-                            <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="relative flex-2">
+                    <ColumnedRowsParent>
+                        <ColumnedRowsChild
+                            labelFor="tour_name"
+                            labelContent="Tour Name"
+                            required
+                        >
                             <Input
                                 id="tour_name"
                                 name="tour_name"
                                 placeholder="Tour Name"
                                 required
                             />
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
 
-                    {/* Dates Section */}
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label htmlFor="start_date" className="sm:flex-1">
-                            Start Date
-                            <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="relative flex-2">
+                        <ColumnedRowsChild
+                            labelFor="start_date"
+                            labelContent="Start Date"
+                            required
+                        >
                             <DatePickerInput
                                 id="start_date"
                                 label=""
@@ -82,19 +82,13 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 onChange={(value) => setStartDate(value)}
                                 buttonClassName="w-full justify-start"
                             />
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
 
-                    {/* Expire On Sale Now Cuts Options Section */}
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label
-                            htmlFor="expire_on_sale_now_cuts"
-                            className="sm:flex-1"
+                        <ColumnedRowsChild
+                            labelFor="expire_on_sale_now_cuts"
+                            labelContent="Expire On Sale Now Cuts"
                         >
-                            Expire On Sale Now Cuts
-                        </Label>
-                        <div className="relative flex-2">
                             <DatePickerInput
                                 id="expire_on_sale_now_cuts"
                                 label=""
@@ -105,25 +99,16 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 }
                                 buttonClassName="w-full justify-start"
                             />
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
+                    </ColumnedRowsParent>
 
                     {/* Tour Options Section */}
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label
-                            htmlFor="voice_over"
-                            className="sm:flex-1"
-                        ></Label>
-                    </div>
-
                     <div className="flex flex-1 flex-col gap-2 sm:flex-row">
                         <Label className="sm:flex-1">Tour Options</Label>
                         <div className="flex flex-2 flex-col gap-3">
                             <div className="flex flex-col gap-1">
-                                <span className="text-xs text-muted-foreground">
-                                    Voice Over
-                                </span>
+                                <span className="text-xs">Voice Over</span>
                                 <Select name="voice_over">
                                     <SelectTrigger>
                                         <SelectValue placeholder="Voice Over" />
@@ -151,7 +136,12 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                     checked={holdAllInvoices}
                                     onCheckedChange={setHoldAllInvoices}
                                 />
-                                <span>Hold All Invoices</span>
+                                <Label
+                                    htmlFor="hold_all_invoices"
+                                    className="font-medium"
+                                >
+                                    Hold All Invoices
+                                </Label>
                                 <InputError message={undefined} />
                             </div>
 
@@ -161,7 +151,12 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                     checked={liveOnOrderingSystem}
                                     onCheckedChange={setLiveOnOrderingSystem}
                                 />
-                                <span>Live On Ordering System</span>
+                                <Label
+                                    htmlFor="live_on_ordering_system"
+                                    className="font-medium"
+                                >
+                                    Live On Ordering System
+                                </Label>
                                 <InputError message={undefined} />
                             </div>
 
@@ -171,73 +166,70 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                     checked={requireClientApproval}
                                     onCheckedChange={setRequireClientApproval}
                                 />
-                                <span>Require Client Approval</span>
+                                <Label
+                                    htmlFor="require_client_approval"
+                                    className="font-medium"
+                                >
+                                    Require Client Approval
+                                </Label>
                                 <InputError message={undefined} />
                             </div>
                         </div>
                     </div>
 
                     {requireClientApproval && (
-                        <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                            <Label
-                                htmlFor="client_approval_email"
-                                className="sm:flex-1"
+                        <ColumnedRowsParent>
+                            <ColumnedRowsChild
+                                labelFor="client_approval_email"
+                                labelContent="Client Approval Email"
+                                required
                             >
-                                Client Approval Email
-                                <span className="text-destructive">*</span>
-                            </Label>
-                            <div className="relative flex-2">
-                                <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                <Input
-                                    id="client_approval_email"
-                                    name="client_approval_email"
-                                    type="email"
-                                    placeholder="Client Approval Email"
-                                    required
-                                    className="pl-9"
-                                />
-                            </div>
-                            <InputError message={undefined} />
-                        </div>
+                                <div className="relative">
+                                    <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                    <Input
+                                        id="client_approval_email"
+                                        name="client_approval_email"
+                                        type="email"
+                                        placeholder="Client Approval Email"
+                                        required
+                                        className="pl-9"
+                                    />
+                                </div>
+                                <InputError message={undefined} />
+                            </ColumnedRowsChild>
+                        </ColumnedRowsParent>
                     )}
 
-                    {/* Tour Sponsor Section */}
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label htmlFor="tour_sponsor" className="sm:flex-1">
-                            Tour Sponsor
-                        </Label>
-                        <div className="relative flex-2">
+                    <ColumnedRowsParent>
+                        <ColumnedRowsChild
+                            labelFor="tour_sponsor"
+                            labelContent="Tour Sponsor"
+                        >
                             <Input
                                 id="tour_sponsor"
                                 name="tour_sponsor"
                                 placeholder="Tour Sponsor"
                             />
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
 
-                    {/* Special Instructions Section */}
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label
-                            htmlFor="special_instructions"
-                            className="sm:flex-1"
+                        <ColumnedRowsChild
+                            labelFor="special_instructions"
+                            labelContent="Special Instructions"
                         >
-                            Special Instructions
-                        </Label>
-                        <div className="relative flex-2">
                             <textarea
                                 id="special_instructions"
                                 name="special_instructions"
                                 placeholder="Special Instructions"
                                 className="flex min-h-28 w-full resize-y rounded-md border bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm"
                             />
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
+                    </ColumnedRowsParent>
 
                     {/* Pricing Section */}
                     <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <h5 className="sm:flex-1">Price</h5>
+                        <Label className="sm:flex-1">Price</Label>
 
                         <div className="relative flex flex-2 flex-col gap-2">
                             <div className="flex max-w-[300px] flex-col justify-between gap-2">
@@ -274,13 +266,12 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                         </div>
                     </div>
 
-                    {/* GTC Representative Section */}
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label htmlFor="gtc_department" className="sm:flex-1">
-                            GTC Department
-                            <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="relative flex-2">
+                    <ColumnedRowsParent>
+                        <ColumnedRowsChild
+                            labelFor="gtc_department"
+                            labelContent="GTC Department"
+                            required
+                        >
                             <Select name="gtc_department" required>
                                 <SelectTrigger>
                                     <SelectValue placeholder="GTC Department" />
@@ -297,20 +288,14 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
 
-                    {/* GTC Representative Section */}
-                    <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
-                        <Label
-                            htmlFor="gtc_representative"
-                            className="sm:flex-1"
+                        <ColumnedRowsChild
+                            labelFor="gtc_representative"
+                            labelContent="GTC Represenitive"
+                            required
                         >
-                            GTC Represenitive
-                            <span className="text-destructive">*</span>
-                        </Label>
-                        <div className="relative flex-2">
                             <Select name="gtc_representative" required>
                                 <SelectTrigger>
                                     <SelectValue placeholder="GTC Represenitive" />
@@ -327,9 +312,9 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                        </div>
-                        <InputError message={undefined} />
-                    </div>
+                            <InputError message={undefined} />
+                        </ColumnedRowsChild>
+                    </ColumnedRowsParent>
 
                     <Divider />
                     <DialogFooter className="gap-3 sm:gap-2">
@@ -362,7 +347,9 @@ function PriceInput({
     return (
         <>
             <div className="flex items-center justify-between gap-2">
-                <Label htmlFor={id}>{title}</Label>
+                <Label htmlFor={id} className="font-medium">
+                    {title}
+                </Label>
                 <DollarInput id={id} containerClassNames="max-w-20" />
             </div>
             <InputError message={error} />

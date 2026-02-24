@@ -20,7 +20,7 @@ function DollarInput({
                 min="0"
                 step="0.01"
                 placeholder={placeholder}
-                className="border-gray-300 p-0 pl-6"
+                className="border-gray-300 py-2 pr-2.5 pl-6"
             />
         </div>
     );

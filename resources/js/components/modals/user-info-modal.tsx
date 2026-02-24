@@ -346,7 +346,10 @@ export default function UserInfoModal({
 
                                         <div className="grid gap-2">
                                             <div className="flex items-center gap-2">
-                                                <Label htmlFor="permissions_level">
+                                                <Label
+                                                    htmlFor="permissions_level"
+                                                    className="text-gray-400"
+                                                >
                                                     Permissions Level
                                                 </Label>
                                                 <HelpCircle className="h-4 w-4 text-muted-foreground" />

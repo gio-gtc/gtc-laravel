@@ -13,17 +13,23 @@ export function ColumnedRowsChild({
     labelFor,
     labelContent,
     required,
+    multiInput,
 }: {
     children: React.ReactNode;
     labelFor?: string;
-    labelContent?: string;
+    labelContent?: React.ReactNode;
     required?: boolean;
+    /** When true, child container uses flex-col gap-4 for multiple inputs. */
+    multiInput?: boolean;
 }) {
+    const childClassName = multiInput
+        ? 'flex flex-col gap-4 sm:flex-2'
+        : 'sm:flex-2';
     return (
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
             {labelFor && labelContent ? (
                 <Label
-                    className="font-semibold text-gray-700 sm:flex-1"
+                    className="text-sm font-semibold text-gray-700 sm:flex-1"
                     htmlFor={labelFor}
                 >
                     {labelContent}
@@ -34,7 +40,7 @@ export function ColumnedRowsChild({
             ) : (
                 ''
             )}
-            <div className="sm:flex-2">{children}</div>
+            <div className={childClassName}>{children}</div>
         </div>
     );
 }
