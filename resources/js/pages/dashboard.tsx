@@ -144,9 +144,7 @@ export default function Dashboard() {
 
                 {/* Accounts Receivable Section */}
                 <div className="space-y-4 rounded-lg border-1 bg-gray-50 px-4 py-2">
-                    <h3 className="color-gray-900 text-lg font-semibold">
-                        Accounts Receivable
-                    </h3>
+                    <Heading title="Accounts Receivable" type="section" />
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
                         <CardLink
                             label="0-30 days"
@@ -190,9 +188,7 @@ export default function Dashboard() {
                 <div className="grid gap-6 md:grid-cols-2">
                     {/* Orders Section */}
                     <div className="space-y-4">
-                        <h3 className="color-gray-900 text-lg font-semibold">
-                            Orders
-                        </h3>
+                        <Heading title="Orders" type="section" />
                         <div className="grid gap-4 md:grid-cols-2">
                             <CardLink label="Pending" content="48" />
                             <CardLink label="In Production" content="218" />
@@ -203,9 +199,7 @@ export default function Dashboard() {
 
                     {/* Held Invoices Section */}
                     <div className="space-y-4">
-                        <h3 className="color-gray-900 text-lg font-semibold">
-                            Held Invoices
-                        </h3>
+                        <Heading title="Held Invoices" type="section" />
                         <div className="grid gap-4 md:grid-cols-2">
                             <CardLink label="Amount" content="32" />
                             <CardLink label="In Production" content="218" />

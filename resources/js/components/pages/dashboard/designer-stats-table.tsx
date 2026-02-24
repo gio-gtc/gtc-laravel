@@ -1,3 +1,4 @@
+import Heading from '@/components/heading';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     Pagination,
@@ -161,7 +162,7 @@ function DesignerStatsTable() {
 
     return (
         <div className="space-y-4 px-4 py-2">
-            <h3 className="text-lg font-semibold">Designer Stats</h3>
+            <Heading title="Designer Stats" type="section" />
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -209,11 +210,15 @@ function DesignerStatsTable() {
                             assetsAssigned?: number;
                             assetsUploaded?: number;
                             rolling30DayAccuracy?: number;
-                            trend?: { direction: 'up' | 'down'; percentage: number };
+                            trend?: {
+                                direction: 'up' | 'down';
+                                percentage: number;
+                            };
                         };
                         const assetsAssigned = d.assetsAssigned ?? 0;
                         const assetsUploaded = d.assetsUploaded ?? 0;
-                        const rolling30DayAccuracy = d.rolling30DayAccuracy ?? 0;
+                        const rolling30DayAccuracy =
+                            d.rolling30DayAccuracy ?? 0;
                         const trend = d.trend ?? defaultTrend;
                         return (
                             <TableRow key={designer.id}>
@@ -221,7 +226,9 @@ function DesignerStatsTable() {
                                     <div className="flex items-center gap-3">
                                         <Avatar className="h-10 w-10 overflow-hidden rounded-full">
                                             <AvatarImage
-                                                src={designer.avatar || undefined}
+                                                src={
+                                                    designer.avatar || undefined
+                                                }
                                                 alt={designer.name}
                                             />
                                             <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
@@ -258,9 +265,7 @@ function DesignerStatsTable() {
                                                 ) : (
                                                     <ArrowDown className="h-3 w-3 text-red-600" />
                                                 )}
-                                                <span>
-                                                    {trend.percentage}%
-                                                </span>
+                                                <span>{trend.percentage}%</span>
                                             </div>
                                         </div>
                                     </div>

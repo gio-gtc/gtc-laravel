@@ -1,3 +1,4 @@
+import Heading from '@/components/heading';
 import { salesByRepData } from '@/components/mockdata';
 import {
     Table,
@@ -50,7 +51,7 @@ function SalesByRepTable() {
 
     return (
         <div className="space-y-4 px-4 py-2">
-            <h3 className="text-lg font-semibold">Sales by Rep</h3>
+            <Heading title="Sales by Rep" type="section" />
             <Table>
                 <TableHeader>
                     <TableRow>

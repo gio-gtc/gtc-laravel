@@ -1,3 +1,4 @@
+import Heading from '@/components/heading';
 import { tourRevenueData } from '@/components/mockdata';
 import {
     Table,
@@ -26,7 +27,7 @@ function RevenueTable() {
 
     return (
         <div className="space-y-4 px-4 py-2">
-            <h3 className="text-lg font-semibold">Revenue by Tour</h3>
+            <Heading title="Revenue by Tour" type="section" />
             <Table layout="none">
                 <TableHeader>
                     <TableRow className="text-xs">

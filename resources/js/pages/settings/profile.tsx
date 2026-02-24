@@ -5,7 +5,7 @@ import { Transition } from '@headlessui/react';
 import { Form, Head, Link, usePage } from '@inertiajs/react';
 
 import DeleteUser from '@/components/delete-user';
-import HeadingSmall from '@/components/heading-small';
+import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,9 +36,10 @@ export default function Profile({
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <HeadingSmall
+                    <Heading
                         title="Profile information"
                         description="Update your name and email address"
+                        type="small"
                     />
 
                     <Form
