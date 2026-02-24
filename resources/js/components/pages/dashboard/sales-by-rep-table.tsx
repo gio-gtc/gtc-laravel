@@ -14,7 +14,6 @@ import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useMemo } from 'react';
 
 function SalesByRepTable() {
-    // Totals from the image (may include additional reps not shown)
     const totals = useMemo(
         () => ({
             currentMonth: 1561000,
@@ -24,7 +23,6 @@ function SalesByRepTable() {
         [],
     );
 
-    // Render value with change indicator
     function renderValueWithChange(
         value: number,
         change: { direction: 'up' | 'down'; percentage: number },
@@ -52,37 +50,43 @@ function SalesByRepTable() {
     return (
         <div className="space-y-4 px-4 py-2">
             <Heading title="Sales by Rep" type="section" />
-            <Table>
+            <Table layout="none">
                 <TableHeader>
-                    <TableRow>
-                        <TableHead>Rep</TableHead>
-                        <TableHead className="text-right">
+                    <TableRow className="text-xs">
+                        <TableHead className="w-1/8">Rep</TableHead>
+                        <TableHead className="w-[400px] text-right">
                             CURRENT MONTH
                         </TableHead>
-                        <TableHead className="text-right">YTD</TableHead>
-                        <TableHead className="text-right">TOTAL</TableHead>
+                        <TableHead className="w-[200px] text-right">
+                            YTD
+                        </TableHead>
+                        <TableHead className="w-[200px] text-right">
+                            TOTAL
+                        </TableHead>
                     </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody className="text-gray-900">
                     {salesByRepData.map((rep, index) => (
                         <TableRow key={index}>
-                            <TableCell>{rep.rep}</TableCell>
-                            <TableCell className="text-right">
+                            <TableCell className="font-medium">
+                                {rep.rep}
+                            </TableCell>
+                            <TableCell className="text-right font-semibold">
                                 {renderValueWithChange(
                                     rep.currentMonth,
                                     rep.currentMonthChange,
                                 )}
                             </TableCell>
-                            <TableCell className="text-right">
+                            <TableCell className="text-right font-semibold">
                                 {renderValueWithChange(rep.ytd, rep.ytdChange)}
                             </TableCell>
-                            <TableCell className="text-right">
+                            <TableCell className="text-right font-semibold">
                                 <span>{formatCurrency(rep.total)}</span>
                             </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
-                <TableFooter className="bg-white">
+                <TableFooter className="bg-white text-gray-900">
                     <TableRow>
                         <TableCell className="font-semibold">Total</TableCell>
                         <TableCell className="text-right text-lg font-semibold">

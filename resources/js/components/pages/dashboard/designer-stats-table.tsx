@@ -163,9 +163,9 @@ function DesignerStatsTable() {
     return (
         <div className="space-y-4 px-4 py-2">
             <Heading title="Designer Stats" type="section" />
-            <Table>
+            <Table layout="none">
                 <TableHeader>
-                    <TableRow>
+                    <TableRow className="text-xs">
                         <TableHead>
                             <button
                                 onClick={() => handleSort('name')}
@@ -231,22 +231,26 @@ function DesignerStatsTable() {
                                                 }
                                                 alt={designer.name}
                                             />
-                                            <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                            <AvatarFallback className="rounded-full bg-neutral-200 text-black">
                                                 {getInitials(designer.name)}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="flex flex-col">
-                                            <span className="font-medium">
+                                            <span className="text-sm font-medium text-gray-900">
                                                 {designer.name}
                                             </span>
-                                            <span className="text-sm text-muted-foreground">
+                                            <span className="text-sm text-gray-600">
                                                 {designer.email}
                                             </span>
                                         </div>
                                     </div>
                                 </TableCell>
-                                <TableCell>{assetsAssigned}</TableCell>
-                                <TableCell>{assetsUploaded}</TableCell>
+                                <TableCell className="text-sm text-gray-600">
+                                    {assetsAssigned}
+                                </TableCell>
+                                <TableCell className="text-sm text-gray-600">
+                                    {assetsUploaded}
+                                </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-3">
                                         <div className="flex-1">
@@ -256,10 +260,10 @@ function DesignerStatsTable() {
                                             />
                                         </div>
                                         <div className="flex items-center gap-1">
-                                            <span className="text-sm font-medium">
+                                            <span className="text-sm font-medium text-gray-700">
                                                 {rolling30DayAccuracy}
                                             </span>
-                                            <div className="inline-flex items-center gap-1 rounded-md border-1 p-0.5 text-xs">
+                                            <div className="ml-2 inline-flex items-center gap-1 rounded-md border-1 p-0.5 text-xs md:ml-7">
                                                 {trend.direction === 'up' ? (
                                                     <ArrowUp className="h-3 w-3 text-green-600" />
                                                 ) : (
