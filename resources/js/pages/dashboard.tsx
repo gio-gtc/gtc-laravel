@@ -144,7 +144,7 @@ export default function Dashboard() {
 
                 {/* Accounts Receivable Section */}
                 <div className="space-y-4 rounded-lg border-1 bg-gray-50 px-4 py-2">
-                    <h3 className="text-lg font-semibold">
+                    <h3 className="color-gray-900 text-lg font-semibold">
                         Accounts Receivable
                     </h3>
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
@@ -174,13 +174,13 @@ export default function Dashboard() {
                             change="10%"
                         />
                     </div>
-                    <div className="text-sm font-semibold">
+                    <div className="font-semibold text-gray-900">
                         <div className="flex justify-between py-2">
-                            <span>Total</span>
+                            <span className="text-sm">Total</span>
                             <span className="text-2xl">$1,361,428</span>
                         </div>
                         <div className="flex justify-between border-t-1 py-2">
-                            <span>Total Follow up</span>
+                            <span className="text-sm">Total Follow up</span>
                             <span className="text-2xl">$261,428</span>
                         </div>
                     </div>
@@ -190,7 +190,9 @@ export default function Dashboard() {
                 <div className="grid gap-6 md:grid-cols-2">
                     {/* Orders Section */}
                     <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">Orders</h3>
+                        <h3 className="color-gray-900 text-lg font-semibold">
+                            Orders
+                        </h3>
                         <div className="grid gap-4 md:grid-cols-2">
                             <CardLink label="Pending" content="48" />
                             <CardLink label="In Production" content="218" />
@@ -201,7 +203,9 @@ export default function Dashboard() {
 
                     {/* Held Invoices Section */}
                     <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">Held Invoices</h3>
+                        <h3 className="color-gray-900 text-lg font-semibold">
+                            Held Invoices
+                        </h3>
                         <div className="grid gap-4 md:grid-cols-2">
                             <CardLink label="Amount" content="32" />
                             <CardLink label="In Production" content="218" />

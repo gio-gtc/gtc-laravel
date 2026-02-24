@@ -18,15 +18,19 @@ function CardLink({
     change?: string;
 }) {
     return (
-        <Card className="pt-4 pb-0">
+        <Card className="gap-2 pt-4 pb-0">
             <CardHeader>
-                <CardTitle className="text-sm font-medium">{label}</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-600">
+                    {label}
+                </CardTitle>
             </CardHeader>
-            <CardContent>
-                <div className="text-2xl font-bold">{content}</div>
+            <CardContent className="pb-2">
+                <div className="pb-2 text-2xl font-semibold text-gray-900">
+                    {content}
+                </div>
 
                 {change && (
-                    <div className="inline-flex items-center gap-1 rounded-md border-1 p-0.5 text-xs">
+                    <div className="inline-flex items-center gap-1 rounded-md border-1 p-0.5 text-sm font-medium text-gray-700">
                         <ArrowUp className="h-3 w-3 text-green-600" />
                         {change}
                     </div>
@@ -35,7 +39,7 @@ function CardLink({
             <CardFooter className="border-t-1">
                 <Button
                     variant="link"
-                    className="w-full cursor-pointer text-purple-800"
+                    className="w-full cursor-pointer font-semibold text-purple-700"
                     // TODO: Make a function prop to handle click
                     onClick={() => {
                         console.log('Clicked!');
