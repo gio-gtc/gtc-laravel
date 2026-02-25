@@ -53,7 +53,7 @@ export default function AuthVideoLayout({
 
                     <div className="mt-6 max-w-[400px] rounded-2xl border border-white/20 bg-white/10 px-6 py-8 text-white shadow-2xl backdrop-blur-sm">
                         <div className="space-y-2 text-center">
-                            <h1 className="text-xl font-semibold tracking-tight">
+                            <h1 className="text-xl font-semibold tracking-tight text-white">
                                 {title}
                             </h1>
 
