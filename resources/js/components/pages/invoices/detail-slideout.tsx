@@ -4,6 +4,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { getInvoiceAddress } from '@/components/utils/functions';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
+import { cn } from '@/lib/utils';
 import { type Invoice, type Item } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
 import InvoiceActionButtons from './slideout/action-buttons';
@@ -58,6 +59,7 @@ export default function InvoiceDetailSlideout({
 
     // Delete modal state
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isMaximized, setIsMaximized] = useState(false);
 
     // Update form data when invoice changes
     useEffect(() => {
@@ -156,7 +158,13 @@ export default function InvoiceDetailSlideout({
         <Sheet open={isOpen} onOpenChange={onClose}>
             <SheetContent
                 side="right"
-                className="w-full overflow-y-auto p-0 sm:max-w-5xl"
+                className={cn(
+                    'w-full overflow-y-auto p-0',
+                    isMaximized
+                        ? 'w-full max-w-full sm:max-w-full'
+                        : 'sm:max-w-5xl',
+                    'transition-[max-width] duration-300 ease-in-out',
+                )}
                 showExitBtn={false}
             >
                 <InvoiceSlideoutHeader
@@ -164,9 +172,10 @@ export default function InvoiceDetailSlideout({
                     venue={invoice.venue}
                     market={invoice.market}
                     onSend={() => console.log(`Send invoice: ${invoice}`)}
-                    onMaximize={() => console.log(`On Max clicked!`)}
+                    onMaximize={() => setIsMaximized((m) => !m)}
                     onMore={() => console.log(`Moar clicked`)}
                     onClose={onClose}
+                    isMaximized={isMaximized}
                 />
 
                 <div className="space-y-6 p-4">

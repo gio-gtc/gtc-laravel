@@ -6,6 +6,7 @@ import {
     ArrowRightToLine,
     ClipboardPlus,
     Maximize2Icon,
+    Minimize2Icon,
     MoreHorizontalIcon,
     PaperclipIcon,
     SendIcon,
@@ -26,6 +27,7 @@ interface VenueSlideoutHeaderProps {
     onMaximize?: () => void;
     onMore?: () => void;
     onClose: () => void;
+    isMaximized?: boolean;
 }
 
 export default function VenueSlideoutHeader({
@@ -43,6 +45,7 @@ export default function VenueSlideoutHeader({
     onMaximize = () => {},
     onMore = () => {},
     onClose,
+    isMaximized = false,
 }: VenueSlideoutHeaderProps) {
     // Format venue display with city if available
     const venueDisplay = city
@@ -65,7 +68,7 @@ export default function VenueSlideoutHeader({
                     <NavOptionButton onClick={onSend} icon={SendIcon} />
                     <NavOptionButton
                         onClick={onMaximize}
-                        icon={Maximize2Icon}
+                        icon={isMaximized ? Minimize2Icon : Maximize2Icon}
                     />
                     <NavOptionButton
                         onClick={onMore}

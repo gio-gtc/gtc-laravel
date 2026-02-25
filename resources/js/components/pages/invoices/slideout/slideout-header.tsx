@@ -3,6 +3,7 @@ import NavOptionButton from '@/components/ui/slideout/nav-option-button';
 import {
     ArrowRightToLine,
     Maximize2,
+    Minimize2,
     MoreHorizontal,
     Send,
 } from 'lucide-react';
@@ -15,6 +16,7 @@ interface InvoiceSlideoutHeaderProps {
     onMaximize: () => void;
     onMore: () => void;
     onClose: () => void;
+    isMaximized?: boolean;
 }
 
 export default function InvoiceSlideoutHeader({
@@ -25,6 +27,7 @@ export default function InvoiceSlideoutHeader({
     onMaximize,
     onMore,
     onClose,
+    isMaximized = false,
 }: InvoiceSlideoutHeaderProps) {
     return (
         <SheetHeader className="relative border-b px-6 pt-6 pb-4">
@@ -39,7 +42,10 @@ export default function InvoiceSlideoutHeader({
                 </div>
                 <div className="flex items-center gap-1">
                     <NavOptionButton onClick={onSend} icon={Send} />
-                    <NavOptionButton onClick={onMaximize} icon={Maximize2} />
+                    <NavOptionButton
+                        onClick={onMaximize}
+                        icon={isMaximized ? Minimize2 : Maximize2}
+                    />
                     <NavOptionButton onClick={onMore} icon={MoreHorizontal} />
                     <NavOptionButton
                         onClick={onClose}

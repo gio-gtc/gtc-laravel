@@ -1,5 +1,6 @@
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import Divider from '@/components/utils/divider';
+import { cn } from '@/lib/utils';
 import { type Tour, type TourVenue, type Venue } from '@/types';
 import { useMemo, useState } from 'react';
 import SwitchView from './switch-view';
@@ -98,6 +99,7 @@ export default function VenueDetailSlideout({
     const [attachModalOpen, setAttachModalOpen] = useState(false);
     const [attachModalContext, setAttachModalContext] =
         useState<AttachFileModalContext | null>(null);
+    const [isMaximized, setIsMaximized] = useState(false);
 
     if (!venueItem || !order) {
         return null;
@@ -107,7 +109,13 @@ export default function VenueDetailSlideout({
         <Sheet open={isOpen} onOpenChange={onClose}>
             <SheetContent
                 side="right"
-                className="w-full gap-1 overflow-y-auto sm:max-w-5xl"
+                className={cn(
+                    'w-full gap-1 overflow-y-auto',
+                    isMaximized
+                        ? 'w-full max-w-full sm:max-w-full'
+                        : 'sm:max-w-5xl',
+                    'transition-[max-width] duration-300 ease-in-out',
+                )}
                 showExitBtn={false}
             >
                 <VenueSlideoutHeader
@@ -123,7 +131,9 @@ export default function VenueDetailSlideout({
                         setAttachModalContext(null);
                         setAttachModalOpen(true);
                     }}
+                    onMaximize={() => setIsMaximized((m) => !m)}
                     onClose={onClose}
+                    isMaximized={isMaximized}
                 />
 
                 <Divider />
