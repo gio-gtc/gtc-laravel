@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import NavOptionButton from '@/components/ui/slideout/nav-option-button';
 import {
@@ -40,24 +39,8 @@ export default function InvoiceSlideoutHeader({
                 </div>
                 <div className="flex items-center gap-1">
                     <NavOptionButton onClick={onSend} icon={Send} />
-
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={onMaximize}
-                    >
-                        <Maximize2 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={onMore}
-                    >
-                        <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-
+                    <NavOptionButton onClick={onMaximize} icon={Maximize2} />
+                    <NavOptionButton onClick={onMore} icon={MoreHorizontal} />
                     <NavOptionButton
                         onClick={onClose}
                         icon={ArrowRightToLine}
