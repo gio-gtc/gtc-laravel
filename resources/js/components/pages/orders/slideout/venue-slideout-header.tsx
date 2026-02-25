@@ -1,8 +1,7 @@
-import { Button } from '@/components/ui/button';
 import { DropBox } from '@/components/ui/icons';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import NavOptionButton from '@/components/ui/slideout/nav-option-button';
 import Divider from '@/components/utils/divider';
-import type { LucideIcon } from 'lucide-react';
 import {
     ArrowRightToLine,
     ClipboardPlus,
@@ -61,13 +60,22 @@ export default function VenueSlideoutHeader({
 
                 {/* Action buttons */}
                 <div className="flex items-center gap-0.5 text-slate-500">
-                    <ActionButton onClick={onAttach} icon={PaperclipIcon} />
-                    <ActionButton onClick={onCloud} icon={DropBox} />
-                    <ActionButton onClick={onSend} icon={SendIcon} />
-                    <ActionButton onClick={onMaximize} icon={Maximize2Icon} />
-                    <ActionButton onClick={onMore} icon={MoreHorizontalIcon} />
+                    <NavOptionButton onClick={onAttach} icon={PaperclipIcon} />
+                    <NavOptionButton onClick={onCloud} icon={DropBox} />
+                    <NavOptionButton onClick={onSend} icon={SendIcon} />
+                    <NavOptionButton
+                        onClick={onMaximize}
+                        icon={Maximize2Icon}
+                    />
+                    <NavOptionButton
+                        onClick={onMore}
+                        icon={MoreHorizontalIcon}
+                    />
 
-                    <ActionButton onClick={onClose} icon={ArrowRightToLine} />
+                    <NavOptionButton
+                        onClick={onClose}
+                        icon={ArrowRightToLine}
+                    />
                 </div>
             </div>
 
@@ -86,23 +94,5 @@ export default function VenueSlideoutHeader({
                 </div>
             </div>
         </SheetHeader>
-    );
-}
-
-interface ActionButtonProps {
-    onClick: () => void;
-    icon: LucideIcon;
-}
-
-function ActionButton({ onClick, icon: Icon }: ActionButtonProps) {
-    return (
-        <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6"
-            onClick={onClick}
-        >
-            <Icon className="h-4 w-4" />
-        </Button>
     );
 }

@@ -1,17 +1,21 @@
 import { Button } from '@/components/ui/button';
+import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import NavOptionButton from '@/components/ui/slideout/nav-option-button';
 import {
-    SheetHeader,
-    SheetTitle,
-} from '@/components/ui/sheet';
-import { Maximize2, MoreHorizontal, Send } from 'lucide-react';
+    ArrowRightToLine,
+    Maximize2,
+    MoreHorizontal,
+    Send,
+} from 'lucide-react';
 
 interface InvoiceSlideoutHeaderProps {
     tour: string;
     venue: string;
     market: string;
-    onSend?: () => void;
-    onMaximize?: () => void;
-    onMore?: () => void;
+    onSend: () => void;
+    onMaximize: () => void;
+    onMore: () => void;
+    onClose: () => void;
 }
 
 export default function InvoiceSlideoutHeader({
@@ -21,6 +25,7 @@ export default function InvoiceSlideoutHeader({
     onSend,
     onMaximize,
     onMore,
+    onClose,
 }: InvoiceSlideoutHeaderProps) {
     return (
         <SheetHeader className="relative border-b px-6 pt-6 pb-4">
@@ -34,14 +39,8 @@ export default function InvoiceSlideoutHeader({
                     </p>
                 </div>
                 <div className="flex items-center gap-1">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={onSend}
-                    >
-                        <Send className="h-4 w-4" />
-                    </Button>
+                    <NavOptionButton onClick={onSend} icon={Send} />
+
                     <Button
                         variant="ghost"
                         size="icon"
@@ -58,6 +57,11 @@ export default function InvoiceSlideoutHeader({
                     >
                         <MoreHorizontal className="h-4 w-4" />
                     </Button>
+
+                    <NavOptionButton
+                        onClick={onClose}
+                        icon={ArrowRightToLine}
+                    />
                 </div>
             </div>
         </SheetHeader>

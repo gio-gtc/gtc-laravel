@@ -48,9 +48,7 @@ export default function InvoiceLineItemsTable({
     return (
         <div className="space-y-4">
             <div
-                className={`rounded-md border ${
-                    isDeleted ? 'opacity-50' : ''
-                }`}
+                className={`rounded-md border ${isDeleted ? 'opacity-50' : ''}`}
             >
                 <Table>
                     <TableHeader>
@@ -170,7 +168,7 @@ export default function InvoiceLineItemsTable({
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-6 w-6 rounded-full border-2 border-destructive text-destructive hover:bg-destructive/90"
+                                            className="h-6 w-6 rounded-full border-2 border-destructive text-destructive hover:bg-destructive/90 hover:text-white"
                                             onClick={() =>
                                                 onRemoveItem?.(item.id)
                                             }
@@ -213,7 +211,7 @@ export default function InvoiceLineItemsTable({
             {/* Total Amount */}
             <div
                 className={`flex justify-end pr-4 ${
-                    isDeleted ? 'opacity-50 text-muted-foreground' : ''
+                    isDeleted ? 'text-muted-foreground opacity-50' : ''
                 }`}
             >
                 <div className="flex items-center gap-4">

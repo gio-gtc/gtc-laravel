@@ -157,11 +157,16 @@ export default function InvoiceDetailSlideout({
             <SheetContent
                 side="right"
                 className="w-full overflow-y-auto p-0 sm:max-w-5xl"
+                showExitBtn={false}
             >
                 <InvoiceSlideoutHeader
                     tour={invoice.tour}
                     venue={invoice.venue}
                     market={invoice.market}
+                    onSend={() => console.log(`Send invoice: ${invoice}`)}
+                    onMaximize={() => console.log(`On Max clicked!`)}
+                    onMore={() => console.log(`Moar clicked`)}
+                    onClose={onClose}
                 />
 
                 <div className="space-y-6 p-4">
