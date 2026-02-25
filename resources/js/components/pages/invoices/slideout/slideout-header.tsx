@@ -32,11 +32,11 @@ export default function InvoiceSlideoutHeader({
     return (
         <SheetHeader className="relative border-b px-6 pt-6 pb-4">
             <div className="flex flex-col items-start justify-between pr-10 sm:flex-row">
-                <div className="flex-1">
-                    <SheetTitle className="text-2xl font-semibold">
+                <div className="flex-1 font-medium">
+                    <SheetTitle className="text-3xl font-medium">
                         {tour}
                     </SheetTitle>
-                    <p className="mt-1 text-sm text-muted-foreground">
+                    <p className="mt-1 text-sm">
                         {venue}, {market}
                     </p>
                 </div>

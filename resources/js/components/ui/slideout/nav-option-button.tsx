@@ -11,7 +11,7 @@ function NavOptionButton({ onClick, icon: Icon }: NavOptionButtonProps) {
         <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6"
+            className="h-6 w-6 text-gray-400"
             onClick={onClick}
         >
             <Icon className="h-4 w-4" />

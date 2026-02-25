@@ -28,6 +28,7 @@ export default function InvoiceDetailsForm({
             <ColumnedRowsChild
                 labelFor="release_date"
                 labelContent="Invoice Release Date"
+                labelClassName="text-black"
             >
                 <DatePickerInput
                     id="release_date"
@@ -40,6 +41,7 @@ export default function InvoiceDetailsForm({
             <ColumnedRowsChild
                 labelFor="payment_due"
                 labelContent="Invoice Due Date"
+                labelClassName="text-black"
             >
                 <DatePickerInput
                     id="payment_due"
@@ -62,7 +64,11 @@ export default function InvoiceDetailsForm({
                 />
             </ColumnedRowsChild>
 
-            <ColumnedRowsChild labelFor="orderedBy" labelContent="Ordered By">
+            <ColumnedRowsChild
+                labelFor="orderedBy"
+                labelContent="Ordered By"
+                labelClassName="text-black"
+            >
                 <Input
                     id="orderedBy"
                     value={orderedByUser?.name || ''}

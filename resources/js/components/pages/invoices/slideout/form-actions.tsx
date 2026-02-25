@@ -13,10 +13,11 @@ export default function InvoiceFormActions({
 }: InvoiceFormActionsProps) {
     return (
         <div className="flex flex-col justify-end gap-2 sm:flex-row">
-            <Button variant="outline" onClick={onCancel}>
+            <Button className="text-xs" variant="outline" onClick={onCancel}>
                 Cancel
             </Button>
             <Button
+                className="text-xs"
                 variant="outline"
                 onClick={onSave}
                 disabled={saveDisabled}

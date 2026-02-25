@@ -1,6 +1,5 @@
 import { countriesData } from '@/components/mockdata';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import {
     Select,
     SelectContent,
@@ -8,6 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import {
     ColumnedRowsChild,
     ColumnedRowsParent,
@@ -33,7 +33,11 @@ export default function InvoiceAddressForm({
 }: InvoiceAddressFormProps) {
     return (
         <ColumnedRowsParent>
-            <ColumnedRowsChild labelFor="name" labelContent="Company Name">
+            <ColumnedRowsChild
+                labelFor="name"
+                labelContent="Company Name"
+                labelClassName="text-black font-medium"
+            >
                 <Input
                     id="name"
                     value={formData.name}
@@ -44,6 +48,7 @@ export default function InvoiceAddressForm({
             <ColumnedRowsChild
                 labelFor="billing_address"
                 labelContent="Billing Address"
+                labelClassName="text-black font-medium"
             >
                 <Textarea
                     id="billing_address"
@@ -55,7 +60,11 @@ export default function InvoiceAddressForm({
                 />
             </ColumnedRowsChild>
 
-            <ColumnedRowsChild labelFor="city" labelContent="City">
+            <ColumnedRowsChild
+                labelFor="city"
+                labelContent="City"
+                labelClassName="text-black font-medium"
+            >
                 <Input
                     id="city"
                     value={formData.city}
@@ -63,7 +72,11 @@ export default function InvoiceAddressForm({
                 />
             </ColumnedRowsChild>
 
-            <ColumnedRowsChild labelFor="state" labelContent="State/Province">
+            <ColumnedRowsChild
+                labelFor="state"
+                labelContent="State/Province"
+                labelClassName="text-black font-medium"
+            >
                 <Input
                     id="state"
                     value={formData.state}
@@ -71,7 +84,11 @@ export default function InvoiceAddressForm({
                 />
             </ColumnedRowsChild>
 
-            <ColumnedRowsChild labelFor="zip" labelContent="ZIP/Postal Code">
+            <ColumnedRowsChild
+                labelFor="zip"
+                labelContent="ZIP/Postal Code"
+                labelClassName="text-black font-medium"
+            >
                 <Input
                     id="zip"
                     value={formData.zip}
@@ -79,7 +96,11 @@ export default function InvoiceAddressForm({
                 />
             </ColumnedRowsChild>
 
-            <ColumnedRowsChild labelFor="country_id" labelContent="Country">
+            <ColumnedRowsChild
+                labelFor="country_id"
+                labelContent="Country"
+                labelClassName="text-black font-medium"
+            >
                 <Select
                     value={formData.country_id}
                     onValueChange={(value) => onChange('country_id', value)}
