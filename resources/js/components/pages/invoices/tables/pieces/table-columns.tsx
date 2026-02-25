@@ -32,7 +32,7 @@ export function createInvoiceColumns({
                 return (
                     <div
                         className={cn(
-                            row.original.isDeleted && 'text-gray-400',
+                            row.original.isDeleted && 'text-gray-300',
                         )}
                     >
                         {value}
@@ -52,7 +52,7 @@ export function createInvoiceColumns({
                 return (
                     <div
                         className={cn(
-                            row.original.isDeleted && 'text-gray-400',
+                            row.original.isDeleted && 'text-gray-300',
                         )}
                     >
                         {value}
@@ -72,7 +72,7 @@ export function createInvoiceColumns({
                 return (
                     <div
                         className={cn(
-                            row.original.isDeleted && 'text-gray-400',
+                            row.original.isDeleted && 'text-gray-300',
                         )}
                     >
                         {value}
@@ -92,7 +92,7 @@ export function createInvoiceColumns({
                 return (
                     <div
                         className={cn(
-                            row.original.isDeleted && 'text-gray-400',
+                            row.original.isDeleted && 'text-gray-300',
                         )}
                     >
                         {value}
@@ -112,7 +112,7 @@ export function createInvoiceColumns({
                 return (
                     <div
                         className={cn(
-                            row.original.isDeleted && 'text-gray-400',
+                            row.original.isDeleted && 'text-gray-300',
                         )}
                     >
                         {value}
@@ -132,7 +132,7 @@ export function createInvoiceColumns({
                 return (
                     <div
                         className={cn(
-                            row.original.isDeleted && 'text-gray-400',
+                            row.original.isDeleted && 'text-gray-300',
                         )}
                     >
                         {value}
@@ -152,7 +152,7 @@ export function createInvoiceColumns({
                 return (
                     <div
                         className={cn(
-                            row.original.isDeleted && 'text-gray-400',
+                            row.original.isDeleted && 'text-gray-300',
                         )}
                     >
                         {formatCurrency(value)}

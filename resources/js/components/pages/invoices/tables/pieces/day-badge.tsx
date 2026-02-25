@@ -3,8 +3,8 @@ import { type Invoice } from '@/types';
 
 export function getInvoiceDayBadge(invoice: Invoice): React.ReactNode {
     const normalClasses =
-        'inline-flex items-center rounded-full border-2 border-solid px-2.5 py-0.5 text-xs font-medium';
-    
+        'inline-flex items-center rounded-full border-2 border-solid px-2.5 py-0.5 text-xs font-semibold';
+
     if (invoice.isDeleted) {
         return (
             <span className={`${normalClasses} border-gray-400 bg-gray-50`}>
@@ -58,7 +58,7 @@ export function getInvoiceDayBadge(invoice: Invoice): React.ReactNode {
 export function getReleasedInvoiceDayBadge(invoice: Invoice): React.ReactNode {
     const normalClasses =
         'inline-flex items-center rounded-full border-2 border-solid px-2.5 py-0.5 text-xs font-medium';
-    
+
     if (invoice.isDeleted) {
         return (
             <span className={`${normalClasses} border-gray-400 bg-gray-50`}>

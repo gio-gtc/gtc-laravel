@@ -52,114 +52,104 @@ export function InvoiceTableBase({
     });
 
     return (
-        <div className="rounded-md border">
-            <Table>
-                <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <TableHead
-                                    key={header.id}
-                                    style={{
-                                        width: header.getSize(),
-                                        position: 'relative',
-                                    }}
-                                    className={cn(
-                                        'relative px-2 py-0.5',
-                                        headerGroup.headers.indexOf(header) <
-                                            headerGroup.headers.length - 1 &&
-                                            'border-r border-border',
-                                    )}
-                                >
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(
-                                              header.column.columnDef.header,
-                                              header.getContext(),
-                                          )}
-                                    {header.column.getCanResize() && (
-                                        <div
-                                            onMouseDown={header.getResizeHandler()}
-                                            onTouchStart={header.getResizeHandler()}
-                                            className={cn(
-                                                'absolute top-0 right-0 z-10 h-full w-0.5 cursor-col-resize touch-none bg-border opacity-50 transition-opacity select-none hover:bg-primary hover:opacity-100',
-                                                header.column.getIsResizing() &&
-                                                    'bg-primary opacity-100',
-                                            )}
-                                            style={{
-                                                transform:
-                                                    header.column.getIsResizing()
-                                                        ? `translateX(${
-                                                              table.getState()
-                                                                  .columnSizingInfo
-                                                                  .deltaOffset
-                                                          }px)`
-                                                        : undefined,
-                                            }}
-                                        />
-                                    )}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody>
-                    {table.getRowModel().rows.length ? (
-                        table.getRowModel().rows.map((row) => {
-                            const isSelected = isRowSelected(row.original);
-
-                            return (
-                                <TableRow
-                                    key={row.id}
-                                    className={cn(
-                                        'cursor-pointer select-none hover:bg-red-50',
-                                        isSelected && 'bg-red-200',
-                                        row.original.isDeleted && 'opacity-60',
-                                    )}
-                                    onClick={(e) => onRowClick(row.original, e)}
-                                    onMouseDown={(e) => {
-                                        // Prevent text selection when shift-clicking
-                                        if (e.shiftKey) {
-                                            e.preventDefault();
-                                        }
-                                    }}
-                                >
-                                    {row
-                                        .getVisibleCells()
-                                        .map((cell, cellIndex, cells) => (
-                                            <TableCell
-                                                key={cell.id}
-                                                style={{
-                                                    width: cell.column.getSize(),
-                                                }}
-                                                className={cn(
-                                                    'px-2 py-0.5',
-                                                    cellIndex <
-                                                        cells.length - 1 &&
-                                                        'border-r border-border',
-                                                )}
-                                            >
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext(),
-                                                )}
-                                            </TableCell>
-                                        ))}
-                                </TableRow>
-                            );
-                        })
-                    ) : (
-                        <TableRow>
-                            <TableCell
-                                colSpan={columns.length}
-                                className="h-24 text-center"
+        <Table className="border-y-1">
+            <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => (
+                            <TableHead
+                                key={header.id}
+                                style={{
+                                    width: header.getSize(),
+                                    position: 'relative',
+                                }}
+                                className={cn('relative px-2 py-0.5')}
                             >
-                                No results.
-                            </TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
-        </div>
+                                {header.isPlaceholder
+                                    ? null
+                                    : flexRender(
+                                          header.column.columnDef.header,
+                                          header.getContext(),
+                                      )}
+                                {header.column.getCanResize() && (
+                                    <div
+                                        onMouseDown={header.getResizeHandler()}
+                                        onTouchStart={header.getResizeHandler()}
+                                        className={cn(
+                                            'absolute top-0 right-0 z-10 h-full w-0.5 cursor-col-resize touch-none opacity-50 transition-opacity select-none hover:bg-primary hover:opacity-100',
+                                            header.column.getIsResizing() &&
+                                                'bg-primary opacity-100',
+                                        )}
+                                        style={{
+                                            transform:
+                                                header.column.getIsResizing()
+                                                    ? `translateX(${
+                                                          table.getState()
+                                                              .columnSizingInfo
+                                                              .deltaOffset
+                                                      }px)`
+                                                    : undefined,
+                                        }}
+                                    />
+                                )}
+                            </TableHead>
+                        ))}
+                    </TableRow>
+                ))}
+            </TableHeader>
+            <TableBody className="text-xs font-semibold text-gray-500">
+                {table.getRowModel().rows.length ? (
+                    table.getRowModel().rows.map((row) => {
+                        const isSelected = isRowSelected(row.original);
+
+                        return (
+                            <TableRow
+                                key={row.id}
+                                className={cn(
+                                    'cursor-pointer select-none hover:bg-red-100',
+                                    isSelected && 'bg-red-200',
+                                )}
+                                onClick={(e) => onRowClick(row.original, e)}
+                                onMouseDown={(e) => {
+                                    if (e.shiftKey) {
+                                        e.preventDefault();
+                                    }
+                                }}
+                            >
+                                {row
+                                    .getVisibleCells()
+                                    .map((cell, cellIndex, cells) => (
+                                        <TableCell
+                                            key={cell.id}
+                                            style={{
+                                                width: cell.column.getSize(),
+                                            }}
+                                            className={cn(
+                                                'px-2 py-0.5 font-semibold',
+                                                cellIndex < cells.length - 1 &&
+                                                    'border-r border-border',
+                                            )}
+                                        >
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext(),
+                                            )}
+                                        </TableCell>
+                                    ))}
+                            </TableRow>
+                        );
+                    })
+                ) : (
+                    <TableRow>
+                        <TableCell
+                            colSpan={columns.length}
+                            className="h-24 text-center"
+                        >
+                            No results.
+                        </TableCell>
+                    </TableRow>
+                )}
+            </TableBody>
+        </Table>
     );
 }

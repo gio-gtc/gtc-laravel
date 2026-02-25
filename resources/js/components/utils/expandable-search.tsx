@@ -115,10 +115,10 @@ export function ExpandableSearch({
             ) : (
                 <Button
                     variant="outline"
-                    className="w-9"
+                    className="w-9 rounded-full"
                     onClick={() => setIsSearchExpanded(true)}
                 >
-                    <Search className="size-3.5" />
+                    <Search className="size-3.5 text-gray-400" />
                 </Button>
             )}
         </div>

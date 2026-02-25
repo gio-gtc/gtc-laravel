@@ -165,7 +165,7 @@ function DesignerStatsTable() {
             <Heading title="Designer Stats" type="section" />
             <Table layout="none">
                 <TableHeader>
-                    <TableRow className="text-xs">
+                    <TableRow>
                         <TableHead>
                             <button
                                 onClick={() => handleSort('name')}

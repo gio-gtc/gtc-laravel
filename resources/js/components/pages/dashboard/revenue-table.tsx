@@ -30,7 +30,7 @@ function RevenueTable() {
             <Heading title="Revenue by Tour" type="section" />
             <Table layout="none">
                 <TableHeader>
-                    <TableRow className="text-xs">
+                    <TableRow>
                         <TableHead>Tour</TableHead>
                         <TableHead className="text-right">
                             CURRENT MONTH

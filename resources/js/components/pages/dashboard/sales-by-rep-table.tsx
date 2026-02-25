@@ -52,7 +52,7 @@ function SalesByRepTable() {
             <Heading title="Sales by Rep" type="section" />
             <Table layout="none">
                 <TableHeader>
-                    <TableRow className="text-xs">
+                    <TableRow>
                         <TableHead className="w-1/8">Rep</TableHead>
                         <TableHead className="w-[400px] text-right">
                             CURRENT MONTH
