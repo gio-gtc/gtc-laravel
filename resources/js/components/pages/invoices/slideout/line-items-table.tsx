@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/table';
 import { EditableTableCell } from '@/components/utils/editable-table-cell';
 import { formatCurrency } from '@/components/utils/functions';
+import { cn } from '@/lib/utils';
 import { type Item } from '@/types';
 import { Plus, X } from 'lucide-react';
 
@@ -45,10 +46,19 @@ export default function InvoiceLineItemsTable({
     totalAmount,
     isDeleted = false,
 }: InvoiceLineItemsTableProps) {
+    const iconSizes = {
+        container: 'size-4',
+        icon: 'size-2.5',
+        stroke: 3,
+    };
+
     return (
         <div className="space-y-4">
             <div
-                className={`rounded-md border ${isDeleted ? 'opacity-50' : ''}`}
+                className={cn(
+                    `rounded-md border`,
+                    isDeleted ? 'opacity-50' : '',
+                )}
             >
                 <Table>
                     <TableHeader>
@@ -172,15 +182,15 @@ export default function InvoiceLineItemsTable({
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="size-4 rounded-full border-2 border-destructive text-destructive hover:bg-destructive/90 hover:text-white"
+                                            className={`rounded-full border-2 border-destructive text-destructive hover:bg-destructive hover:text-white ${iconSizes.container}`}
                                             onClick={() =>
                                                 onRemoveItem?.(item.id)
                                             }
                                             disabled={isDeleted}
                                         >
                                             <X
-                                                className="size-2.5"
-                                                strokeWidth={3}
+                                                className={`${iconSizes.icon}`}
+                                                strokeWidth={iconSizes.stroke}
                                             />
                                         </Button>
                                     </TableCell>
@@ -199,35 +209,59 @@ export default function InvoiceLineItemsTable({
                         {/* Add Item Row */}
                         <TableRow>
                             <TableCell colSpan={5}></TableCell>
-                            <TableCell>
+                            <TableCell className="text-center">
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-6 rounded-full bg-muted text-muted-foreground"
+                                    className={`rounded-full border-2 border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-white ${iconSizes.container}`}
                                     onClick={onAddItem}
                                     disabled={isDeleted}
                                 >
-                                    <Plus className="h-3 w-3" />
+                                    <Plus
+                                        className={`${iconSizes.icon}`}
+                                        strokeWidth={iconSizes.stroke}
+                                    />
                                 </Button>
                             </TableCell>
+                        </TableRow>
+
+                        {/* Total Amount */}
+                        <TableRow>
+                            <TableCell
+                                className="border-transparent"
+                                colSpan={3}
+                            ></TableCell>
+                            <TableCell className="border-transparent text-right">
+                                <span className="text-xs font-semibold text-gray-500">
+                                    Total Amount:
+                                </span>
+                            </TableCell>
+                            <TableCell className="border-transparent text-right">
+                                <span className="text-xs font-semibold text-gray-900">
+                                    {formatCurrency(totalAmount)}
+                                </span>
+                            </TableCell>
+                            <TableCell></TableCell>
                         </TableRow>
                     </TableBody>
                 </Table>
             </div>
 
-            {/* Total Amount */}
-            <div
-                className={`flex justify-end pr-4 ${
-                    isDeleted ? 'text-muted-foreground opacity-50' : ''
-                }`}
+            {/* <div
+                className={cn(
+                    `flex justify-end pr-4`,
+                    isDeleted ? 'text-muted-foreground opacity-50' : '',
+                )}
             >
                 <div className="flex items-center gap-4">
-                    <span className="text-sm font-medium">Total Amount:</span>
-                    <span className="text-lg font-semibold">
+                    <span className="text-xs font-semibold text-gray-500">
+                        Total Amount:
+                    </span>
+                    <span className="text-xs font-semibold text-gray-900">
                         {formatCurrency(totalAmount)}
                     </span>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }
