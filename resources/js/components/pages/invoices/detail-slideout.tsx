@@ -252,9 +252,9 @@ export default function InvoiceDetailSlideout({
 
                     {/* Deletion Info */}
                     {invoice.isDeleted && (
-                        <div className="space-y-1 font-semibold">
+                        <div className="space-y-1 text-sm font-semibold text-black">
                             <p>
-                                <span className="text-red-500">
+                                <span className="text-brand-gtc-red">
                                     Deleted By:{' '}
                                 </span>
                                 {deletedByUser
@@ -269,7 +269,7 @@ export default function InvoiceDetailSlideout({
                             </p>
                             {invoice.deleted_reason && (
                                 <p>
-                                    <span className="text-red-500">
+                                    <span className="text-brand-gtc-red">
                                         Reason:{' '}
                                     </span>
                                     {invoice.deleted_reason}
