@@ -54,6 +54,8 @@ export default function InvoiceDetailSlideout({
         release_date: invoice?.release_date || '',
         payment_due: invoice?.payment_due || '',
         clientReference: invoice?.clientReference || '',
+        accountPayableEmail: company?.pay_email || '',
+        additionalEmails: [''] as string[],
     });
 
     // Delete modal state
@@ -86,6 +88,8 @@ export default function InvoiceDetailSlideout({
             release_date: invoice.release_date || '',
             payment_due: invoice.payment_due || '',
             clientReference: invoice.clientReference || '',
+            accountPayableEmail: currentCompany.pay_email || '',
+            additionalEmails: [''],
         });
     }, [invoice]);
 
@@ -171,7 +175,10 @@ export default function InvoiceDetailSlideout({
         0,
     );
 
-    const handleInputChange = (field: keyof typeof formData, value: string) => {
+    const handleInputChange = (
+        field: keyof typeof formData,
+        value: string | string[],
+    ) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
@@ -225,6 +232,9 @@ export default function InvoiceDetailSlideout({
                                     release_date: formData.release_date,
                                     payment_due: formData.payment_due,
                                     clientReference: formData.clientReference,
+                                    accountPayableEmail:
+                                        formData.accountPayableEmail,
+                                    additionalEmails: formData.additionalEmails,
                                 }}
                                 onChange={handleInputChange}
                                 orderedByUser={orderedByUser}

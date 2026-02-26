@@ -28,6 +28,12 @@ function InputAdditions({
                 placeholder="email@company.com"
                 required={index === 0}
                 className="border-gray-300 pr-9 pl-9"
+                value={email}
+                onChange={(e) => {
+                    const newList = [...inputList];
+                    newList[index] = e.target.value;
+                    setInputList(newList);
+                }}
             />
             {index === inputList.length - 1 && (
                 <button

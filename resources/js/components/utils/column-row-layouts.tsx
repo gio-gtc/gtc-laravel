@@ -25,7 +25,7 @@ export function ColumnedRowsChild({
     labelClassName?: string;
 }) {
     const childClassName = multiInput
-        ? 'flex flex-col gap-4 sm:flex-2'
+        ? 'flex flex-col gap-2 sm:flex-2'
         : 'sm:flex-2';
     return (
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
