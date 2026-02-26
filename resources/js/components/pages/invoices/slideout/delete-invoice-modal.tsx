@@ -7,8 +7,8 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 import { type Invoice } from '@/types';
 import { useState } from 'react';
 
@@ -48,22 +48,20 @@ export default function DeleteInvoiceModal({
         >
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                    <DialogTitle className="text-xl font-semibold">
-                        Delete Invoice
-                    </DialogTitle>
+                    <DialogTitle>Delete Invoice</DialogTitle>
                 </DialogHeader>
                 <Separator />
-                <div className="space-y-4 py-4">
+                <div>
                     <div className="space-y-2">
-                        <Label className="text-base font-semibold">
+                        <Label className="xs-gray-700-weight-600">
                             Reason for Deletion
                         </Label>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="xs-gray-600-weight-400">
                             Please provide a reason for deleting this invoice.
                         </p>
                         <Textarea
                             id="delete_reason"
-                            className="min-h-[100px]"
+                            className="text-xs md:text-xs"
                             value={deleteReason}
                             onChange={(e) => setDeleteReason(e.target.value)}
                             placeholder="Client paid in combination with other invoice."
@@ -71,6 +69,7 @@ export default function DeleteInvoiceModal({
                         />
                     </div>
                 </div>
+                <Separator />
                 <DialogFooter className="sm:justify-end">
                     <Button variant="outline" onClick={handleClose}>
                         Cancel

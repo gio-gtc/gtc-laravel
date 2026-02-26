@@ -184,16 +184,20 @@
         @apply px-4 pt-4 pb-4;
     }
 
-    .xs-gray-400-weight-400 {
-        @apply text-xs font-normal text-gray-400;
-    }
-
     .sm-black-weight-500 {
         @apply text-sm font-medium text-black;
     }
 
     .sm-gray-700-weight-500 {
         @apply text-sm font-medium text-gray-700;
+    }
+
+    .xs-gray-400-weight-400 {
+        @apply text-xs font-normal text-gray-400;
+    }
+
+    .xs-gray-600-weight-400 {
+        @apply text-xs font-normal text-gray-600;
     }
 
     .xs-gray-700-weight-500 {
