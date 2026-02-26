@@ -84,17 +84,13 @@ export function EditableTableCell({
                 min={min}
                 step={step}
                 disabled={disabled}
-                className={cn(
-                    'h-8 w-full',
-                    alignmentClasses[align],
-                    className,
-                )}
+                className={cn('h-8 w-full', alignmentClasses[align], className)}
             />
         );
     }
 
     return (
-        <span
+        <p
             onDoubleClick={handleDoubleClick}
             className={cn(
                 disabled ? 'cursor-default' : 'cursor-pointer',
@@ -103,6 +99,6 @@ export function EditableTableCell({
             )}
         >
             {displayValue}
-        </span>
+        </p>
     );
 }

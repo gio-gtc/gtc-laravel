@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface InvoiceActionButtonsProps {
     onReleaseHold?: () => void;
@@ -12,12 +13,12 @@ export default function InvoiceActionButtons({
     disabled = false,
 }: InvoiceActionButtonsProps) {
     return (
-        <div className="flex flex-col justify-center gap-2 sm:flex-row">
+        <div className="mx-[-2%] flex flex-col justify-center gap-2 rounded-lg bg-neutral-100 py-1 sm:flex-row">
             <Button
                 variant="destructive"
                 onClick={onReleaseHold}
                 disabled={disabled}
-                className={disabled ? 'opacity-50 cursor-not-allowed' : ''}
+                className={disabled ? 'cursor-not-allowed opacity-50' : ''}
             >
                 Release Hold
             </Button>
@@ -25,7 +26,10 @@ export default function InvoiceActionButtons({
                 variant="outline"
                 onClick={onDeleteInvoice}
                 disabled={disabled}
-                className={disabled ? 'opacity-50 cursor-not-allowed' : ''}
+                className={cn(
+                    'text-gray-500',
+                    disabled ? 'cursor-not-allowed opacity-50' : '',
+                )}
             >
                 Delete Invoice
             </Button>

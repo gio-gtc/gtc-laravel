@@ -45,6 +45,7 @@ export default function InvoiceLineItemsTable({
     totalAmount,
     isDeleted = false,
 }: InvoiceLineItemsTableProps) {
+    // TODO: Continue from here
     return (
         <div className="space-y-4">
             <div
@@ -53,15 +54,17 @@ export default function InvoiceLineItemsTable({
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[120px]">Code</TableHead>
+                            <TableHead className="w-[120px] text-center">
+                                Code
+                            </TableHead>
                             <TableHead>Description</TableHead>
-                            <TableHead className="w-[100px] text-right">
+                            <TableHead className="w-[100px] text-center">
                                 Quantity
                             </TableHead>
-                            <TableHead className="w-[150px] text-right">
+                            <TableHead className="w-[150px] text-center">
                                 Price
                             </TableHead>
-                            <TableHead className="w-[150px] text-right">
+                            <TableHead className="w-[150px] text-center">
                                 Total
                             </TableHead>
                             <TableHead className="w-[50px]"></TableHead>
@@ -112,7 +115,7 @@ export default function InvoiceLineItemsTable({
                                             disabled={isDeleted}
                                         />
                                     </TableCell>
-                                    <TableCell className="text-right">
+                                    <TableCell>
                                         <EditableTableCell
                                             value={item.quantity}
                                             itemId={item.id}
@@ -128,7 +131,7 @@ export default function InvoiceLineItemsTable({
                                                 item.id,
                                                 'quantity',
                                             )}
-                                            align="right"
+                                            align="center"
                                             disabled={isDeleted}
                                         />
                                     </TableCell>

@@ -1,5 +1,4 @@
 import { companiesData, itemsData } from '@/components/mockdata';
-import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { getInvoiceAddress } from '@/components/utils/functions';
 import { useEditableTable } from '@/hooks/use-editable-table';
@@ -208,14 +207,12 @@ export default function InvoiceDetailSlideout({
                         <InvoiceFormActions onCancel={onClose} />
                     </div>
 
-                    <Separator />
                     {/* Action Buttons Section */}
                     <InvoiceActionButtons
                         onDeleteInvoice={() => setIsDeleteModalOpen(true)}
                         disabled={invoice.isDeleted}
                     />
 
-                    <Separator />
                     {/* Deletion Info */}
                     {invoice.isDeleted && (
                         <div className="space-y-1 font-semibold">
