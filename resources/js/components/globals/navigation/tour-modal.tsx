@@ -8,7 +8,6 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import {
     Select,
@@ -18,6 +17,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import {
     ColumnedRowsChild,
     ColumnedRowsParent,
@@ -81,7 +81,6 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 value={startDate}
                                 required
                                 onChange={(value) => setStartDate(value)}
-                                buttonClassName="w-full justify-start"
                             />
                             <InputError message={undefined} />
                         </ColumnedRowsChild>
@@ -98,7 +97,6 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 onChange={(value) =>
                                     setExpireOnSaleNowCuts(value)
                                 }
-                                buttonClassName="w-full justify-start"
                             />
                             <InputError message={undefined} />
                         </ColumnedRowsChild>

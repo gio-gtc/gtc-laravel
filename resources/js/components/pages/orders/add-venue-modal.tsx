@@ -143,7 +143,6 @@ export default function AddVenueModal({
                             value={dueDate || ''}
                             onChange={(value) => setDueDate(value)}
                             required
-                            buttonClassName="w-full justify-start"
                         />
                     </ColumnedRowsChild>
 

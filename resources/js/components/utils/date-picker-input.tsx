@@ -7,6 +7,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import { format, parse, parseISO } from 'date-fns';
 import { Calendar } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -44,7 +45,7 @@ interface DatePickerInputProps {
     required?: boolean;
     placeholder?: string;
     iconPosition?: 'start' | 'end';
-    buttonClassName?: string;
+    inputClassName?: string;
 }
 
 // TODO: Make styles align with eachother date range and single
@@ -57,7 +58,7 @@ export default function DatePickerInput({
     required = false,
     placeholder = 'Select date',
     iconPosition = 'start',
-    buttonClassName = '',
+    inputClassName = '',
 }: DatePickerInputProps) {
     const [open, setOpen] = useState(false);
     const [tempDate, setTempDate] = useState<Date | undefined>(() =>
@@ -123,7 +124,10 @@ export default function DatePickerInput({
                 <Button
                     variant="ghost"
                     type="button"
-                    className="h-auto shrink-0 p-0 hover:cursor-pointer hover:bg-transparent"
+                    className={cn(
+                        'absolute h-auto shrink-0 p-0 hover:cursor-pointer hover:bg-transparent',
+                        iconPosition === 'start' ? 'left-0' : 'right-0',
+                    )}
                     aria-label="Open calendar"
                 >
                     {calendarIcon}
@@ -156,8 +160,13 @@ export default function DatePickerInput({
                     {label}
                 </Label>
             ) : null}
-            <div className="flex w-full items-center gap-2 rounded-md border border-input bg-transparent text-base shadow-xs transition-[color,box-shadow] outline-none focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 md:text-sm">
-                {iconPosition === 'start' ? calendarButton : null}
+            <div
+                className={cn(
+                    'relative flex w-full items-center gap-2 rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50',
+                    iconPosition === 'start' && 'pl-6.5',
+                )}
+            >
+                {calendarButton}
                 <Input
                     id={id}
                     type="text"
@@ -166,10 +175,12 @@ export default function DatePickerInput({
                     onBlur={handleInputBlur}
                     placeholder={placeholder}
                     required={required}
-                    className="min-w-0 flex-1 border-0 px-0 py-2 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className={cn(
+                        'min-w-0 flex-1 border-0 py-2 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0',
+                        inputClassName,
+                    )}
                     aria-label={placeholder}
                 />
-                {iconPosition === 'end' ? calendarButton : null}
             </div>
         </div>
     );

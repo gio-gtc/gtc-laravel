@@ -42,7 +42,8 @@ export default function InvoiceDetailsForm({
                     label=""
                     value={formData.release_date}
                     onChange={(value) => onChange('release_date', value)}
-                    className="xs-gray-700-weight-600"
+                    inputClassName="xs-gray-700-weight-600"
+                    iconPosition="end"
                 />
             </ColumnedRowsChild>
 
@@ -56,7 +57,8 @@ export default function InvoiceDetailsForm({
                     label=""
                     value={formData.payment_due}
                     onChange={(value) => onChange('payment_due', value)}
-                    className="xs-gray-700-weight-600"
+                    inputClassName="xs-gray-700-weight-600"
+                    iconPosition="end"
                 />
             </ColumnedRowsChild>
 

@@ -27,7 +27,7 @@ function InputAdditions({
                 type="email"
                 placeholder="email@company.com"
                 required={index === 0}
-                className="border-gray-300 pr-9 pl-9"
+                className="xs-gray-700-weight-600 pr-9 pl-9"
                 value={email}
                 onChange={(e) => {
                     const newList = [...inputList];
