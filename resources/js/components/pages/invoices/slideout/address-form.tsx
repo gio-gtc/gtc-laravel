@@ -42,6 +42,7 @@ export default function InvoiceAddressForm({
                     id="name"
                     value={formData.name}
                     onChange={(e) => onChange('name', e.target.value)}
+                    className="xs-gray-700-weight-600"
                 />
             </ColumnedRowsChild>
 
@@ -57,6 +58,7 @@ export default function InvoiceAddressForm({
                         onChange('billing_address', e.target.value)
                     }
                     rows={3}
+                    className="xs-gray-700-weight-600"
                 />
             </ColumnedRowsChild>
 
@@ -69,6 +71,7 @@ export default function InvoiceAddressForm({
                     id="city"
                     value={formData.city}
                     onChange={(e) => onChange('city', e.target.value)}
+                    className="xs-gray-700-weight-600"
                 />
             </ColumnedRowsChild>
 
@@ -81,6 +84,7 @@ export default function InvoiceAddressForm({
                     id="state"
                     value={formData.state}
                     onChange={(e) => onChange('state', e.target.value)}
+                    className="xs-gray-700-weight-600"
                 />
             </ColumnedRowsChild>
 
@@ -93,6 +97,7 @@ export default function InvoiceAddressForm({
                     id="zip"
                     value={formData.zip}
                     onChange={(e) => onChange('zip', e.target.value)}
+                    className="xs-gray-700-weight-600"
                 />
             </ColumnedRowsChild>
 
@@ -105,7 +110,10 @@ export default function InvoiceAddressForm({
                     value={formData.country_id}
                     onValueChange={(value) => onChange('country_id', value)}
                 >
-                    <SelectTrigger id="country_id">
+                    <SelectTrigger
+                        id="country_id"
+                        className="xs-gray-700-weight-600"
+                    >
                         <SelectValue placeholder="Select country" />
                     </SelectTrigger>
                     <SelectContent>
@@ -113,6 +121,7 @@ export default function InvoiceAddressForm({
                             <SelectItem
                                 key={country.id}
                                 value={country.id.toString()}
+                                className="xs-gray-700-weight-600"
                             >
                                 {country.name}
                             </SelectItem>

@@ -35,6 +35,7 @@ export default function InvoiceDetailsForm({
                     label=""
                     value={formData.release_date}
                     onChange={(value) => onChange('release_date', value)}
+                    className="xs-gray-700-weight-600"
                 />
             </ColumnedRowsChild>
 
@@ -48,6 +49,7 @@ export default function InvoiceDetailsForm({
                     label=""
                     value={formData.payment_due}
                     onChange={(value) => onChange('payment_due', value)}
+                    className="xs-gray-700-weight-600"
                 />
             </ColumnedRowsChild>
 
@@ -61,6 +63,7 @@ export default function InvoiceDetailsForm({
                     onChange={(e) =>
                         onChange('clientReference', e.target.value)
                     }
+                    className="xs-gray-700-weight-600"
                 />
             </ColumnedRowsChild>
 
@@ -72,8 +75,9 @@ export default function InvoiceDetailsForm({
                 <Input
                     id="orderedBy"
                     value={orderedByUser?.name || ''}
+                    disabled
                     readOnly
-                    className="bg-muted"
+                    className="xs-gray-700-weight-600"
                 />
             </ColumnedRowsChild>
         </ColumnedRowsParent>

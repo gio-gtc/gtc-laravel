@@ -31,7 +31,7 @@ export function ColumnedRowsChild({
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
             {labelFor && labelContent ? (
                 <Label
-                    className={`text-sm font-semibold text-gray-700 sm:flex-1 ${labelClassName}`}
+                    className={`sm-black-weight-500 sm:flex-1 ${labelClassName}`}
                     htmlFor={labelFor}
                 >
                     {labelContent}
