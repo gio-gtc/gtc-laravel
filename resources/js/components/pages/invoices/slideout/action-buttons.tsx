@@ -18,6 +18,7 @@ export default function InvoiceActionButtons({
                 variant="destructive"
                 onClick={onReleaseHold}
                 disabled={disabled}
+                size={'md'}
                 className={disabled ? 'cursor-not-allowed opacity-50' : ''}
             >
                 Release Hold
@@ -26,6 +27,7 @@ export default function InvoiceActionButtons({
                 variant="outline"
                 onClick={onDeleteInvoice}
                 disabled={disabled}
+                size={'md'}
                 className={cn(
                     'text-gray-500',
                     disabled ? 'cursor-not-allowed opacity-50' : '',

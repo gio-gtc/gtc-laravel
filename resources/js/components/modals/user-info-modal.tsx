@@ -10,8 +10,8 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { useInitials } from '@/hooks/use-initials';
 import { type SharedData, type User } from '@/types';
 import { Form, usePage } from '@inertiajs/react';
@@ -135,70 +135,82 @@ export default function UserInfoModal({
                         <>
                             <div className="grid gap-2">
                                 <div className="space-y-4">
-                                    <Label className="text-gray-400">
-                                        {isCreateMode ? 'Photo' : 'Your Photo'}
-                                    </Label>
+                                    <span className="inline-block text-center">
+                                        <Label className="xs-gray-400-weight-400">
+                                            {isCreateMode
+                                                ? 'Photo'
+                                                : 'Your Photo'}
+                                        </Label>
 
-                                    <div className="relative w-fit">
-                                        <Avatar className="h-24 w-24 overflow-hidden rounded-full">
-                                            <AvatarImage
-                                                src={
-                                                    photoPreviewUrl ??
-                                                    (isCreateMode
-                                                        ? undefined
-                                                        : user.avatar) ??
-                                                    undefined
-                                                }
-                                                alt={
+                                        <div className="relative w-fit">
+                                            <Avatar className="h-24 w-24 overflow-hidden rounded-full">
+                                                <AvatarImage
+                                                    src={
+                                                        photoPreviewUrl ??
+                                                        (isCreateMode
+                                                            ? undefined
+                                                            : user.avatar) ??
+                                                        undefined
+                                                    }
+                                                    alt={
+                                                        isCreateMode
+                                                            ? 'Contact'
+                                                            : user.name
+                                                    }
+                                                />
+                                                <AvatarFallback className="rounded-full bg-neutral-200 text-black">
+                                                    {isCreateMode
+                                                        ? 'CN'
+                                                        : getInitials(
+                                                              user.name,
+                                                          )}
+                                                </AvatarFallback>
+                                            </Avatar>
+
+                                            <label
+                                                htmlFor="photo"
+                                                className="absolute right-0 bottom-0 inline-flex cursor-pointer items-center justify-center rounded-full border bg-background p-1 text-gray-500 shadow-sm hover:bg-muted"
+                                                title={
                                                     isCreateMode
-                                                        ? 'Contact'
-                                                        : user.name
+                                                        ? 'Upload photo'
+                                                        : 'Change photo'
                                                 }
+                                            >
+                                                <Camera className="size-3" />
+                                            </label>
+
+                                            <input
+                                                id="photo"
+                                                name="photo"
+                                                type="file"
+                                                accept="image/*"
+                                                className="sr-only"
+                                                onChange={(e) => {
+                                                    const file =
+                                                        e.currentTarget
+                                                            .files?.[0];
+                                                    if (!file) return;
+
+                                                    const url =
+                                                        URL.createObjectURL(
+                                                            file,
+                                                        );
+                                                    setPhotoPreviewUrl(url);
+                                                }}
                                             />
-                                            <AvatarFallback className="rounded-full bg-neutral-200 text-black">
-                                                {isCreateMode
-                                                    ? 'CN'
-                                                    : getInitials(user.name)}
-                                            </AvatarFallback>
-                                        </Avatar>
+                                        </div>
 
-                                        <label
-                                            htmlFor="photo"
-                                            className="absolute right-0 bottom-0 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border bg-background shadow-sm hover:bg-muted"
-                                            title={
-                                                isCreateMode
-                                                    ? 'Upload photo'
-                                                    : 'Change photo'
-                                            }
-                                        >
-                                            <Camera className="h-4 w-4" />
-                                        </label>
-
-                                        <input
-                                            id="photo"
-                                            name="photo"
-                                            type="file"
-                                            accept="image/*"
-                                            className="sr-only"
-                                            onChange={(e) => {
-                                                const file =
-                                                    e.currentTarget.files?.[0];
-                                                if (!file) return;
-
-                                                const url =
-                                                    URL.createObjectURL(file);
-                                                setPhotoPreviewUrl(url);
-                                            }}
-                                        />
-                                    </div>
-
-                                    <InputError message={errors.photo} />
+                                        <InputError message={errors.photo} />
+                                    </span>
                                 </div>
 
                                 <div className="grid gap-2">
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="first_name">
+                                            <Label
+                                                className="xs-gray-700-weight-500"
+                                                htmlFor="first_name"
+                                            >
                                                 First Name{' '}
                                                 <span className="text-destructive">
                                                     *
@@ -219,7 +231,10 @@ export default function UserInfoModal({
                                         </div>
 
                                         <div className="grid gap-2">
-                                            <Label htmlFor="last_name">
+                                            <Label
+                                                className="xs-gray-700-weight-500"
+                                                htmlFor="last_name"
+                                            >
                                                 Last Name{' '}
                                                 <span className="text-destructive">
                                                     *
@@ -242,7 +257,10 @@ export default function UserInfoModal({
 
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="organization">
+                                            <Label
+                                                className="xs-gray-700-weight-500"
+                                                htmlFor="organization"
+                                            >
                                                 Organization{' '}
                                                 <span className="text-destructive">
                                                     *
@@ -262,7 +280,10 @@ export default function UserInfoModal({
                                         </div>
 
                                         <div className="grid gap-2">
-                                            <Label htmlFor="job_title">
+                                            <Label
+                                                className="xs-gray-700-weight-500"
+                                                htmlFor="job_title"
+                                            >
                                                 Job Title
                                             </Label>
                                             <Input
@@ -281,7 +302,10 @@ export default function UserInfoModal({
 
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="email">
+                                            <Label
+                                                className="xs-gray-700-weight-500"
+                                                htmlFor="email"
+                                            >
                                                 Email{' '}
                                                 <span className="text-destructive">
                                                     *
@@ -306,7 +330,10 @@ export default function UserInfoModal({
                                         </div>
 
                                         <div className="grid gap-2">
-                                            <Label htmlFor="department">
+                                            <Label
+                                                className="xs-gray-700-weight-500"
+                                                htmlFor="department"
+                                            >
                                                 Department or Team
                                             </Label>
                                             <Input
@@ -325,7 +352,10 @@ export default function UserInfoModal({
 
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="phone_number">
+                                            <Label
+                                                className="xs-gray-700-weight-500"
+                                                htmlFor="phone_number"
+                                            >
                                                 Phone Number{' '}
                                                 <span className="text-destructive">
                                                     *
@@ -349,11 +379,11 @@ export default function UserInfoModal({
                                             <div className="flex items-center gap-2">
                                                 <Label
                                                     htmlFor="permissions_level"
-                                                    className="text-gray-400"
+                                                    className="text-xs font-medium text-gray-400"
                                                 >
                                                     Permissions Level
                                                 </Label>
-                                                <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                                <HelpCircle className="size-3 text-gray-400" />
                                             </div>
                                             <Input
                                                 id="permissions_level"
@@ -375,7 +405,12 @@ export default function UserInfoModal({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="about_me">About Me</Label>
+                                <Label
+                                    className="xs-gray-700-weight-500"
+                                    htmlFor="about_me"
+                                >
+                                    About Me
+                                </Label>
                                 <Textarea
                                     id="about_me"
                                     name="about_me"
@@ -430,7 +465,7 @@ export default function UserInfoModal({
                                             </button>
                                             <Label
                                                 htmlFor="out_of_office"
-                                                className="cursor-pointer"
+                                                className="sm-gray-700-weight-500 cursor-pointer"
                                             >
                                                 Set Out of Office
                                             </Label>
@@ -465,16 +500,19 @@ export default function UserInfoModal({
                                                 }
                                             />
 
-                                            <span className="flex flex-col">
-                                                <label htmlFor="ooo_start">
+                                            <span className="flex flex-col gap-2">
+                                                <Label
+                                                    className="xs-gray-700-weight-500"
+                                                    htmlFor="ooo_start"
+                                                >
                                                     First Day
-                                                </label>
-                                                <label
+                                                </Label>
+                                                <Label
                                                     className="sr-only"
                                                     htmlFor="ooo_start"
                                                 >
                                                     Out of office start date
-                                                </label>
+                                                </Label>
                                                 <input
                                                     id="ooo_start"
                                                     type="date"
@@ -500,12 +538,12 @@ export default function UserInfoModal({
                                                     }}
                                                 />
 
-                                                <label
+                                                <Label
                                                     className="sr-only"
                                                     htmlFor="ooo_end"
                                                 >
                                                     Out of office end date
-                                                </label>
+                                                </Label>
                                                 <input
                                                     id="ooo_end"
                                                     type="date"
@@ -543,10 +581,13 @@ export default function UserInfoModal({
                                                 </button>
                                             </span>
 
-                                            <span className="flex flex-col">
-                                                <label htmlFor="ooo_start">
+                                            <span className="flex flex-col gap-2">
+                                                <Label
+                                                    className="xs-gray-700-weight-500"
+                                                    htmlFor="ooo_end"
+                                                >
                                                     Last Day
-                                                </label>
+                                                </Label>
                                                 <button
                                                     type="button"
                                                     onClick={() => {
@@ -597,11 +638,7 @@ export default function UserInfoModal({
                                 >
                                     Cancel
                                 </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="bg-brand-gtc-red"
-                                >
+                                <Button type="submit" disabled={processing}>
                                     {isCreateMode ? 'Create Contact' : 'Submit'}
                                 </Button>
                             </DialogFooter>
