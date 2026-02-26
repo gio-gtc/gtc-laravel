@@ -25,6 +25,9 @@ interface UseEditableTableReturn<T> {
         field: string,
     ) => void;
     isEditing: (itemId: number | string, field: string) => boolean;
+    addItem: (item: T) => void;
+    removeItem: (itemId: number | string) => void;
+    startEditing: (itemId: number | string, field: string) => void;
 }
 
 export function useEditableTable<T extends object>({
@@ -131,6 +134,38 @@ export function useEditableTable<T extends object>({
         );
     };
 
+    // Add a new item to the table
+    const addItem = (item: T) => {
+        setLocalData((prev) => {
+            const updated = [...prev, item];
+            localDataRef.current = updated;
+            return updated;
+        });
+    };
+
+    // Remove an item from the table
+    const removeItem = (itemId: number | string) => {
+        setLocalData((prev) => {
+            const updated = prev.filter((i) => getId(i) !== itemId);
+            localDataRef.current = updated;
+            return updated;
+        });
+        if (editingCell?.itemId === itemId) {
+            setEditingCell(null);
+            setOriginalValue(null);
+        }
+    };
+
+    // Programmatically start editing a cell (uses ref to support immediate use after addItem)
+    const startEditing = (itemId: number | string, field: string) => {
+        const item = localDataRef.current.find((i) => getId(i) === itemId);
+        const value = item
+            ? ((item[field as keyof T] as string | number) ?? null)
+            : null;
+        setOriginalValue(value);
+        setEditingCell({ itemId, field });
+    };
+
     return {
         editingCell,
         localData,
@@ -139,5 +174,8 @@ export function useEditableTable<T extends object>({
         handleCellBlur,
         handleCellKeyDown,
         isEditing,
+        addItem,
+        removeItem,
+        startEditing,
     };
 }

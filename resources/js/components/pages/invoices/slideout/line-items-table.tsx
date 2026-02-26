@@ -29,7 +29,7 @@ interface InvoiceLineItemsTableProps {
     ) => void;
     isEditing: (itemId: number | string, field: string) => boolean;
     onAddItem?: () => void;
-    onRemoveItem?: (itemId: number) => void;
+    onRemoveItem?: (itemId: number | string) => void;
     totalAmount: number;
     isDeleted?: boolean;
 }
@@ -66,7 +66,9 @@ export default function InvoiceLineItemsTable({
                             <TableHead className="w-[120px] text-center">
                                 Code
                             </TableHead>
-                            <TableHead>Description</TableHead>
+                            <TableHead className="text-center">
+                                Description
+                            </TableHead>
                             <TableHead className="w-[100px] text-center">
                                 Quantity
                             </TableHead>
@@ -133,6 +135,8 @@ export default function InvoiceLineItemsTable({
                                             type="number"
                                             min={0}
                                             step={0.01}
+                                            emptyValue={0}
+                                            emptyPlaceholder="0"
                                             onChange={onItemChange}
                                             onDoubleClick={onItemDoubleClick}
                                             onBlur={onItemBlur}
@@ -154,6 +158,8 @@ export default function InvoiceLineItemsTable({
                                             type="number"
                                             min={0}
                                             step={0.01}
+                                            emptyValue={0}
+                                            emptyPlaceholder={formatCurrency(0)}
                                             formatValue={(val) =>
                                                 formatCurrency(
                                                     typeof val === 'string'

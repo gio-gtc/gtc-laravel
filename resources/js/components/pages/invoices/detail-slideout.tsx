@@ -103,10 +103,37 @@ export default function InvoiceDetailSlideout({
         handleCellBlur,
         handleCellKeyDown,
         isEditing,
+        addItem,
+        removeItem,
+        startEditing,
     } = useEditableTable<Item>({
         data: invoiceItems,
         getId: (item) => item.id,
     });
+
+    // First order_id from existing items (for new rows); fallback to 0 if none
+    const firstOrderId =
+        localInvoiceItems.length > 0 ? localInvoiceItems[0].order_id : 0;
+
+    const handleAddItem = () => {
+        if (!invoice) return;
+        const tempId = -Date.now();
+        const newItem: Item = {
+            id: tempId,
+            order_id: firstOrderId,
+            invoice_id: invoice.id,
+            code: '',
+            description: '',
+            quantity: 0,
+            price: 0,
+        };
+        addItem(newItem);
+        startEditing(tempId, 'code');
+    };
+
+    const handleRemoveItem = (itemId: number | string) => {
+        removeItem(itemId);
+    };
 
     // Early return if invoice or company doesn't exist - AFTER all hooks are called
     if (!invoice || !company) {
@@ -248,6 +275,8 @@ export default function InvoiceDetailSlideout({
                         onItemBlur={handleCellBlur}
                         onItemKeyDown={handleCellKeyDown}
                         isEditing={isEditing}
+                        onAddItem={handleAddItem}
+                        onRemoveItem={handleRemoveItem}
                         totalAmount={totalAmount}
                         isDeleted={invoice.isDeleted}
                     />

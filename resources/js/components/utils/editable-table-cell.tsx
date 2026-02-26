@@ -26,6 +26,10 @@ interface EditableTableCellProps {
     min?: number;
     step?: number;
     disabled?: boolean;
+    /** When value equals this, show empty in display/edit mode with placeholder. Use 0 for quantity/price so 0 doesn't block typing. */
+    emptyValue?: number | string;
+    /** Placeholder shown in input when value is empty. Defaults to String(emptyValue) when emptyValue is set. */
+    emptyPlaceholder?: string;
 }
 
 export function EditableTableCell({
@@ -44,7 +48,12 @@ export function EditableTableCell({
     min,
     step,
     disabled = false,
+    emptyValue,
+    emptyPlaceholder,
 }: EditableTableCellProps) {
+    const isEmpty =
+        emptyValue !== undefined &&
+        (value === emptyValue || (type === 'number' && Number(value) === 0));
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (disabled) return;
         const newValue =
@@ -64,7 +73,15 @@ export function EditableTableCell({
         onDoubleClick(itemId, field);
     };
 
-    const displayValue = formatValue ? formatValue(value) : String(value);
+    const displayValue = isEmpty
+        ? ''
+        : formatValue
+          ? formatValue(value)
+          : String(value);
+
+    const inputPlaceholder =
+        emptyPlaceholder ?? (emptyValue !== undefined ? String(emptyValue) : undefined);
+    const inputValue = isEmpty ? '' : (type === 'number' ? value : String(value));
 
     const alignmentClasses = {
         left: 'text-left',
@@ -76,7 +93,8 @@ export function EditableTableCell({
         return (
             <Input
                 type={type}
-                value={type === 'number' ? value : String(value)}
+                value={inputValue}
+                placeholder={inputPlaceholder}
                 onChange={handleChange}
                 onBlur={onBlur}
                 onKeyDown={handleKeyDown}
@@ -99,7 +117,7 @@ export function EditableTableCell({
                 className,
             )}
         >
-            {displayValue}
+            {displayValue || '\u00A0'}
         </p>
     );
 }
