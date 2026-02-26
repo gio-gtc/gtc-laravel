@@ -31,7 +31,7 @@ export default function InvoiceSlideoutHeader({
 }: InvoiceSlideoutHeaderProps) {
     return (
         <SheetHeader className="relative border-b px-6 pt-6 pb-4">
-            <div className="flex flex-col items-start justify-between pr-10 sm:flex-row">
+            <div className="flex flex-col items-start justify-between sm:flex-row">
                 <div className="flex-1 font-medium">
                     <SheetTitle className="text-3xl font-medium">
                         {tour}

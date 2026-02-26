@@ -93,6 +93,7 @@ export function EditableTableCell({
         <p
             onDoubleClick={handleDoubleClick}
             className={cn(
+                'text-xs font-semibold text-gray-500',
                 disabled ? 'cursor-default' : 'cursor-pointer',
                 alignmentClasses[align],
                 className,

@@ -45,7 +45,6 @@ export default function InvoiceLineItemsTable({
     totalAmount,
     isDeleted = false,
 }: InvoiceLineItemsTableProps) {
-    // TODO: Continue from here
     return (
         <div className="space-y-4">
             <div
@@ -74,7 +73,7 @@ export default function InvoiceLineItemsTable({
                         {items.length > 0 ? (
                             items.map((item) => (
                                 <TableRow key={item.id}>
-                                    <TableCell className="font-medium">
+                                    <TableCell>
                                         <EditableTableCell
                                             value={item.code}
                                             itemId={item.id}
@@ -117,6 +116,7 @@ export default function InvoiceLineItemsTable({
                                     </TableCell>
                                     <TableCell>
                                         <EditableTableCell
+                                            className="text-gray-400"
                                             value={item.quantity}
                                             itemId={item.id}
                                             field="quantity"
@@ -135,8 +135,9 @@ export default function InvoiceLineItemsTable({
                                             disabled={isDeleted}
                                         />
                                     </TableCell>
-                                    <TableCell className="text-right">
+                                    <TableCell>
                                         <EditableTableCell
+                                            className="text-gray-400"
                                             value={item.price}
                                             itemId={item.id}
                                             field="price"
@@ -162,22 +163,25 @@ export default function InvoiceLineItemsTable({
                                             disabled={isDeleted}
                                         />
                                     </TableCell>
-                                    <TableCell className="text-right">
+                                    <TableCell className="text-right text-xs font-semibold text-gray-500">
                                         {formatCurrency(
                                             item.quantity * item.price,
                                         )}
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="text-center">
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-6 w-6 rounded-full border-2 border-destructive text-destructive hover:bg-destructive/90 hover:text-white"
+                                            className="size-4 rounded-full border-2 border-destructive text-destructive hover:bg-destructive/90 hover:text-white"
                                             onClick={() =>
                                                 onRemoveItem?.(item.id)
                                             }
                                             disabled={isDeleted}
                                         >
-                                            <X className="h-3 w-3" />
+                                            <X
+                                                className="size-2.5"
+                                                strokeWidth={3}
+                                            />
                                         </Button>
                                     </TableCell>
                                 </TableRow>
