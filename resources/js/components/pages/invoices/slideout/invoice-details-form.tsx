@@ -35,7 +35,7 @@ export default function InvoiceDetailsForm({
             <ColumnedRowsChild
                 labelFor="release_date"
                 labelContent="Invoice Release Date"
-                labelClassName="text-black"
+                labelLocation="other"
             >
                 <DatePickerInput
                     id="release_date"
@@ -50,7 +50,7 @@ export default function InvoiceDetailsForm({
             <ColumnedRowsChild
                 labelFor="payment_due"
                 labelContent="Invoice Due Date"
-                labelClassName="text-black"
+                labelLocation="other"
             >
                 <DatePickerInput
                     id="payment_due"
@@ -65,6 +65,7 @@ export default function InvoiceDetailsForm({
             <ColumnedRowsChild
                 labelFor="clientReference"
                 labelContent="Client Reference"
+                labelLocation="other"
             >
                 <Input
                     id="clientReference"
@@ -79,7 +80,7 @@ export default function InvoiceDetailsForm({
             <ColumnedRowsChild
                 labelFor="orderedBy"
                 labelContent="Ordered By"
-                labelClassName="text-black"
+                labelLocation="other"
             >
                 <Input
                     id="orderedBy"
@@ -93,7 +94,7 @@ export default function InvoiceDetailsForm({
             <ColumnedRowsChild
                 labelFor="accountPayableEmail"
                 labelContent="Account Payable Email"
-                labelClassName="text-black"
+                labelLocation="other"
             >
                 <div className="relative">
                     <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -113,6 +114,7 @@ export default function InvoiceDetailsForm({
             <ColumnedRowsChild
                 labelFor="additionalEmails"
                 labelContent="Additional Emails"
+                labelLocation="other"
                 multiInput
             >
                 <InputAdditions

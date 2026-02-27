@@ -107,7 +107,9 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                         <Label className="sm:flex-1">Tour Options</Label>
                         <div className="flex flex-2 flex-col gap-3">
                             <div className="flex flex-col gap-1">
-                                <span className="text-xs">Voice Over</span>
+                                <span className="xs-gray-700-weight-500">
+                                    Voice Over
+                                </span>
                                 <Select name="voice_over">
                                     <SelectTrigger>
                                         <SelectValue placeholder="Voice Over" />
@@ -137,7 +139,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 />
                                 <Label
                                     htmlFor="hold_all_invoices"
-                                    className="font-medium"
+                                    className="sm-gray-700-weight-500"
                                 >
                                     Hold All Invoices
                                 </Label>
@@ -152,7 +154,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 />
                                 <Label
                                     htmlFor="live_on_ordering_system"
-                                    className="font-medium"
+                                    className="sm-gray-700-weight-500"
                                 >
                                     Live On Ordering System
                                 </Label>
@@ -167,7 +169,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 />
                                 <Label
                                     htmlFor="require_client_approval"
-                                    className="font-medium"
+                                    className="sm-gray-700-weight-500"
                                 >
                                     Require Client Approval
                                 </Label>
@@ -346,7 +348,7 @@ function PriceInput({
     return (
         <>
             <div className="flex items-center justify-between gap-2">
-                <Label htmlFor={id} className="font-medium">
+                <Label htmlFor={id} className="sm-black-weight-400">
                     {title}
                 </Label>
                 <DollarInput id={id} containerClassNames="max-w-20" />

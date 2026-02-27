@@ -36,7 +36,7 @@ export default function InvoiceAddressForm({
             <ColumnedRowsChild
                 labelFor="name"
                 labelContent="Company Name"
-                labelClassName="text-black font-medium"
+                labelLocation="other"
             >
                 <Input
                     id="name"
@@ -49,7 +49,7 @@ export default function InvoiceAddressForm({
             <ColumnedRowsChild
                 labelFor="billing_address"
                 labelContent="Billing Address"
-                labelClassName="text-black font-medium"
+                labelLocation="other"
             >
                 <Textarea
                     id="billing_address"
@@ -65,7 +65,7 @@ export default function InvoiceAddressForm({
             <ColumnedRowsChild
                 labelFor="city"
                 labelContent="City"
-                labelClassName="text-black font-medium"
+                labelLocation="other"
             >
                 <Input
                     id="city"
@@ -78,7 +78,7 @@ export default function InvoiceAddressForm({
             <ColumnedRowsChild
                 labelFor="state"
                 labelContent="State/Province"
-                labelClassName="text-black font-medium"
+                labelLocation="other"
             >
                 <Input
                     id="state"
@@ -91,7 +91,7 @@ export default function InvoiceAddressForm({
             <ColumnedRowsChild
                 labelFor="zip"
                 labelContent="ZIP/Postal Code"
-                labelClassName="text-black font-medium"
+                labelLocation="other"
             >
                 <Input
                     id="zip"
@@ -104,7 +104,7 @@ export default function InvoiceAddressForm({
             <ColumnedRowsChild
                 labelFor="country_id"
                 labelContent="Country"
-                labelClassName="text-black font-medium"
+                labelLocation="other"
             >
                 <Select
                     value={formData.country_id}
