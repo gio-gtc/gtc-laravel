@@ -58,8 +58,11 @@ export default function InvoiceDetailSlideout({
         additionalEmails: [''] as string[],
     });
 
-    // Delete modal state
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    // Action modal state (delete or restore)
+    const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+    const [modalAction, setModalAction] = useState<'delete' | 'restore'>(
+        'delete',
+    );
     const [isMaximized, setIsMaximized] = useState(false);
 
     // Update form data when invoice changes
@@ -184,7 +187,12 @@ export default function InvoiceDetailSlideout({
 
     const handleDeleteConfirm = (reason: string) => {
         console.log('Deleting invoice:', invoice, 'Reason:', reason);
-        setIsDeleteModalOpen(false);
+        setIsActionModalOpen(false);
+    };
+
+    const handleRestoreConfirm = (reason: string) => {
+        console.log('Restoring invoice:', invoice, 'Reason:', reason);
+        setIsActionModalOpen(false);
     };
 
     return (
@@ -246,8 +254,16 @@ export default function InvoiceDetailSlideout({
 
                     {/* Action Buttons Section */}
                     <InvoiceActionButtons
-                        onDeleteInvoice={() => setIsDeleteModalOpen(true)}
-                        disabled={invoice.isDeleted}
+                        isDeleted={invoice.isDeleted}
+                        onDeleteInvoice={() => {
+                            setModalAction('delete');
+                            setIsActionModalOpen(true);
+                        }}
+                        onRestoreInvoice={() => {
+                            setModalAction('restore');
+                            setIsActionModalOpen(true);
+                        }}
+                        disabled={false}
                     />
 
                     {/* Deletion Info */}
@@ -293,12 +309,17 @@ export default function InvoiceDetailSlideout({
                 </div>
             </SheetContent>
 
-            {/* Delete Invoice Modal */}
+            {/* Delete / Restore Invoice Modal */}
             <DeleteInvoiceModal
-                isOpen={isDeleteModalOpen}
-                onClose={() => setIsDeleteModalOpen(false)}
-                onConfirm={handleDeleteConfirm}
+                isOpen={isActionModalOpen}
+                onClose={() => setIsActionModalOpen(false)}
+                onConfirm={
+                    modalAction === 'delete'
+                        ? handleDeleteConfirm
+                        : handleRestoreConfirm
+                }
                 invoice={invoice}
+                action={modalAction}
             />
         </Sheet>
     );
