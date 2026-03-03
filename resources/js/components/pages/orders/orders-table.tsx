@@ -213,6 +213,7 @@ function OrdersTable() {
                 <div className="flex items-center gap-2">
                     <Button
                         variant="outline"
+                        size={'md'}
                         disabled={selectedVenueIds.length === 0}
                         onClick={() => setIsAddVenueModalOpen(true)}
                     >
@@ -237,7 +238,7 @@ function OrdersTable() {
             </div>
 
             {/* Table */}
-            <div className="rounded-md border">
+            <div className="border-t">
                 <Table>
                     <TableHeader>
                         <TableRow>
