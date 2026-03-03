@@ -22,12 +22,12 @@ import {
     ChevronDown,
     ChevronRight,
     Filter,
-    Search,
     SortAsc,
 } from 'lucide-react';
 import { Fragment, useMemo, useState } from 'react';
 import AddVenueModal from './add-venue-modal';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
+import OrdersSearchFilter from './orders-search-filter';
 import VenueDetailSlideout from './slideout';
 import StatusIcon from './status-icon';
 
@@ -38,11 +38,11 @@ type GroupedOrderData = {
         venue: Venue;
     }>;
 };
-// TODO: START FROM HERE
 function OrdersTable() {
     const [expandedOrders, setExpandedOrders] = useState<Set<number>>(
         new Set(),
     );
+    const [searchQuery, setSearchQuery] = useState('');
     const [selectedVenueIds, setSelectedVenueIds] = useState<number[]>([]);
     const [editingVenueId, setEditingVenueId] = useState<number | null>(null);
     const [isAddVenueModalOpen, setIsAddVenueModalOpen] = useState(false);
@@ -86,6 +86,52 @@ function OrdersTable() {
             return usersWithFallback.find((user) => user.id === clientId);
         };
     }, [usersWithFallback]);
+
+    // Filter grouped data by search query
+    const filteredGroupedData = useMemo(() => {
+        if (!searchQuery.trim()) return groupedData;
+        const query = searchQuery.toLowerCase().trim();
+
+        const venueMatches = (
+            venueItem: { orderVenue: TourVenue; venue: Venue },
+        ) => {
+            const region = `${venueItem.venue.city}, ${venueItem.venue.state}`;
+            const client = getClientUser(venueItem.orderVenue.client);
+            const collaborators = getVenueCollaborators(venueItem.venue.id);
+            return (
+                region.toLowerCase().includes(query) ||
+                venueItem.venue.name.toLowerCase().includes(query) ||
+                (client?.name?.toLowerCase().includes(query) ?? false) ||
+                collaborators.some((c) =>
+                    c.name.toLowerCase().includes(query),
+                )
+            );
+        };
+
+        // If query matches any tour name, show full groups for matching tours
+        const hasTourMatch = groupedData.some((g) =>
+            g.order.name.toLowerCase().includes(query),
+        );
+
+        if (hasTourMatch) {
+            return groupedData.filter((g) =>
+                g.order.name.toLowerCase().includes(query),
+            );
+        }
+
+        // Otherwise narrow: filter groups and filter venues within each group
+        return groupedData
+            .filter((g) => g.venues.some(venueMatches))
+            .map((g) => ({
+                ...g,
+                venues: g.venues.filter(venueMatches),
+            }));
+    }, [
+        groupedData,
+        searchQuery,
+        getClientUser,
+        getVenueCollaborators,
+    ]);
 
     // Helper function to format date (short format: "Nov 8")
     const formatDate = (dateString: string): string => {
@@ -231,9 +277,13 @@ function OrdersTable() {
                     <Button variant="outline">
                         <SortAsc className="size-3.5" />
                     </Button>
-                    <Button variant="outline">
-                        <Search className="size-3.5" />
-                    </Button>
+                    <OrdersSearchFilter
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        groupedData={groupedData}
+                        getClientUser={getClientUser}
+                        getVenueCollaborators={getVenueCollaborators}
+                    />
                 </div>
             </div>
 
@@ -261,8 +311,8 @@ function OrdersTable() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {groupedData.length > 0 ? (
-                            groupedData.map((group) => {
+                        {filteredGroupedData.length > 0 ? (
+                            filteredGroupedData.map((group) => {
                                 const isExpanded = expandedOrders.has(
                                     group.order.id,
                                 );
