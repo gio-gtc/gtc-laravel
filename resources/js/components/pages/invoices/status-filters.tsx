@@ -16,18 +16,21 @@ export default function InvoiceStatusFilters({
     return (
         <div className="flex items-center gap-1">
             <Button
+                size={'md'}
                 variant={filter === 'all' ? 'default' : 'outline'}
                 onClick={() => onFilterChange('all')}
             >
                 All
             </Button>
             <Button
+                size={'md'}
                 variant={filter === 'on-hold' ? 'default' : 'outline'}
                 onClick={() => onFilterChange('on-hold')}
             >
                 On Hold
             </Button>
             <Button
+                size={'md'}
                 variant={filter === 'released' ? 'default' : 'outline'}
                 onClick={() => onFilterChange('released')}
             >
@@ -35,6 +38,7 @@ export default function InvoiceStatusFilters({
             </Button>
             {onSendReminder && (
                 <Button
+                    size={'md'}
                     variant="outline"
                     onClick={onSendReminder}
                     disabled={selectedCount === 0}

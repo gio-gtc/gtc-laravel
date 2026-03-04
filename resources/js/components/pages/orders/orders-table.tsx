@@ -5,7 +5,6 @@ import {
     venuesData,
 } from '@/components/mockdata';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import {
     Table,
     TableBody,
@@ -392,13 +391,13 @@ function OrdersTable() {
                                                 colSpan={6}
                                                 className="px-2 py-1"
                                             >
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center gap-2.5">
                                                     {isExpanded ? (
-                                                        <ChevronDown className="h-4 w-4" />
+                                                        <ChevronDown className="h-1.5 w-2 text-gray-600" />
                                                     ) : (
-                                                        <ChevronRight className="h-4 w-4" />
+                                                        <ChevronRight className="h-1.5 w-2 text-gray-600" />
                                                     )}
-                                                    <span>
+                                                    <span className="text-gray-700">
                                                         {group.order.name}
                                                     </span>
                                                 </div>
@@ -427,9 +426,9 @@ function OrdersTable() {
                                                             'selected'
                                                         }
                                                         className={cn(
-                                                            'cursor-pointer hover:bg-red-50',
+                                                            'xs-gray-500-weight-600 cursor-pointer hover:bg-red-50',
                                                             venueIsSelected &&
-                                                                'data-[state=selected]:bg-red-200',
+                                                                'data-[state=selected]:bg-red-100',
                                                         )}
                                                         onClick={() =>
                                                             handleVenueRowClick(
@@ -465,7 +464,7 @@ function OrdersTable() {
                                                                     }
                                                                 </span>
                                                                 <ChevronRight
-                                                                    className="h-4 w-4 cursor-pointer text-gray-400 hover:text-gray-600"
+                                                                    className="h-2.5 w-2.5 cursor-pointer text-gray-400 hover:text-gray-600"
                                                                     onClick={(
                                                                         e,
                                                                     ) => {
@@ -524,7 +523,7 @@ function OrdersTable() {
                                                             )}
                                                         >
                                                             {client && (
-                                                                <Avatar className="h-7 w-7">
+                                                                <Avatar className="h-7 w-7 border-2 border-background">
                                                                     <AvatarImage
                                                                         src={
                                                                             client.avatar ||

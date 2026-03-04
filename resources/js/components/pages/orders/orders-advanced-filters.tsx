@@ -6,16 +6,16 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Divider from '@/components/utils/divider';
+import {
+    type OrdersFilterState,
+    DEFAULT_FILTERS,
+} from '@/hooks/use-orders-filters';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
 import { type TourVenue, type User } from '@/types';
 import { Filter, X } from 'lucide-react';
 import { useMemo } from 'react';
 import UserMultiSelect from './user-multi-select';
-import {
-    type OrdersFilterState,
-    DEFAULT_FILTERS,
-} from '@/hooks/use-orders-filters';
 
 const STATUS_OPTIONS: { value: TourVenue['status']; label: string }[] = [
     { value: 'edit', label: 'Edit' },
@@ -49,14 +49,15 @@ export default function OrdersAdvancedFilters({
     );
 
     const hasActiveFilters = useMemo(() => {
-        const clientActive =
-            filter.clientIds.length > 0 || filter.myClients;
+        const clientActive = filter.clientIds.length > 0 || filter.myClients;
         const collaboratorActive =
             filter.collaboratorIds.length > 0 || filter.myCollaborators;
         const statusActive = filter.statuses.length > 0;
         const countryActive =
             !filter.country.us || !filter.country.international;
-        return clientActive || collaboratorActive || statusActive || countryActive;
+        return (
+            clientActive || collaboratorActive || statusActive || countryActive
+        );
     }, [filter]);
 
     const handleClearFilters = () => {
@@ -76,17 +77,20 @@ export default function OrdersAdvancedFilters({
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline">
+                <Button variant="outline" size={'md'}>
                     <Filter
                         className={cn(
-                            'size-3',
+                            'size-3 text-gray-400',
                             hasActiveFilters && 'fill-current',
                         )}
                     />
                     Filters
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80 max-h-[80vh] overflow-y-auto p-4">
+            <DropdownMenuContent
+                align="end"
+                className="max-h-[80vh] w-80 overflow-y-auto p-4"
+            >
                 <div className="space-y-4">
                     {/* Clients Section */}
                     <div className="space-y-2">
@@ -152,7 +156,8 @@ export default function OrdersAdvancedFilters({
                                     })
                                 }
                                 availableUsers={usersWithFallback.filter(
-                                    (u) => !filter.collaboratorIds.includes(u.id),
+                                    (u) =>
+                                        !filter.collaboratorIds.includes(u.id),
                                 )}
                             />
                         </div>
@@ -190,9 +195,7 @@ export default function OrdersAdvancedFilters({
                         <div className="flex flex-col gap-2 sm:flex-row">
                             <Button
                                 variant={
-                                    filter.country.us
-                                        ? 'default'
-                                        : 'secondary'
+                                    filter.country.us ? 'default' : 'secondary'
                                 }
                                 size="sm"
                                 className="w-full justify-start"

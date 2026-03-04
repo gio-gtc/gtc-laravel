@@ -79,10 +79,10 @@ export default function InvoiceAdvancedFilters({
         <div className="flex items-center gap-1">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
+                    <Button variant="outline" size={'md'}>
                         <Filter
                             className={cn(
-                                'size-3',
+                                'size-3 text-gray-400',
                                 hasActiveFilters && 'fill-current',
                             )}
                         />
