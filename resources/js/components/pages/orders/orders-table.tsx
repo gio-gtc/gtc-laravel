@@ -15,30 +15,30 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { useInitials } from '@/hooks/use-initials';
+import { useOrdersFilters } from '@/hooks/use-orders-filters';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
-import { type Tour, type TourVenue, type User, type Venue } from '@/types';
 import {
-    ChevronDown,
-    ChevronRight,
-    Filter,
-    SortAsc,
-} from 'lucide-react';
+    type SharedData,
+    type Tour,
+    type TourVenue,
+    type User,
+    type Venue,
+} from '@/types';
+import { usePage } from '@inertiajs/react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Fragment, useMemo, useState } from 'react';
 import AddVenueModal from './add-venue-modal';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
-import OrdersSearchFilter from './orders-search-filter';
+import OrdersTableHeaderActions, {
+    type GroupedOrderData,
+} from './orders-table-header-actions';
 import VenueDetailSlideout from './slideout';
 import StatusIcon from './status-icon';
 
-type GroupedOrderData = {
-    order: Tour;
-    venues: Array<{
-        orderVenue: TourVenue;
-        venue: Venue;
-    }>;
-};
 function OrdersTable() {
+    const { auth } = usePage<SharedData>().props;
+    const [filters, setFilters] = useOrdersFilters();
     const [expandedOrders, setExpandedOrders] = useState<Set<number>>(
         new Set(),
     );
@@ -87,48 +87,127 @@ function OrdersTable() {
         };
     }, [usersWithFallback]);
 
-    // Filter grouped data by search query
+    // Filter grouped data by search query, then by advanced filters
     const filteredGroupedData = useMemo(() => {
-        if (!searchQuery.trim()) return groupedData;
-        const query = searchQuery.toLowerCase().trim();
-
-        const venueMatches = (
-            venueItem: { orderVenue: TourVenue; venue: Venue },
-        ) => {
-            const region = `${venueItem.venue.city}, ${venueItem.venue.state}`;
-            const client = getClientUser(venueItem.orderVenue.client);
-            const collaborators = getVenueCollaborators(venueItem.venue.id);
-            return (
-                region.toLowerCase().includes(query) ||
-                venueItem.venue.name.toLowerCase().includes(query) ||
-                (client?.name?.toLowerCase().includes(query) ?? false) ||
-                collaborators.some((c) =>
-                    c.name.toLowerCase().includes(query),
-                )
-            );
-        };
-
-        // If query matches any tour name, show full groups for matching tours
-        const hasTourMatch = groupedData.some((g) =>
-            g.order.name.toLowerCase().includes(query),
-        );
-
-        if (hasTourMatch) {
-            return groupedData.filter((g) =>
+        // Step 1: Search filter
+        let searchFiltered: GroupedOrderData[];
+        if (!searchQuery.trim()) {
+            searchFiltered = groupedData;
+        } else {
+            const query = searchQuery.toLowerCase().trim();
+            const venueMatchesSearch = (venueItem: {
+                orderVenue: TourVenue;
+                venue: Venue;
+            }) => {
+                const region = `${venueItem.venue.city}, ${venueItem.venue.state}`;
+                const client = getClientUser(venueItem.orderVenue.client);
+                const collaborators = getVenueCollaborators(venueItem.venue.id);
+                return (
+                    region.toLowerCase().includes(query) ||
+                    venueItem.venue.name.toLowerCase().includes(query) ||
+                    (client?.name?.toLowerCase().includes(query) ?? false) ||
+                    collaborators.some((c) =>
+                        c.name.toLowerCase().includes(query),
+                    )
+                );
+            };
+            const hasTourMatch = groupedData.some((g) =>
                 g.order.name.toLowerCase().includes(query),
             );
+            if (hasTourMatch) {
+                searchFiltered = groupedData.filter((g) =>
+                    g.order.name.toLowerCase().includes(query),
+                );
+            } else {
+                searchFiltered = groupedData
+                    .filter((g) => g.venues.some(venueMatchesSearch))
+                    .map((g) => ({
+                        ...g,
+                        venues: g.venues.filter(venueMatchesSearch),
+                    }));
+            }
         }
 
-        // Otherwise narrow: filter groups and filter venues within each group
-        return groupedData
-            .filter((g) => g.venues.some(venueMatches))
+        // Step 2: Apply advanced filters (client, collaborator, status, country)
+        const hasClientFilter =
+            filters.clientIds.length > 0 || filters.myClients;
+        const hasCollaboratorFilter =
+            filters.collaboratorIds.length > 0 || filters.myCollaborators;
+        const hasStatusFilter = filters.statuses.length > 0;
+        const hasCountryFilter =
+            !filters.country.us || !filters.country.international;
+
+        const venueMatchesAdvancedFilters = (venueItem: {
+            orderVenue: TourVenue;
+            venue: Venue;
+        }): boolean => {
+            // Client filter (when myClients, ignore clientIds per plan)
+            if (hasClientFilter) {
+                if (filters.myClients) {
+                    if (venueItem.orderVenue.client !== auth.user.id)
+                        return false;
+                } else {
+                    if (
+                        !filters.clientIds.includes(venueItem.orderVenue.client)
+                    )
+                        return false;
+                }
+            }
+
+            // Collaborator filter (when myCollaborators, ignore collaboratorIds per plan)
+            if (hasCollaboratorFilter) {
+                const collaborators = getVenueCollaborators(venueItem.venue.id);
+                if (filters.myCollaborators) {
+                    if (!collaborators.some((c) => c.id === auth.user.id))
+                        return false;
+                } else {
+                    if (
+                        !collaborators.some((c) =>
+                            filters.collaboratorIds.includes(c.id),
+                        )
+                    )
+                        return false;
+                }
+            }
+
+            // Status filter
+            if (hasStatusFilter) {
+                if (!filters.statuses.includes(venueItem.orderVenue.status))
+                    return false;
+            }
+
+            // Country filter
+            if (hasCountryFilter) {
+                const isUS = venueItem.venue.country_id === 1;
+                const usMatch = filters.country.us && isUS;
+                const internationalMatch =
+                    filters.country.international && !isUS;
+                if (!usMatch && !internationalMatch) return false;
+            }
+
+            return true;
+        };
+
+        if (
+            !hasClientFilter &&
+            !hasCollaboratorFilter &&
+            !hasStatusFilter &&
+            !hasCountryFilter
+        ) {
+            return searchFiltered;
+        }
+
+        return searchFiltered
+            .filter((g) => g.venues.some(venueMatchesAdvancedFilters))
             .map((g) => ({
                 ...g,
-                venues: g.venues.filter(venueMatches),
+                venues: g.venues.filter(venueMatchesAdvancedFilters),
             }));
     }, [
         groupedData,
         searchQuery,
+        filters,
+        auth.user.id,
         getClientUser,
         getVenueCollaborators,
     ]);
@@ -254,38 +333,17 @@ function OrdersTable() {
 
     return (
         <div className="space-y-4">
-            {/* Header Actions */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Button
-                        variant="outline"
-                        size={'md'}
-                        disabled={selectedVenueIds.length === 0}
-                        onClick={() => setIsAddVenueModalOpen(true)}
-                    >
-                        Add Venue
-                    </Button>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Button variant="outline">
-                        My Tours, US, +4
-                        <span className="ml-2">x</span>
-                    </Button>
-                    <Button variant="outline">
-                        <Filter className="size-3.5" />
-                    </Button>
-                    <Button variant="outline">
-                        <SortAsc className="size-3.5" />
-                    </Button>
-                    <OrdersSearchFilter
-                        searchQuery={searchQuery}
-                        onSearchChange={setSearchQuery}
-                        groupedData={groupedData}
-                        getClientUser={getClientUser}
-                        getVenueCollaborators={getVenueCollaborators}
-                    />
-                </div>
-            </div>
+            <OrdersTableHeaderActions
+                selectedVenueCount={selectedVenueIds.length}
+                onAddVenueClick={() => setIsAddVenueModalOpen(true)}
+                filters={filters}
+                onFilterChange={setFilters}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+                groupedData={groupedData}
+                getClientUser={getClientUser}
+                getVenueCollaborators={getVenueCollaborators}
+            />
 
             {/* Table */}
             <div className="border-t">

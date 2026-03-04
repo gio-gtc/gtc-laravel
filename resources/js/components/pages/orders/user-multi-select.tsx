@@ -99,7 +99,7 @@ function UserMultiSelect({
             {/* User List */}
             <div className="space-y-2">
                 <label className="text-sm font-medium">Available Users</label>
-                <div className="max-h-60 space-y-1 overflow-y-auto">
+                <div className="space-y-1">
                     {filteredUsers.length === 0 ? (
                         <div className="py-4 text-center text-sm text-muted-foreground">
                             No users found
