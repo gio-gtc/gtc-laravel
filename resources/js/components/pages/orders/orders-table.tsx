@@ -355,7 +355,9 @@ function OrdersTable() {
                                         width: column.size,
                                         position: 'relative',
                                     }}
-                                    className={cn('relative px-2 py-1')}
+                                    className={cn(
+                                        'relative h-[30px] px-2 py-1',
+                                    )}
                                 >
                                     {column.header}
                                 </TableHead>
@@ -421,7 +423,7 @@ function OrdersTable() {
                                                             'selected'
                                                         }
                                                         className={cn(
-                                                            'xs-gray-500-weight-600 cursor-pointer hover:bg-red-50',
+                                                            'xs-gray-500-weight-600 cursor-pointer hover:bg-gray-100',
                                                             venueIsSelected &&
                                                                 'data-[state=selected]:bg-red-100',
                                                         )}
@@ -440,7 +442,7 @@ function OrdersTable() {
                                                                     .size,
                                                             }}
                                                             className={cn(
-                                                                'px-2 py-0 text-gray-500',
+                                                                'px-2 py-0.5 text-gray-500',
                                                             )}
                                                         >
                                                             <div className="flex items-center justify-between">
@@ -481,7 +483,7 @@ function OrdersTable() {
                                                                     .size,
                                                             }}
                                                             className={cn(
-                                                                'px-2 py-0 text-gray-500',
+                                                                'px-2 py-0.5 text-gray-500',
                                                             )}
                                                         >
                                                             {
@@ -495,7 +497,7 @@ function OrdersTable() {
                                                                     .size,
                                                             }}
                                                             className={cn(
-                                                                'px-2 py-0 text-gray-500',
+                                                                'px-2 py-0.5 text-gray-500',
                                                             )}
                                                         >
                                                             {formatDate(
@@ -510,7 +512,7 @@ function OrdersTable() {
                                                                     .size,
                                                             }}
                                                             className={cn(
-                                                                'px-2 py-0 text-gray-500',
+                                                                'px-2 py-0.5 text-gray-500',
                                                             )}
                                                         >
                                                             {client && (
@@ -527,7 +529,7 @@ function OrdersTable() {
                                                                     .size,
                                                             }}
                                                             className={cn(
-                                                                'px-2 py-0 text-gray-500',
+                                                                'px-2 py-0.5 text-gray-500',
                                                             )}
                                                         >
                                                             <UserAvatarsStack

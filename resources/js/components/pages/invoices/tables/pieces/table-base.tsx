@@ -106,8 +106,8 @@ export function InvoiceTableBase({
                             <TableRow
                                 key={row.id}
                                 className={cn(
-                                    'cursor-pointer select-none hover:bg-red-100',
-                                    isSelected && 'bg-red-200',
+                                    'cursor-pointer select-none hover:bg-gray-100',
+                                    isSelected && 'bg-red-100',
                                 )}
                                 onClick={(e) => onRowClick(row.original, e)}
                                 onMouseDown={(e) => {
