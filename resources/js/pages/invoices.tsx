@@ -15,7 +15,7 @@ export default function Invoices() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Invoices" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl">
+            <div className="flex h-full flex-1 flex-col overflow-x-auto rounded-xl">
                 <Heading
                     title="Invoices"
                     description="Review invoices below."
