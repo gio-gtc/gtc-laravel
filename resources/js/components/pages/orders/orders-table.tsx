@@ -330,7 +330,7 @@ function OrdersTable() {
     );
 
     return (
-        <div className="space-y-4">
+        <div className="table-content-max-width space-y-4">
             <OrdersTableHeaderActions
                 selectedVenueCount={selectedVenueIds.length}
                 onAddVenueClick={() => setIsAddVenueModalOpen(true)}

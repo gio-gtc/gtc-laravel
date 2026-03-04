@@ -204,7 +204,7 @@ function InvoicesTable() {
     }, [filter, searchQuery, countryFilter, dateFilter, dateRangeFilter]);
 
     return (
-        <div className="space-y-4">
+        <div className="table-content-max-width space-y-4">
             {/* Header Actions */}
             <div className="flex justify-between gap-1 overflow-auto">
                 <InvoiceStatusFilters
