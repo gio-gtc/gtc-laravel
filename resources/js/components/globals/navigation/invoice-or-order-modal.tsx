@@ -38,7 +38,7 @@ export default function InvoiceOrOrderModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="sm:max-w-lg">
+            <DialogContent className="sm:max-w-[800px]">
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>
@@ -49,6 +49,7 @@ export default function InvoiceOrOrderModal({
                         <ColumnedRowsChild
                             labelFor="tour"
                             labelContent="Tour"
+                            childrenContainerClasses="modal-child-container"
                             required
                         >
                             <Input
@@ -64,6 +65,7 @@ export default function InvoiceOrOrderModal({
                         <ColumnedRowsChild
                             labelFor="venue"
                             labelContent="Venue"
+                            childrenContainerClasses="modal-child-container"
                             required
                         >
                             <Input

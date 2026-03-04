@@ -46,7 +46,7 @@ export default function OrganizationModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
+            <DialogContent className="overflow-y-auto sm:max-w-[800px]">
                 <DialogHeader>
                     <DialogTitle>Organization Information</DialogTitle>
                 </DialogHeader>
@@ -59,6 +59,7 @@ export default function OrganizationModal({
                         <ColumnedRowsChild
                             labelFor="organization_name"
                             labelContent="Organization Name"
+                            childrenContainerClasses="modal-child-container"
                             required
                         >
                             <Input
@@ -73,6 +74,7 @@ export default function OrganizationModal({
                         <ColumnedRowsChild
                             labelFor="organization_type"
                             labelContent="Organization Type"
+                            childrenContainerClasses="modal-child-container"
                             required
                         >
                             <Select name="organization_type" required>
@@ -105,6 +107,7 @@ export default function OrganizationModal({
                         <ColumnedRowsChild
                             labelFor="street_address"
                             labelContent="Address"
+                            childrenContainerClasses="modal-child-container"
                             required
                             multiInput
                         >
@@ -170,11 +173,12 @@ export default function OrganizationModal({
                                     <span className="ml-0.5 text-destructive">
                                         *
                                     </span>
-                                    <span className="block font-normal text-gray-600">
+                                    <span className="mt-1 block font-normal text-gray-600">
                                         In US Dollars
                                     </span>
                                 </>
                             }
+                            childrenContainerClasses="modal-child-container"
                         >
                             <DollarInput
                                 id="credit_limit"
@@ -192,11 +196,12 @@ export default function OrganizationModal({
                                     <span className="ml-0.5 text-destructive">
                                         *
                                     </span>
-                                    <span className="block font-normal text-gray-600">
+                                    <span className="mt-1 block font-normal text-gray-600">
                                         Number of days
                                     </span>
                                 </>
                             }
+                            childrenContainerClasses="modal-child-container"
                         >
                             <Input
                                 id="credit_terms"
@@ -212,6 +217,7 @@ export default function OrganizationModal({
                         <ColumnedRowsChild
                             labelFor="preferred_currency"
                             labelContent="Preferred Currency"
+                            childrenContainerClasses="modal-child-container"
                             required
                         >
                             <Select name="preferred_currency" required>
@@ -239,6 +245,7 @@ export default function OrganizationModal({
                         <ColumnedRowsChild
                             labelFor="ap_email"
                             labelContent="Accounts Payable Email"
+                            childrenContainerClasses="modal-child-container"
                             required
                             multiInput
                         >
@@ -252,6 +259,7 @@ export default function OrganizationModal({
                         <ColumnedRowsChild
                             labelFor="ap_contact"
                             labelContent="Accounts Payable Contact"
+                            childrenContainerClasses="modal-child-container"
                         >
                             <div className="relative">
                                 <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

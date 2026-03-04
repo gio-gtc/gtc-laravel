@@ -1,4 +1,5 @@
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 export function ColumnedRowsParent({
     children,
@@ -10,6 +11,7 @@ export function ColumnedRowsParent({
 
 export function ColumnedRowsChild({
     children,
+    childrenContainerClasses = '',
     labelFor,
     labelContent,
     required,
@@ -18,6 +20,7 @@ export function ColumnedRowsChild({
     labelLocation = 'modal',
 }: {
     children: React.ReactNode;
+    childrenContainerClasses?: string;
     labelFor?: string;
     labelContent?: React.ReactNode;
     required?: boolean;
@@ -26,13 +29,15 @@ export function ColumnedRowsChild({
     labelClassName?: string;
     labelLocation?: 'modal' | 'other';
 }) {
-    const childClassName = multiInput
-        ? 'flex flex-col gap-2 sm:flex-2'
-        : 'sm:flex-2';
     const labelLocationClasses =
         labelLocation === 'modal'
             ? 'sm-gray-700-weight-600'
             : 'sm-black-weight-500';
+
+    const childClassName = multiInput
+        ? 'flex flex-col gap-2 sm:flex-2'
+        : 'sm:flex-2';
+
     return (
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
             {labelFor && labelContent ? (
@@ -48,7 +53,9 @@ export function ColumnedRowsChild({
             ) : (
                 ''
             )}
-            <div className={childClassName}>{children}</div>
+            <div className={cn(childClassName, childrenContainerClasses)}>
+                {children}
+            </div>
         </div>
     );
 }

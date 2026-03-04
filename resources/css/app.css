@@ -184,6 +184,10 @@
     .table-content-max-width {
         @apply max-w-[1730px];
     }
+
+    .modal-child-container {
+        @apply max-w-[448px];
+    }
 }
 
 @layer utils {
