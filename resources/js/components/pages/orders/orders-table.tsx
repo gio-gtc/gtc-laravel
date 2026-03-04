@@ -4,7 +4,6 @@ import {
     venueCollaboratorData,
     venuesData,
 } from '@/components/mockdata';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     Table,
     TableBody,
@@ -13,7 +12,8 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { useInitials } from '@/hooks/use-initials';
+import { UserAvatar } from '@/components/ui/user-avatar';
+import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { useOrdersFilters } from '@/hooks/use-orders-filters';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
@@ -50,7 +50,6 @@ function OrdersTable() {
         venue: Venue;
         order: Tour;
     } | null>(null);
-    const getInitials = useInitials();
     const usersWithFallback = useUsersWithFallback();
 
     // Transform data into grouped structure
@@ -356,11 +355,7 @@ function OrdersTable() {
                                         width: column.size,
                                         position: 'relative',
                                     }}
-                                    className={cn(
-                                        'relative px-2 py-1',
-                                        index < columns.length - 1 &&
-                                            'border-r border-border',
-                                    )}
+                                    className={cn('relative px-2 py-1')}
                                 >
                                     {column.header}
                                 </TableHead>
@@ -389,7 +384,7 @@ function OrdersTable() {
                                         >
                                             <TableCell
                                                 colSpan={6}
-                                                className="px-2 py-1"
+                                                className="h-[45px] px-2 py-1"
                                             >
                                                 <div className="flex items-center gap-2.5">
                                                     {isExpanded ? (
@@ -445,8 +440,7 @@ function OrdersTable() {
                                                                     .size,
                                                             }}
                                                             className={cn(
-                                                                'px-2 py-1 text-gray-500',
-                                                                'border-r border-border',
+                                                                'px-2 py-0 text-gray-500',
                                                             )}
                                                         >
                                                             <div className="flex items-center justify-between">
@@ -487,8 +481,7 @@ function OrdersTable() {
                                                                     .size,
                                                             }}
                                                             className={cn(
-                                                                'px-2 py-1 text-gray-500',
-                                                                'border-r border-border',
+                                                                'px-2 py-0 text-gray-500',
                                                             )}
                                                         >
                                                             {
@@ -502,8 +495,7 @@ function OrdersTable() {
                                                                     .size,
                                                             }}
                                                             className={cn(
-                                                                'px-2 py-1 text-gray-500',
-                                                                'border-r border-border',
+                                                                'px-2 py-0 text-gray-500',
                                                             )}
                                                         >
                                                             {formatDate(
@@ -518,27 +510,15 @@ function OrdersTable() {
                                                                     .size,
                                                             }}
                                                             className={cn(
-                                                                'px-2 py-1 text-gray-500',
-                                                                'border-r border-border',
+                                                                'px-2 py-0 text-gray-500',
                                                             )}
                                                         >
                                                             {client && (
-                                                                <Avatar className="h-7 w-7 border-2 border-background">
-                                                                    <AvatarImage
-                                                                        src={
-                                                                            client.avatar ||
-                                                                            undefined
-                                                                        }
-                                                                        alt={
-                                                                            client.name
-                                                                        }
-                                                                    />
-                                                                    <AvatarFallback className="bg-neutral-200 text-black">
-                                                                        {getInitials(
-                                                                            client.name,
-                                                                        )}
-                                                                    </AvatarFallback>
-                                                                </Avatar>
+                                                                <UserAvatar
+                                                                    user={
+                                                                        client
+                                                                    }
+                                                                />
                                                             )}
                                                         </TableCell>
                                                         <TableCell
@@ -547,73 +527,29 @@ function OrdersTable() {
                                                                     .size,
                                                             }}
                                                             className={cn(
-                                                                'px-2 py-1 text-gray-500',
-                                                                'border-r border-border',
+                                                                'px-2 py-0 text-gray-500',
                                                             )}
                                                         >
-                                                            <div
-                                                                className="flex cursor-pointer items-center"
-                                                                onClick={(
-                                                                    e,
-                                                                ) => {
-                                                                    e.stopPropagation();
+                                                            <UserAvatarsStack
+                                                                users={
+                                                                    collaborators
+                                                                }
+                                                                maxCount={3}
+                                                                onClick={() =>
                                                                     setEditingVenueId(
                                                                         venueItem
                                                                             .venue
                                                                             .id,
-                                                                    );
-                                                                }}
-                                                            >
-                                                                <div className="flex items-center">
-                                                                    {collaborators
-                                                                        .slice(
-                                                                            0,
-                                                                            3,
-                                                                        )
-                                                                        .map(
-                                                                            (
-                                                                                collab,
-                                                                            ) => (
-                                                                                <Avatar
-                                                                                    key={
-                                                                                        collab.id
-                                                                                    }
-                                                                                    className="-ml-3 h-7 w-7 border-2 border-background first:ml-0"
-                                                                                >
-                                                                                    <AvatarImage
-                                                                                        src={
-                                                                                            collab.avatar ||
-                                                                                            undefined
-                                                                                        }
-                                                                                        alt={
-                                                                                            collab.name
-                                                                                        }
-                                                                                    />
-                                                                                    <AvatarFallback className="bg-neutral-200 text-black">
-                                                                                        {getInitials(
-                                                                                            collab.name,
-                                                                                        )}
-                                                                                    </AvatarFallback>
-                                                                                </Avatar>
-                                                                            ),
-                                                                        )}
-                                                                </div>
-                                                                {collaborators.length >
-                                                                    3 && (
-                                                                    <span className="ml-2 text-xs text-muted-foreground">
-                                                                        +
-                                                                        {collaborators.length -
-                                                                            3}
-                                                                    </span>
-                                                                )}
-                                                            </div>
+                                                                    )
+                                                                }
+                                                            />
                                                         </TableCell>
                                                         <TableCell
                                                             style={{
                                                                 width: columns[5]
                                                                     .size,
                                                             }}
-                                                            className="px-2 py-1 text-gray-500"
+                                                            className="px-2 py-[1px] text-gray-500"
                                                         >
                                                             <StatusIcon
                                                                 status={
