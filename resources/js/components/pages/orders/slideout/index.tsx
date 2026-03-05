@@ -1,5 +1,4 @@
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import Divider from '@/components/utils/divider';
 import { cn } from '@/lib/utils';
 import { type Tour, type TourVenue, type Venue } from '@/types';
 import { useMemo, useState } from 'react';
@@ -137,7 +136,6 @@ export default function VenueDetailSlideout({
                     isMaximized={isMaximized}
                 />
 
-                <Divider />
                 <SwitchView
                     order={order}
                     venueItem={venueItem}

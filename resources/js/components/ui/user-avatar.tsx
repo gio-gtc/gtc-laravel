@@ -13,7 +13,7 @@ export function UserAvatar({ user, className }: UserAvatarProps) {
 
     return (
         <Avatar
-            className={cn('size-4.5 border-2 border-background', className)}
+            className={cn('size-[24px] border-1 border-background', className)}
         >
             <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
             <AvatarFallback className="bg-neutral-200 text-[9px] text-black">

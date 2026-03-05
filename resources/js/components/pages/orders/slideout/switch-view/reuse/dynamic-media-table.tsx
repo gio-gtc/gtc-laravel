@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Collapsible,
@@ -19,7 +18,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { useInitials } from '@/hooks/use-initials';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { cn } from '@/lib/utils';
 import { MediaTableProps, MediaTableRow } from '@/types';
 import {
@@ -71,21 +70,20 @@ export default function MediaTable({
     onPreviewClick,
 }: MediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
-    const getInitials = useInitials();
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <div className="space-y-2">
                 {/* Collapsible Header */}
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2">
                     <CollapsibleTrigger asChild>
-                        <button className="flex items-center gap-2 text-left hover:opacity-80">
+                        <button className="flex gap-2 hover:opacity-90">
                             {isOpen ? (
                                 <ChevronDown className="h-4 w-4 text-gray-600" />
                             ) : (
                                 <ChevronRight className="h-4 w-4 text-gray-600" />
                             )}
-                            <span className="font-semibold text-gray-900">
+                            <span className="md-gray-700-weight-600">
                                 {title}
                             </span>
                         </button>
@@ -93,7 +91,7 @@ export default function MediaTable({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="size-4.5 cursor-pointer rounded-full border-1 border-gray-400 text-gray-400 hover:border-gray-500"
+                        className="size-[24px] cursor-pointer rounded-full border-1 border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-white"
                         onClick={onAdd ?? undefined}
                     >
                         <Plus className="size-3" />
@@ -102,18 +100,34 @@ export default function MediaTable({
 
                 {/* Table */}
                 <CollapsibleContent>
-                    <div className="rounded-lg border bg-white">
+                    <div className="rounded-lg border">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>ISCI</TableHead>
-                                    <TableHead>Cut Name</TableHead>
-                                    <TableHead>Duration</TableHead>
-                                    <TableHead>Due Date</TableHead>
-                                    <TableHead>Assigned</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Preview</TableHead>
-                                    <TableHead>Deliverables</TableHead>
+                                    <TableHead className="h-[30px]">
+                                        ISCI
+                                    </TableHead>
+                                    <TableHead className="h-[30px]">
+                                        Cut Name
+                                    </TableHead>
+                                    <TableHead className="h-[30px]">
+                                        Duration
+                                    </TableHead>
+                                    <TableHead className="h-[30px]">
+                                        Due Date
+                                    </TableHead>
+                                    <TableHead className="h-[30px]">
+                                        Assigned
+                                    </TableHead>
+                                    <TableHead className="h-[30px]">
+                                        Status
+                                    </TableHead>
+                                    <TableHead className="h-[30px]">
+                                        Preview
+                                    </TableHead>
+                                    <TableHead className="h-[30px]">
+                                        Deliverables
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -126,23 +140,25 @@ export default function MediaTable({
                                             isDisabledRow ||
                                             row.status === 'Unassigned';
                                         return (
-                                            <TableRow key={row.id}>
-                                                <TableCell
-                                                    className={cn(
-                                                        isDisabledRow &&
-                                                            'text-muted-foreground opacity-70',
-                                                    )}
-                                                >
+                                            <TableRow
+                                                key={row.id}
+                                                className={cn(
+                                                    'xs-gray-500-weight-600',
+                                                    isDisabledRow &&
+                                                        'xs-gray-300-weight-600',
+                                                )}
+                                            >
+                                                <TableCell className="h-[30px] py-0">
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger
                                                             asChild
                                                         >
-                                                            <button
-                                                                type="button"
-                                                                className="cursor-pointer text-left hover:underline focus:ring-0 focus:outline-none"
+                                                            <Button
+                                                                variant="ghost"
+                                                                className="h-[30px] p-0 text-left hover:bg-transparent"
                                                             >
                                                                 {row.isci}
-                                                            </button>
+                                                            </Button>
                                                         </DropdownMenuTrigger>
                                                         <DropdownMenuContent
                                                             align="start"
@@ -179,59 +195,30 @@ export default function MediaTable({
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
                                                 </TableCell>
-                                                <TableCell
-                                                    className={cn(
-                                                        isDisabledRow &&
-                                                            'text-muted-foreground opacity-70',
-                                                    )}
-                                                >
+                                                <TableCell className="h-[30px] py-0">
                                                     {row.cutName}
                                                 </TableCell>
-                                                <TableCell
-                                                    className={cn(
-                                                        isDisabledRow &&
-                                                            'text-muted-foreground opacity-70',
-                                                    )}
-                                                >
+                                                <TableCell className="h-[30px] py-0">
                                                     {row.duration}
                                                 </TableCell>
-                                                <TableCell
-                                                    className={cn(
-                                                        isDisabledRow &&
-                                                            'text-muted-foreground opacity-70',
-                                                    )}
-                                                >
+                                                <TableCell className="h-[30px] py-0">
                                                     {row.dueDate}
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className="h-[30px] py-0">
                                                     {row.assigned ? (
-                                                        <Avatar className="size-5 overflow-hidden rounded-full">
-                                                            <AvatarImage
-                                                                src={
-                                                                    row.assigned
-                                                                        .avatar ||
-                                                                    undefined
-                                                                }
-                                                                alt={
-                                                                    row.assigned
-                                                                        .name
-                                                                }
-                                                            />
-                                                            <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                                                {getInitials(
-                                                                    row.assigned
-                                                                        .name,
-                                                                )}
-                                                            </AvatarFallback>
-                                                        </Avatar>
+                                                        <UserAvatar
+                                                            user={row.assigned}
+                                                        />
                                                     ) : (
                                                         <span className="text-muted-foreground"></span>
                                                     )}
                                                 </TableCell>
-                                                <TableCell className="text-center">
+                                                <TableCell className="py-0 text-center">
                                                     {getStatusBadge(row.status)}
                                                 </TableCell>
-                                                <TableCell>
+
+                                                {/* Preview Icons */}
+                                                <TableCell className="h-[30px] py-0">
                                                     {isDisabledRow ? (
                                                         <span className="text-muted-foreground"></span>
                                                     ) : previewVariant ===
@@ -241,7 +228,10 @@ export default function MediaTable({
                                                                 type="button"
                                                                 className="cursor-pointer text-gray-600 hover:text-gray-900"
                                                                 onClick={() =>
-                                                                    onPreviewClick?.(row, 0)
+                                                                    onPreviewClick?.(
+                                                                        row,
+                                                                        0,
+                                                                    )
                                                                 }
                                                             >
                                                                 <AudioLines className="h-4 w-4" />
@@ -256,7 +246,7 @@ export default function MediaTable({
                                                                 ) => (
                                                                     <button
                                                                         key={`${row.id}-preview-${index}`}
-                                                                        className="cursor-pointer text-gray-600 hover:text-gray-900"
+                                                                        className="cursor-pointer text-gray-400 hover:text-gray-900"
                                                                         onClick={() =>
                                                                             onPreviewClick?.(
                                                                                 row,
@@ -271,7 +261,7 @@ export default function MediaTable({
                                                         </div>
                                                     )}
                                                 </TableCell>
-                                                <TableCell className="flex items-center justify-center gap-2">
+                                                <TableCell className="items-cente flex h-[30px] items-center justify-center gap-2 py-0">
                                                     {hideDeliverablesButtons ? (
                                                         <span className="text-muted-foreground"></span>
                                                     ) : row.status ===
@@ -280,26 +270,26 @@ export default function MediaTable({
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="size-6 cursor-pointer rounded-full text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
+                                                                className="size-5.5 cursor-pointer rounded-full text-red-400 hover:border-red-400 hover:bg-red-400 hover:text-white"
                                                                 onClick={
                                                                     row
                                                                         .deliverables
                                                                         ?.onReject
                                                                 }
                                                             >
-                                                                <RefreshCw className="size-4.5" />
+                                                                <RefreshCw className="size-[24px]" />
                                                             </Button>
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="size-6 cursor-pointer rounded-full text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
+                                                                className="size-5.5 cursor-pointer rounded-full text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
                                                                 onClick={
                                                                     row
                                                                         .deliverables
                                                                         ?.onApprove
                                                                 }
                                                             >
-                                                                <Download className="size-4.5" />
+                                                                <Download className="size-[24px]" />
                                                             </Button>
                                                         </>
                                                     ) : (
@@ -307,7 +297,7 @@ export default function MediaTable({
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="size-4 cursor-pointer rounded-full border border-red-500 text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
+                                                                className="size-4 cursor-pointer rounded-full border border-red-400 text-red-400 hover:bg-red-400 hover:text-white"
                                                                 onClick={
                                                                     row
                                                                         .deliverables
@@ -323,7 +313,7 @@ export default function MediaTable({
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="icon"
-                                                                        className="size-4 cursor-pointer rounded-full border border-green-500 text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
+                                                                        className="size-4 cursor-pointer rounded-full border border-green-400 text-green-400 hover:bg-green-400 hover:text-white"
                                                                     >
                                                                         <Check className="size-3" />
                                                                     </Button>

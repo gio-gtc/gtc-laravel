@@ -30,6 +30,7 @@
     --color-purple-700: #6941c6;
     --color-red-100: #fee4e2;
     --color-red-400: #f97066;
+    --color-green-400: #47cd89;
     --color-green-700: #067647;
 
     --radius-lg: var(--radius);
@@ -199,6 +200,10 @@
         @apply text-base font-semibold text-black;
     }
 
+    .md-gray-700-weight-600 {
+        @apply text-base font-semibold text-gray-700;
+    }
+
     .sm-black-weight-500 {
         @apply text-sm font-medium text-black;
     }
@@ -221,6 +226,10 @@
 
     .xs-gray-500-weight-600 {
         @apply text-xs font-semibold text-gray-500;
+    }
+
+    .xs-gray-300-weight-600 {
+        @apply text-xs font-semibold text-gray-300;
     }
 
     .xs-gray-600-weight-400 {
