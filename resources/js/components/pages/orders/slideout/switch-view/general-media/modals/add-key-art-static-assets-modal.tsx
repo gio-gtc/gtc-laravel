@@ -47,7 +47,7 @@ export default function AddKeyArtStaticAssetsModal({
             title="Add Key Art & Static Assets"
             primaryLabel="Add to Order"
             onPrimaryClick={handleAddToOrder}
-            maxWidth="sm"
+            modalClasses="sm:max-w-[264px] px-2"
         >
             <div className="flex flex-col gap-2 text-xs">
                 <Label className={orderModalStyles.label}>Type</Label>
@@ -59,6 +59,7 @@ export default function AddKeyArtStaticAssetsModal({
                             selected={type === option}
                             onClick={() => setType(option)}
                             baseClassName={orderModalStyles.pillFull}
+                            className="justify-start px-2"
                         >
                             {option}
                         </PillButton>

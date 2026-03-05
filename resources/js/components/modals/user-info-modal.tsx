@@ -118,7 +118,7 @@ export default function UserInfoModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="sm:max-w-3xl">
+            <DialogContent className="sm:max-w-[716px]">
                 <DialogHeader>
                     <DialogTitle>{modalTitle}</DialogTitle>
                 </DialogHeader>

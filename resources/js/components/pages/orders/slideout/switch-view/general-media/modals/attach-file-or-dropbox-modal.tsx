@@ -65,7 +65,7 @@ export default function AttachFileOrDropboxModal({
             title="Attach File or Dropbox Link"
             primaryLabel="Add to Order"
             onPrimaryClick={handleAddToOrder}
-            maxWidth="2xl"
+            modalClasses="sm:max-w-[552px]"
         >
             <div className="flex flex-col gap-4">
                 {/* Drop zone */}

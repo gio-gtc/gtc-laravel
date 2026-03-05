@@ -77,7 +77,7 @@ export default function AddBroadcastStreamingModal({
             title="Add Broadcast & Streaming Video"
             primaryLabel="Add to Order"
             onPrimaryClick={handleAddToOrder}
-            maxWidth="2xl"
+            modalClasses="sm:max-w-[585px]"
         >
             <div className="flex flex-col gap-2 text-xs sm:flex-row">
                 <div className="flex flex-3 flex-col gap-1.5">

@@ -9,23 +9,14 @@ import {
 import Divider from '@/components/utils/divider';
 import { orderModalStyles } from './shared';
 
-type MaxWidth = 'sm' | 'lg' | '2xl';
-
-const maxWidthClass: Record<MaxWidth, string> = {
-    sm: 'sm:max-w-sm',
-    lg: 'sm:max-w-lg',
-    '2xl': 'sm:max-w-2xl',
-};
-
 interface OrderModalLayoutProps {
     isOpen: boolean;
     onClose: () => void;
     title: string;
     primaryLabel: string;
     onPrimaryClick: () => void;
-    maxWidth?: MaxWidth;
+    modalClasses?: string;
     children: React.ReactNode;
-    /** If false, no divider is rendered before the footer. Default true. */
     dividerBeforeFooter?: boolean;
 }
 
@@ -35,13 +26,13 @@ export default function OrderModalLayout({
     title,
     primaryLabel,
     onPrimaryClick,
-    maxWidth = '2xl',
+    modalClasses = '',
     children,
     dividerBeforeFooter = true,
 }: OrderModalLayoutProps) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className={`gap-3 ${maxWidthClass[maxWidth]}`}>
+            <DialogContent className={`gap-3 ${modalClasses}`}>
                 <DialogHeader>
                     <DialogTitle className={orderModalStyles.dialogTitle}>
                         {title}

@@ -77,7 +77,7 @@ export default function DeleteInvoiceModal({
                 }
             }}
         >
-            <DialogContent className="sm:max-w-lg">
+            <DialogContent className="sm:max-w-[348px]">
                 <DialogHeader>
                     <DialogTitle>{copy.title}</DialogTitle>
                 </DialogHeader>
@@ -106,7 +106,9 @@ export default function DeleteInvoiceModal({
                         Cancel
                     </Button>
                     <Button
-                        variant={action === 'delete' ? 'destructive' : 'default'}
+                        variant={
+                            action === 'delete' ? 'destructive' : 'default'
+                        }
                         disabled={reason.trim() === ''}
                         onClick={handleConfirm}
                     >

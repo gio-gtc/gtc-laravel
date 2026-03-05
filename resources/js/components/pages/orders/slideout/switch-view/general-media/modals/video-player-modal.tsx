@@ -24,15 +24,18 @@ function registerElapsedTimeDisplay() {
     class ElapsedTimeDisplay extends Component {
         declare contentEl_: HTMLElement | null;
 
-        constructor(
-            player: VideoJsPlayer,
-            options?: Record<string, unknown>,
-        ) {
+        constructor(player: VideoJsPlayer, options?: Record<string, unknown>) {
             super(player, options);
-            (this as unknown as { on: (t: unknown, e: string | string[], f: () => void) => void }).on(
-                player,
-                ['timeupdate', 'durationchange'],
-                () => this.updateContent(),
+            (
+                this as unknown as {
+                    on: (
+                        t: unknown,
+                        e: string | string[],
+                        f: () => void,
+                    ) => void;
+                }
+            ).on(player, ['timeupdate', 'durationchange'], () =>
+                this.updateContent(),
             );
             this.updateContent();
         }
@@ -158,7 +161,15 @@ export default function VideoPlayerModal({
             el.removeEventListener('seeked', handleSeeked);
             el.removeEventListener('loadeddata', handleLoadedData);
         };
-    }, [isOpen, hasVideo, isAudio, effectiveSrc, posterImage, capturePosterFrame, hiddenVideoReady]);
+    }, [
+        isOpen,
+        hasVideo,
+        isAudio,
+        effectiveSrc,
+        posterImage,
+        capturePosterFrame,
+        hiddenVideoReady,
+    ]);
 
     useEffect(() => {
         if (
@@ -196,7 +207,9 @@ export default function VideoPlayerModal({
         const controlBar = player.getChild('controlBar') as ControlBarLike;
         const volumePanel = controlBar.getChild('volumePanel');
         const volumeIndex =
-            volumePanel != null ? controlBar.children_.indexOf(volumePanel) : -1;
+            volumePanel != null
+                ? controlBar.children_.indexOf(volumePanel)
+                : -1;
         const insertIndex = volumeIndex >= 0 ? volumeIndex + 1 : 0;
         controlBar.addChild(COMPONENT_NAME, {}, insertIndex);
 
@@ -239,7 +252,7 @@ export default function VideoPlayerModal({
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
-                className="min-w-[min(90vw,768px)] gap-0 overflow-hidden rounded-xl border-0 bg-white p-0 shadow-2xl"
+                className="min-w-[560px] gap-0 overflow-hidden rounded-xl border-0 bg-white p-0 shadow-2xl"
                 onPointerDownOutside={onClose}
                 onEscapeKeyDown={onClose}
             >

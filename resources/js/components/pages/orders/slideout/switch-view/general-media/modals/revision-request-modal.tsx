@@ -36,7 +36,7 @@ export default function RevisionRequestModal({
             title="Revision Request"
             primaryLabel="Submit"
             onPrimaryClick={handleSubmit}
-            maxWidth="2xl"
+            modalClasses="sm:max-w-[600px]"
         >
             <div className="flex flex-col gap-2 text-xs">
                 <Textarea

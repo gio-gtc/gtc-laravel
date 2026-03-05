@@ -47,9 +47,10 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
         onClose();
     };
 
+    // TODO: Check if possible leeway on layout
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[988px]">
                 <DialogHeader>
                     <DialogTitle>Add Tour</DialogTitle>
                 </DialogHeader>

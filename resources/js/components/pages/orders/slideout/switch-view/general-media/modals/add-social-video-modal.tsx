@@ -59,7 +59,7 @@ export default function AddSocialVideoModal({
             title="Add Social Video"
             primaryLabel="Add to Order"
             onPrimaryClick={handleAddToOrder}
-            maxWidth="lg"
+            modalClasses="sm:max-w-[484px]"
         >
             <div className="flex flex-col gap-2 text-xs sm:flex-row">
                 <div className="flex flex-3 flex-col gap-1.5">
