@@ -192,7 +192,7 @@
 
 @layer utils {
     .slide-out-container {
-        @apply px-4 pt-4 pb-4;
+        @apply p-3;
     }
 
     .md-black-weight-600 {

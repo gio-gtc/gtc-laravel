@@ -122,6 +122,7 @@ export default function VenueDetailSlideout({
                     tour={order.name}
                     venue={venueItem.venue.name}
                     state={venueItem.venue.state}
+                    status={venueItem.orderVenue.status}
                     city={venueItem.venue.city}
                     eventDates={formatEventDates}
                     ticketSaleDate={mockTicketSaleDate}

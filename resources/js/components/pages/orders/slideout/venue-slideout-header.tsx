@@ -2,20 +2,22 @@ import { DropBox } from '@/components/ui/icons';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import NavOptionButton from '@/components/ui/slideout/nav-option-button';
 import Divider from '@/components/utils/divider';
+import { type TourVenue } from '@/types';
 import {
     ArrowRightToLine,
-    ClipboardPlus,
     Maximize2Icon,
     Minimize2Icon,
     MoreHorizontalIcon,
     PaperclipIcon,
     SendIcon,
 } from 'lucide-react';
+import StatusIcon from '../status-icon';
 
 interface VenueSlideoutHeaderProps {
     tour: string;
     venue: string;
     state: string;
+    status: TourVenue['status'];
     city?: string;
     eventDates?: string;
     ticketSaleDate?: string;
@@ -34,6 +36,7 @@ export default function VenueSlideoutHeader({
     tour,
     venue,
     state,
+    status,
     city,
     eventDates,
     ticketSaleDate,
@@ -53,16 +56,13 @@ export default function VenueSlideoutHeader({
         : `${venue}, ${state}`;
 
     return (
-        <SheetHeader className="relative p-0">
-            {/* Top row: Green icon on left, action buttons on right */}
+        <SheetHeader className="relative gap-0 p-0">
+            {/* Top row: Status icon on left, action buttons on right */}
             <div className="slide-out-container flex items-center justify-between">
-                {/* Green document icon with plus (decorative) */}
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-green-500">
-                    <ClipboardPlus className="h-5 w-5 text-white" />
-                </div>
+                <StatusIcon status={status} />
 
                 {/* Action buttons */}
-                <div className="flex items-center gap-0.5 text-slate-500">
+                <div className="flex items-center gap-0.5">
                     <NavOptionButton onClick={onAttach} icon={PaperclipIcon} />
                     <NavOptionButton onClick={onCloud} icon={DropBox} />
                     <NavOptionButton onClick={onSend} icon={SendIcon} />
@@ -82,13 +82,14 @@ export default function VenueSlideoutHeader({
                 </div>
             </div>
 
-            <Divider />
             {/* Main content: Title and details */}
+            <Divider className="shadow-lg" />
+            <SheetTitle className="slide-out-container text-2xl font-medium text-black">
+                {tour}
+            </SheetTitle>
+            <Divider />
             <div className="slide-out-container flex-1">
-                <SheetTitle className="text-2xl font-semibold">
-                    {tour}
-                </SheetTitle>
-                <div className="mt-1 space-y-1 text-sm text-muted-foreground">
+                <div className="sm-black-weight-500">
                     <p>{venueDisplay}</p>
                     {eventDates && <p>{eventDates}</p>}
                     {ticketSaleDate && <p>Ticket Sale : {ticketSaleDate}</p>}
