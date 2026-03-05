@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Collapsible,
@@ -13,6 +12,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import type {
@@ -78,7 +78,7 @@ export default function StaticAssetsMediaTable({
                             ) : (
                                 <ChevronRight className="h-4 w-4 text-gray-600" />
                             )}
-                            <span className="font-semibold text-gray-900">
+                            <span className="md-gray-700-weight-600">
                                 {title}
                             </span>
                         </button>
@@ -86,7 +86,7 @@ export default function StaticAssetsMediaTable({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="size-4.5 cursor-pointer rounded-full border-1 border-gray-400 text-gray-400 hover:border-gray-500"
+                        className="size-4.5 cursor-pointer rounded-full border-1 border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-white"
                         onClick={onAdd ?? undefined}
                     >
                         <Plus className="size-3" />
@@ -95,17 +95,31 @@ export default function StaticAssetsMediaTable({
 
                 {/* Table */}
                 <CollapsibleContent>
-                    <div className="rounded-lg border bg-white">
+                    <div className="rounded-lg border">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Cut Name</TableHead>
-                                    <TableHead>W</TableHead>
-                                    <TableHead>H</TableHead>
-                                    <TableHead>Due Date</TableHead>
-                                    <TableHead>Assigned</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Deliverables</TableHead>
+                                    <TableHead className="h-[30px]">
+                                        Cut Name
+                                    </TableHead>
+                                    <TableHead className="h-[30px]">
+                                        W
+                                    </TableHead>
+                                    <TableHead className="h-[30px]">
+                                        H
+                                    </TableHead>
+                                    <TableHead className="h-[30px]">
+                                        Due Date
+                                    </TableHead>
+                                    <TableHead className="h-[30px]">
+                                        Assigned
+                                    </TableHead>
+                                    <TableHead className="h-[30px]">
+                                        Status
+                                    </TableHead>
+                                    <TableHead className="h-[30px]">
+                                        Deliverables
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -118,66 +132,36 @@ export default function StaticAssetsMediaTable({
                                             isDisabledRow ||
                                             row.status === 'Unassigned';
                                         return (
-                                            <TableRow key={row.id}>
-                                                <TableCell
-                                                    className={cn(
-                                                        isDisabledRow &&
-                                                            'text-muted-foreground opacity-70',
-                                                    )}
-                                                >
+                                            <TableRow
+                                                key={row.id}
+                                                className={cn(
+                                                    'xs-gray-500-weight-600',
+                                                    isDisabledRow &&
+                                                        'xs-gray-300-weight-600',
+                                                )}
+                                            >
+                                                <TableCell className="h-[30px] py-0">
                                                     {row.cutName}
                                                 </TableCell>
-                                                <TableCell
-                                                    className={cn(
-                                                        isDisabledRow &&
-                                                            'text-muted-foreground opacity-70',
-                                                    )}
-                                                >
+                                                <TableCell className="h-[30px] py-0">
                                                     {row.width}
                                                 </TableCell>
-                                                <TableCell
-                                                    className={cn(
-                                                        isDisabledRow &&
-                                                            'text-muted-foreground opacity-70',
-                                                    )}
-                                                >
+                                                <TableCell className="h-[30px] py-0">
                                                     {row.height}
                                                 </TableCell>
-                                                <TableCell
-                                                    className={cn(
-                                                        isDisabledRow &&
-                                                            'text-muted-foreground opacity-70',
-                                                    )}
-                                                >
+                                                <TableCell className="h-[30px] py-0">
                                                     {row.dueDate}
                                                 </TableCell>
-                                                <TableCell>
-                                                    {row.assigned ? (
-                                                        <Avatar className="size-5.5 overflow-hidden rounded-full">
-                                                            <AvatarImage
-                                                                src={
-                                                                    row.assigned
-                                                                        .avatar ||
-                                                                    undefined
-                                                                }
-                                                                alt={
-                                                                    row.assigned
-                                                                        .name
-                                                                }
-                                                            />
-                                                            <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                                                {getInitials(
-                                                                    row.assigned
-                                                                        .name,
-                                                                )}
-                                                            </AvatarFallback>
-                                                        </Avatar>
-                                                    ) : (
-                                                        <span className="text-muted-foreground"></span>
+                                                <TableCell className="h-[30px] py-0">
+                                                    {row.assigned && (
+                                                        <UserAvatar
+                                                            user={row.assigned}
+                                                        />
                                                     )}
                                                 </TableCell>
 
-                                                <TableCell>
+                                                {/* Preview Icons */}
+                                                <TableCell className="h-[30px] py-0">
                                                     <p className="flex justify-center rounded-full focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 focus:outline-none">
                                                         {getStatusBadge(
                                                             row.status,
@@ -185,7 +169,7 @@ export default function StaticAssetsMediaTable({
                                                     </p>
                                                 </TableCell>
 
-                                                <TableCell className="flex items-center justify-center gap-2">
+                                                <TableCell className="flex h-[30px] items-center justify-center gap-2 py-0">
                                                     {hideDeliverablesButtons ? (
                                                         <span className="text-muted-foreground"></span>
                                                     ) : (
@@ -193,18 +177,18 @@ export default function StaticAssetsMediaTable({
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="size-6 cursor-pointer rounded-full text-red-500 hover:border-red-600 hover:bg-red-300 hover:text-white"
+                                                                className="red-400-hover size-5.5 cursor-pointer rounded-full"
                                                                 onClick={() => {}}
                                                             >
-                                                                <RefreshCw className="size-4.5" />
+                                                                <RefreshCw className="size-[24px]" />
                                                             </Button>
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="size-6 cursor-pointer rounded-full text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
+                                                                className="green-400-hover size-5.5 cursor-pointer rounded-full"
                                                                 onClick={() => {}}
                                                             >
-                                                                <Download className="size-4.5" />
+                                                                <Download className="size-[24px]" />
                                                             </Button>
                                                         </>
                                                     )}

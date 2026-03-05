@@ -205,19 +205,18 @@ export default function MediaTable({
                                                     {row.dueDate}
                                                 </TableCell>
                                                 <TableCell className="h-[30px] py-0">
-                                                    {row.assigned ? (
+                                                    {row.assigned && (
                                                         <UserAvatar
                                                             user={row.assigned}
                                                         />
-                                                    ) : (
-                                                        <span className="text-muted-foreground"></span>
                                                     )}
-                                                </TableCell>
-                                                <TableCell className="py-0 text-center">
-                                                    {getStatusBadge(row.status)}
                                                 </TableCell>
 
                                                 {/* Preview Icons */}
+                                                <TableCell className="h-[30px] py-0 text-center">
+                                                    {getStatusBadge(row.status)}
+                                                </TableCell>
+
                                                 <TableCell className="h-[30px] py-0">
                                                     {isDisabledRow ? (
                                                         <span className="text-muted-foreground"></span>
@@ -270,7 +269,7 @@ export default function MediaTable({
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="size-5.5 cursor-pointer rounded-full text-red-400 hover:border-red-400 hover:bg-red-400 hover:text-white"
+                                                                className="red-400-hover size-5.5 cursor-pointer rounded-full"
                                                                 onClick={
                                                                     row
                                                                         .deliverables
@@ -282,7 +281,7 @@ export default function MediaTable({
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="size-5.5 cursor-pointer rounded-full text-green-500 hover:border-green-600 hover:bg-green-300 hover:text-white"
+                                                                className="green-400-hover size-5.5 cursor-pointer rounded-full"
                                                                 onClick={
                                                                     row
                                                                         .deliverables
@@ -297,7 +296,9 @@ export default function MediaTable({
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                className="size-4 cursor-pointer rounded-full border border-red-400 text-red-400 hover:bg-red-400 hover:text-white"
+                                                                className={cn(
+                                                                    'red-400-hover size-4 cursor-pointer rounded-full border',
+                                                                )}
                                                                 onClick={
                                                                     row
                                                                         .deliverables
@@ -313,7 +314,9 @@ export default function MediaTable({
                                                                     <Button
                                                                         variant="ghost"
                                                                         size="icon"
-                                                                        className="size-4 cursor-pointer rounded-full border border-green-400 text-green-400 hover:bg-green-400 hover:text-white"
+                                                                        className={cn(
+                                                                            'green-400-hover size-4 cursor-pointer rounded-full border',
+                                                                        )}
                                                                     >
                                                                         <Check className="size-3" />
                                                                     </Button>
