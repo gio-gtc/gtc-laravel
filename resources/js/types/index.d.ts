@@ -188,6 +188,7 @@ export interface MediaTableRow {
     deliverables?: {
         onReject?: () => void;
         onApprove?: () => void;
+        onDownload?: (optionId: string) => void;
     };
 }
 
@@ -219,6 +220,11 @@ export interface StaticAssetsTableRow {
         | 'Cancelled'
         | 'Revision Requested'
         | 'Unassigned';
+    deliverables?: {
+        onReject?: () => void;
+        onApprove?: () => void;
+        onDownload?: (optionId: string) => void;
+    };
 }
 
 export interface StaticAssetsMediaTableProps {

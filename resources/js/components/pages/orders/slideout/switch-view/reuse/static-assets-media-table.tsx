@@ -13,20 +13,14 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { useInitials } from '@/hooks/use-initials';
 import { cn } from '@/lib/utils';
 import type {
     StaticAssetsMediaTableProps,
     StaticAssetsTableRow,
 } from '@/types';
-import {
-    ChevronDown,
-    ChevronRight,
-    Download,
-    Plus,
-    RefreshCw,
-} from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import { useState } from 'react';
+import { DeliverablesCell } from './deliverables-buttons';
 
 function getStatusBadge(
     status: StaticAssetsTableRow['status'],
@@ -64,7 +58,6 @@ export default function StaticAssetsMediaTable({
     onAdd,
 }: StaticAssetsMediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
-    const getInitials = useInitials();
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -128,9 +121,6 @@ export default function StaticAssetsMediaTable({
                                         const isDisabledRow =
                                             row.status === 'Cancelled' ||
                                             row.status === 'Revision Requested';
-                                        const hideDeliverablesButtons =
-                                            isDisabledRow ||
-                                            row.status === 'Unassigned';
                                         return (
                                             <TableRow
                                                 key={row.id}
@@ -170,28 +160,12 @@ export default function StaticAssetsMediaTable({
                                                 </TableCell>
 
                                                 <TableCell className="flex h-[30px] items-center justify-center gap-2 py-0">
-                                                    {hideDeliverablesButtons ? (
-                                                        <span className="text-muted-foreground"></span>
-                                                    ) : (
-                                                        <>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="red-400-hover size-5.5 cursor-pointer rounded-full"
-                                                                onClick={() => {}}
-                                                            >
-                                                                <RefreshCw className="size-[24px]" />
-                                                            </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="green-400-hover size-5.5 cursor-pointer rounded-full"
-                                                                onClick={() => {}}
-                                                            >
-                                                                <Download className="size-[24px]" />
-                                                            </Button>
-                                                        </>
-                                                    )}
+                                                    <DeliverablesCell
+                                                        status={row.status}
+                                                        deliverables={
+                                                            row.deliverables
+                                                        }
+                                                    />
                                                 </TableCell>
                                             </TableRow>
                                         );

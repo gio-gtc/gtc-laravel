@@ -23,15 +23,12 @@ import { cn } from '@/lib/utils';
 import { MediaTableProps, MediaTableRow } from '@/types';
 import {
     AudioLines,
-    Check,
     ChevronDown,
     ChevronRight,
-    Download,
     Plus,
-    RefreshCw,
-    X,
 } from 'lucide-react';
 import { useState } from 'react';
+import { DeliverablesCell } from './deliverables-buttons';
 
 function getStatusBadge(status: MediaTableRow['status']): React.ReactNode {
     const baseClasses =
@@ -136,9 +133,6 @@ export default function MediaTable({
                                         const isDisabledRow =
                                             row.status === 'Cancelled' ||
                                             row.status === 'Revision Requested';
-                                        const hideDeliverablesButtons =
-                                            isDisabledRow ||
-                                            row.status === 'Unassigned';
                                         return (
                                             <TableRow
                                                 key={row.id}
@@ -260,85 +254,13 @@ export default function MediaTable({
                                                         </div>
                                                     )}
                                                 </TableCell>
-                                                <TableCell className="items-cente flex h-[30px] items-center justify-center gap-2 py-0">
-                                                    {hideDeliverablesButtons ? (
-                                                        <span className="text-muted-foreground"></span>
-                                                    ) : row.status ===
-                                                      'Out for Delivery' ? (
-                                                        <>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="red-400-hover size-5.5 cursor-pointer rounded-full"
-                                                                onClick={
-                                                                    row
-                                                                        .deliverables
-                                                                        ?.onReject
-                                                                }
-                                                            >
-                                                                <RefreshCw className="size-[24px]" />
-                                                            </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="green-400-hover size-5.5 cursor-pointer rounded-full"
-                                                                onClick={
-                                                                    row
-                                                                        .deliverables
-                                                                        ?.onApprove
-                                                                }
-                                                            >
-                                                                <Download className="size-[24px]" />
-                                                            </Button>
-                                                        </>
-                                                    ) : (
-                                                        <div className="flex items-center justify-center gap-2">
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className={cn(
-                                                                    'red-400-hover size-4 cursor-pointer rounded-full border',
-                                                                )}
-                                                                onClick={
-                                                                    row
-                                                                        .deliverables
-                                                                        ?.onReject
-                                                                }
-                                                            >
-                                                                <X className="size-3" />
-                                                            </Button>
-                                                            <DropdownMenu>
-                                                                <DropdownMenuTrigger
-                                                                    asChild
-                                                                >
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="icon"
-                                                                        className={cn(
-                                                                            'green-400-hover size-4 cursor-pointer rounded-full border',
-                                                                        )}
-                                                                    >
-                                                                        <Check className="size-3" />
-                                                                    </Button>
-                                                                </DropdownMenuTrigger>
-                                                                <DropdownMenuContent
-                                                                    align="end"
-                                                                    className="min-w-[7rem]"
-                                                                >
-                                                                    <DropdownMenuItem
-                                                                        onClick={() =>
-                                                                            row.deliverables?.onApprove?.()
-                                                                        }
-                                                                    >
-                                                                        Approve
-                                                                    </DropdownMenuItem>
-                                                                    <DropdownMenuItem>
-                                                                        Cancel
-                                                                    </DropdownMenuItem>
-                                                                </DropdownMenuContent>
-                                                            </DropdownMenu>
-                                                        </div>
-                                                    )}
+                                                <TableCell className="flex h-[30px] items-center justify-center gap-2 py-0">
+                                                    <DeliverablesCell
+                                                        status={row.status}
+                                                        deliverables={
+                                                            row.deliverables
+                                                        }
+                                                    />
                                                 </TableCell>
                                             </TableRow>
                                         );
