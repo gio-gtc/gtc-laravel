@@ -66,3 +66,11 @@ export function getInvoiceAddress(
         country_id: company.country_id?.toString() || '',
     };
 }
+
+export function getInvoiceVenueName(
+    invoice: { venue_id: number },
+    venues: { id: number; name: string }[],
+): string {
+    const venue = venues.find((v) => v.id === invoice.venue_id);
+    return venue?.name ?? 'N/A';
+}

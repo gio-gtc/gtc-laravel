@@ -2,6 +2,7 @@ import {
     companiesData,
     countriesData,
     invoicesData,
+    venuesData,
 } from '@/components/mockdata';
 import InvoiceAdvancedFilters from '@/components/pages/invoices/advanced-filters';
 import InvoiceDetailSlideout from '@/components/pages/invoices/detail-slideout';
@@ -11,6 +12,7 @@ import ReleasedInvoicesTable from '@/components/pages/invoices/tables/released-i
 import {
     getDaysRemaining,
     getInvoiceAddress,
+    getInvoiceVenueName,
 } from '@/components/utils/functions';
 import { type Invoice } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
@@ -186,7 +188,8 @@ function InvoicesTable() {
                     invoice.invoiceNumber?.toLowerCase() || '';
                 const tour = invoice.tour?.toLowerCase() || '';
                 const market = invoice.market?.toLowerCase() || '';
-                const venue = invoice.venue?.toLowerCase() || '';
+                const venue =
+                    getInvoiceVenueName(invoice, venuesData).toLowerCase();
                 const clientReference =
                     invoice.clientReference?.toLowerCase() || '';
 

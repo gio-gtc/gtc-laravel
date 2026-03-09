@@ -297,7 +297,7 @@ function GeneralMediaView({
             (inv) =>
                 !inv.isDeleted &&
                 inv.tour === order.name &&
-                inv.venue === venueItem.venue.name,
+                inv.venue_id === venueItem.venue.id,
         );
     }, [order, venueItem]);
 

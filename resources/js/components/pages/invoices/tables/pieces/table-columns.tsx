@@ -3,7 +3,11 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { formatCurrency } from '@/components/utils/functions';
+import { venuesData } from '@/components/mockdata';
+import {
+    formatCurrency,
+    getInvoiceVenueName,
+} from '@/components/utils/functions';
 import { SortableHeader } from '@/components/utils/sortable-header';
 import { cn } from '@/lib/utils';
 import { type Invoice } from '@/types';
@@ -101,14 +105,16 @@ export function createInvoiceColumns({
             },
         },
         {
-            accessorKey: 'venue',
+            accessorFn: (row) =>
+                getInvoiceVenueName(row, venuesData),
+            id: 'venue',
             header: ({ column }) => (
                 <SortableHeader column={column}>Venue</SortableHeader>
             ),
             enableSorting: true,
             size: 200,
-            cell: ({ getValue, row }) => {
-                const value = getValue() as string;
+            cell: ({ row }) => {
+                const value = getInvoiceVenueName(row.original, venuesData);
                 return (
                     <div
                         className={cn(

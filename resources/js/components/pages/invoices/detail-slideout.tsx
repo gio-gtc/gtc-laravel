@@ -1,6 +1,13 @@
-import { companiesData, itemsData } from '@/components/mockdata';
+import {
+    companiesData,
+    itemsData,
+    venuesData,
+} from '@/components/mockdata';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { getInvoiceAddress } from '@/components/utils/functions';
+import {
+    getInvoiceAddress,
+    getInvoiceVenueName,
+} from '@/components/utils/functions';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
@@ -210,7 +217,7 @@ export default function InvoiceDetailSlideout({
             >
                 <InvoiceSlideoutHeader
                     tour={invoice.tour}
-                    venue={invoice.venue}
+                    venue={getInvoiceVenueName(invoice, venuesData)}
                     market={invoice.market}
                     onSend={() => console.log(`Send invoice: ${invoice}`)}
                     onMaximize={() => setIsMaximized((m) => !m)}

@@ -89,7 +89,7 @@ export interface Invoice {
     date: string;
     tour: string;
     market: string;
-    venue: string;
+    venue_id: number;
     amount: number;
     showDate: string;
     isDeleted: boolean;
