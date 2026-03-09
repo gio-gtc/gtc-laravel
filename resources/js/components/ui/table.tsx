@@ -27,16 +27,19 @@ const table_layouts = {
 };
 interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
     layout?: 'boxed' | 'dash' | 'none';
+    compactRows?: boolean;
 }
 
 const Table = React.forwardRef<HTMLTableElement, TableProps>(
-    ({ className, layout = 'boxed', ...props }, ref) => (
+    ({ className, layout = 'boxed', compactRows = false, ...props }, ref) => (
         <div className="relative w-full overflow-auto">
             <table
                 ref={ref}
                 className={cn(
                     'w-full caption-bottom text-sm',
                     table_layouts[layout],
+                    compactRows &&
+                        '[&_td]:h-[30px] [&_td]:py-0 [&_th]:h-[30px] [&_th]:py-0',
                     className,
                 )}
                 {...props}

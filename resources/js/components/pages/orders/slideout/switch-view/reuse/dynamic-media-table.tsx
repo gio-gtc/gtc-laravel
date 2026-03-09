@@ -21,12 +21,7 @@ import {
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { cn } from '@/lib/utils';
 import { MediaTableProps, MediaTableRow } from '@/types';
-import {
-    AudioLines,
-    ChevronDown,
-    ChevronRight,
-    Plus,
-} from 'lucide-react';
+import { AudioLines, ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { DeliverablesCell } from './deliverables-buttons';
 
@@ -98,7 +93,7 @@ export default function MediaTable({
                 {/* Table */}
                 <CollapsibleContent>
                     <div className="rounded-lg border">
-                        <Table>
+                        <Table compactRows>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="h-[30px]">

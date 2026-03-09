@@ -89,30 +89,16 @@ export default function StaticAssetsMediaTable({
                 {/* Table */}
                 <CollapsibleContent>
                     <div className="rounded-lg border">
-                        <Table>
+                        <Table compactRows>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="h-[30px]">
-                                        Cut Name
-                                    </TableHead>
-                                    <TableHead className="h-[30px]">
-                                        W
-                                    </TableHead>
-                                    <TableHead className="h-[30px]">
-                                        H
-                                    </TableHead>
-                                    <TableHead className="h-[30px]">
-                                        Due Date
-                                    </TableHead>
-                                    <TableHead className="h-[30px]">
-                                        Assigned
-                                    </TableHead>
-                                    <TableHead className="h-[30px]">
-                                        Status
-                                    </TableHead>
-                                    <TableHead className="h-[30px]">
-                                        Deliverables
-                                    </TableHead>
+                                    <TableHead>Cut Name</TableHead>
+                                    <TableHead>W</TableHead>
+                                    <TableHead>H</TableHead>
+                                    <TableHead>Due Date</TableHead>
+                                    <TableHead>Assigned</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead>Deliverables</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -130,19 +116,19 @@ export default function StaticAssetsMediaTable({
                                                         'xs-gray-300-weight-600',
                                                 )}
                                             >
-                                                <TableCell className="h-[30px] py-0">
+                                                <TableCell>
                                                     {row.cutName}
                                                 </TableCell>
-                                                <TableCell className="h-[30px] py-0">
+                                                <TableCell>
                                                     {row.width}
                                                 </TableCell>
-                                                <TableCell className="h-[30px] py-0">
+                                                <TableCell>
                                                     {row.height}
                                                 </TableCell>
-                                                <TableCell className="h-[30px] py-0">
+                                                <TableCell>
                                                     {row.dueDate}
                                                 </TableCell>
-                                                <TableCell className="h-[30px] py-0">
+                                                <TableCell>
                                                     {row.assigned && (
                                                         <UserAvatar
                                                             user={row.assigned}
@@ -151,7 +137,7 @@ export default function StaticAssetsMediaTable({
                                                 </TableCell>
 
                                                 {/* Preview Icons */}
-                                                <TableCell className="h-[30px] py-0">
+                                                <TableCell>
                                                     <p className="flex justify-center rounded-full focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 focus:outline-none">
                                                         {getStatusBadge(
                                                             row.status,
