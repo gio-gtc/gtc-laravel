@@ -240,6 +240,14 @@
         @apply text-xs font-semibold text-gray-300;
     }
 
+    .xs-gray-500-weight-400 {
+        @apply text-xs font-normal text-gray-500;
+    }
+
+    .xs-gray-500-weight-500 {
+        @apply text-xs font-medium text-gray-500;
+    }
+
     .xs-gray-600-weight-400 {
         @apply text-xs font-normal text-gray-600;
     }

@@ -1,4 +1,6 @@
+import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 import { Download, FileText, FileVideo, Trash2 } from 'lucide-react';
 
 type AttachmentFileType = 'video' | 'pdf' | 'doc' | 'other';
@@ -50,15 +52,16 @@ const mockAttachments: AttachmentRow[] = [
 ];
 
 function getFileIcon(type: AttachmentFileType) {
+    const baseClasses = 'size-[20px] mr-[20px]';
     switch (type) {
         case 'video':
-            return <FileVideo className="size-3 text-sky-500" />;
+            return <FileVideo className={cn('text-sky-500', baseClasses)} />;
         case 'pdf':
-            return <FileText className="size-3 text-red-500" />;
+            return <FileText className={cn('text-red-500', baseClasses)} />;
         case 'doc':
-            return <FileText className="size-3 text-blue-500" />;
+            return <FileText className={cn('text-blue-500', baseClasses)} />;
         default:
-            return <FileText className="size-3 text-gray-500" />;
+            return <FileText className={cn('text-gray-500', baseClasses)} />;
     }
 }
 
@@ -72,38 +75,54 @@ export default function AttachmentsSection() {
     }
 
     return (
-        <Table layout="dash">
+        <Table
+            layout="dash"
+            compactRows
+            className="w-full min-w-[825px] table-fixed overflow-x-auto"
+        >
+            <colgroup>
+                <col className="w-[52%]" />
+                <col className="w-[8%]" />
+                <col className="w-[12%]" />
+                <col className="w-[28%]" />
+            </colgroup>
             <TableBody>
                 {mockAttachments.map((file) => (
                     <TableRow key={file.id}>
-                        <TableCell className="flex items-center gap-1 font-medium">
-                            {getFileIcon(file.type)} {file.name}
+                        <TableCell className="xs-gray-700-weight-500 flex items-center">
+                            {getFileIcon(file.type)}{' '}
+                            <span className="max-w-[90%] truncate">
+                                {file.name}
+                            </span>
                         </TableCell>
-                        <TableCell className="text-center text-muted-foreground">
+                        <TableCell className="xs-gray-600-weight-400 max-w-[8%] text-center">
                             {file.size}
                         </TableCell>
-                        <TableCell className="text-center">
+                        <TableCell className="xs-gray-500-weight-500 max-w-[12%] text-center">
                             <button
                                 type="button"
-                                className="inline-flex cursor-pointer items-center gap-1 text-sm font-medium text-muted-foreground hover:text-sky-600"
+                                className="items-centertext-sm inline-flex cursor-pointer font-medium text-muted-foreground hover:text-sky-600"
                                 onClick={() => handleDownload(file)}
                             >
                                 Download
-                                <Download className="size-3" />
+                                <Download className="ml-[10px] size-[16px]" />
                             </button>
                         </TableCell>
-                        <TableCell className="flex items-center gap-1 text-muted-foreground">
-                            <span className="italic">
-                                Uploaded By: {file.uploadedBy}
-                            </span>
-                            <button
-                                type="button"
-                                className="inline-flex cursor-pointer hover:text-red-600"
-                                aria-label={`Delete ${file.name}`}
-                                onClick={() => handleDelete(file)}
-                            >
-                                <Trash2 className="size-3" />
-                            </button>
+                        <TableCell className="xs-gray-500-weight-400 max-w-[28%] px-2">
+                            <div className="flex items-center justify-between">
+                                <span className="mr-[5px] truncate italic">
+                                    Uploaded By: {file.uploadedBy}
+                                </span>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-4 w-4 hover:text-red-600 has-[>svg]:px-0"
+                                    aria-label={`Delete ${file.name}`}
+                                    onClick={() => handleDelete(file)}
+                                >
+                                    <Trash2 className="size-[12px]" />
+                                </Button>
+                            </div>
                         </TableCell>
                     </TableRow>
                 ))}
