@@ -23,6 +23,7 @@ export default function LocalizedArtTable({
     data,
     defaultOpen = true,
     onAdd,
+    onOpenNotes,
 }: LocalizedArtTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const getInitials = useInitials();
@@ -112,11 +113,13 @@ export default function LocalizedArtTable({
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="size-[20px] cursor-pointer rounded-full border-2 border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-white"
-                                                    onClick={() => {}}
+                                                    className="size-[16px] cursor-pointer rounded-full border-2 border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-white"
+                                                    onClick={() =>
+                                                        onOpenNotes?.(row)
+                                                    }
                                                 >
                                                     <Plus
-                                                        className="size-[16px]"
+                                                        className="size-[12px]"
                                                         strokeWidth={3}
                                                     />
                                                 </Button>

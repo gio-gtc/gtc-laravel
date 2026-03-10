@@ -1,0 +1,82 @@
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import Divider from '@/components/utils/divider';
+import type { LocalizedArtNote } from '@/types';
+import { orderModalStyles } from '../general-media/modals/shared';
+
+interface NotesModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    notes: LocalizedArtNote[];
+    rowId?: string | number;
+}
+
+export default function NotesModal({
+    isOpen,
+    onClose,
+    notes,
+}: NotesModalProps) {
+    return (
+        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent className="grid-rows-[auto_1fr_auto] gap-2 sm:h-full sm:max-h-[600px] sm:w-full sm:max-w-[600px]">
+                {/* <DialogContent className="gap-2 sm:w-full sm:max-w-[600px]"> */}
+                <div>
+                    <DialogHeader className="pb-2">
+                        <DialogTitle className="md-black-weight-600">
+                            Notes
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <Divider />
+                </div>
+
+                <div className="min-h-0 overflow-y-auto rounded-lg border">
+                    {notes.length > 0 ? (
+                        <div className="space-y-4 px-2.5 py-1">
+                            {notes.map((note, index) => (
+                                <div key={index} className="space-y-1">
+                                    <p className="xs-gray-500-weight-400">
+                                        {note.text}
+                                    </p>
+                                    <Divider />
+                                    <p className="xs-gray-300-weight-400 text-center italic">
+                                        Saved on {note.savedAt}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-sm text-gray-500">No notes yet.</p>
+                    )}
+                </div>
+
+                <div>
+                    <Divider />
+
+                    <DialogFooter className="flex gap-2 pt-2">
+                        <Button
+                            variant="outline"
+                            onClick={onClose}
+                            className={orderModalStyles.cancelButton}
+                        >
+                            Cancel
+                        </Button>
+
+                        <Button
+                            className={orderModalStyles.primaryButton}
+                            onClick={onClose}
+                        >
+                            Save
+                        </Button>
+                    </DialogFooter>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}

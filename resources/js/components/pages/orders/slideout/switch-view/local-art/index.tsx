@@ -2,9 +2,15 @@ import { LocalizedArtTableRow } from '@/types';
 import AttachmentsSection from '../reuse/attachments-section';
 import ChatBox from '../reuse/chat';
 import LocalizedArtTable from '../reuse/localised-media-table';
+import NotesModal from '../reuse/notes-modal';
 import SectionContainers from '../reuse/section-containers';
+import { useState } from 'react';
 
 function LocalArtView() {
+    const [notesModalRow, setNotesModalRow] = useState<
+        LocalizedArtTableRow | null
+    >(null);
+
     const mockUser = {
         id: 1,
         name: 'Jane Doe',
@@ -24,6 +30,16 @@ function LocalArtView() {
             cta: 'Save the Date',
             dueDate: '1/15/25',
             assigned: mockUser,
+            notes: [
+                {
+                    text: 'Do not put city/state on artwork even though the admat has it.',
+                    savedAt: '9/15/2024 @ 3:15PM',
+                },
+                {
+                    text: 'Change the background color to deeper blue to match logo.',
+                    savedAt: '9/17/2024 @ 4:30PM',
+                },
+            ],
         },
         {
             id: 2,
@@ -51,8 +67,15 @@ function LocalArtView() {
                 <LocalizedArtTable
                     title="Localized Art"
                     data={localizedArtExampleData}
+                    onOpenNotes={(row) => setNotesModalRow(row)}
                 />
             </div>
+
+            <NotesModal
+                isOpen={notesModalRow !== null}
+                onClose={() => setNotesModalRow(null)}
+                notes={notesModalRow?.notes ?? []}
+            />
 
             {/* Attachments Section */}
             <SectionContainers title="Attachments">

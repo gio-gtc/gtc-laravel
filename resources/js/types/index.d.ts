@@ -238,6 +238,11 @@ export interface StaticAssetsMediaTableProps {
     onAdd?: () => void;
 }
 
+export interface LocalizedArtNote {
+    text: string;
+    savedAt: string;
+}
+
 export interface LocalizedArtTableRow {
     id: string | number;
     description: string;
@@ -246,6 +251,7 @@ export interface LocalizedArtTableRow {
     cta: string;
     dueDate: string;
     assigned: User | null;
+    notes?: LocalizedArtNote[];
 }
 
 export interface LocalizedArtTableProps {
@@ -253,4 +259,5 @@ export interface LocalizedArtTableProps {
     data: LocalizedArtTableRow[];
     defaultOpen?: boolean;
     onAdd?: () => void;
+    onOpenNotes?: (row: LocalizedArtTableRow) => void;
 }
