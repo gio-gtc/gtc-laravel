@@ -76,7 +76,7 @@ export default function InvoiceAdvancedFilters({
     };
 
     return (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="outline" size={'md'}>

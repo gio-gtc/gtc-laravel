@@ -190,6 +190,8 @@ export interface MediaTableRow {
         onApprove?: () => void;
         onDownload?: (optionId: string) => void;
     };
+    /** Order ID for sorting by order creation date */
+    order_id?: number;
 }
 
 export interface MediaTableProps {
@@ -225,6 +227,8 @@ export interface StaticAssetsTableRow {
         onApprove?: () => void;
         onDownload?: (optionId: string) => void;
     };
+    /** Order ID for sorting by order creation date */
+    order_id?: number;
 }
 
 export interface StaticAssetsMediaTableProps {

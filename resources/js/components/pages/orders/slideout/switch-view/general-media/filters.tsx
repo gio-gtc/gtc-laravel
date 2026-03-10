@@ -1,20 +1,148 @@
+import { orderData } from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
-import { ArrowUpDown, Filter, X } from 'lucide-react';
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { type MediaTableRow } from '@/types';
+import { ArrowDown, ArrowUp, ArrowUpDown, Filter } from 'lucide-react';
 
-export default function Filters() {
+const MEDIA_STATUS_OPTIONS: {
+    value: MediaTableRow['status'];
+    label: string;
+}[] = [
+    { value: 'Still in Cart', label: 'Still in Cart' },
+    { value: 'Client Review', label: 'Client Review' },
+    { value: 'In Production', label: 'In Production' },
+    { value: 'Out for Delivery', label: 'Out for Delivery' },
+    { value: 'Cancelled', label: 'Cancelled' },
+    { value: 'Revision Requested', label: 'Revision Requested' },
+    { value: 'Unassigned', label: 'Unassigned' },
+];
+
+export type MediaStatusFilter = MediaTableRow['status'][];
+export type SortDirection = 'asc' | 'desc' | null;
+
+interface FiltersProps {
+    statusFilter: MediaStatusFilter;
+    onStatusFilterChange: (filter: MediaStatusFilter) => void;
+    sortDirection: SortDirection;
+    onSortDirectionChange: (direction: SortDirection) => void;
+}
+
+export default function Filters({
+    statusFilter,
+    onStatusFilterChange,
+    sortDirection,
+    onSortDirectionChange,
+}: FiltersProps) {
+    const hasActiveStatusFilter = statusFilter.length > 0;
+
+    const toggleStatus = (status: MediaTableRow['status']) => {
+        const isSelected = statusFilter.includes(status);
+        onStatusFilterChange(
+            isSelected
+                ? statusFilter.filter((s) => s !== status)
+                : [...statusFilter, status],
+        );
+    };
+
+    const cycleSortDirection = () => {
+        if (sortDirection === null) {
+            onSortDirectionChange('asc');
+        } else if (sortDirection === 'asc') {
+            onSortDirectionChange('desc');
+        } else {
+            onSortDirectionChange(null);
+        }
+    };
+
+    const SortIcon =
+        sortDirection === 'asc'
+            ? ArrowUp
+            : sortDirection === 'desc'
+              ? ArrowDown
+              : ArrowUpDown;
+
     return (
-        // TODO: ask how this is suppose to work?
         <div className="flex items-center justify-end gap-2">
-            <Button variant="outline">
-                Still in Cart, +5
-                <X className="ml-2 h-4 w-4" />
-            </Button>
-            <Button variant="outline">
-                <Filter className="h-4 w-4" />
-            </Button>
-            <Button variant="outline">
-                <ArrowUpDown className="h-4 w-4" />
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline">
+                        <Filter
+                            className={cn(
+                                'h-4 w-4',
+                                hasActiveStatusFilter && 'fill-current',
+                            )}
+                        />
+                        Filter
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-56 p-4">
+                    <p className="mb-3 text-sm font-medium text-muted-foreground">
+                        Status
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                        {MEDIA_STATUS_OPTIONS.map(({ value, label }) => (
+                            <Button
+                                key={value}
+                                variant={
+                                    statusFilter.includes(value)
+                                        ? 'default'
+                                        : 'secondary'
+                                }
+                                size="sm"
+                                onClick={() => toggleStatus(value)}
+                            >
+                                {label}
+                            </Button>
+                        ))}
+                    </div>
+                </PopoverContent>
+            </Popover>
+            <Button variant="outline" onClick={cycleSortDirection}>
+                <SortIcon className="h-4 w-4" /> Sort
             </Button>
         </div>
     );
+}
+
+type RowWithStatus = {
+    status: MediaTableRow['status'];
+    order_id?: number;
+    [key: string]: unknown;
+};
+
+export function filterAndSortRows<T extends RowWithStatus>(
+    rows: T[],
+    venueOrders: { id: number }[],
+    statusFilter: MediaStatusFilter,
+    sortDirection: SortDirection,
+): T[] {
+    let result = rows.map((row, i) => ({
+        ...row,
+        order_id: venueOrders[i % venueOrders.length]?.id,
+    })) as T[];
+
+    if (statusFilter.length > 0) {
+        result = result.filter((row) => statusFilter.includes(row.status));
+    }
+
+    if (sortDirection === 'asc' || sortDirection === 'desc') {
+        const orderMap = new Map(orderData.map((o) => [o.id, o.date] as const));
+        result = [...result].sort((a, b) => {
+            const dateA =
+                (a.order_id != null ? orderMap.get(a.order_id) : undefined) ??
+                '';
+            const dateB =
+                (b.order_id != null ? orderMap.get(b.order_id) : undefined) ??
+                '';
+            const cmp = String(dateA).localeCompare(String(dateB));
+            return sortDirection === 'asc' ? cmp : -cmp;
+        });
+    }
+
+    return result;
 }

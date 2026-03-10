@@ -1,4 +1,4 @@
-import { invoicesData } from '@/components/mockdata';
+import { invoicesData, orderData } from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
 import {
     type Invoice,
@@ -16,7 +16,11 @@ import MediaTable from '../reuse/dynamic-media-table';
 import SectionContainers from '../reuse/section-containers';
 import StaticAssetsMediaTable from '../reuse/static-assets-media-table';
 import BillingSection from './billing-section';
-import Filters from './filters';
+import Filters, {
+    filterAndSortRows,
+    type MediaStatusFilter,
+    type SortDirection,
+} from './filters';
 import AddAudioModal from './modals/add-audio-modal';
 import AddBroadcastStreamingModal from './modals/add-broadcast-streaming-modal';
 import AddKeyArtStaticAssetsModal from './modals/add-key-art-static-assets-modal';
@@ -54,6 +58,8 @@ function GeneralMediaView({
     const [revisionModalOpen, setRevisionModalOpen] = useState(false);
     const [revisionRequestRow, setRevisionRequestRow] =
         useState<MediaTableRow | null>(null);
+    const [statusFilter, setStatusFilter] = useState<MediaStatusFilter>([]);
+    const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
     const baseExampleData = useMemo(
         (): MediaTableRow[] => [
@@ -301,14 +307,48 @@ function GeneralMediaView({
         );
     }, [order, venueItem]);
 
+    const venueOrders = useMemo(() => {
+        if (!venueItem) return [];
+        return orderData.filter(
+            (o) => o.tour_venue_id === venueItem.orderVenue.id,
+        );
+    }, [venueItem]);
+
+    const filteredMediaData = useMemo(
+        () =>
+            filterAndSortRows(
+                exampleData,
+                venueOrders,
+                statusFilter,
+                sortDirection,
+            ),
+        [exampleData, venueOrders, statusFilter, sortDirection],
+    );
+
+    const filteredStaticAssetsData = useMemo(
+        () =>
+            filterAndSortRows(
+                staticAssetsExampleData,
+                venueOrders,
+                statusFilter,
+                sortDirection,
+            ),
+        [staticAssetsExampleData, venueOrders, statusFilter, sortDirection],
+    );
+
     return (
         <>
             {/* Media tables */}
             <div className="slide-out-container space-y-4">
-                <Filters />
+                <Filters
+                    statusFilter={statusFilter}
+                    onStatusFilterChange={setStatusFilter}
+                    sortDirection={sortDirection}
+                    onSortDirectionChange={setSortDirection}
+                />
                 <MediaTable
                     title="Broadcast & Streaming Video"
-                    data={exampleData}
+                    data={filteredMediaData}
                     onAdd={() => setBroadcastModalOpen(true)}
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
@@ -323,7 +363,7 @@ function GeneralMediaView({
                 />
                 <MediaTable
                     title="Social Video"
-                    data={exampleData}
+                    data={filteredMediaData}
                     onAdd={() => setSocialVideoModalOpen(true)}
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
@@ -338,7 +378,7 @@ function GeneralMediaView({
                 />
                 <MediaTable
                     title="Audio"
-                    data={exampleData}
+                    data={filteredMediaData}
                     onAdd={() => setAudioModalOpen(true)}
                     previewVariant="audio"
                     onUploadRow={(row) =>
@@ -354,7 +394,7 @@ function GeneralMediaView({
                 />
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
-                    data={staticAssetsExampleData}
+                    data={filteredStaticAssetsData}
                     onAdd={() => setKeyArtModalOpen(true)}
                 />
             </div>
