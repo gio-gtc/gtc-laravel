@@ -1,4 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Collapsible,
@@ -13,6 +12,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { useInitials } from '@/hooks/use-initials';
 import type { LocalizedArtTableProps } from '@/types';
 import { ChevronDown, ChevronRight, Paperclip, Plus } from 'lucide-react';
@@ -56,32 +56,32 @@ export default function LocalizedArtTable({
 
                 {/* Table */}
                 <CollapsibleContent>
-                    <div className="rounded-lg border border-gray-200 bg-white">
-                        <Table>
+                    <div className="rounded-lg border">
+                        <Table compactRows>
                             <TableHeader>
-                                <TableRow className="bg-gray-50">
-                                    <TableHead className="h-9 px-3 font-semibold text-gray-700">
+                                <TableRow>
+                                    <TableHead className="xs-gray-500-weight-600 text-center">
                                         Description
                                     </TableHead>
-                                    <TableHead className="h-9 px-3 font-semibold text-gray-700">
+                                    <TableHead className="xs-gray-500-weight-600 text-center">
                                         W
                                     </TableHead>
-                                    <TableHead className="h-9 px-3 font-semibold text-gray-700">
+                                    <TableHead className="xs-gray-500-weight-600 text-center">
                                         H
                                     </TableHead>
-                                    <TableHead className="h-9 px-3 font-semibold text-gray-700">
+                                    <TableHead className="xs-gray-500-weight-600 text-center">
                                         CTA
                                     </TableHead>
-                                    <TableHead className="h-9 px-3 font-semibold text-gray-700">
+                                    <TableHead className="xs-gray-500-weight-600 text-center">
                                         Due Date
                                     </TableHead>
-                                    <TableHead className="h-9 px-3 font-semibold text-gray-700">
+                                    <TableHead className="xs-gray-500-weight-600 text-center">
                                         Assigned
                                     </TableHead>
-                                    <TableHead className="h-9 px-3 font-semibold text-gray-700">
+                                    <TableHead className="xs-gray-500-weight-600 text-center">
                                         Notes
                                     </TableHead>
-                                    <TableHead className="h-9 px-3 font-semibold text-gray-700">
+                                    <TableHead className="xs-gray-500-weight-600 text-center">
                                         Download
                                     </TableHead>
                                 </TableRow>
@@ -89,7 +89,10 @@ export default function LocalizedArtTable({
                             <TableBody>
                                 {data.length > 0 ? (
                                     data.map((row) => (
-                                        <TableRow key={row.id}>
+                                        <TableRow
+                                            key={row.id}
+                                            className="xs-gray-500-weight-600"
+                                        >
                                             <TableCell>
                                                 {row.description}
                                             </TableCell>
@@ -98,30 +101,10 @@ export default function LocalizedArtTable({
                                             <TableCell>{row.cta}</TableCell>
                                             <TableCell>{row.dueDate}</TableCell>
                                             <TableCell>
-                                                {row.assigned ? (
-                                                    <Avatar className="size-6 overflow-hidden rounded-full">
-                                                        <AvatarImage
-                                                            src={
-                                                                row.assigned
-                                                                    .avatar ||
-                                                                undefined
-                                                            }
-                                                            alt={
-                                                                row.assigned
-                                                                    .name
-                                                            }
-                                                        />
-                                                        <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                                            {getInitials(
-                                                                row.assigned
-                                                                    .name,
-                                                            )}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                ) : (
-                                                    <span className="text-muted-foreground">
-                                                        —
-                                                    </span>
+                                                {row.assigned && (
+                                                    <UserAvatar
+                                                        user={row.assigned}
+                                                    />
                                                 )}
                                             </TableCell>
 
@@ -129,10 +112,13 @@ export default function LocalizedArtTable({
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="size-5 cursor-pointer rounded-full border border-gray-300 text-gray-400 hover:border-gray-400"
+                                                    className="size-[20px] cursor-pointer rounded-full border-2 border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-white"
                                                     onClick={() => {}}
                                                 >
-                                                    <Plus className="size-3.5" />
+                                                    <Plus
+                                                        className="size-[16px]"
+                                                        strokeWidth={3}
+                                                    />
                                                 </Button>
                                             </TableCell>
 
@@ -140,10 +126,10 @@ export default function LocalizedArtTable({
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="size-5 cursor-pointer rounded-full text-gray-400 hover:border-gray-400"
+                                                    className="size-[18px] cursor-pointer rounded-full text-gray-400 hover:border-gray-400"
                                                     onClick={() => {}}
                                                 >
-                                                    <Paperclip className="size-3.5" />
+                                                    <Paperclip className="size-[14px]" />
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
