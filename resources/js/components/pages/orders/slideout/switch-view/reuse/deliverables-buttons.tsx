@@ -139,14 +139,21 @@ export function DownloadButtons({
 
     return (
         <div className="flex items-center justify-center gap-2">
-            <Button
-                variant="ghost"
-                size="icon"
-                className="red-400-hover size-5.5 cursor-pointer rounded-full"
-                onClick={onReject}
-            >
-                <RefreshCw className="size-[24px]" />
-            </Button>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="red-400-hover size-5.5 cursor-pointer rounded-full"
+                    >
+                        <RefreshCw className="size-[24px]" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-[7rem]">
+                    <DropdownMenuItem>Revise</DropdownMenuItem>
+                    <DropdownMenuItem>Cancel</DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button

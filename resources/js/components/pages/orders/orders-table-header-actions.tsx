@@ -37,7 +37,7 @@ export default function OrdersTableHeaderActions({
 }: OrdersTableHeaderActionsProps) {
     return (
         <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
                 <Button
                     variant="outline"
                     size={'md'}
@@ -47,7 +47,7 @@ export default function OrdersTableHeaderActions({
                     Add Venue
                 </Button>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
                 <OrdersAdvancedFilters
                     filter={filters}
                     onFilterChange={onFilterChange}

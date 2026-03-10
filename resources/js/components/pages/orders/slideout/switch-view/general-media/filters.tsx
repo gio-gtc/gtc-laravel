@@ -68,7 +68,7 @@ export default function Filters({
               : ArrowUpDown;
 
     return (
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex items-center justify-end gap-1">
             <Popover>
                 <PopoverTrigger asChild>
                     <Button variant="outline">
