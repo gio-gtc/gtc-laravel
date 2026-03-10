@@ -204,12 +204,12 @@
         @apply p-3;
     }
 
-    .md-gray-500-weight-400 {
-        @apply text-base font-normal text-gray-500;
-    }
-
     .md-black-weight-600 {
         @apply text-base font-semibold text-black;
+    }
+
+    .md-gray-500-weight-400 {
+        @apply text-base font-normal text-gray-500;
     }
 
     .md-gray-700-weight-600 {

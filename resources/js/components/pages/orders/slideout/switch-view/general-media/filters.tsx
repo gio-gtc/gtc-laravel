@@ -5,9 +5,10 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import Divider from '@/components/utils/divider';
 import { cn } from '@/lib/utils';
 import { type MediaTableRow } from '@/types';
-import { ArrowDown, ArrowUp, ArrowUpDown, Filter } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Filter, X } from 'lucide-react';
 
 const MEDIA_STATUS_OPTIONS: {
     value: MediaTableRow['status'];
@@ -73,7 +74,7 @@ export default function Filters({
                     <Button variant="outline">
                         <Filter
                             className={cn(
-                                'h-4 w-4',
+                                'size-3 text-gray-400',
                                 hasActiveStatusFilter && 'fill-current',
                             )}
                         />
@@ -81,29 +82,41 @@ export default function Filters({
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent align="end" className="w-56 p-4">
-                    <p className="mb-3 text-sm font-medium text-muted-foreground">
-                        Status
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                        {MEDIA_STATUS_OPTIONS.map(({ value, label }) => (
+                    <div className="space-y-4">
+                        <h4 className="md-gray-700-weight-600">Status</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {MEDIA_STATUS_OPTIONS.map(({ value, label }) => (
+                                <Button
+                                    key={value}
+                                    variant={
+                                        statusFilter.includes(value)
+                                            ? 'default'
+                                            : 'secondary'
+                                    }
+                                    size="sm"
+                                    onClick={() => toggleStatus(value)}
+                                >
+                                    {label}
+                                </Button>
+                            ))}
+                        </div>
+                        <Divider />
+                        <div className="flex justify-end">
                             <Button
-                                key={value}
-                                variant={
-                                    statusFilter.includes(value)
-                                        ? 'default'
-                                        : 'secondary'
-                                }
-                                size="sm"
-                                onClick={() => toggleStatus(value)}
+                                variant="ghost"
+                                onClick={() => onStatusFilterChange([])}
+                                disabled={!hasActiveStatusFilter}
+                                className="cursor-pointer"
                             >
-                                {label}
+                                <X className="size-3" />
+                                Clear Filters
                             </Button>
-                        ))}
+                        </div>
                     </div>
                 </PopoverContent>
             </Popover>
             <Button variant="outline" onClick={cycleSortDirection}>
-                <SortIcon className="h-4 w-4" /> Sort
+                <SortIcon className="size-3 text-gray-400" /> Sort
             </Button>
         </div>
     );
