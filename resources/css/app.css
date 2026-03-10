@@ -220,6 +220,10 @@
         @apply text-sm font-normal text-black;
     }
 
+    .sm-gray-600-weight-500 {
+        @apply text-sm font-medium text-gray-600;
+    }
+
     .sm-gray-700-weight-500 {
         @apply text-sm font-medium text-gray-700;
     }

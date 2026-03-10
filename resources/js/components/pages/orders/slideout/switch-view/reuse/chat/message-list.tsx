@@ -20,11 +20,7 @@ import {
     chatEditorBaseExtensions,
     createChatEditorKeyDown,
 } from '@/lib/chat-editor';
-import {
-    formatMessageTimestamp,
-    groupMessagesByDate,
-} from '@/lib/chat-utils';
-import { MessageContentRender } from './message-content-render';
+import { formatMessageTimestamp, groupMessagesByDate } from '@/lib/chat-utils';
 import { cn } from '@/lib/utils';
 import { User } from '@/types';
 import { Message } from '@/types/chat';
@@ -32,6 +28,7 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import { Check, Pencil, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
+import { MessageContentRender } from './message-content-render';
 
 const DROPDOWN_OFFSET_WHEN_EDITED = -20;
 
@@ -154,12 +151,12 @@ export default function MessageList({
                 initialTopMostItemIndex={flattenedData.length - 1} // Scroll to bottom
                 followOutput={'auto'} // Stick to bottom on new messages
                 itemContent={(index, item) => {
-                    // CASE 1: Render Date Header
+                    // ----------------- Render Date Header -------------
                     if (typeof item === 'string') {
                         return (
                             <div className="flex items-center px-4 py-6">
                                 <div className="flex-grow border-t border-gray-200"></div>
-                                <span className="mx-4 text-xs font-semibold tracking-wider text-gray-400 uppercase">
+                                <span className="sm-gray-600-weight-500 mx-4 tracking-wider">
                                     {item}
                                 </span>
                                 <div className="flex-grow border-t border-gray-200"></div>
@@ -167,7 +164,7 @@ export default function MessageList({
                         );
                     }
 
-                    // CASE 2: Render Message Bubble
+                    // Render Message Bubble
                     const isMe = item.sender_id === currentUserId;
                     const sender = isMe
                         ? currentUser
@@ -216,10 +213,10 @@ export default function MessageList({
                     const bubbleDiv = (
                         <div
                             className={cn(
-                                'rounded-2xl px-4 py-2 text-sm shadow-sm',
+                                'rounded-2xl p-2 text-gray-900 shadow-sm',
                                 isMe
-                                    ? 'rounded-br-none border border-gray-200 bg-white text-gray-900'
-                                    : 'rounded-tl-none bg-gray-100 text-gray-900',
+                                    ? 'rounded-br-none border border-gray-200 bg-white'
+                                    : 'rounded-tl-none bg-gray-50',
                                 item.status === 'sending' && 'opacity-70',
                                 canEditDelete && 'cursor-pointer',
                             )}
@@ -270,11 +267,11 @@ export default function MessageList({
                             >
                                 <div className="max-w-[85%]">
                                     <div className="flex justify-between gap-2 pb-1 text-xs text-gray-600">
-                                        <span className="font-medium">
+                                        <span className="sm-gray-700-weight-500">
                                             {senderName}
                                         </span>
                                         <span className="flex items-center gap-1">
-                                            <span className="text-gray-500">
+                                            <span className="xs-gray-600-weight-400">
                                                 {timestamp}
                                             </span>
                                             {isMe &&
