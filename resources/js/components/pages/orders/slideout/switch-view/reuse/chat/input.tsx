@@ -56,25 +56,6 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         equalityFn: (a, b) => a === b,
     });
 
-    const isBulletList = useEditorState({
-        editor,
-        selector: (ctx) =>
-            ctx.editor ? ctx.editor.isActive('bulletList') : false,
-        equalityFn: (a, b) => a === b,
-    });
-    const isOrderedList = useEditorState({
-        editor,
-        selector: (ctx) =>
-            ctx.editor ? ctx.editor.isActive('orderedList') : false,
-        equalityFn: (a, b) => a === b,
-    });
-    const isTaskList = useEditorState({
-        editor,
-        selector: (ctx) =>
-            ctx.editor ? ctx.editor.isActive('taskList') : false,
-        equalityFn: (a, b) => a === b,
-    });
-
     // Reset editor when disabled state changes (e.g., after send)
     useEffect(() => {
         if (disabled && editor) {
