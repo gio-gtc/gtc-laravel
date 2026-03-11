@@ -197,7 +197,6 @@ export default function InvoiceAdvancedFilters({
                                 startDate={dateRangeFilter.startDate}
                                 endDate={dateRangeFilter.endDate}
                                 onDateRangeChange={handleDateRangeChange}
-                                buttonVariant="secondary"
                                 buttonSize="sm"
                                 buttonClassName="w-full justify-start"
                                 placeholder="Select date range"

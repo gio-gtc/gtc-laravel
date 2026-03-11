@@ -42,13 +42,6 @@ interface DateRangePickerProps {
         startDate: string | null;
         endDate: string | null;
     }) => void;
-    buttonVariant?:
-        | 'default'
-        | 'outline'
-        | 'secondary'
-        | 'ghost'
-        | 'link'
-        | 'destructive';
     buttonSize?: 'default' | 'sm' | 'lg' | 'icon';
     buttonClassName?: string;
     placeholder?: string;
@@ -60,7 +53,6 @@ export default function DateRangePicker({
     startDate,
     endDate,
     onDateRangeChange,
-    buttonVariant = 'outline',
     buttonSize = 'sm',
     buttonClassName = '',
     placeholder = 'Select date range',
@@ -109,7 +101,7 @@ export default function DateRangePicker({
         <Popover open={open} onOpenChange={handleOpenChange}>
             <PopoverTrigger asChild>
                 <Button
-                    variant={buttonVariant}
+                    variant={'outline'}
                     size={buttonSize}
                     className={`gap-2 font-semibold text-gray-700 ${buttonClassName}`}
                 >

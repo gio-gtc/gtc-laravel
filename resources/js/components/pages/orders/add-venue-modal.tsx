@@ -123,7 +123,6 @@ export default function AddVenueModal({
                             startDate={showStartDate}
                             endDate={showEndDate}
                             onDateRangeChange={handleDateRangeChange}
-                            buttonVariant="outline"
                             buttonSize="default"
                             buttonClassName="w-full justify-start"
                             placeholder="Select date range"
