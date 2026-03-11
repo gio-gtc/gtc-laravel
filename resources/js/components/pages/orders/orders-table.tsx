@@ -348,20 +348,14 @@ function OrdersTable() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            {columns.map((column, index) => (
-                                <TableHead
-                                    key={column.id}
-                                    style={{
-                                        width: column.size,
-                                        position: 'relative',
-                                    }}
-                                    className={cn(
-                                        'relative h-[30px] px-2 py-1',
-                                    )}
-                                >
-                                    {column.header}
-                                </TableHead>
-                            ))}
+                            <TableHead className="w-[20%]">Name</TableHead>
+                            <TableHead className="w-[35%]">Venue</TableHead>
+                            <TableHead className="w-[10%]">Due Date</TableHead>
+                            <TableHead className="w-[11%]">Client</TableHead>
+                            <TableHead className="w-[12%]">
+                                Collaborators
+                            </TableHead>
+                            <TableHead className="w-[12%]">Status</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
