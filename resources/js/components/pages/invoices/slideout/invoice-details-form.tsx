@@ -106,7 +106,7 @@ export default function InvoiceDetailsForm({
                         onChange={(e) =>
                             onChange('accountPayableEmail', e.target.value)
                         }
-                        className="xs-gray-700-weight-600 border-gray-300 pl-9"
+                        className="xs-gray-700-weight-600 pl-9"
                     />
                 </div>
             </ColumnedRowsChild>

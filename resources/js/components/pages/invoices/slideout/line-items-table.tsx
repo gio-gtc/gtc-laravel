@@ -55,6 +55,7 @@ export default function InvoiceLineItemsTable({
     return (
         <div className="space-y-4 rounded-md border">
             <Table
+                compactRows
                 className={cn(
                     isDeleted &&
                         '[background-image:repeating-linear-gradient(-45deg,transparent,transparent_2px,rgba(0,0,0,0.04)_2px,rgba(0,0,0,0.04)_4px)]',
@@ -62,22 +63,22 @@ export default function InvoiceLineItemsTable({
             >
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[120px] text-center">
+                        <TableHead className="w-[21%] text-center">
                             Code
                         </TableHead>
-                        <TableHead className="text-center">
+                        <TableHead className="w-[39%] text-center">
                             Description
                         </TableHead>
-                        <TableHead className="w-[100px] text-center">
+                        <TableHead className="w-[8%] text-center">
                             Quantity
                         </TableHead>
-                        <TableHead className="w-[150px] text-center">
+                        <TableHead className="w-[12%] text-center">
                             Price
                         </TableHead>
-                        <TableHead className="w-[150px] text-center">
+                        <TableHead className="w-[12%] text-center">
                             Total
                         </TableHead>
-                        <TableHead className="w-[50px]"></TableHead>
+                        <TableHead className="w-[8%]"></TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
