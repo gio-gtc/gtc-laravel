@@ -2,11 +2,15 @@ import { type Column, type Table } from '@tanstack/react-table';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { ReactNode } from 'react';
 
+type SortDirection = 'asc' | 'desc';
+
 interface SortableHeaderProps<TData, TValue> {
     column: Column<TData, TValue>;
     table?: Table<TData>;
     children?: ReactNode;
     className?: string;
+    /** Pass explicitly to force re-render when sorting changes (column/table refs are stable) */
+    sortedState?: false | SortDirection;
 }
 
 export function SortableHeader<TData, TValue>({
@@ -14,8 +18,9 @@ export function SortableHeader<TData, TValue>({
     table,
     children,
     className = '',
+    sortedState: sortedStateProp,
 }: SortableHeaderProps<TData, TValue>) {
-    const sortedState = column.getIsSorted();
+    const sortedState = sortedStateProp ?? column.getIsSorted();
 
     return (
         <button

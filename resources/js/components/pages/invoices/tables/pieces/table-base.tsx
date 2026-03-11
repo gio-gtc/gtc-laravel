@@ -75,7 +75,7 @@ export function InvoiceTableBase({
         },
         {
             perc: '13',
-            min: '148',
+            min: '134',
         },
     ];
 

@@ -14,6 +14,14 @@ import { type Invoice } from '@/types';
 import { type ColumnDef } from '@tanstack/react-table';
 import { HelpCircle } from 'lucide-react';
 
+/** Parse M/D/YY or MM/DD/YY date strings for sorting */
+function parseInvoiceDate(dateStr: string): number {
+    if (!dateStr) return 0;
+    const [m, d, y] = dateStr.split('/').map(Number);
+    const year = y != null && y < 100 ? 2000 + y : y ?? 2000;
+    return new Date(year, (m ?? 1) - 1, d ?? 1).getTime();
+}
+
 interface CreateInvoiceColumnsOptions {
     getDayBadge: (invoice: Invoice) => React.ReactNode;
     daysAccessorFn: (row: Invoice) => number;
@@ -27,7 +35,11 @@ export function createInvoiceColumns({
         {
             accessorKey: 'invoiceNumber',
             header: ({ column, table }) => (
-                <SortableHeader column={column} table={table}>
+                <SortableHeader
+                    column={column}
+                    table={table}
+                    sortedState={column.getIsSorted()}
+                >
                     Invoice #
                 </SortableHeader>
             ),
@@ -48,9 +60,20 @@ export function createInvoiceColumns({
         {
             accessorKey: 'date',
             header: ({ column, table }) => (
-                <SortableHeader column={column} table={table}>Date</SortableHeader>
+                <SortableHeader
+                    column={column}
+                    table={table}
+                    sortedState={column.getIsSorted()}
+                >
+                    Date
+                </SortableHeader>
             ),
             enableSorting: true,
+            sortingFn: (rowA, rowB, columnId) => {
+                const a = rowA.getValue(columnId) as string;
+                const b = rowB.getValue(columnId) as string;
+                return parseInvoiceDate(a) - parseInvoiceDate(b);
+            },
             cell: ({ getValue, row }) => {
                 const value = getValue() as string;
                 return (
@@ -67,7 +90,13 @@ export function createInvoiceColumns({
         {
             accessorKey: 'tour',
             header: ({ column, table }) => (
-                <SortableHeader column={column} table={table}>Tour</SortableHeader>
+                <SortableHeader
+                    column={column}
+                    table={table}
+                    sortedState={column.getIsSorted()}
+                >
+                    Tour
+                </SortableHeader>
             ),
             enableSorting: true,
             cell: ({ getValue, row }) => {
@@ -86,7 +115,11 @@ export function createInvoiceColumns({
         {
             accessorKey: 'market',
             header: ({ column, table }) => (
-                <SortableHeader column={column} table={table}>
+                <SortableHeader
+                    column={column}
+                    table={table}
+                    sortedState={column.getIsSorted()}
+                >
                     Market
                 </SortableHeader>
             ),
@@ -108,7 +141,13 @@ export function createInvoiceColumns({
             accessorFn: (row) => getInvoiceVenueName(row, venuesData),
             id: 'venue',
             header: ({ column, table }) => (
-                <SortableHeader column={column} table={table}>Venue</SortableHeader>
+                <SortableHeader
+                    column={column}
+                    table={table}
+                    sortedState={column.getIsSorted()}
+                >
+                    Venue
+                </SortableHeader>
             ),
             enableSorting: true,
             cell: ({ row }) => {
@@ -127,7 +166,13 @@ export function createInvoiceColumns({
         {
             accessorKey: 'clientReference',
             header: ({ column, table }) => (
-                <SortableHeader column={column} table={table}>Ref</SortableHeader>
+                <SortableHeader
+                    column={column}
+                    table={table}
+                    sortedState={column.getIsSorted()}
+                >
+                    Ref
+                </SortableHeader>
             ),
             enableSorting: true,
             cell: ({ getValue, row }) => {
@@ -146,7 +191,13 @@ export function createInvoiceColumns({
         {
             accessorKey: 'amount',
             header: ({ column, table }) => (
-                <SortableHeader column={column} table={table}>Amt</SortableHeader>
+                <SortableHeader
+                    column={column}
+                    table={table}
+                    sortedState={column.getIsSorted()}
+                >
+                    Amt
+                </SortableHeader>
             ),
             enableSorting: true,
             cell: ({ getValue, row }) => {
@@ -167,7 +218,11 @@ export function createInvoiceColumns({
             id: 'daysToShow',
             header: ({ column, table }) => {
                 return (
-                    <SortableHeader column={column} table={table}>
+                    <SortableHeader
+                        column={column}
+                        table={table}
+                        sortedState={column.getIsSorted()}
+                    >
                         <div className="flex items-start gap-0.5">
                             <span>Days</span>
                             <Tooltip>
