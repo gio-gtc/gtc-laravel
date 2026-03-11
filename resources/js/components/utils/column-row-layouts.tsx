@@ -17,16 +17,18 @@ export function ColumnedRowsChild({
     required,
     multiInput,
     labelClassName = '',
+    subLabelContent,
     labelLocation = 'modal',
 }: {
     children: React.ReactNode;
     childrenContainerClasses?: string;
-    labelFor?: string;
-    labelContent?: React.ReactNode;
+    labelFor: string;
+    labelContent: React.ReactNode;
     required?: boolean;
     /** When true, child container uses flex-col gap-4 for multiple inputs. */
     multiInput?: boolean;
     labelClassName?: string;
+    subLabelContent?: string;
     labelLocation?: 'modal' | 'other';
 }) {
     const labelLocationClasses =
@@ -48,6 +50,11 @@ export function ColumnedRowsChild({
                     {labelContent}
                     {required && (
                         <span className="ml-0.5 text-destructive">*</span>
+                    )}
+                    {subLabelContent && (
+                        <p className="mt-1 font-normal text-gray-600">
+                            {subLabelContent}
+                        </p>
                     )}
                 </Label>
             ) : (

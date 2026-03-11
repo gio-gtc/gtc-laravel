@@ -35,7 +35,6 @@ export default function OrganizationModal({
     onClose,
 }: OrganizationModalProps) {
     const [apEmails, setApEmails] = useState<string[]>(['']);
-    const [arEmails, setArEmails] = useState<string[]>(['']);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -167,18 +166,10 @@ export default function OrganizationModal({
                     <ColumnedRowsParent>
                         <ColumnedRowsChild
                             labelFor="credit_limit"
-                            labelContent={
-                                <>
-                                    Credit Limit
-                                    <span className="ml-0.5 text-destructive">
-                                        *
-                                    </span>
-                                    <span className="mt-1 block font-normal text-gray-600">
-                                        In US Dollars
-                                    </span>
-                                </>
-                            }
+                            labelContent="Credit Limit"
+                            subLabelContent="In US Dollars"
                             childrenContainerClasses="modal-child-container"
+                            required
                         >
                             <DollarInput
                                 id="credit_limit"
@@ -190,18 +181,10 @@ export default function OrganizationModal({
 
                         <ColumnedRowsChild
                             labelFor="credit_terms"
-                            labelContent={
-                                <>
-                                    Credit Terms
-                                    <span className="ml-0.5 text-destructive">
-                                        *
-                                    </span>
-                                    <span className="mt-1 block font-normal text-gray-600">
-                                        Number of days
-                                    </span>
-                                </>
-                            }
+                            labelContent="Credit Terms"
+                            subLabelContent="Number of days"
                             childrenContainerClasses="modal-child-container"
+                            required
                         >
                             <Input
                                 id="credit_terms"
@@ -223,7 +206,7 @@ export default function OrganizationModal({
                             <Select name="preferred_currency" required>
                                 <SelectTrigger>
                                     <SelectValue
-                                        placeholder="USD"
+                                        placeholder="Select Currency (default USD)"
                                         defaultValue="usd"
                                     />
                                 </SelectTrigger>
