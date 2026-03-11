@@ -22,7 +22,13 @@ import { useInitials } from '@/hooks/use-initials';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import type { User } from '@/types';
-import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
+import {
+    ArrowDown,
+    ArrowUp,
+    ChevronDownIcon,
+    ChevronsUpDownIcon,
+    ChevronUpIcon,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 type SortColumn = 'name' | 'assetsAssigned' | 'assetsUploaded' | 'accuracy';
@@ -108,12 +114,12 @@ function DesignerStatsTable() {
     // Get sort icon
     function getSortIcon(column: SortColumn) {
         if (sortColumn !== column) {
-            return <ArrowUpDown className="h-4 w-4" />;
+            return <ChevronsUpDownIcon className="size-[12px]" />;
         }
         return sortDirection === 'asc' ? (
-            <ArrowUp className="h-4 w-4" />
+            <ChevronUpIcon className="size-[12px]" />
         ) : (
-            <ArrowDown className="h-4 w-4" />
+            <ChevronDownIcon className="size-[12px]" />
         );
     }
 
@@ -196,15 +202,7 @@ function DesignerStatsTable() {
                                     {getSortIcon('assetsUploaded')}
                                 </button>
                             </TableHead>
-                            <TableHead>
-                                <button
-                                    onClick={() => handleSort('accuracy')}
-                                    className="flex items-center gap-2 hover:text-foreground"
-                                >
-                                    Rolling 30 Day Accuracy
-                                    {getSortIcon('accuracy')}
-                                </button>
-                            </TableHead>
+                            <TableHead>Rolling 30 Day Accuracy</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
