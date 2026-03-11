@@ -107,7 +107,7 @@ export default function DateRangePicker({
 
     const pickerContent = (
         <>
-            <div className="p-4">
+            <div className="flex justify-center">
                 <CalendarComponent
                     mode="range"
                     selected={tempRange}
@@ -120,17 +120,17 @@ export default function DateRangePicker({
                             : undefined
                     }
                 />
-                <div className="flex justify-end gap-2 pt-4">
-                    <Button variant="outline" onClick={handleClearRange}>
-                        Clear
-                    </Button>
-                    <Button
-                        onClick={handleSaveRange}
-                        disabled={!tempRange?.from || !tempRange?.to}
-                    >
-                        Save
-                    </Button>
-                </div>
+            </div>
+            <div className="flex justify-end gap-2 p-4 pt-0.5">
+                <Button variant="outline" onClick={handleClearRange}>
+                    Clear
+                </Button>
+                <Button
+                    onClick={handleSaveRange}
+                    disabled={!tempRange?.from || !tempRange?.to}
+                >
+                    Save
+                </Button>
             </div>
         </>
     );
@@ -142,7 +142,7 @@ export default function DateRangePicker({
             className={`gap-2 font-semibold text-gray-700 ${buttonClassName}`}
             {...(isMobile && { onClick: () => setOpen(true) })}
         >
-            <Calendar className="h-4 w-4 text-gray-400" />
+            <Calendar className="size-[15px] text-gray-400" />
             {displayRangeText}
         </Button>
     );
