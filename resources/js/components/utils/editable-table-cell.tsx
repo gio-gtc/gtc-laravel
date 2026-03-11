@@ -80,8 +80,9 @@ export function EditableTableCell({
           : String(value);
 
     const inputPlaceholder =
-        emptyPlaceholder ?? (emptyValue !== undefined ? String(emptyValue) : undefined);
-    const inputValue = isEmpty ? '' : (type === 'number' ? value : String(value));
+        emptyPlaceholder ??
+        (emptyValue !== undefined ? String(emptyValue) : undefined);
+    const inputValue = isEmpty ? '' : type === 'number' ? value : String(value);
 
     const alignmentClasses = {
         left: 'text-left',
@@ -111,7 +112,7 @@ export function EditableTableCell({
         <p
             onDoubleClick={handleDoubleClick}
             className={cn(
-                'text-xs font-semibold text-gray-500',
+                'xs-gray-500-weight-600',
                 disabled ? 'cursor-default' : 'cursor-pointer',
                 alignmentClasses[align],
                 className,

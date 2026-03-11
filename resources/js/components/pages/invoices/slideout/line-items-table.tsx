@@ -63,10 +63,11 @@ export default function InvoiceLineItemsTable({
             >
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[21%] text-center">
+                        <TableHead className="w-[6%] text-center">ID</TableHead>
+                        <TableHead className="w-[18%] text-center">
                             Code
                         </TableHead>
-                        <TableHead className="w-[39%] text-center">
+                        <TableHead className="w-[37%] text-center">
                             Description
                         </TableHead>
                         <TableHead className="w-[8%] text-center">
@@ -78,13 +79,16 @@ export default function InvoiceLineItemsTable({
                         <TableHead className="w-[12%] text-center">
                             Total
                         </TableHead>
-                        <TableHead className="w-[8%]"></TableHead>
+                        <TableHead className="w-[6%]"></TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {items.length > 0 ? (
                         items.map((item) => (
                             <TableRow key={item.id}>
+                                <TableCell className="xs-gray-500-weight-600">
+                                    {item.id}
+                                </TableCell>
                                 <TableCell>
                                     <EditableTableCell
                                         value={item.code}
@@ -194,14 +198,14 @@ export default function InvoiceLineItemsTable({
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={6} className="h-24 text-center">
+                            <TableCell colSpan={7} className="h-24 text-center">
                                 No items found.
                             </TableCell>
                         </TableRow>
                     )}
                     {/* Add Item Row */}
                     <TableRow>
-                        <TableCell colSpan={5}></TableCell>
+                        <TableCell colSpan={6}></TableCell>
                         <TableCell className="text-center">
                             <Button
                                 variant="ghost"
@@ -222,7 +226,7 @@ export default function InvoiceLineItemsTable({
                     <TableRow>
                         <TableCell
                             className="border-transparent"
-                            colSpan={3}
+                            colSpan={4}
                         ></TableCell>
                         <TableCell className="border-transparent text-right">
                             <span className="text-xs font-semibold text-gray-500">
