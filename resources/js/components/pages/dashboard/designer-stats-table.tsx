@@ -19,6 +19,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { useInitials } from '@/hooks/use-initials';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import type { User } from '@/types';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
@@ -33,6 +34,7 @@ const defaultTrend = { direction: 'up' as const, percentage: 0 };
 
 function DesignerStatsTable() {
     const getInitials = useInitials();
+    const isMobile = useIsMobile();
     const usersWithFallback = useUsersWithFallback();
     const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
@@ -163,8 +165,8 @@ function DesignerStatsTable() {
     return (
         <div className="space-y-4 px-4 py-2">
             <Heading title="Designer Stats" type="section" />
-            <div className="space-y-4 overflow-x-auto">
-                <Table layout="none" className="overflow-visible">
+            <div className="space-y-4">
+                <Table layout="none">
                     <TableHeader>
                         <TableRow>
                             <TableHead>
@@ -285,7 +287,7 @@ function DesignerStatsTable() {
                     </TableBody>
                 </Table>
                 {totalPages > 1 && (
-                    <Pagination className="justify-start overflow-visible">
+                    <Pagination className="overflow-visible">
                         <PaginationContent>
                             <PaginationItem>
                                 <PaginationPrevious
@@ -301,29 +303,39 @@ function DesignerStatsTable() {
                                     }`}
                                 />
                             </PaginationItem>
-                            {getPageNumbers().map((page, index) => {
-                                if (page === 'ellipsis') {
+                            {isMobile ? (
+                                <PaginationItem>
+                                    <span className="sm-gray-700-weight-600 px-2">
+                                        {currentPage} of {totalPages}
+                                    </span>
+                                </PaginationItem>
+                            ) : (
+                                getPageNumbers().map((page, index) => {
+                                    if (page === 'ellipsis') {
+                                        return (
+                                            <PaginationItem
+                                                key={`ellipsis-${index}`}
+                                            >
+                                                <PaginationEllipsis />
+                                            </PaginationItem>
+                                        );
+                                    }
                                     return (
-                                        <PaginationItem
-                                            key={`ellipsis-${index}`}
-                                        >
-                                            <PaginationEllipsis />
+                                        <PaginationItem key={page}>
+                                            <PaginationLink
+                                                onClick={() =>
+                                                    setCurrentPage(page)
+                                                }
+                                                isActive={currentPage === page}
+                                                size="default"
+                                                className="min-w-9 cursor-pointer"
+                                            >
+                                                {page}
+                                            </PaginationLink>
                                         </PaginationItem>
                                     );
-                                }
-                                return (
-                                    <PaginationItem key={page}>
-                                        <PaginationLink
-                                            onClick={() => setCurrentPage(page)}
-                                            isActive={currentPage === page}
-                                            size="default"
-                                            className="min-w-9 cursor-pointer"
-                                        >
-                                            {page}
-                                        </PaginationLink>
-                                    </PaginationItem>
-                                );
-                            })}
+                                })
+                            )}
                             <PaginationItem>
                                 <PaginationNext
                                     onClick={() =>
