@@ -92,13 +92,23 @@ export default function StaticAssetsMediaTable({
                         <Table compactRows>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Cut Name</TableHead>
-                                    <TableHead>W</TableHead>
-                                    <TableHead>H</TableHead>
-                                    <TableHead>Due Date</TableHead>
-                                    <TableHead>Assigned</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead>Deliverables</TableHead>
+                                    <TableHead className="w-[40%]">
+                                        Cut Name
+                                    </TableHead>
+                                    <TableHead className="w-[6%]">W</TableHead>
+                                    <TableHead className="w-[6]">H</TableHead>
+                                    <TableHead className="w-[9%]">
+                                        Due Date
+                                    </TableHead>
+                                    <TableHead className="w-[9%]">
+                                        Assigned
+                                    </TableHead>
+                                    <TableHead className="w-[19%]">
+                                        Status
+                                    </TableHead>
+                                    <TableHead className="w-[11%]">
+                                        Deliverables
+                                    </TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>

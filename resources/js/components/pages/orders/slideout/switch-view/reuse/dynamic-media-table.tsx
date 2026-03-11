@@ -27,25 +27,25 @@ import { DeliverablesCell } from './deliverables-buttons';
 
 function getStatusBadge(status: MediaTableRow['status']): React.ReactNode {
     const baseClasses =
-        'inline-flex items-center rounded-full border-2 border-solid px-2.5 py-0.5 text-xs font-medium';
+        'xs-gray-700-weight-600 inline-flex items-center rounded-full border-2 border-solid px-2.5 py-0.5';
 
     let colorClasses = '';
 
     switch (status) {
         case 'Still in Cart':
         case 'Client Review':
-            colorClasses = 'border-yellow-400 bg-yellow-50 text-yellow-700';
+            colorClasses = 'border-yellow-400 bg-yellow-50';
             break;
         case 'In Production':
         case 'Out for Delivery':
-            colorClasses = 'border-green-400 bg-green-50 text-green-700';
+            colorClasses = 'border-green-400 bg-green-50';
             break;
         case 'Cancelled':
         case 'Revision Requested':
-            colorClasses = 'border-gray-400 bg-gray-50 text-gray-700';
+            colorClasses = 'border-gray-400 bg-gray-50';
             break;
         case 'Unassigned':
-            colorClasses = 'border-red-400 bg-red-50 text-red-700';
+            colorClasses = 'border-red-400 bg-red-50';
             break;
     }
 
@@ -96,28 +96,28 @@ export default function MediaTable({
                         <Table compactRows>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="h-[30px]">
+                                    <TableHead className="w-[13%]">
                                         ISCI
                                     </TableHead>
-                                    <TableHead className="h-[30px]">
+                                    <TableHead className="w-[24%]">
                                         Cut Name
                                     </TableHead>
-                                    <TableHead className="h-[30px]">
+                                    <TableHead className="w-[8%]">
                                         Duration
                                     </TableHead>
-                                    <TableHead className="h-[30px]">
+                                    <TableHead className="w-[9%]">
                                         Due Date
                                     </TableHead>
-                                    <TableHead className="h-[30px]">
+                                    <TableHead className="w-[9%]">
                                         Assigned
                                     </TableHead>
-                                    <TableHead className="h-[30px]">
+                                    <TableHead className="w-[18%]">
                                         Status
                                     </TableHead>
-                                    <TableHead className="h-[30px]">
+                                    <TableHead className="w-[8%]">
                                         Preview
                                     </TableHead>
-                                    <TableHead className="h-[30px]">
+                                    <TableHead className="w-[11%]">
                                         Deliverables
                                     </TableHead>
                                 </TableRow>
@@ -137,14 +137,14 @@ export default function MediaTable({
                                                         'xs-gray-300-weight-600',
                                                 )}
                                             >
-                                                <TableCell className="h-[30px] py-0">
+                                                <TableCell>
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger
                                                             asChild
                                                         >
                                                             <Button
                                                                 variant="ghost"
-                                                                className="h-[30px] p-0 text-left hover:bg-transparent"
+                                                                className="h-[28px] p-0 text-left hover:bg-transparent"
                                                             >
                                                                 {row.isci}
                                                             </Button>
@@ -184,16 +184,16 @@ export default function MediaTable({
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
                                                 </TableCell>
-                                                <TableCell className="h-[30px] py-0">
+                                                <TableCell>
                                                     {row.cutName}
                                                 </TableCell>
-                                                <TableCell className="h-[30px] py-0">
+                                                <TableCell>
                                                     {row.duration}
                                                 </TableCell>
-                                                <TableCell className="h-[30px] py-0">
+                                                <TableCell>
                                                     {row.dueDate}
                                                 </TableCell>
-                                                <TableCell className="h-[30px] py-0">
+                                                <TableCell>
                                                     {row.assigned && (
                                                         <UserAvatar
                                                             user={row.assigned}
@@ -206,7 +206,7 @@ export default function MediaTable({
                                                     {getStatusBadge(row.status)}
                                                 </TableCell>
 
-                                                <TableCell className="h-[30px] py-0">
+                                                <TableCell>
                                                     {isDisabledRow ? (
                                                         <span className="text-muted-foreground"></span>
                                                     ) : previewVariant ===

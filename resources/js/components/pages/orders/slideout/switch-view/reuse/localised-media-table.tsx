@@ -61,28 +61,28 @@ export default function LocalizedArtTable({
                         <Table compactRows>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="xs-gray-500-weight-600 text-center">
+                                    <TableHead className="xs-gray-500-weight-600 w-[31%] text-center">
                                         Description
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 text-center">
+                                    <TableHead className="xs-gray-500-weight-600 w-[7%] text-center">
                                         W
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 text-center">
+                                    <TableHead className="xs-gray-500-weight-600 w-[7%] text-center">
                                         H
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 text-center">
+                                    <TableHead className="xs-gray-500-weight-600 w-[16%] text-center">
                                         CTA
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 text-center">
+                                    <TableHead className="xs-gray-500-weight-600 w-[10%] text-center">
                                         Due Date
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 text-center">
+                                    <TableHead className="xs-gray-500-weight-600 w-[10%] text-center">
                                         Assigned
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 text-center">
+                                    <TableHead className="xs-gray-500-weight-600 w-[7%] text-center">
                                         Notes
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 text-center">
+                                    <TableHead className="xs-gray-500-weight-600 w-[12%] text-center">
                                         Download
                                     </TableHead>
                                 </TableRow>
