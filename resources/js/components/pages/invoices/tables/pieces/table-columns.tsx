@@ -1,9 +1,9 @@
+import { venuesData } from '@/components/mockdata';
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { venuesData } from '@/components/mockdata';
 import {
     formatCurrency,
     getInvoiceVenueName,
@@ -26,11 +26,12 @@ export function createInvoiceColumns({
     return [
         {
             accessorKey: 'invoiceNumber',
-            header: ({ column }) => (
-                <SortableHeader column={column}>Invoice #</SortableHeader>
+            header: ({ column, table }) => (
+                <SortableHeader column={column} table={table}>
+                    Invoice #
+                </SortableHeader>
             ),
             enableSorting: true,
-            size: 120,
             cell: ({ getValue, row }) => {
                 const value = getValue() as string;
                 return (
@@ -46,11 +47,10 @@ export function createInvoiceColumns({
         },
         {
             accessorKey: 'date',
-            header: ({ column }) => (
-                <SortableHeader column={column}>Date</SortableHeader>
+            header: ({ column, table }) => (
+                <SortableHeader column={column} table={table}>Date</SortableHeader>
             ),
             enableSorting: true,
-            size: 100,
             cell: ({ getValue, row }) => {
                 const value = getValue() as string;
                 return (
@@ -66,11 +66,10 @@ export function createInvoiceColumns({
         },
         {
             accessorKey: 'tour',
-            header: ({ column }) => (
-                <SortableHeader column={column}>Tour</SortableHeader>
+            header: ({ column, table }) => (
+                <SortableHeader column={column} table={table}>Tour</SortableHeader>
             ),
             enableSorting: true,
-            size: 200,
             cell: ({ getValue, row }) => {
                 const value = getValue() as string;
                 return (
@@ -86,11 +85,12 @@ export function createInvoiceColumns({
         },
         {
             accessorKey: 'market',
-            header: ({ column }) => (
-                <SortableHeader column={column}>Market</SortableHeader>
+            header: ({ column, table }) => (
+                <SortableHeader column={column} table={table}>
+                    Market
+                </SortableHeader>
             ),
             enableSorting: true,
-            size: 150,
             cell: ({ getValue, row }) => {
                 const value = getValue() as string;
                 return (
@@ -105,14 +105,12 @@ export function createInvoiceColumns({
             },
         },
         {
-            accessorFn: (row) =>
-                getInvoiceVenueName(row, venuesData),
+            accessorFn: (row) => getInvoiceVenueName(row, venuesData),
             id: 'venue',
-            header: ({ column }) => (
-                <SortableHeader column={column}>Venue</SortableHeader>
+            header: ({ column, table }) => (
+                <SortableHeader column={column} table={table}>Venue</SortableHeader>
             ),
             enableSorting: true,
-            size: 200,
             cell: ({ row }) => {
                 const value = getInvoiceVenueName(row.original, venuesData);
                 return (
@@ -128,11 +126,10 @@ export function createInvoiceColumns({
         },
         {
             accessorKey: 'clientReference',
-            header: ({ column }) => (
-                <SortableHeader column={column}>Ref</SortableHeader>
+            header: ({ column, table }) => (
+                <SortableHeader column={column} table={table}>Ref</SortableHeader>
             ),
             enableSorting: true,
-            size: 150,
             cell: ({ getValue, row }) => {
                 const value = getValue() as string;
                 return (
@@ -148,11 +145,10 @@ export function createInvoiceColumns({
         },
         {
             accessorKey: 'amount',
-            header: ({ column }) => (
-                <SortableHeader column={column}>Amt</SortableHeader>
+            header: ({ column, table }) => (
+                <SortableHeader column={column} table={table}>Amt</SortableHeader>
             ),
             enableSorting: true,
-            size: 120,
             cell: ({ getValue, row }) => {
                 const value = getValue() as number;
                 return (
@@ -169,9 +165,9 @@ export function createInvoiceColumns({
         {
             accessorFn: daysAccessorFn,
             id: 'daysToShow',
-            header: ({ column }) => {
+            header: ({ column, table }) => {
                 return (
-                    <SortableHeader column={column}>
+                    <SortableHeader column={column} table={table}>
                         <div className="flex items-start gap-0.5">
                             <span>Days</span>
                             <Tooltip>
@@ -190,7 +186,6 @@ export function createInvoiceColumns({
                 );
             },
             enableSorting: true,
-            size: 120,
             cell: ({ row }) => {
                 return getDayBadge(row.original);
             },

@@ -1,15 +1,17 @@
-import { type Column } from '@tanstack/react-table';
+import { type Column, type Table } from '@tanstack/react-table';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { ReactNode } from 'react';
 
 interface SortableHeaderProps<TData, TValue> {
     column: Column<TData, TValue>;
+    table?: Table<TData>;
     children?: ReactNode;
     className?: string;
 }
 
 export function SortableHeader<TData, TValue>({
     column,
+    table,
     children,
     className = '',
 }: SortableHeaderProps<TData, TValue>) {
@@ -22,11 +24,11 @@ export function SortableHeader<TData, TValue>({
         >
             <span>{children}</span>
             {sortedState === 'asc' ? (
-                <ArrowUp className="h-4 w-4" />
+                <ArrowUp className="size-[14px]" />
             ) : sortedState === 'desc' ? (
-                <ArrowDown className="h-4 w-4" />
+                <ArrowDown className="size-[14px]" />
             ) : (
-                <ArrowUpDown className="h-4 w-4 opacity-50" />
+                <ArrowUpDown className="size-[14px] opacity-50" />
             )}
         </button>
     );

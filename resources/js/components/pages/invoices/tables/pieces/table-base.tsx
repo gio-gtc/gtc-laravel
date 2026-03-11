@@ -44,7 +44,40 @@ export function InvoiceTableBase({
         },
     });
 
-    const tableWidths = ['7', '7', '17', '15', '22', '10', '9', '13'];
+    const tableWidths = [
+        {
+            perc: '7',
+            min: '94',
+        },
+        {
+            perc: '7',
+            min: '80',
+        },
+        {
+            perc: '17',
+            min: '200',
+        },
+        {
+            perc: '15',
+            min: '175',
+        },
+        {
+            perc: '22',
+            min: '250',
+        },
+        {
+            perc: '10',
+            min: '120',
+        },
+        {
+            perc: '9',
+            min: '100',
+        },
+        {
+            perc: '13',
+            min: '148',
+        },
+    ];
 
     return (
         <Table compactRows className="border-y-1">
@@ -54,10 +87,11 @@ export function InvoiceTableBase({
                         {headerGroup.headers.map((header, i) => (
                             <TableHead
                                 key={header.id}
-                                className={cn(
-                                    `w-[${tableWidths[i]}%]`,
-                                    'px-2 py-0.5',
-                                )}
+                                style={{
+                                    width: `${tableWidths[i].perc}%`,
+                                    minWidth: `${tableWidths[i].min}px`,
+                                }}
+                                className={cn('px-2 py-0.5')}
                             >
                                 {header.isPlaceholder
                                     ? null
