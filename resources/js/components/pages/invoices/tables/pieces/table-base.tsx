@@ -16,8 +16,6 @@ import {
     useReactTable,
     type ColumnDef,
 } from '@tanstack/react-table';
-import { useState } from 'react';
-
 interface InvoiceTableBaseProps {
     data: Invoice[];
     columns: ColumnDef<Invoice>[];
@@ -31,7 +29,6 @@ export function InvoiceTableBase({
     onRowClick,
     isRowSelected,
 }: InvoiceTableBaseProps) {
-    const [columnSizing, setColumnSizing] = useState({});
     const [sorting, setSorting] = useTableSorting();
 
     const table = useReactTable({
@@ -40,30 +37,27 @@ export function InvoiceTableBase({
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getRowId: (row) => String(row.id),
-        enableColumnResizing: true,
         enableSorting: true,
-        columnResizeMode: 'onChange',
-        onColumnSizingChange: setColumnSizing,
         onSortingChange: setSorting,
         state: {
-            columnSizing,
             sorting,
         },
     });
 
+    const tableWidths = ['7', '7', '17', '15', '22', '10', '9', '13'];
+
     return (
-        <Table className="border-y-1">
+        <Table compactRows className="border-y-1">
             <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => (
+                        {headerGroup.headers.map((header, i) => (
                             <TableHead
                                 key={header.id}
-                                style={{
-                                    width: header.getSize(),
-                                    position: 'relative',
-                                }}
-                                className={cn('relative px-2 py-0.5')}
+                                className={cn(
+                                    `w-[${tableWidths[i - i]}%]`,
+                                    'px-2 py-0.5',
+                                )}
                             >
                                 {header.isPlaceholder
                                     ? null
@@ -71,27 +65,6 @@ export function InvoiceTableBase({
                                           header.column.columnDef.header,
                                           header.getContext(),
                                       )}
-                                {header.column.getCanResize() && (
-                                    <div
-                                        onMouseDown={header.getResizeHandler()}
-                                        onTouchStart={header.getResizeHandler()}
-                                        className={cn(
-                                            'absolute top-0 right-0 z-10 h-full w-0.5 cursor-col-resize touch-none opacity-50 transition-opacity select-none hover:bg-primary hover:opacity-100',
-                                            header.column.getIsResizing() &&
-                                                'bg-primary opacity-100',
-                                        )}
-                                        style={{
-                                            transform:
-                                                header.column.getIsResizing()
-                                                    ? `translateX(${
-                                                          table.getState()
-                                                              .columnSizingInfo
-                                                              .deltaOffset
-                                                      }px)`
-                                                    : undefined,
-                                        }}
-                                    />
-                                )}
                             </TableHead>
                         ))}
                     </TableRow>
