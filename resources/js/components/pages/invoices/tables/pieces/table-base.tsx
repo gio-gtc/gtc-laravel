@@ -55,7 +55,7 @@ export function InvoiceTableBase({
                             <TableHead
                                 key={header.id}
                                 className={cn(
-                                    `w-[${tableWidths[i - i]}%]`,
+                                    `w-[${tableWidths[i]}%]`,
                                     'px-2 py-0.5',
                                 )}
                             >
