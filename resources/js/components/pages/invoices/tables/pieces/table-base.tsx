@@ -55,11 +55,11 @@ export function InvoiceTableBase({
         },
         {
             perc: '17',
-            min: '200',
+            min: '190',
         },
         {
             perc: '15',
-            min: '175',
+            min: '165',
         },
         {
             perc: '22',
@@ -71,11 +71,11 @@ export function InvoiceTableBase({
         },
         {
             perc: '9',
-            min: '100',
+            min: '90',
         },
         {
             perc: '13',
-            min: '134',
+            min: '124',
         },
     ];
 
