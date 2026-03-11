@@ -5,10 +5,19 @@ import { Label } from '@/components/ui/label';
 import {
     Popover,
     PopoverContent,
+    PopoverHeader,
+    PopoverTitle,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+} from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
-import { format, parse, parseISO } from 'date-fns';
+import { format, parseISO, startOfDay } from 'date-fns';
 import { Calendar } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -16,24 +25,29 @@ function toISOString(date: Date): string {
     return format(date, 'yyyy-MM-dd');
 }
 
-const DATE_FORMATS = [
-    'yyyy-MM-dd',
-    'yyyy-M-d',
-    'MM/dd/yyyy',
-    'M/d/yyyy',
-    'MM/dd/yy',
-    'M/d/yy',
-] as const;
+function isoToMasked(iso: string): string {
+    if (!iso || iso.length !== 10) return '';
+    const [yyyy, mm, dd] = iso.split('-');
+    return `${mm}/${dd}/${yyyy}`;
+}
 
-function parseDateInput(input: string): Date | null {
-    if (!input.trim()) return null;
-    const trimmed = input.trim();
+function formatForMask(digits: string): string {
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4, 8)}`;
+}
 
-    for (const fmt of DATE_FORMATS) {
-        const parsed = parse(trimmed, fmt, new Date());
-        if (!Number.isNaN(parsed.getTime())) return parsed;
-    }
-    return null;
+function parseMaskedValue(masked: string): Date | null {
+    if (masked.length !== 10) return null;
+    const parts = masked.split('/');
+    if (parts.length !== 3) return null;
+    const [mm, dd, yyyy] = parts.map(Number);
+    const d = new Date(yyyy, mm - 1, dd);
+    return d.getFullYear() === yyyy &&
+        d.getMonth() === mm - 1 &&
+        d.getDate() === dd
+        ? d
+        : null;
 }
 
 interface DatePickerInputProps {
@@ -44,11 +58,11 @@ interface DatePickerInputProps {
     className?: string;
     required?: boolean;
     placeholder?: string;
-    iconPosition?: 'start' | 'end';
     inputClassName?: string;
+    dialogTitle?: string;
+    forwardOnlyFromToday?: boolean;
 }
 
-// TODO: Make styles align with eachother date range and single
 export default function DatePickerInput({
     id,
     label,
@@ -56,24 +70,29 @@ export default function DatePickerInput({
     onChange,
     className,
     required = false,
-    placeholder = 'Select date',
-    iconPosition = 'start',
+    placeholder = 'MM/DD/YYYY',
     inputClassName = '',
+    dialogTitle = 'Select Date',
+    forwardOnlyFromToday = false,
 }: DatePickerInputProps) {
     const [open, setOpen] = useState(false);
     const [tempDate, setTempDate] = useState<Date | undefined>(() =>
         value ? parseISO(value) : undefined,
     );
-    const [inputValue, setInputValue] = useState(value || '');
+    const [inputValue, setInputValue] = useState(() =>
+        value ? isoToMasked(value) : '',
+    );
+    const isMobile = useIsMobile();
 
-    // Sync input value when value prop changes externally
     useEffect(() => {
-        setInputValue(value || '');
+        setInputValue(value ? isoToMasked(value) : '');
     }, [value]);
 
     const handleOpenChange = (isOpen: boolean) => {
         if (isOpen) {
-            const parsed = value ? parseISO(value) : parseDateInput(inputValue);
+            const parsed = value
+                ? parseISO(value)
+                : parseMaskedValue(inputValue);
             setTempDate(parsed ?? undefined);
         }
         setOpen(isOpen);
@@ -87,7 +106,7 @@ export default function DatePickerInput({
         if (tempDate) {
             const iso = toISOString(tempDate);
             onChange(iso);
-            setInputValue(iso);
+            setInputValue(isoToMasked(iso));
             setOpen(false);
         }
     };
@@ -100,15 +119,17 @@ export default function DatePickerInput({
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setInputValue(e.target.value);
+        const raw = e.target.value.replace(/\D/g, '');
+        const capped = raw.slice(0, 8);
+        setInputValue(formatForMask(capped));
     };
 
     const handleInputBlur = () => {
-        const parsed = parseDateInput(inputValue);
+        const parsed = parseMaskedValue(inputValue);
         if (parsed) {
             const iso = toISOString(parsed);
             onChange(iso);
-            setInputValue(iso);
+            setInputValue(isoToMasked(iso));
         } else if (inputValue.trim() === '') {
             onChange('');
         }
@@ -118,40 +139,91 @@ export default function DatePickerInput({
         <Calendar className="h-4 w-4 text-gray-400" aria-hidden />
     );
 
-    const calendarButton = (
-        <Popover open={open} onOpenChange={handleOpenChange}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="ghost"
-                    type="button"
-                    className={cn(
-                        'absolute h-auto shrink-0 p-0 hover:cursor-pointer hover:bg-transparent',
-                        iconPosition === 'start' ? 'left-0' : 'right-0',
-                    )}
-                    aria-label="Open calendar"
-                >
-                    {calendarIcon}
+    const pickerContent = (
+        <>
+            <div className="flex justify-center">
+                <CalendarComponent
+                    mode="single"
+                    selected={tempDate}
+                    onSelect={handleSelect}
+                    fixedWeeks
+                    disabled={
+                        forwardOnlyFromToday
+                            ? { before: startOfDay(new Date()) }
+                            : undefined
+                    }
+                />
+            </div>
+            <div className="flex justify-end gap-2 p-4 pt-0">
+                <Button variant="outline" onClick={handleClear}>
+                    Clear
                 </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-                <div className="p-4">
-                    <CalendarComponent
-                        mode="single"
-                        selected={tempDate}
-                        onSelect={handleSelect}
-                    />
-                    <div className="flex justify-end gap-2 pt-4">
-                        <Button variant="outline" onClick={handleClear}>
-                            Clear
-                        </Button>
-                        <Button onClick={handleSave} disabled={!tempDate}>
-                            Save
-                        </Button>
-                    </div>
-                </div>
-            </PopoverContent>
-        </Popover>
+                <Button onClick={handleSave} disabled={!tempDate}>
+                    Save
+                </Button>
+            </div>
+        </>
     );
+
+    const calendarButton = (
+        <Button
+            variant="ghost"
+            type="button"
+            className={cn(
+                'absolute right-0 h-auto shrink-0 p-0 hover:cursor-pointer hover:bg-transparent',
+            )}
+            aria-label="Open calendar"
+            {...(isMobile && { onClick: () => setOpen(true) })}
+        >
+            {calendarIcon}
+        </Button>
+    );
+
+    if (isMobile) {
+        return (
+            <div className={className}>
+                {label ? (
+                    <Label htmlFor={id} className="pt-2">
+                        {label}
+                    </Label>
+                ) : null}
+                <div
+                    className={cn(
+                        'relative flex w-full items-center gap-2 rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50',
+                    )}
+                >
+                    {calendarButton}
+                    <Input
+                        id={id}
+                        type="text"
+                        value={inputValue}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        placeholder={placeholder}
+                        required={required}
+                        className={cn(
+                            'min-w-0 flex-1 border-0 py-2 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0',
+                            inputClassName,
+                        )}
+                        aria-label={placeholder}
+                    />
+                </div>
+                <Sheet open={open} onOpenChange={handleOpenChange}>
+                    <SheetContent
+                        side="bottom"
+                        className="max-h-[90vh] overflow-y-auto"
+                    >
+                        {dialogTitle && (
+                            <SheetHeader>
+                                <SheetTitle>{dialogTitle}</SheetTitle>
+                            </SheetHeader>
+                        )}
+                        {pickerContent}
+                    </SheetContent>
+                </Sheet>
+            </div>
+        );
+    }
 
     return (
         <div className={className}>
@@ -163,10 +235,19 @@ export default function DatePickerInput({
             <div
                 className={cn(
                     'relative flex w-full items-center gap-2 rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50',
-                    iconPosition === 'start' && 'pl-6.5',
                 )}
             >
-                {calendarButton}
+                <Popover open={open} onOpenChange={handleOpenChange}>
+                    <PopoverTrigger asChild>{calendarButton}</PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                        {dialogTitle && (
+                            <PopoverHeader className="px-4 pt-4">
+                                <PopoverTitle>{dialogTitle}</PopoverTitle>
+                            </PopoverHeader>
+                        )}
+                        {pickerContent}
+                    </PopoverContent>
+                </Popover>
                 <Input
                     id={id}
                     type="text"
