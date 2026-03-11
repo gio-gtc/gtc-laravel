@@ -163,177 +163,185 @@ function DesignerStatsTable() {
     return (
         <div className="space-y-4 px-4 py-2">
             <Heading title="Designer Stats" type="section" />
-            <Table layout="none">
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>
-                            <button
-                                onClick={() => handleSort('name')}
-                                className="flex items-center gap-2 hover:text-foreground"
-                            >
-                                Employees
-                                {getSortIcon('name')}
-                            </button>
-                        </TableHead>
-                        <TableHead>
-                            <button
-                                onClick={() => handleSort('assetsAssigned')}
-                                className="flex items-center gap-2 hover:text-foreground"
-                            >
-                                Assets Assigned
-                                {getSortIcon('assetsAssigned')}
-                            </button>
-                        </TableHead>
-                        <TableHead>
-                            <button
-                                onClick={() => handleSort('assetsUploaded')}
-                                className="flex items-center gap-2 hover:text-foreground"
-                            >
-                                Assets Uploaded
-                                {getSortIcon('assetsUploaded')}
-                            </button>
-                        </TableHead>
-                        <TableHead>
-                            <button
-                                onClick={() => handleSort('accuracy')}
-                                className="flex items-center gap-2 hover:text-foreground"
-                            >
-                                Rolling 30 Day Accuracy
-                                {getSortIcon('accuracy')}
-                            </button>
-                        </TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {paginatedData.map((designer, index) => {
-                        const d = designer as User & {
-                            assetsAssigned?: number;
-                            assetsUploaded?: number;
-                            rolling30DayAccuracy?: number;
-                            trend?: {
-                                direction: 'up' | 'down';
-                                percentage: number;
+            <div className="space-y-4 overflow-x-auto">
+                <Table layout="none" className="overflow-visible">
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>
+                                <button
+                                    onClick={() => handleSort('name')}
+                                    className="flex items-center gap-2 hover:text-foreground"
+                                >
+                                    Employees
+                                    {getSortIcon('name')}
+                                </button>
+                            </TableHead>
+                            <TableHead>
+                                <button
+                                    onClick={() => handleSort('assetsAssigned')}
+                                    className="flex items-center gap-2 hover:text-foreground"
+                                >
+                                    Assets Assigned
+                                    {getSortIcon('assetsAssigned')}
+                                </button>
+                            </TableHead>
+                            <TableHead>
+                                <button
+                                    onClick={() => handleSort('assetsUploaded')}
+                                    className="flex items-center gap-2 hover:text-foreground"
+                                >
+                                    Assets Uploaded
+                                    {getSortIcon('assetsUploaded')}
+                                </button>
+                            </TableHead>
+                            <TableHead>
+                                <button
+                                    onClick={() => handleSort('accuracy')}
+                                    className="flex items-center gap-2 hover:text-foreground"
+                                >
+                                    Rolling 30 Day Accuracy
+                                    {getSortIcon('accuracy')}
+                                </button>
+                            </TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {paginatedData.map((designer, index) => {
+                            const d = designer as User & {
+                                assetsAssigned?: number;
+                                assetsUploaded?: number;
+                                rolling30DayAccuracy?: number;
+                                trend?: {
+                                    direction: 'up' | 'down';
+                                    percentage: number;
+                                };
                             };
-                        };
-                        const assetsAssigned = d.assetsAssigned ?? 0;
-                        const assetsUploaded = d.assetsUploaded ?? 0;
-                        const rolling30DayAccuracy =
-                            d.rolling30DayAccuracy ?? 0;
-                        const trend = d.trend ?? defaultTrend;
-                        return (
-                            <TableRow key={designer.id}>
-                                <TableCell>
-                                    <div className="flex items-center gap-3">
-                                        <Avatar className="h-10 w-10 overflow-hidden rounded-full">
-                                            <AvatarImage
-                                                src={
-                                                    designer.avatar || undefined
-                                                }
-                                                alt={designer.name}
-                                            />
-                                            <AvatarFallback className="rounded-full bg-neutral-200 text-black">
-                                                {getInitials(designer.name)}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-medium text-gray-900">
-                                                {designer.name}
-                                            </span>
-                                            <span className="text-sm text-gray-600">
-                                                {designer.email}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell className="text-sm text-gray-600">
-                                    {assetsAssigned}
-                                </TableCell>
-                                <TableCell className="text-sm text-gray-600">
-                                    {assetsUploaded}
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex-1">
-                                            <Progress
-                                                value={rolling30DayAccuracy}
-                                                className="h-2"
-                                            />
-                                        </div>
-                                        <div className="flex items-center gap-1">
-                                            <span className="text-sm font-medium text-gray-700">
-                                                {rolling30DayAccuracy}
-                                            </span>
-                                            <div className="ml-2 inline-flex items-center gap-1 rounded-md border-1 p-0.5 text-xs md:ml-7">
-                                                {trend.direction === 'up' ? (
-                                                    <ArrowUp className="h-3 w-3 text-green-600" />
-                                                ) : (
-                                                    <ArrowDown className="h-3 w-3 text-red-600" />
-                                                )}
-                                                <span>{trend.percentage}%</span>
+                            const assetsAssigned = d.assetsAssigned ?? 0;
+                            const assetsUploaded = d.assetsUploaded ?? 0;
+                            const rolling30DayAccuracy =
+                                d.rolling30DayAccuracy ?? 0;
+                            const trend = d.trend ?? defaultTrend;
+                            return (
+                                <TableRow key={designer.id}>
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <Avatar className="h-10 w-10 overflow-hidden rounded-full">
+                                                <AvatarImage
+                                                    src={
+                                                        designer.avatar ||
+                                                        undefined
+                                                    }
+                                                    alt={designer.name}
+                                                />
+                                                <AvatarFallback className="rounded-full bg-neutral-200 text-black">
+                                                    {getInitials(designer.name)}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-medium text-gray-900">
+                                                    {designer.name}
+                                                </span>
+                                                <span className="text-sm text-gray-600">
+                                                    {designer.email}
+                                                </span>
                                             </div>
                                         </div>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        );
-                    })}
-                </TableBody>
-            </Table>
-            {totalPages > 1 && (
-                <Pagination>
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={() =>
-                                    setCurrentPage((prev) =>
-                                        Math.max(1, prev - 1),
-                                    )
-                                }
-                                className={`${
-                                    currentPage === 1
-                                        ? 'pointer-events-none opacity-50'
-                                        : 'cursor-pointer'
-                                }`}
-                            />
-                        </PaginationItem>
-                        {getPageNumbers().map((page, index) => {
-                            if (page === 'ellipsis') {
-                                return (
-                                    <PaginationItem key={`ellipsis-${index}`}>
-                                        <PaginationEllipsis />
-                                    </PaginationItem>
-                                );
-                            }
-                            return (
-                                <PaginationItem key={page}>
-                                    <PaginationLink
-                                        onClick={() => setCurrentPage(page)}
-                                        isActive={currentPage === page}
-                                        size="default"
-                                        className="min-w-9 cursor-pointer"
-                                    >
-                                        {page}
-                                    </PaginationLink>
-                                </PaginationItem>
+                                    </TableCell>
+                                    <TableCell className="text-sm text-gray-600">
+                                        {assetsAssigned}
+                                    </TableCell>
+                                    <TableCell className="text-sm text-gray-600">
+                                        {assetsUploaded}
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex-1">
+                                                <Progress
+                                                    value={rolling30DayAccuracy}
+                                                    className="h-2"
+                                                />
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-sm font-medium text-gray-700">
+                                                    {rolling30DayAccuracy}
+                                                </span>
+                                                <div className="ml-2 inline-flex items-center gap-1 rounded-md border-1 p-0.5 text-xs md:ml-7">
+                                                    {trend.direction ===
+                                                    'up' ? (
+                                                        <ArrowUp className="h-3 w-3 text-green-600" />
+                                                    ) : (
+                                                        <ArrowDown className="h-3 w-3 text-red-600" />
+                                                    )}
+                                                    <span>
+                                                        {trend.percentage}%
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
                             );
                         })}
-                        <PaginationItem>
-                            <PaginationNext
-                                onClick={() =>
-                                    setCurrentPage((prev) =>
-                                        Math.min(totalPages, prev + 1),
-                                    )
+                    </TableBody>
+                </Table>
+                {totalPages > 1 && (
+                    <Pagination className="justify-start overflow-visible">
+                        <PaginationContent>
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    onClick={() =>
+                                        setCurrentPage((prev) =>
+                                            Math.max(1, prev - 1),
+                                        )
+                                    }
+                                    className={`${
+                                        currentPage === 1
+                                            ? 'pointer-events-none opacity-50'
+                                            : 'cursor-pointer'
+                                    }`}
+                                />
+                            </PaginationItem>
+                            {getPageNumbers().map((page, index) => {
+                                if (page === 'ellipsis') {
+                                    return (
+                                        <PaginationItem
+                                            key={`ellipsis-${index}`}
+                                        >
+                                            <PaginationEllipsis />
+                                        </PaginationItem>
+                                    );
                                 }
-                                className={`${
-                                    currentPage === totalPages
-                                        ? 'pointer-events-none opacity-50'
-                                        : 'cursor-pointer'
-                                }`}
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            )}
+                                return (
+                                    <PaginationItem key={page}>
+                                        <PaginationLink
+                                            onClick={() => setCurrentPage(page)}
+                                            isActive={currentPage === page}
+                                            size="default"
+                                            className="min-w-9 cursor-pointer"
+                                        >
+                                            {page}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                );
+                            })}
+                            <PaginationItem>
+                                <PaginationNext
+                                    onClick={() =>
+                                        setCurrentPage((prev) =>
+                                            Math.min(totalPages, prev + 1),
+                                        )
+                                    }
+                                    className={`${
+                                        currentPage === totalPages
+                                            ? 'pointer-events-none opacity-50'
+                                            : 'cursor-pointer'
+                                    }`}
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                )}
+            </div>
         </div>
     );
 }

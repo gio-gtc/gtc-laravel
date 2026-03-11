@@ -12,7 +12,6 @@ import {
     ColumnedRowsParent,
 } from '@/components/utils/column-row-layouts';
 import DatePickerInput from '@/components/utils/date-picker-input';
-import DateRangePicker from '@/components/utils/date-range-picker';
 import Divider from '@/components/utils/divider';
 import { type Tour, type Venue } from '@/types';
 import { useEffect, useState } from 'react';
@@ -119,7 +118,9 @@ export default function AddVenueModal({
                         labelContent="Show Dates"
                         required
                     >
-                        <DateRangePicker
+                        {/* TODO: Placeholder says it all */}
+                        <Input placeholder="This will be 2 dates soon" />
+                        {/* <DateRangePicker
                             startDate={showStartDate}
                             endDate={showEndDate}
                             onDateRangeChange={handleDateRangeChange}
@@ -127,7 +128,7 @@ export default function AddVenueModal({
                             buttonClassName="w-full justify-start"
                             placeholder="Select date range"
                             dialogTitle="Select Show Dates"
-                        />
+                        /> */}
                     </ColumnedRowsChild>
 
                     {/* Due Date */}

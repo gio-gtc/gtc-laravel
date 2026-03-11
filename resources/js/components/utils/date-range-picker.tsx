@@ -7,6 +7,13 @@ import {
     PopoverTitle,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+} from '@/components/ui/sheet';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { format, parseISO, startOfDay } from 'date-fns';
 import { Calendar } from 'lucide-react';
 import { useState } from 'react';
@@ -63,6 +70,7 @@ export default function DateRangePicker({
     const [tempRange, setTempRange] = useState<DateRange | undefined>(() =>
         toDateRange(startDate, endDate),
     );
+    const isMobile = useIsMobile();
 
     const formattedStartDate = formatDateLabel(startDate);
     const formattedEndDate = formatDateLabel(endDate);
@@ -97,48 +105,79 @@ export default function DateRangePicker({
             ? `${formattedStartDate} - ${formattedEndDate}`
             : placeholder;
 
+    const pickerContent = (
+        <>
+            <div className="p-4">
+                <CalendarComponent
+                    mode="range"
+                    selected={tempRange}
+                    onSelect={handleRangeSelect}
+                    numberOfMonths={1}
+                    fixedWeeks
+                    disabled={
+                        forwardOnlyFromToday
+                            ? { before: startOfDay(new Date()) }
+                            : undefined
+                    }
+                />
+                <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="outline" onClick={handleClearRange}>
+                        Clear
+                    </Button>
+                    <Button
+                        onClick={handleSaveRange}
+                        disabled={!tempRange?.from || !tempRange?.to}
+                    >
+                        Save
+                    </Button>
+                </div>
+            </div>
+        </>
+    );
+
+    const triggerButton = (
+        <Button
+            variant={'outline'}
+            size={buttonSize}
+            className={`gap-2 font-semibold text-gray-700 ${buttonClassName}`}
+            {...(isMobile && { onClick: () => setOpen(true) })}
+        >
+            <Calendar className="h-4 w-4 text-gray-400" />
+            {displayRangeText}
+        </Button>
+    );
+
+    if (isMobile) {
+        return (
+            <>
+                {triggerButton}
+                <Sheet open={open} onOpenChange={handleOpenChange}>
+                    <SheetContent
+                        side="bottom"
+                        className="max-h-[90vh] overflow-y-auto"
+                    >
+                        {dialogTitle && (
+                            <SheetHeader>
+                                <SheetTitle>{dialogTitle}</SheetTitle>
+                            </SheetHeader>
+                        )}
+                        {pickerContent}
+                    </SheetContent>
+                </Sheet>
+            </>
+        );
+    }
+
     return (
         <Popover open={open} onOpenChange={handleOpenChange}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant={'outline'}
-                    size={buttonSize}
-                    className={`gap-2 font-semibold text-gray-700 ${buttonClassName}`}
-                >
-                    <Calendar className="h-4 w-4 text-gray-400" />
-                    {displayRangeText}
-                </Button>
-            </PopoverTrigger>
+            <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
                 {dialogTitle && (
                     <PopoverHeader className="px-4 pt-4">
                         <PopoverTitle>{dialogTitle}</PopoverTitle>
                     </PopoverHeader>
                 )}
-                <div className="p-4">
-                    <CalendarComponent
-                        mode="range"
-                        selected={tempRange}
-                        onSelect={handleRangeSelect}
-                        numberOfMonths={2}
-                        disabled={
-                            forwardOnlyFromToday
-                                ? { before: startOfDay(new Date()) }
-                                : undefined
-                        }
-                    />
-                    <div className="flex justify-end gap-2 pt-4">
-                        <Button variant="outline" onClick={handleClearRange}>
-                            Clear
-                        </Button>
-                        <Button
-                            onClick={handleSaveRange}
-                            disabled={!tempRange?.from || !tempRange?.to}
-                        >
-                            Save
-                        </Button>
-                    </div>
-                </div>
+                {pickerContent}
             </PopoverContent>
         </Popover>
     );
