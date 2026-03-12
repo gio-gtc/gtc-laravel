@@ -15,8 +15,9 @@ import {
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { useOrdersFilters } from '@/hooks/use-orders-filters';
+import { useRecentVenues } from '@/hooks/use-recent-venues';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
-import { cn } from '@/lib/utils';
+import { cn, resolveUrl } from '@/lib/utils';
 import {
     type SharedData,
     type Tour,
@@ -24,20 +25,23 @@ import {
     type User,
     type Venue,
 } from '@/types';
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import AddVenueModal from './add-venue-modal';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
 import OrdersTableHeaderActions, {
     type GroupedOrderData,
 } from './orders-table-header-actions';
+import { orders } from '@/routes';
 import VenueDetailSlideout from './slideout';
 import StatusIcon from './status-icon';
 
 function OrdersTable() {
-    const { auth } = usePage<SharedData>().props;
+    const page = usePage<SharedData>();
+    const { auth } = page.props;
     const [filters, setFilters] = useOrdersFilters();
+    const { addRecentVenue } = useRecentVenues();
     const [expandedOrders, setExpandedOrders] = useState<Set<number>>(
         new Set(),
     );
@@ -84,6 +88,48 @@ function OrdersTable() {
             return usersWithFallback.find((user) => user.id === clientId);
         };
     }, [usersWithFallback]);
+
+    // Record venue to recent list when slideout is opened
+    useEffect(() => {
+        if (selectedVenueForSlideout) {
+            addRecentVenue({
+                tourVenueId: selectedVenueForSlideout.orderVenue.id,
+                tourName: selectedVenueForSlideout.order.name,
+                venueName: selectedVenueForSlideout.venue.name,
+            });
+        }
+    }, [selectedVenueForSlideout, addRecentVenue]);
+
+    // Open venue slideout from URL param (e.g. from Recent Venues sidebar link)
+    useEffect(() => {
+        const url = page.url;
+        const queryIndex = url.indexOf('?');
+        if (queryIndex === -1) return;
+        const params = new URLSearchParams(url.slice(queryIndex));
+        const openVenueId = params.get('openVenue');
+        if (!openVenueId) return;
+
+        const tourVenueId = parseInt(openVenueId, 10);
+        if (Number.isNaN(tourVenueId)) return;
+
+        for (const group of groupedData) {
+            const venueItem = group.venues.find(
+                (v) => v.orderVenue.id === tourVenueId,
+            );
+            if (venueItem) {
+                setSelectedVenueForSlideout({
+                    orderVenue: venueItem.orderVenue,
+                    venue: venueItem.venue,
+                    order: group.order,
+                });
+                router.visit(resolveUrl(orders()), {
+                    replace: true,
+                    preserveState: true,
+                });
+                break;
+            }
+        }
+    }, [page.url, groupedData]);
 
     // Filter grouped data by search query, then by advanced filters
     const filteredGroupedData = useMemo(() => {

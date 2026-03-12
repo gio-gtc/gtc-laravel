@@ -1,4 +1,4 @@
-import { NavMain } from '@/components/globals/navigation/';
+import { NavMain, RecentVenues } from '@/components/globals/navigation/';
 import { Sidebar, SidebarContent } from '@/components/ui/sidebar';
 import { dashboard, invoices, orders } from '@/routes';
 import { type NavItem } from '@/types';
@@ -38,6 +38,7 @@ export function AppSidebar() {
         >
             <SidebarContent>
                 <NavMain items={mainNavItems} />
+                <RecentVenues />
             </SidebarContent>
         </Sidebar>
     );
