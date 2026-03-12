@@ -8,9 +8,9 @@ import { resolveUrl } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import { CreateBtn } from './create-btn';
-import { RecentVenues } from './recent-venues';
+import { RecentOrders } from './recent-orders';
 
-export { RecentVenues };
+export { RecentOrders };
 export function NavMain({ items = [] }: { items: NavItem[] }) {
     const page = usePage();
     return (

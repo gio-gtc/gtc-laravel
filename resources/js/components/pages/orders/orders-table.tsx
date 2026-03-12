@@ -15,7 +15,7 @@ import {
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { useOrdersFilters } from '@/hooks/use-orders-filters';
-import { useRecentVenues } from '@/hooks/use-recent-venues';
+import { useRecentOrders } from '@/hooks/use-recent-orders';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn, resolveUrl } from '@/lib/utils';
 import {
@@ -41,7 +41,7 @@ function OrdersTable() {
     const page = usePage<SharedData>();
     const { auth } = page.props;
     const [filters, setFilters] = useOrdersFilters();
-    const { addRecentVenue } = useRecentVenues();
+    const { addRecentOrder } = useRecentOrders();
     const [expandedOrders, setExpandedOrders] = useState<Set<number>>(
         new Set(),
     );
@@ -92,15 +92,15 @@ function OrdersTable() {
     // Record venue to recent list when slideout is opened
     useEffect(() => {
         if (selectedVenueForSlideout) {
-            addRecentVenue({
+            addRecentOrder({
                 tourVenueId: selectedVenueForSlideout.orderVenue.id,
                 tourName: selectedVenueForSlideout.order.name,
                 venueName: selectedVenueForSlideout.venue.name,
             });
         }
-    }, [selectedVenueForSlideout, addRecentVenue]);
+    }, [selectedVenueForSlideout, addRecentOrder]);
 
-    // Open venue slideout from URL param (e.g. from Recent Venues sidebar link)
+    // Open venue slideout from URL param (e.g. from Recent Orders sidebar link)
     useEffect(() => {
         const url = page.url;
         const queryIndex = url.indexOf('?');

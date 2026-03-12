@@ -1,4 +1,4 @@
-import { RecentVenuesProvider } from '@/hooks/use-recent-venues';
+import { RecentOrdersProvider } from '@/hooks/use-recent-orders';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
@@ -11,12 +11,12 @@ export function AppShell({ children }: AppShellProps) {
     const isOpen = usePage<SharedData>().props.sidebarOpen;
 
     return (
-        <RecentVenuesProvider>
+        <RecentOrdersProvider>
             <SidebarProvider defaultOpen={isOpen}>
                 <div className="flex min-h-screen w-full flex-col">
                     {children}
                 </div>
             </SidebarProvider>
-        </RecentVenuesProvider>
+        </RecentOrdersProvider>
     );
 }

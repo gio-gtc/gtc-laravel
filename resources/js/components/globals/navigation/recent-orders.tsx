@@ -7,18 +7,18 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from '@/components/ui/sidebar';
-import { useRecentVenues } from '@/hooks/use-recent-venues';
+import { useRecentOrders } from '@/hooks/use-recent-orders';
 import { cn, resolveUrl } from '@/lib/utils';
 import { orders } from '@/routes';
 import { router } from '@inertiajs/react';
 import { History } from 'lucide-react';
 
-export function RecentVenues() {
-    const { recentVenues } = useRecentVenues();
+export function RecentOrders() {
+    const { recentOrders } = useRecentOrders();
     const { state } = useSidebar();
 
     const isCollapsed = state === 'collapsed';
-    if (isCollapsed || recentVenues.length === 0) {
+    if (isCollapsed || recentOrders.length === 0) {
         return null;
     }
 
@@ -32,13 +32,13 @@ export function RecentVenues() {
 
     return (
         <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel className="flex items-center gap-1.5">
+            <SidebarGroupLabel className="flex items-center gap-1.5 text-white">
                 <History className="size-4 shrink-0" />
-                Recent Venues
+                Recent Orders
             </SidebarGroupLabel>
             <SidebarGroupContent>
                 <SidebarMenu className="mt-1 gap-1">
-                    {recentVenues.map((item) => (
+                    {recentOrders.map((item) => (
                         <SidebarMenuItem key={item.tourVenueId}>
                             <SidebarMenuButton
                                 asChild={false}
@@ -52,11 +52,10 @@ export function RecentVenues() {
                                 )}
                             >
                                 <span className="truncate">
-                                    {item.venueName}
-                                    <span className="text-sidebar-foreground/60">
-                                        {' '}
-                                        ({item.tourName})
-                                    </span>
+                                    <p>{item.tourName}</p>
+                                    <p className="text-gray-400">
+                                        {item.venueName}
+                                    </p>
                                 </span>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
