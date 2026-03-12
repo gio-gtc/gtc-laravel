@@ -2,10 +2,10 @@ import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import NavOptionButton from '@/components/ui/slideout/nav-option-button';
 import {
     ArrowRightToLine,
-    Maximize2,
-    Minimize2,
+    ExpandIcon,
     MoreHorizontal,
     Send,
+    ShrinkIcon,
 } from 'lucide-react';
 
 interface InvoiceSlideoutHeaderProps {
@@ -44,7 +44,7 @@ export default function InvoiceSlideoutHeader({
                     <NavOptionButton onClick={onSend} icon={Send} />
                     <NavOptionButton
                         onClick={onMaximize}
-                        icon={isMaximized ? Minimize2 : Maximize2}
+                        icon={isMaximized ? ShrinkIcon : ExpandIcon}
                     />
                     <NavOptionButton onClick={onMore} icon={MoreHorizontal} />
                     <NavOptionButton

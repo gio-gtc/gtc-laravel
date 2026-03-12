@@ -5,11 +5,11 @@ import Divider from '@/components/utils/divider';
 import { type TourVenue } from '@/types';
 import {
     ArrowRightToLine,
-    Maximize2Icon,
-    Minimize2Icon,
+    ExpandIcon,
     MoreHorizontalIcon,
     PaperclipIcon,
     SendIcon,
+    ShrinkIcon,
 } from 'lucide-react';
 import StatusIcon from '../status-icon';
 
@@ -68,7 +68,7 @@ export default function VenueSlideoutHeader({
                     <NavOptionButton onClick={onSend} icon={SendIcon} />
                     <NavOptionButton
                         onClick={onMaximize}
-                        icon={isMaximized ? Minimize2Icon : Maximize2Icon}
+                        icon={isMaximized ? ShrinkIcon : ExpandIcon}
                     />
                     <NavOptionButton
                         onClick={onMore}

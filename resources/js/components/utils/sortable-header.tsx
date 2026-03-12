@@ -1,5 +1,9 @@
 import { type Column, type Table } from '@tanstack/react-table';
-import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
+import {
+    ChevronDownIcon,
+    ChevronsUpDownIcon,
+    ChevronUpIcon,
+} from 'lucide-react';
 import { ReactNode } from 'react';
 
 type SortDirection = 'asc' | 'desc';
@@ -29,11 +33,11 @@ export function SortableHeader<TData, TValue>({
         >
             <span>{children}</span>
             {sortedState === 'asc' ? (
-                <ArrowUp className="size-[14px]" />
+                <ChevronUpIcon className="size-[12px]" />
             ) : sortedState === 'desc' ? (
-                <ArrowDown className="size-[14px]" />
+                <ChevronDownIcon className="size-[12px]" />
             ) : (
-                <ArrowUpDown className="size-[14px] opacity-50" />
+                <ChevronsUpDownIcon className="size-[14px] opacity-50" />
             )}
         </button>
     );
