@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui/button';
 
 interface InvoiceStatusFiltersProps {
-    filter: 'all' | 'on-hold' | 'released';
-    onFilterChange: (filter: 'all' | 'on-hold' | 'released') => void;
+    filter: 'all' | 'on-hold' | 'released' | 'reminder';
+    onFilterChange: (
+        filter: 'all' | 'on-hold' | 'released' | 'reminder',
+    ) => void;
     selectedCount?: number;
     onSendReminder?: () => void;
 }
@@ -35,6 +37,13 @@ export default function InvoiceStatusFilters({
                 onClick={() => onFilterChange('released')}
             >
                 Released
+            </Button>
+            <Button
+                size={'md'}
+                variant={filter === 'reminder' ? 'default' : 'outline'}
+                onClick={() => onFilterChange('reminder')}
+            >
+                Payment Reminder
             </Button>
             {onSendReminder && (
                 <Button

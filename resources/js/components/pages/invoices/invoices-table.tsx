@@ -7,8 +7,8 @@ import {
 import InvoiceAdvancedFilters from '@/components/pages/invoices/advanced-filters';
 import InvoiceDetailSlideout from '@/components/pages/invoices/detail-slideout';
 import InvoiceStatusFilters from '@/components/pages/invoices/status-filters';
-import HoldInvoicesTable from '@/components/pages/invoices/tables/hold-invoices-table';
-import ReleasedInvoicesTable from '@/components/pages/invoices/tables/released-invoices-table';
+import InvoiceDetailTable from '@/components/pages/invoices/tables/invoice-detail-table';
+import PaymentReminderTable from '@/components/pages/invoices/tables/payment-reminder-table';
 import {
     getDaysRemaining,
     getInvoiceAddress,
@@ -21,9 +21,9 @@ function InvoicesTable() {
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(
         null,
     );
-    const [filter, setFilter] = useState<'all' | 'on-hold' | 'released'>(
-        'on-hold',
-    );
+    const [filter, setFilter] = useState<
+        'all' | 'on-hold' | 'released' | 'reminder'
+    >('on-hold');
     const [searchQuery, setSearchQuery] = useState('');
     const [countryFilter, setCountryFilter] = useState({
         us: true,
@@ -39,10 +39,17 @@ function InvoicesTable() {
     const [selectedReleasedInvoiceIds, setSelectedReleasedInvoiceIds] =
         useState<number[]>([]);
 
-    // Clear selected invoices when switching away from released filter
+    // Clear selected invoices when switching away from payment reminder filter
     useEffect(() => {
-        if (filter !== 'released') {
+        if (filter !== 'reminder') {
             setSelectedReleasedInvoiceIds([]);
+        }
+    }, [filter]);
+
+    // Close slideout when switching to payment reminder view
+    useEffect(() => {
+        if (filter === 'reminder') {
+            setSelectedInvoice(null);
         }
     }, [filter]);
 
@@ -84,7 +91,7 @@ function InvoicesTable() {
             result = result.filter(
                 (invoice) => invoice.held === 1 && !invoice.isDeleted,
             );
-        } else if (filter === 'released') {
+        } else if (filter === 'released' || filter === 'reminder') {
             result = result.filter(
                 (invoice) => invoice.held === 0 && !invoice.isDeleted,
             );
@@ -214,12 +221,12 @@ function InvoicesTable() {
                     filter={filter}
                     onFilterChange={setFilter}
                     selectedCount={
-                        filter === 'released'
+                        filter === 'reminder'
                             ? selectedReleasedInvoiceIds.length
                             : 0
                     }
                     onSendReminder={
-                        filter === 'released' ? handleSendReminder : undefined
+                        filter === 'reminder' ? handleSendReminder : undefined
                     }
                 />
                 <InvoiceAdvancedFilters
@@ -234,13 +241,13 @@ function InvoicesTable() {
             </div>
 
             {/* Table */}
-            {filter === 'released' ? (
-                <ReleasedInvoicesTable
+            {filter === 'reminder' ? (
+                <PaymentReminderTable
                     data={filteredData}
                     onSelectionChange={setSelectedReleasedInvoiceIds}
                 />
             ) : (
-                <HoldInvoicesTable
+                <InvoiceDetailTable
                     data={filteredData}
                     onInvoiceSelect={setSelectedInvoice}
                     selectedInvoice={selectedInvoice}

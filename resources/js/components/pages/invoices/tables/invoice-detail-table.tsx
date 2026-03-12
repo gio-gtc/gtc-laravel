@@ -5,22 +5,25 @@ import { getInvoiceDayBadge } from './pieces/day-badge';
 import { InvoiceTableBase } from './pieces/table-base';
 import { createInvoiceColumns } from './pieces/table-columns';
 
-interface OnHoldInvoicesTableProps {
+interface InvoiceDetailTableProps {
     data: Invoice[];
     onInvoiceSelect: (invoice: Invoice | null) => void;
     selectedInvoice: Invoice | null;
 }
 
-function OnHoldInvoicesTable({
+function InvoiceDetailTable({
     data,
     onInvoiceSelect,
     selectedInvoice,
-}: OnHoldInvoicesTableProps) {
+}: InvoiceDetailTableProps) {
     const columns = useMemo(
         () =>
             createInvoiceColumns({
                 getDayBadge: getInvoiceDayBadge,
-                daysAccessorFn: (row) => getDaysRemaining(row.showDate),
+                daysAccessorFn: (row) =>
+                    row.held === 1
+                        ? getDaysRemaining(row.showDate)
+                        : getDaysRemaining(row.release_date, row.id),
             }),
         [],
     );
@@ -39,4 +42,4 @@ function OnHoldInvoicesTable({
     );
 }
 
-export default OnHoldInvoicesTable;
+export default InvoiceDetailTable;

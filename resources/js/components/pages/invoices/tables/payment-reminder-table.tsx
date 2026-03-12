@@ -5,15 +5,15 @@ import { getReleasedInvoiceDayBadge } from './pieces/day-badge';
 import { InvoiceTableBase } from './pieces/table-base';
 import { createInvoiceColumns } from './pieces/table-columns';
 
-interface ReleasedInvoicesTableProps {
+interface PaymentReminderTableProps {
     data: Invoice[];
     onSelectionChange: (selectedIds: number[]) => void;
 }
 
-function ReleasedInvoicesTable({
+function PaymentReminderTable({
     data,
     onSelectionChange,
-}: ReleasedInvoicesTableProps) {
+}: PaymentReminderTableProps) {
     const [selectedInvoiceIds, setSelectedInvoiceIds] = useState<Set<number>>(
         new Set(),
     );
@@ -48,7 +48,7 @@ function ReleasedInvoicesTable({
         if (event.shiftKey) {
             // Shift-click: select range
             let startIndex: number;
-            
+
             // If nothing is selected, start from first item
             if (selectedInvoiceIds.size === 0) {
                 startIndex = 0;
@@ -59,7 +59,7 @@ function ReleasedInvoicesTable({
                 // Fallback to first item if no last clicked index
                 startIndex = 0;
             }
-            
+
             const endIndex = currentIndex;
             const minIndex = Math.min(startIndex, endIndex);
             const maxIndex = Math.max(startIndex, endIndex);
@@ -98,4 +98,4 @@ function ReleasedInvoicesTable({
     );
 }
 
-export default ReleasedInvoicesTable;
+export default PaymentReminderTable;
