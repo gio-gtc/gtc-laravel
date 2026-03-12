@@ -52,7 +52,7 @@ function parseMaskedValue(masked: string): Date | null {
 
 interface DatePickerInputProps {
     id: string;
-    label: string;
+    label?: string;
     value: string;
     onChange: (value: string) => void;
     className?: string;
@@ -70,7 +70,7 @@ export default function DatePickerInput({
     onChange,
     className,
     required = false,
-    placeholder = 'MM/DD/YYYY',
+    placeholder = 'mm/dd/yyyy',
     inputClassName = '',
     dialogTitle = 'Select Date',
     forwardOnlyFromToday = false,

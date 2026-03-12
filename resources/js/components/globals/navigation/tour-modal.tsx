@@ -47,7 +47,6 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
         onClose();
     };
 
-    // TODO: Check if possible leeway on layout
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[988px]">
@@ -78,10 +77,10 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                         >
                             <DatePickerInput
                                 id="start_date"
-                                label=""
+                                className="max-w-[140px]"
                                 value={startDate}
-                                required
                                 onChange={(value) => setStartDate(value)}
+                                required
                             />
                             <InputError message={undefined} />
                         </ColumnedRowsChild>
@@ -92,9 +91,8 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                         >
                             <DatePickerInput
                                 id="expire_on_sale_now_cuts"
-                                label=""
+                                className="max-w-[140px]"
                                 value={expireOnSaleNowCuts}
-                                required
                                 onChange={(value) =>
                                     setExpireOnSaleNowCuts(value)
                                 }
