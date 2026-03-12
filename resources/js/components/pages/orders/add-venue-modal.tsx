@@ -116,19 +116,24 @@ export default function AddVenueModal({
                     <ColumnedRowsChild
                         labelFor="show-dates"
                         labelContent="Show Dates"
+                        childrenContainerClasses="flex gap-2 items-center"
                         required
                     >
-                        {/* TODO: Placeholder says it all */}
-                        <Input placeholder="This will be 2 dates soon" />
-                        {/* <DateRangePicker
-                            startDate={showStartDate}
-                            endDate={showEndDate}
-                            onDateRangeChange={handleDateRangeChange}
-                            buttonSize="default"
-                            buttonClassName="w-full justify-start"
-                            placeholder="Select date range"
-                            dialogTitle="Select Show Dates"
-                        /> */}
+                        <DatePickerInput
+                            id="show-date-start"
+                            className="max-w-[140px]"
+                            value={dueDate || ''}
+                            onChange={(value) => setShowStartDate(value)}
+                            required
+                        />
+                        -
+                        <DatePickerInput
+                            id="show-date-end"
+                            className="max-w-[140px]"
+                            value={dueDate || ''}
+                            onChange={(value) => setShowStartDate(value)}
+                            required
+                        />
                     </ColumnedRowsChild>
 
                     {/* Due Date */}
@@ -139,7 +144,7 @@ export default function AddVenueModal({
                     >
                         <DatePickerInput
                             id="due-date"
-                            label=""
+                            className="max-w-[140px]"
                             value={dueDate || ''}
                             onChange={(value) => setDueDate(value)}
                             required
