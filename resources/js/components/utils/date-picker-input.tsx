@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import type { Matcher } from 'react-day-picker';
 import { format, parseISO, startOfDay } from 'date-fns';
 import { Calendar } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -50,6 +51,10 @@ function parseMaskedValue(masked: string): Date | null {
         : null;
 }
 
+function toDate(v: string | Date): Date {
+    return typeof v === 'string' ? parseISO(v) : v;
+}
+
 interface DatePickerInputProps {
     id: string;
     label?: string;
@@ -61,6 +66,10 @@ interface DatePickerInputProps {
     inputClassName?: string;
     dialogTitle?: string;
     forwardOnlyFromToday?: boolean;
+    minDate?: string | Date;
+    maxDate?: string | Date;
+    name?: string;
+    disabled?: boolean;
 }
 
 export default function DatePickerInput({
@@ -74,6 +83,10 @@ export default function DatePickerInput({
     inputClassName = '',
     dialogTitle = 'Select Date',
     forwardOnlyFromToday = false,
+    minDate,
+    maxDate,
+    name,
+    disabled = false,
 }: DatePickerInputProps) {
     const [open, setOpen] = useState(false);
     const [tempDate, setTempDate] = useState<Date | undefined>(() =>
@@ -89,6 +102,7 @@ export default function DatePickerInput({
     }, [value]);
 
     const handleOpenChange = (isOpen: boolean) => {
+        if (disabled && isOpen) return;
         if (isOpen) {
             const parsed = value
                 ? parseISO(value)
@@ -139,6 +153,14 @@ export default function DatePickerInput({
         <Calendar className="h-4 w-4 text-gray-400" aria-hidden />
     );
 
+    const disabledMatchers: Matcher[] = [];
+    if (minDate) disabledMatchers.push({ before: toDate(minDate) });
+    if (maxDate) disabledMatchers.push({ after: toDate(maxDate) });
+    if (forwardOnlyFromToday)
+        disabledMatchers.push({ before: startOfDay(new Date()) });
+    const calendarDisabled: Matcher[] | undefined =
+        disabledMatchers.length > 0 ? disabledMatchers : undefined;
+
     const pickerContent = (
         <>
             <div className="flex justify-center">
@@ -147,11 +169,7 @@ export default function DatePickerInput({
                     selected={tempDate}
                     onSelect={handleSelect}
                     fixedWeeks
-                    disabled={
-                        forwardOnlyFromToday
-                            ? { before: startOfDay(new Date()) }
-                            : undefined
-                    }
+                    disabled={calendarDisabled}
                 />
             </div>
             <div className="flex justify-end gap-2 p-4 pt-0">
@@ -169,11 +187,14 @@ export default function DatePickerInput({
         <Button
             variant="ghost"
             type="button"
+            disabled={disabled}
             className={cn(
                 'absolute right-0 h-auto shrink-0 p-0 hover:cursor-pointer hover:bg-transparent',
             )}
             aria-label="Open calendar"
-            {...(isMobile && { onClick: () => setOpen(true) })}
+            {...(isMobile && {
+                onClick: () => !disabled && setOpen(true),
+            })}
         >
             {calendarIcon}
         </Button>
@@ -181,7 +202,15 @@ export default function DatePickerInput({
 
     if (isMobile) {
         return (
-            <div className={className}>
+            <div
+                className={cn(
+                    className,
+                    disabled && 'pointer-events-none opacity-50',
+                )}
+            >
+                {name ? (
+                    <input type="hidden" name={name} value={value} />
+                ) : null}
                 {label ? (
                     <Label htmlFor={id} className="pt-2">
                         {label}
@@ -201,6 +230,7 @@ export default function DatePickerInput({
                         onBlur={handleInputBlur}
                         placeholder={placeholder}
                         required={required}
+                        disabled={disabled}
                         className={cn(
                             'min-w-0 flex-1 border-0 py-2 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0',
                             inputClassName,
@@ -226,7 +256,15 @@ export default function DatePickerInput({
     }
 
     return (
-        <div className={className}>
+        <div
+            className={cn(
+                className,
+                disabled && 'pointer-events-none opacity-50',
+            )}
+        >
+            {name ? (
+                <input type="hidden" name={name} value={value} />
+            ) : null}
             {label ? (
                 <Label htmlFor={id} className="pt-2">
                     {label}
@@ -256,6 +294,7 @@ export default function DatePickerInput({
                     onBlur={handleInputBlur}
                     placeholder={placeholder}
                     required={required}
+                    disabled={disabled}
                     className={cn(
                         'min-w-0 flex-1 border-0 py-2 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0',
                         inputClassName,

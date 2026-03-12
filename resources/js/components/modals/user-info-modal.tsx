@@ -1,5 +1,6 @@
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import InputError from '@/components/input-error';
+import DatePickerInput from '@/components/utils/date-picker-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useInitials } from '@/hooks/use-initials';
 import { type SharedData, type User } from '@/types';
 import { Form, usePage } from '@inertiajs/react';
-import { Calendar, Camera, HelpCircle } from 'lucide-react';
+import { Camera, HelpCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import Divider from '../utils/divider';
 
@@ -30,17 +31,6 @@ function splitName(fullName: string) {
         first: parts[0],
         last: parts.slice(1).join(' '),
     };
-}
-
-function formatDateLabel(value: string) {
-    if (!value) return 'Select date';
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return 'Select date';
-    return new Intl.DateTimeFormat(undefined, {
-        month: 'short',
-        day: '2-digit',
-        year: 'numeric',
-    }).format(date);
 }
 
 interface UserInfoModalProps {
@@ -481,132 +471,48 @@ export default function UserInfoModal({
                                                     : '',
                                             ].join(' ')}
                                         >
-                                            <input
-                                                type="hidden"
+                                            <DatePickerInput
+                                                id="ooo_start"
                                                 name="out_of_office_start_date"
-                                                value={
-                                                    outOfOfficeEnabled
-                                                        ? outOfOfficeStartDate
-                                                        : ''
-                                                }
-                                            />
-                                            <input
-                                                type="hidden"
-                                                name="out_of_office_end_date"
-                                                value={
-                                                    outOfOfficeEnabled
-                                                        ? outOfOfficeEndDate
-                                                        : ''
-                                                }
-                                            />
-
-                                            <span className="flex flex-col gap-2">
-                                                <Label
-                                                    className="xs-gray-700-weight-500"
-                                                    htmlFor="ooo_start"
-                                                >
-                                                    First Day
-                                                </Label>
-                                                <Label
-                                                    className="sr-only"
-                                                    htmlFor="ooo_start"
-                                                >
-                                                    Out of office start date
-                                                </Label>
-                                                <input
-                                                    id="ooo_start"
-                                                    type="date"
-                                                    className="sr-only"
-                                                    value={outOfOfficeStartDate}
-                                                    onChange={(e) => {
-                                                        const next =
-                                                            e.currentTarget
-                                                                .value;
-                                                        setOutOfOfficeStartDate(
+                                                label="First Day"
+                                                value={outOfOfficeStartDate}
+                                                onChange={(next) => {
+                                                    setOutOfOfficeStartDate(
+                                                        next,
+                                                    );
+                                                    if (!next) {
+                                                        setOutOfOfficeEndDate(
+                                                            '',
+                                                        );
+                                                    } else if (
+                                                        outOfOfficeEndDate &&
+                                                        outOfOfficeEndDate <
+                                                            next
+                                                    ) {
+                                                        setOutOfOfficeEndDate(
                                                             next,
                                                         );
-                                                        if (
-                                                            outOfOfficeEndDate &&
-                                                            next &&
-                                                            outOfOfficeEndDate <
-                                                                next
-                                                        ) {
-                                                            setOutOfOfficeEndDate(
-                                                                next,
-                                                            );
-                                                        }
-                                                    }}
-                                                />
-
-                                                <Label
-                                                    className="sr-only"
-                                                    htmlFor="ooo_end"
-                                                >
-                                                    Out of office end date
-                                                </Label>
-                                                <input
-                                                    id="ooo_end"
-                                                    type="date"
-                                                    className="sr-only"
-                                                    value={outOfOfficeEndDate}
-                                                    onChange={(e) =>
-                                                        setOutOfOfficeEndDate(
-                                                            e.currentTarget
-                                                                .value,
-                                                        )
                                                     }
-                                                    min={
-                                                        outOfOfficeStartDate ||
-                                                        undefined
-                                                    }
-                                                />
-
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        const el =
-                                                            document.getElementById(
-                                                                'ooo_start',
-                                                            ) as HTMLInputElement | null;
-                                                        el?.showPicker?.();
-                                                        el?.focus();
-                                                        el?.click();
-                                                    }}
-                                                    className="inline-flex items-center gap-2 rounded-md border bg-background px-3 py-1 text-sm hover:bg-muted"
-                                                >
-                                                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                                                    {formatDateLabel(
-                                                        outOfOfficeStartDate,
-                                                    )}
-                                                </button>
-                                            </span>
-
-                                            <span className="flex flex-col gap-2">
-                                                <Label
-                                                    className="xs-gray-700-weight-500"
-                                                    htmlFor="ooo_end"
-                                                >
-                                                    Last Day
-                                                </Label>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        const el =
-                                                            document.getElementById(
-                                                                'ooo_end',
-                                                            ) as HTMLInputElement | null;
-                                                        el?.showPicker?.();
-                                                        el?.focus();
-                                                        el?.click();
-                                                    }}
-                                                    className="inline-flex items-center gap-2 rounded-md border bg-background px-3 py-1 text-sm hover:bg-muted"
-                                                >
-                                                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                                                    {formatDateLabel(
-                                                        outOfOfficeEndDate,
-                                                    )}
-                                                </button>
-                                            </span>
+                                                }}
+                                                forwardOnlyFromToday
+                                                dialogTitle="Out of office start date"
+                                                className="max-w-[140px]"
+                                            />
+                                            <DatePickerInput
+                                                id="ooo_end"
+                                                name="out_of_office_end_date"
+                                                label="Last Day"
+                                                value={outOfOfficeEndDate}
+                                                onChange={setOutOfOfficeEndDate}
+                                                minDate={
+                                                    outOfOfficeStartDate ||
+                                                    undefined
+                                                }
+                                                forwardOnlyFromToday
+                                                dialogTitle="Out of office end date"
+                                                className="max-w-[140px]"
+                                                disabled={!outOfOfficeStartDate}
+                                            />
                                         </div>
                                     )}
 
