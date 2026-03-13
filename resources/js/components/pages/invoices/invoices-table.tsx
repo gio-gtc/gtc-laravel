@@ -236,10 +236,28 @@ function InvoicesTable() {
 
             {/* Table */}
             {filter === 'reminder' ? (
-                <PaymentReminderTable
-                    data={filteredData}
-                    onSelectionChange={setSelectedReleasedInvoiceIds}
-                />
+                <>
+                    <PaymentReminderTable
+                        data={filteredData}
+                        onSelectionChange={setSelectedReleasedInvoiceIds}
+                    />
+
+                    <div className="flex justify-end">
+                        <Button
+                            size={'md'}
+                            variant="outline"
+                            onClick={
+                                isReminder ? handleSendReminder : undefined
+                            }
+                            disabled={
+                                isReminder &&
+                                selectedReleasedInvoiceIds.length === 0
+                            }
+                        >
+                            Send Payment Reminder
+                        </Button>
+                    </div>
+                </>
             ) : (
                 <InvoiceDetailTable
                     data={filteredData}
