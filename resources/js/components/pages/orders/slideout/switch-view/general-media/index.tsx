@@ -8,7 +8,7 @@ import {
     type TourVenue,
     type Venue,
 } from '@/types';
-import { Eye, Link } from 'lucide-react';
+import { Link, PlayIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import AttachmentsSection from '../reuse/attachments-section';
 import ChatBox from '../reuse/chat';
@@ -72,7 +72,7 @@ function GeneralMediaView({
                 assigned: null,
                 status: 'Still in Cart',
                 previewIcons: [
-                    <Eye key="e1" className="h-4 w-4" />,
+                    <PlayIcon key="e1" className="h-4 w-4" />,
                     <Link key="l1" className="h-4 w-4" />,
                 ],
                 deliverables: {
@@ -89,7 +89,7 @@ function GeneralMediaView({
                 assigned: mockUser,
                 status: 'Client Review',
                 previewIcons: [
-                    <Eye key="e2" className="h-4 w-4" />,
+                    <PlayIcon key="e2" className="h-4 w-4" />,
                     <Link key="l2" className="h-4 w-4" />,
                 ],
                 deliverables: {
@@ -106,7 +106,7 @@ function GeneralMediaView({
                 assigned: mockUser,
                 status: 'In Production',
                 previewIcons: [
-                    <Eye key="e3" className="h-4 w-4" />,
+                    <PlayIcon key="e3" className="h-4 w-4" />,
                     <Link key="l3" className="h-4 w-4" />,
                 ],
                 deliverables: {
@@ -123,7 +123,7 @@ function GeneralMediaView({
                 assigned: mockUser,
                 status: 'Out for Delivery',
                 previewIcons: [
-                    <Eye key="e4" className="h-4 w-4" />,
+                    <PlayIcon key="e4" className="h-4 w-4" />,
                     <Link key="l4" className="h-4 w-4" />,
                 ],
                 deliverables: {
@@ -151,7 +151,7 @@ function GeneralMediaView({
                 assigned: mockUser,
                 status: 'Revision Requested',
                 previewIcons: [
-                    <Eye key="e6" className="h-4 w-4" />,
+                    <PlayIcon key="e6" className="h-4 w-4" />,
                     <Link key="l6" className="h-4 w-4" />,
                 ],
                 deliverables: {
