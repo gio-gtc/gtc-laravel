@@ -5,15 +5,11 @@ interface InvoiceStatusFiltersProps {
     onFilterChange: (
         filter: 'all' | 'on-hold' | 'released' | 'reminder',
     ) => void;
-    selectedCount?: number;
-    onSendReminder?: () => void;
 }
 
 export default function InvoiceStatusFilters({
     filter,
     onFilterChange,
-    selectedCount = 0,
-    onSendReminder,
 }: InvoiceStatusFiltersProps) {
     return (
         <div className="flex items-center gap-1">
@@ -45,16 +41,6 @@ export default function InvoiceStatusFilters({
             >
                 Payment Reminder
             </Button>
-            {onSendReminder && (
-                <Button
-                    size={'md'}
-                    variant="outline"
-                    onClick={onSendReminder}
-                    disabled={selectedCount === 0}
-                >
-                    Send Payment Reminder
-                </Button>
-            )}
         </div>
     );
 }

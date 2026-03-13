@@ -9,6 +9,7 @@ import InvoiceDetailSlideout from '@/components/pages/invoices/detail-slideout';
 import InvoiceStatusFilters from '@/components/pages/invoices/status-filters';
 import InvoiceDetailTable from '@/components/pages/invoices/tables/invoice-detail-table';
 import PaymentReminderTable from '@/components/pages/invoices/tables/payment-reminder-table';
+import { Button } from '@/components/ui/button';
 import {
     getDaysRemaining,
     getInvoiceAddress,
@@ -53,6 +54,7 @@ function InvoicesTable() {
     }>({ startDate: null, endDate: null });
     const [selectedReleasedInvoiceIds, setSelectedReleasedInvoiceIds] =
         useState<number[]>([]);
+    const isReminder = filter === 'reminder';
 
     const handleFilterChange = (newFilter: typeof filter) => {
         setFilter(newFilter);
@@ -112,9 +114,7 @@ function InvoicesTable() {
         filteredData = filteredData.filter((invoice) => {
             // Use release_date for released invoices (held === 0), showDate for held invoices (held === 1)
             const invoiceDate =
-                invoice.held === 0
-                    ? invoice.release_date
-                    : invoice.showDate;
+                invoice.held === 0 ? invoice.release_date : invoice.showDate;
 
             // Skip if invoice date is null (for released invoices without release_date)
             if (!invoiceDate) {
@@ -142,8 +142,7 @@ function InvoicesTable() {
 
             // Filter dates BETWEEN start and end (normalized range)
             return (
-                invoiceDateObj >= startDateObj &&
-                invoiceDateObj <= endDateObj
+                invoiceDateObj >= startDateObj && invoiceDateObj <= endDateObj
             );
         });
     }
@@ -183,12 +182,13 @@ function InvoicesTable() {
     if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase().trim();
         filteredData = filteredData.filter((invoice) => {
-            const invoiceNumber =
-                invoice.invoiceNumber?.toLowerCase() || '';
+            const invoiceNumber = invoice.invoiceNumber?.toLowerCase() || '';
             const tour = invoice.tour?.toLowerCase() || '';
             const market = invoice.market?.toLowerCase() || '';
-            const venue =
-                getInvoiceVenueName(invoice, venuesData).toLowerCase();
+            const venue = getInvoiceVenueName(
+                invoice,
+                venuesData,
+            ).toLowerCase();
             const clientReference =
                 invoice.clientReference?.toLowerCase() || '';
 
@@ -209,15 +209,20 @@ function InvoicesTable() {
                 <InvoiceStatusFilters
                     filter={filter}
                     onFilterChange={handleFilterChange}
-                    selectedCount={
-                        filter === 'reminder'
-                            ? selectedReleasedInvoiceIds.length
-                            : 0
-                    }
-                    onSendReminder={
-                        filter === 'reminder' ? handleSendReminder : undefined
-                    }
                 />
+                {isReminder && (
+                    <Button
+                        size={'md'}
+                        variant="outline"
+                        onClick={isReminder ? handleSendReminder : undefined}
+                        disabled={
+                            isReminder &&
+                            selectedReleasedInvoiceIds.length === 0
+                        }
+                    >
+                        Send Payment Reminder
+                    </Button>
+                )}
                 <InvoiceAdvancedFilters
                     countryFilter={countryFilter}
                     onCountryFilterChange={setCountryFilter}
