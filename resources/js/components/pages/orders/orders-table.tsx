@@ -27,7 +27,7 @@ import {
 } from '@/types';
 import { router, usePage } from '@inertiajs/react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState, startTransition } from 'react';
 import AddVenueModal from './add-venue-modal';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
 import OrdersTableHeaderActions, {
@@ -117,10 +117,12 @@ function OrdersTable() {
                 (v) => v.orderVenue.id === tourVenueId,
             );
             if (venueItem) {
-                setSelectedVenueForSlideout({
-                    orderVenue: venueItem.orderVenue,
-                    venue: venueItem.venue,
-                    order: group.order,
+                startTransition(() => {
+                    setSelectedVenueForSlideout({
+                        orderVenue: venueItem.orderVenue,
+                        venue: venueItem.venue,
+                        order: group.order,
+                    });
                 });
                 router.visit(resolveUrl(orders()), {
                     replace: true,
