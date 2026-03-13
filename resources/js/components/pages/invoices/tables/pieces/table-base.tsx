@@ -114,148 +114,40 @@ export function InvoiceTableBase({
                         const isSelected = isRowSelected(row.original);
 
                         return (
-                            <>
-                                <TableRow
-                                    key={row.id}
-                                    className={cn(
-                                        'cursor-pointer select-none hover:bg-gray-100',
-                                        isSelected && 'bg-red-100',
-                                    )}
-                                    onClick={(e) => onRowClick(row.original, e)}
-                                    onMouseDown={(e) => {
-                                        if (e.shiftKey) {
-                                            e.preventDefault();
-                                        }
-                                    }}
-                                >
-                                    {row
-                                        .getVisibleCells()
-                                        .map((cell, cellIndex, cells) => (
-                                            <TableCell
-                                                key={cell.id}
-                                                style={{
-                                                    width: cell.column.getSize(),
-                                                }}
-                                                className={cn(
-                                                    'px-2 py-0.5 font-semibold',
-                                                    cellIndex <
-                                                        cells.length - 1 &&
-                                                        'border-r border-border',
-                                                )}
-                                            >
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext(),
-                                                )}
-                                            </TableCell>
-                                        ))}
-                                </TableRow>
-                                <TableRow
-                                    key={row.id}
-                                    className={cn(
-                                        'cursor-pointer select-none hover:bg-gray-100',
-                                        isSelected && 'bg-red-100',
-                                    )}
-                                    onClick={(e) => onRowClick(row.original, e)}
-                                    onMouseDown={(e) => {
-                                        if (e.shiftKey) {
-                                            e.preventDefault();
-                                        }
-                                    }}
-                                >
-                                    {row
-                                        .getVisibleCells()
-                                        .map((cell, cellIndex, cells) => (
-                                            <TableCell
-                                                key={cell.id}
-                                                style={{
-                                                    width: cell.column.getSize(),
-                                                }}
-                                                className={cn(
-                                                    'px-2 py-0.5 font-semibold',
-                                                    cellIndex <
-                                                        cells.length - 1 &&
-                                                        'border-r border-border',
-                                                )}
-                                            >
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext(),
-                                                )}
-                                            </TableCell>
-                                        ))}
-                                </TableRow>
-                                <TableRow
-                                    key={row.id}
-                                    className={cn(
-                                        'cursor-pointer select-none hover:bg-gray-100',
-                                        isSelected && 'bg-red-100',
-                                    )}
-                                    onClick={(e) => onRowClick(row.original, e)}
-                                    onMouseDown={(e) => {
-                                        if (e.shiftKey) {
-                                            e.preventDefault();
-                                        }
-                                    }}
-                                >
-                                    {row
-                                        .getVisibleCells()
-                                        .map((cell, cellIndex, cells) => (
-                                            <TableCell
-                                                key={cell.id}
-                                                style={{
-                                                    width: cell.column.getSize(),
-                                                }}
-                                                className={cn(
-                                                    'px-2 py-0.5 font-semibold',
-                                                    cellIndex <
-                                                        cells.length - 1 &&
-                                                        'border-r border-border',
-                                                )}
-                                            >
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext(),
-                                                )}
-                                            </TableCell>
-                                        ))}
-                                </TableRow>
-                                <TableRow
-                                    key={row.id}
-                                    className={cn(
-                                        'cursor-pointer select-none hover:bg-gray-100',
-                                        isSelected && 'bg-red-100',
-                                    )}
-                                    onClick={(e) => onRowClick(row.original, e)}
-                                    onMouseDown={(e) => {
-                                        if (e.shiftKey) {
-                                            e.preventDefault();
-                                        }
-                                    }}
-                                >
-                                    {row
-                                        .getVisibleCells()
-                                        .map((cell, cellIndex, cells) => (
-                                            <TableCell
-                                                key={cell.id}
-                                                style={{
-                                                    width: cell.column.getSize(),
-                                                }}
-                                                className={cn(
-                                                    'px-2 py-0.5 font-semibold',
-                                                    cellIndex <
-                                                        cells.length - 1 &&
-                                                        'border-r border-border',
-                                                )}
-                                            >
-                                                {flexRender(
-                                                    cell.column.columnDef.cell,
-                                                    cell.getContext(),
-                                                )}
-                                            </TableCell>
-                                        ))}
-                                </TableRow>
-                            </>
+                            <TableRow
+                                key={row.id}
+                                className={cn(
+                                    'cursor-pointer select-none hover:bg-gray-100',
+                                    isSelected && 'bg-red-100',
+                                )}
+                                onClick={(e) => onRowClick(row.original, e)}
+                                onMouseDown={(e) => {
+                                    if (e.shiftKey) {
+                                        e.preventDefault();
+                                    }
+                                }}
+                            >
+                                {row
+                                    .getVisibleCells()
+                                    .map((cell, cellIndex, cells) => (
+                                        <TableCell
+                                            key={cell.id}
+                                            style={{
+                                                width: cell.column.getSize(),
+                                            }}
+                                            className={cn(
+                                                'px-2 py-0.5 font-semibold',
+                                                cellIndex < cells.length - 1 &&
+                                                    'border-r border-border',
+                                            )}
+                                        >
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext(),
+                                            )}
+                                        </TableCell>
+                                    ))}
+                            </TableRow>
                         );
                     })
                 ) : (
