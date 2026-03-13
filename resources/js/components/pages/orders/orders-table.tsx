@@ -4,6 +4,7 @@ import {
     venueCollaboratorData,
     venuesData,
 } from '@/components/mockdata';
+import { FilledArrow } from '@/components/ui/icons';
 import {
     Table,
     TableBody,
@@ -18,6 +19,7 @@ import { useOrdersFilters } from '@/hooks/use-orders-filters';
 import { useRecentOrders } from '@/hooks/use-recent-orders';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn, resolveUrl } from '@/lib/utils';
+import { orders } from '@/routes';
 import {
     type SharedData,
     type Tour,
@@ -27,13 +29,12 @@ import {
 } from '@/types';
 import { router, usePage } from '@inertiajs/react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
-import { Fragment, useEffect, useMemo, useState, startTransition } from 'react';
+import { Fragment, startTransition, useEffect, useMemo, useState } from 'react';
 import AddVenueModal from './add-venue-modal';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
 import OrdersTableHeaderActions, {
     type GroupedOrderData,
 } from './orders-table-header-actions';
-import { orders } from '@/routes';
 import VenueDetailSlideout from './slideout';
 import StatusIcon from './status-icon';
 
@@ -436,6 +437,7 @@ function OrdersTable() {
                                                     ) : (
                                                         <ChevronRight className="h-1.5 w-2 text-gray-600" />
                                                     )}
+                                                    <FilledArrow className="size-3 text-gray-600" />
                                                     <span className="text-gray-700">
                                                         {group.order.name}
                                                     </span>

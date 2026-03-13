@@ -20,3 +20,24 @@ export const DropBox = createLucideIcon('DropBox', [
         },
     ],
 ]);
+
+export const FilledArrow = createLucideIcon('FilledArrow', [
+    [
+        'path',
+        {
+            d: 'M4.76314 6L-3.8147e-06 0L9.52628 0L4.76314 6Z',
+            fill: 'currentColor',
+            key: 'FilledArrow',
+        },
+    ],
+]);
+
+// <svg
+//     xmlns="http://www.w3.org/2000/svg"
+//     width="10"
+//     height="6"
+//     viewBox="0 0 10 6"
+//     fill="none"
+// >
+//     <path d="M4.76314 6L-3.8147e-06 0L9.52628 0L4.76314 6Z" fill="#535862" />
+// </svg>;
