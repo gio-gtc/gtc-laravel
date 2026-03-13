@@ -15,7 +15,22 @@ import {
     getInvoiceVenueName,
 } from '@/components/utils/functions';
 import { type Invoice } from '@/types';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
+
+function getInvoiceCountryCode(invoice: Invoice): 'US' | 'International' {
+    const company = companiesData.find((c) => c.id === invoice.company_id);
+    if (!company) return 'International';
+
+    const addressData = getInvoiceAddress(invoice, company);
+    const countryId = addressData.country_id
+        ? parseInt(addressData.country_id, 10)
+        : null;
+
+    if (!countryId) return 'International';
+
+    const country = countriesData.find((c) => c.id === countryId);
+    return country?.code === 'US' ? 'US' : 'International';
+}
 
 function InvoicesTable() {
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(
@@ -39,19 +54,15 @@ function InvoicesTable() {
     const [selectedReleasedInvoiceIds, setSelectedReleasedInvoiceIds] =
         useState<number[]>([]);
 
-    // Clear selected invoices when switching away from payment reminder filter
-    useEffect(() => {
-        if (filter !== 'reminder') {
+    const handleFilterChange = (newFilter: typeof filter) => {
+        setFilter(newFilter);
+        if (newFilter !== 'reminder') {
             setSelectedReleasedInvoiceIds([]);
         }
-    }, [filter]);
-
-    // Close slideout when switching to payment reminder view
-    useEffect(() => {
-        if (filter === 'reminder') {
+        if (newFilter === 'reminder') {
             setSelectedInvoice(null);
         }
-    }, [filter]);
+    };
 
     // Handler for Send Payment Reminder button
     const handleSendReminder = () => {
@@ -64,154 +75,132 @@ function InvoicesTable() {
         );
     };
 
-    // Helper function to get country code for an invoice
-    const getInvoiceCountryCode = (
-        invoice: Invoice,
-    ): 'US' | 'International' => {
-        const company = companiesData.find((c) => c.id === invoice.company_id);
-        if (!company) return 'International';
+    // Filter invoices based on selected filter and search query (React Compiler memoizes)
+    let filteredData = invoicesData;
 
-        const addressData = getInvoiceAddress(invoice, company);
-        const countryId = addressData.country_id
-            ? parseInt(addressData.country_id, 10)
-            : null;
+    // Apply held/released filter
+    if (filter === 'on-hold') {
+        filteredData = filteredData.filter(
+            (invoice) => invoice.held === 1 && !invoice.isDeleted,
+        );
+    } else if (filter === 'released' || filter === 'reminder') {
+        filteredData = filteredData.filter(
+            (invoice) => invoice.held === 0 && !invoice.isDeleted,
+        );
+    }
 
-        if (!countryId) return 'International';
-
-        const country = countriesData.find((c) => c.id === countryId);
-        return country?.code === 'US' ? 'US' : 'International';
-    };
-
-    // Filter invoices based on selected filter and search query
-    const filteredData = useMemo(() => {
-        let result = invoicesData;
-
-        // Apply held/released filter
-        if (filter === 'on-hold') {
-            result = result.filter(
-                (invoice) => invoice.held === 1 && !invoice.isDeleted,
-            );
-        } else if (filter === 'released' || filter === 'reminder') {
-            result = result.filter(
-                (invoice) => invoice.held === 0 && !invoice.isDeleted,
-            );
-        }
-
-        // Apply country filter
-        if (countryFilter.us || countryFilter.international) {
-            result = result.filter((invoice) => {
-                const countryCode = getInvoiceCountryCode(invoice);
-                if (countryFilter.us && countryFilter.international) {
-                    return true;
-                } else if (countryFilter.us) {
-                    return countryCode === 'US';
-                } else if (countryFilter.international) {
-                    return countryCode === 'International';
-                }
+    // Apply country filter
+    if (countryFilter.us || countryFilter.international) {
+        filteredData = filteredData.filter((invoice) => {
+            const countryCode = getInvoiceCountryCode(invoice);
+            if (countryFilter.us && countryFilter.international) {
                 return true;
-            });
-        }
+            } else if (countryFilter.us) {
+                return countryCode === 'US';
+            } else if (countryFilter.international) {
+                return countryCode === 'International';
+            }
+            return true;
+        });
+    }
 
-        // Apply date range filter (takes precedence over days filter)
-        const startDate = dateRangeFilter.startDate;
-        const endDate = dateRangeFilter.endDate;
+    // Apply date range filter (takes precedence over days filter)
+    const startDate = dateRangeFilter.startDate;
+    const endDate = dateRangeFilter.endDate;
 
-        if (startDate && endDate) {
-            result = result.filter((invoice) => {
-                // Use release_date for released invoices (held === 0), showDate for held invoices (held === 1)
-                const invoiceDate =
-                    invoice.held === 0
-                        ? invoice.release_date
-                        : invoice.showDate;
+    if (startDate && endDate) {
+        filteredData = filteredData.filter((invoice) => {
+            // Use release_date for released invoices (held === 0), showDate for held invoices (held === 1)
+            const invoiceDate =
+                invoice.held === 0
+                    ? invoice.release_date
+                    : invoice.showDate;
 
-                // Skip if invoice date is null (for released invoices without release_date)
-                if (!invoiceDate) {
-                    return false;
-                }
-
-                const invoiceDateObj = new Date(invoiceDate);
-                let startDateObj = new Date(startDate);
-                let endDateObj = new Date(endDate);
-
-                // Set time to start of day for accurate comparison
-                invoiceDateObj.setHours(0, 0, 0, 0);
-                startDateObj.setHours(0, 0, 0, 0);
-                endDateObj.setHours(23, 59, 59, 999);
-
-                // Normalize reversed ranges: if start > end, swap them
-                // This allows users to enter dates in any order, but we always filter for dates BETWEEN the range
-                if (startDateObj > endDateObj) {
-                    const temp = startDateObj;
-                    startDateObj = endDateObj;
-                    endDateObj = temp;
-                    // Adjust endDateObj to end of day
-                    endDateObj.setHours(23, 59, 59, 999);
-                }
-
-                // Filter dates BETWEEN start and end (normalized range)
-                return (
-                    invoiceDateObj >= startDateObj &&
-                    invoiceDateObj <= endDateObj
-                );
-            });
-        }
-        // Apply days filter (only if date range is not active)
-        else if (dateFilter) {
-            result = result.filter((invoice) => {
-                const daysRemaining =
-                    invoice.held === 1
-                        ? getDaysRemaining(invoice.showDate)
-                        : getDaysRemaining(invoice.release_date, invoice.id);
-
-                if (invoice.held === 1) {
-                    // On hold invoices: use showDate countdown
-                    // Ranges: 30 = 0-30, 60 = 31-60, 61+ = 61+
-                    if (dateFilter === '30') {
-                        return daysRemaining >= 0 && daysRemaining <= 30;
-                    } else if (dateFilter === '60') {
-                        return daysRemaining > 30 && daysRemaining <= 60;
-                    } else if (dateFilter === '61+') {
-                        return daysRemaining > 60;
-                    }
-                } else {
-                    // Released invoices: use release_date age
-                    if (dateFilter === '30') {
-                        return daysRemaining >= -30 && daysRemaining <= 0;
-                    } else if (dateFilter === '60') {
-                        return daysRemaining > -60 && daysRemaining <= -30;
-                    } else if (dateFilter === '61+') {
-                        return daysRemaining < -60;
-                    }
-                }
+            // Skip if invoice date is null (for released invoices without release_date)
+            if (!invoiceDate) {
                 return false;
-            });
-        }
+            }
 
-        // Apply search filter
-        if (searchQuery.trim()) {
-            const query = searchQuery.toLowerCase().trim();
-            result = result.filter((invoice) => {
-                const invoiceNumber =
-                    invoice.invoiceNumber?.toLowerCase() || '';
-                const tour = invoice.tour?.toLowerCase() || '';
-                const market = invoice.market?.toLowerCase() || '';
-                const venue =
-                    getInvoiceVenueName(invoice, venuesData).toLowerCase();
-                const clientReference =
-                    invoice.clientReference?.toLowerCase() || '';
+            const invoiceDateObj = new Date(invoiceDate);
+            let startDateObj = new Date(startDate);
+            let endDateObj = new Date(endDate);
 
-                return (
-                    invoiceNumber.includes(query) ||
-                    tour.includes(query) ||
-                    market.includes(query) ||
-                    venue.includes(query) ||
-                    clientReference.includes(query)
-                );
-            });
-        }
+            // Set time to start of day for accurate comparison
+            invoiceDateObj.setHours(0, 0, 0, 0);
+            startDateObj.setHours(0, 0, 0, 0);
+            endDateObj.setHours(23, 59, 59, 999);
 
-        return result;
-    }, [filter, searchQuery, countryFilter, dateFilter, dateRangeFilter]);
+            // Normalize reversed ranges: if start > end, swap them
+            // This allows users to enter dates in any order, but we always filter for dates BETWEEN the range
+            if (startDateObj > endDateObj) {
+                const temp = startDateObj;
+                startDateObj = endDateObj;
+                endDateObj = temp;
+                // Adjust endDateObj to end of day
+                endDateObj.setHours(23, 59, 59, 999);
+            }
+
+            // Filter dates BETWEEN start and end (normalized range)
+            return (
+                invoiceDateObj >= startDateObj &&
+                invoiceDateObj <= endDateObj
+            );
+        });
+    }
+    // Apply days filter (only if date range is not active)
+    else if (dateFilter) {
+        filteredData = filteredData.filter((invoice) => {
+            const daysRemaining =
+                invoice.held === 1
+                    ? getDaysRemaining(invoice.showDate)
+                    : getDaysRemaining(invoice.release_date, invoice.id);
+
+            if (invoice.held === 1) {
+                // On hold invoices: use showDate countdown
+                // Ranges: 30 = 0-30, 60 = 31-60, 61+ = 61+
+                if (dateFilter === '30') {
+                    return daysRemaining >= 0 && daysRemaining <= 30;
+                } else if (dateFilter === '60') {
+                    return daysRemaining > 30 && daysRemaining <= 60;
+                } else if (dateFilter === '61+') {
+                    return daysRemaining > 60;
+                }
+            } else {
+                // Released invoices: use release_date age
+                if (dateFilter === '30') {
+                    return daysRemaining >= -30 && daysRemaining <= 0;
+                } else if (dateFilter === '60') {
+                    return daysRemaining > -60 && daysRemaining <= -30;
+                } else if (dateFilter === '61+') {
+                    return daysRemaining < -60;
+                }
+            }
+            return false;
+        });
+    }
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase().trim();
+        filteredData = filteredData.filter((invoice) => {
+            const invoiceNumber =
+                invoice.invoiceNumber?.toLowerCase() || '';
+            const tour = invoice.tour?.toLowerCase() || '';
+            const market = invoice.market?.toLowerCase() || '';
+            const venue =
+                getInvoiceVenueName(invoice, venuesData).toLowerCase();
+            const clientReference =
+                invoice.clientReference?.toLowerCase() || '';
+
+            return (
+                invoiceNumber.includes(query) ||
+                tour.includes(query) ||
+                market.includes(query) ||
+                venue.includes(query) ||
+                clientReference.includes(query)
+            );
+        });
+    }
 
     return (
         <div className="table-content-max-width space-y-4">
@@ -219,7 +208,7 @@ function InvoicesTable() {
             <div className="flex justify-between gap-1 overflow-auto">
                 <InvoiceStatusFilters
                     filter={filter}
-                    onFilterChange={setFilter}
+                    onFilterChange={handleFilterChange}
                     selectedCount={
                         filter === 'reminder'
                             ? selectedReleasedInvoiceIds.length
