@@ -28,7 +28,7 @@ import {
     type Venue,
 } from '@/types';
 import { router, usePage } from '@inertiajs/react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { Fragment, startTransition, useEffect, useMemo, useState } from 'react';
 import AddVenueModal from './add-venue-modal';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
@@ -432,18 +432,20 @@ function OrdersTable() {
                                                 className="h-[45px] px-2 py-1"
                                             >
                                                 <div className="flex items-center gap-2.5">
-                                                    {isExpanded ? (
-                                                        <ChevronDown className="h-1.5 w-2 text-gray-600" />
-                                                    ) : (
-                                                        <ChevronRight className="h-1.5 w-2 text-gray-600" />
-                                                    )}
-                                                    <FilledArrow className="size-3 text-gray-600" />
+                                                    <FilledArrow
+                                                        className={cn(
+                                                            'text-gray-600translate-x-4 size-1.5 rotate-[-90deg] transition-transform duration-150',
+                                                            isExpanded &&
+                                                                'rotate-0',
+                                                        )}
+                                                    />
                                                     <span className="text-gray-700">
                                                         {group.order.name}
                                                     </span>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
+
                                         {/* Venue Detail Rows */}
                                         {isExpanded &&
                                             group.venues.map((venueItem) => {
@@ -490,7 +492,7 @@ function OrdersTable() {
                                                             )}
                                                         >
                                                             <div className="flex items-center justify-between">
-                                                                <span>
+                                                                <span className="pl-2">
                                                                     {
                                                                         venueItem
                                                                             .venue
@@ -505,6 +507,9 @@ function OrdersTable() {
                                                                 </span>
                                                                 <ChevronRight
                                                                     className="h-2.5 w-2.5 cursor-pointer text-gray-400 hover:text-gray-600"
+                                                                    strokeWidth={
+                                                                        3
+                                                                    }
                                                                     onClick={(
                                                                         e,
                                                                     ) => {
