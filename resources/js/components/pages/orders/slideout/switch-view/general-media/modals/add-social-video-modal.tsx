@@ -17,6 +17,7 @@ const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French'] as const;
 
 export interface AddSocialVideoFormValues {
     type: string;
+    cut: string;
     cardHolder: string[];
     duration: string[];
     language: string[];
@@ -34,6 +35,7 @@ export default function AddSocialVideoModal({
     onAdd,
 }: AddSocialVideoModalProps) {
     const [type, setType] = useState('Generic');
+    const [cut, setCut] = useState('cut');
     const [cardHolder, setCardHolder] = useState<string[]>([]);
     const [duration, setDuration] = useState<string[]>([]);
     const [language, setLanguage] = useState<string[]>([]);
@@ -41,6 +43,7 @@ export default function AddSocialVideoModal({
     useEffect(() => {
         if (!isOpen) {
             setType('Generic');
+            setType('Cut');
             setCardHolder([]);
             setDuration([]);
             setLanguage([]);
@@ -48,7 +51,7 @@ export default function AddSocialVideoModal({
     }, [isOpen]);
 
     const handleAddToOrder = () => {
-        onAdd?.({ type, cardHolder, duration, language });
+        onAdd?.({ type, cut, cardHolder, duration, language });
         onClose();
     };
 
@@ -62,27 +65,55 @@ export default function AddSocialVideoModal({
             modalClasses="sm:max-w-[484px]"
         >
             <div className="flex flex-col gap-2 text-xs sm:flex-row">
-                <div className="flex flex-3 flex-col gap-1.5">
-                    <Label htmlFor="type" className={orderModalStyles.label}>
-                        Type
-                    </Label>
-                    <p className={orderModalStyles.helper}>
-                        Select the type of Social Video
-                    </p>
-                    <Select value={type} onValueChange={setType}>
-                        <SelectTrigger
-                            id="type"
-                            className={orderModalStyles.selectTrigger}
+                <div className="flex flex-col gap-2">
+                    <div className="flex flex-3 flex-col gap-1.5">
+                        <Label
+                            htmlFor="type"
+                            className={orderModalStyles.label}
                         >
-                            <SelectValue placeholder="Select the type of Social Video" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Generic">Generic</SelectItem>
-                        </SelectContent>
-                    </Select>
+                            Type
+                        </Label>
+                        <p className={orderModalStyles.helper}>
+                            Select the type of Social Video
+                        </p>
+                        <Select value={type} onValueChange={setType}>
+                            <SelectTrigger
+                                id="type"
+                                className={orderModalStyles.selectTrigger}
+                            >
+                                <SelectValue placeholder="Select the type of Social Video" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Generic">Generic</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <div className="flex flex-3 flex-col gap-1.5">
+                        <Label
+                            htmlFor="type"
+                            className={orderModalStyles.label}
+                        >
+                            Cuts
+                        </Label>
+                        <p className={orderModalStyles.helper}>
+                            Select the type of Cuts
+                        </p>
+                        <Select value={cut} onValueChange={setCut}>
+                            <SelectTrigger
+                                id="cut"
+                                className={orderModalStyles.selectTrigger}
+                            >
+                                <SelectValue placeholder="Cuts" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Cuts">Cuts</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
 
-                <div className="flex flex-row justify-center gap-2 text-xs">
+                <div className="flex flex-row justify-between gap-2 text-xs sm:justify-center">
                     <div className="flex flex-col gap-2">
                         <Label className={orderModalStyles.label}>
                             Card Holder
