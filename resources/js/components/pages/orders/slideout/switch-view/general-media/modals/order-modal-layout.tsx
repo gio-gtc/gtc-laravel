@@ -15,6 +15,7 @@ interface OrderModalLayoutProps {
     title: string;
     primaryLabel: string;
     onPrimaryClick: () => void;
+    primaryDisabled?: boolean;
     modalClasses?: string;
     children: React.ReactNode;
     dividerBeforeFooter?: boolean;
@@ -26,6 +27,7 @@ export default function OrderModalLayout({
     title,
     primaryLabel,
     onPrimaryClick,
+    primaryDisabled = false,
     modalClasses = '',
     children,
     dividerBeforeFooter = true,
@@ -56,6 +58,7 @@ export default function OrderModalLayout({
                     <Button
                         className={orderModalStyles.primaryButton}
                         onClick={onPrimaryClick}
+                        disabled={primaryDisabled}
                     >
                         {primaryLabel}
                     </Button>

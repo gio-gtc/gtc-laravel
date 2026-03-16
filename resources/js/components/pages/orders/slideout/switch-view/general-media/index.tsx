@@ -439,6 +439,7 @@ function GeneralMediaView({
             <AddKeyArtStaticAssetsModal
                 isOpen={keyArtModalOpen}
                 onClose={() => setKeyArtModalOpen(false)}
+                isUSOrder={venueItem?.venue?.country_id === 1}
             />
             <RevisionRequestModal
                 isOpen={revisionModalOpen}
