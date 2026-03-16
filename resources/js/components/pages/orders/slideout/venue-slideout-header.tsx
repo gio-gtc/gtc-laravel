@@ -50,10 +50,9 @@ export default function VenueSlideoutHeader({
     onClose,
     isMaximized = false,
 }: VenueSlideoutHeaderProps) {
-    // Format venue display with city if available
-    const venueDisplay = city
-        ? `${venue}, ${city}, ${state}`
-        : `${venue}, ${state}`;
+    // Format venue display with city if available (demo mode: venue only)
+    const venueDisplay =
+        !state && !city ? venue : city ? `${venue}, ${city}, ${state}` : `${venue}, ${state}`;
 
     return (
         <SheetHeader className="relative gap-0 p-0">

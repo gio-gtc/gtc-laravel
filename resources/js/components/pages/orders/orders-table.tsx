@@ -57,10 +57,12 @@ function OrdersTable() {
     const [selectedVenueIds, setSelectedVenueIds] = useState<number[]>([]);
     const [editingVenueId, setEditingVenueId] = useState<number | null>(null);
     const [isAddVenueModalOpen, setIsAddVenueModalOpen] = useState(false);
-    const [selectedVenueForSlideout, setSelectedVenueForSlideout] = useState<{
-        orderVenue: TourVenue;
-        venue: Venue;
+    const [selectedSlideout, setSelectedSlideout] = useState<{
         order: Tour;
+        venueItem: {
+            orderVenue: TourVenue;
+            venue: Venue;
+        } | null;
     } | null>(null);
     const usersWithFallback = useUsersWithFallback();
 
@@ -97,16 +99,16 @@ function OrdersTable() {
         };
     }, [usersWithFallback]);
 
-    // Record venue to recent list when slideout is opened
+    // Record venue to recent list when slideout is opened (skip demo mode)
     useEffect(() => {
-        if (selectedVenueForSlideout) {
+        if (selectedSlideout?.venueItem) {
             addRecentOrder({
-                tourVenueId: selectedVenueForSlideout.orderVenue.id,
-                tourName: selectedVenueForSlideout.order.name,
-                venueName: selectedVenueForSlideout.venue.name,
+                tourVenueId: selectedSlideout.venueItem.orderVenue.id,
+                tourName: selectedSlideout.order.name,
+                venueName: selectedSlideout.venueItem.venue.name,
             });
         }
-    }, [selectedVenueForSlideout, addRecentOrder]);
+    }, [selectedSlideout, addRecentOrder]);
 
     // Sync URL filter param to myCollaborators (e.g. ?filter=my-tasks)
     useEffect(() => {
@@ -165,10 +167,12 @@ function OrdersTable() {
             );
             if (venueItem) {
                 startTransition(() => {
-                    setSelectedVenueForSlideout({
-                        orderVenue: venueItem.orderVenue,
-                        venue: venueItem.venue,
+                    setSelectedSlideout({
                         order: group.order,
+                        venueItem: {
+                            orderVenue: venueItem.orderVenue,
+                            venue: venueItem.venue,
+                        },
                     });
                 });
                 // Preserve filter param (e.g. my-tasks) when clearing openVenue
@@ -313,6 +317,16 @@ function OrdersTable() {
         getClientUser,
         getVenueCollaborators,
     ]);
+
+    const hasVenueLevelFilter =
+        filters.statuses.length > 0 ||
+        !filters.country.us ||
+        !filters.country.international;
+
+    const hasClientFilter =
+        filters.clientIds.length > 0 || filters.myClients;
+    const hasCollaboratorFilter =
+        filters.collaboratorIds.length > 0 || filters.myCollaborators;
 
     // Helper function to format date (short format: "Nov 8")
     const formatDate = (dateString: string): string => {
@@ -501,6 +515,149 @@ function OrdersTable() {
                                             </TableCell>
                                         </TableRow>
 
+                                        {/* Demo Row - first when expanded */}
+                                        {isExpanded &&
+                                            !hasVenueLevelFilter &&
+                                            (() => {
+                                                const owner = getClientUser(
+                                                    group.order.owner_contact_id,
+                                                );
+                                                const demoMatchesClient =
+                                                    !hasClientFilter ||
+                                                    (filters.myClients
+                                                        ? owner?.id ===
+                                                          auth.user.id
+                                                        : owner &&
+                                                          filters.clientIds.includes(
+                                                              owner.id,
+                                                          ));
+                                                const demoMatchesCollaborator =
+                                                    !hasCollaboratorFilter ||
+                                                    (filters.myCollaborators
+                                                        ? owner?.id ===
+                                                          auth.user.id
+                                                        : owner &&
+                                                          filters.collaboratorIds.includes(
+                                                              owner.id,
+                                                          ));
+                                                const q = searchQuery
+                                                    .toLowerCase()
+                                                    .trim();
+                                                const searchMatchesDemo =
+                                                    !q ||
+                                                    'demo'.includes(q) ||
+                                                    (owner?.name
+                                                        ?.toLowerCase()
+                                                        .includes(q) ??
+                                                        false);
+                                                const shouldShowDemo =
+                                                    demoMatchesClient &&
+                                                    demoMatchesCollaborator &&
+                                                    searchMatchesDemo;
+                                                if (!shouldShowDemo) return null;
+                                                return (
+                                                    <TableRow
+                                                        key={`demo-${group.order.id}`}
+                                                        className="xs-gray-500-weight-600 cursor-pointer hover:bg-gray-100"
+                                                        onClick={() => {
+                                                            setSelectedSlideout(
+                                                                {
+                                                                    order: group.order,
+                                                                    venueItem: null,
+                                                                },
+                                                            );
+                                                        }}
+                                                    >
+                                                        <TableCell
+                                                            style={{
+                                                                width: columns[0]
+                                                                    .size,
+                                                            }}
+                                                            className="px-2 py-0.5 text-gray-500"
+                                                        >
+                                                            <div className="flex items-center justify-between">
+                                                                <span className="pl-2">—</span>
+                                                                <ChevronRight
+                                                                    className="h-2.5 w-2.5 cursor-pointer text-gray-400 hover:text-gray-600"
+                                                                    strokeWidth={
+                                                                        3
+                                                                    }
+                                                                    onClick={(
+                                                                        e,
+                                                                    ) => {
+                                                                        e.stopPropagation();
+                                                                        setSelectedSlideout(
+                                                                            {
+                                                                                order: group.order,
+                                                                                venueItem: null,
+                                                                            },
+                                                                        );
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell
+                                                            style={{
+                                                                width: columns[1]
+                                                                    .size,
+                                                            }}
+                                                            className="px-2 py-0.5 text-gray-500"
+                                                        >
+                                                            demo
+                                                        </TableCell>
+                                                        <TableCell
+                                                            style={{
+                                                                width: columns[2]
+                                                                    .size,
+                                                            }}
+                                                            className="px-2 py-0.5 text-gray-500"
+                                                        >
+                                                            —
+                                                        </TableCell>
+                                                        <TableCell
+                                                            style={{
+                                                                width: columns[3]
+                                                                    .size,
+                                                            }}
+                                                            className="px-2 py-0.5 text-gray-500"
+                                                        >
+                                                            {owner && (
+                                                                <UserAvatar
+                                                                    user={
+                                                                        owner
+                                                                    }
+                                                                />
+                                                            )}
+                                                        </TableCell>
+                                                        <TableCell
+                                                            style={{
+                                                                width: columns[4]
+                                                                    .size,
+                                                            }}
+                                                            className="px-2 py-0.5 text-gray-500"
+                                                        >
+                                                            {owner && (
+                                                                <UserAvatarsStack
+                                                                    users={[
+                                                                        owner,
+                                                                    ]}
+                                                                    maxCount={
+                                                                        3
+                                                                    }
+                                                                />
+                                                            )}
+                                                        </TableCell>
+                                                        <TableCell
+                                                            style={{
+                                                                width: columns[5]
+                                                                    .size,
+                                                            }}
+                                                            className="px-2 py-[1px] text-gray-500"
+                                                        />
+                                                    </TableRow>
+                                                );
+                                            })()}
+
                                         {/* Venue Detail Rows */}
                                         {isExpanded &&
                                             group.venues.map((venueItem) => {
@@ -569,12 +726,14 @@ function OrdersTable() {
                                                                         e,
                                                                     ) => {
                                                                         e.stopPropagation();
-                                                                        setSelectedVenueForSlideout(
+                                                                        setSelectedSlideout(
                                                                             {
-                                                                                orderVenue:
-                                                                                    venueItem.orderVenue,
-                                                                                venue: venueItem.venue,
                                                                                 order: group.order,
+                                                                                venueItem: {
+                                                                                    orderVenue:
+                                                                                        venueItem.orderVenue,
+                                                                                    venue: venueItem.venue,
+                                                                                },
                                                                             },
                                                                         );
                                                                     }}
@@ -705,19 +864,12 @@ function OrdersTable() {
                 order={selectedOrder}
             />
 
-            {/* Venue Detail Slideout */}
+            {/* Venue / Demo Detail Slideout */}
             <VenueDetailSlideout
-                venueItem={
-                    selectedVenueForSlideout
-                        ? {
-                              orderVenue: selectedVenueForSlideout.orderVenue,
-                              venue: selectedVenueForSlideout.venue,
-                          }
-                        : null
-                }
-                order={selectedVenueForSlideout?.order || null}
-                isOpen={selectedVenueForSlideout !== null}
-                onClose={() => setSelectedVenueForSlideout(null)}
+                venueItem={selectedSlideout?.venueItem ?? null}
+                order={selectedSlideout?.order ?? null}
+                isOpen={selectedSlideout !== null}
+                onClose={() => setSelectedSlideout(null)}
             />
         </div>
     );

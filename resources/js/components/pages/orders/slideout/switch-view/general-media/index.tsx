@@ -1,9 +1,13 @@
-import { invoicesData, orderData } from '@/components/mockdata';
+import {
+    invoicesData,
+    orderData,
+    venueSlideoutMediaData,
+    venueSlideoutStaticAssetsData,
+} from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
 import {
     type Invoice,
     type MediaTableRow,
-    type StaticAssetsTableRow,
     type Tour,
     type TourVenue,
     type Venue,
@@ -37,147 +41,30 @@ interface GeneralMediaViewProps {
     }) => void;
 }
 
+const defaultPreviewIcons = [
+    <PlayIcon key="p1" className="h-4 w-4" />,
+    <Link key="p2" className="h-4 w-4" />,
+];
+
 function GeneralMediaView({
     order,
     venueItem,
     onOpenAttachModal,
 }: GeneralMediaViewProps) {
-    const mockUser = useMemo(
-        () => ({
-            id: 1,
-            name: 'Jane Doe',
-            email: 'jane@example.com',
-            email_verified_at: null as string | null,
-            company_id: 1,
-            created_at: '',
-            updated_at: '',
-        }),
-        [],
-    );
-
     const [revisionModalOpen, setRevisionModalOpen] = useState(false);
     const [revisionRequestRow, setRevisionRequestRow] =
         useState<MediaTableRow | null>(null);
     const [statusFilter, setStatusFilter] = useState<MediaStatusFilter>([]);
     const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
-    const baseExampleData = useMemo(
-        (): MediaTableRow[] => [
-            {
-                id: 1,
-                isci: 'GTC1818843',
-                cutName: 'Generic Presale',
-                duration: ':45',
-                dueDate: '1/15/25',
-                assigned: null,
-                status: 'Still in Cart',
-                previewIcons: [
-                    <PlayIcon key="e1" className="h-4 w-4" />,
-                    <Link key="l1" className="h-4 w-4" />,
-                ],
-                deliverables: {
-                    onReject: () => {},
-                    onApprove: () => {},
-                },
-            },
-            {
-                id: 2,
-                isci: 'GTC1818847',
-                cutName: 'Generic Coming soon',
-                duration: ':30',
-                dueDate: '1/15/25',
-                assigned: mockUser,
-                status: 'Client Review',
-                previewIcons: [
-                    <PlayIcon key="e2" className="h-4 w-4" />,
-                    <Link key="l2" className="h-4 w-4" />,
-                ],
-                deliverables: {
-                    onReject: () => {},
-                    onApprove: () => {},
-                },
-            },
-            {
-                id: 3,
-                isci: 'GTC1818848',
-                cutName: 'Generic Teaser',
-                duration: ':15',
-                dueDate: '1/18/25',
-                assigned: mockUser,
-                status: 'In Production',
-                previewIcons: [
-                    <PlayIcon key="e3" className="h-4 w-4" />,
-                    <Link key="l3" className="h-4 w-4" />,
-                ],
-                deliverables: {
-                    onReject: () => {},
-                    onApprove: () => {},
-                },
-            },
-            {
-                id: 4,
-                isci: 'GTC1818849',
-                cutName: 'Generic Final',
-                duration: ':60',
-                dueDate: '1/20/25',
-                assigned: mockUser,
-                status: 'Out for Delivery',
-                previewIcons: [
-                    <PlayIcon key="e4" className="h-4 w-4" />,
-                    <Link key="l4" className="h-4 w-4" />,
-                ],
-                deliverables: {
-                    onReject: () => {},
-                    onApprove: () => {},
-                },
-            },
-            {
-                id: 5,
-                isci: 'GTC1818850',
-                cutName: 'Generic Dropped',
-                duration: ':30',
-                dueDate: '1/22/25',
-                assigned: null,
-                status: 'Cancelled',
-                previewIcons: [],
-                deliverables: undefined,
-            },
-            {
-                id: 6,
-                isci: 'GTC1818851',
-                cutName: 'Generic Revise',
-                duration: ':45',
-                dueDate: '1/25/25',
-                assigned: mockUser,
-                status: 'Revision Requested',
-                previewIcons: [
-                    <PlayIcon key="e6" className="h-4 w-4" />,
-                    <Link key="l6" className="h-4 w-4" />,
-                ],
-                deliverables: {
-                    onReject: () => {},
-                    onApprove: () => {},
-                },
-            },
-            {
-                id: 7,
-                isci: 'GTC1818852',
-                cutName: 'Generic Unassigned',
-                duration: ':20',
-                dueDate: '1/28/25',
-                assigned: null,
-                status: 'Unassigned',
-                previewIcons: [],
-                deliverables: undefined,
-            },
-        ],
-        [mockUser],
-    );
-
-    const exampleData = useMemo(
+    const venueMediaWithCallbacks = useMemo(
         () =>
-            baseExampleData.map((row) => ({
+            venueSlideoutMediaData.map((row) => ({
                 ...row,
+                previewIcons:
+                    row.previewIcons.length > 0
+                        ? row.previewIcons
+                        : defaultPreviewIcons,
                 deliverables: row.deliverables
                     ? {
                           ...row.deliverables,
@@ -188,93 +75,12 @@ function GeneralMediaView({
                       }
                     : undefined,
             })),
-        [baseExampleData],
+        [],
     );
 
-    const staticAssetsMockUser = {
-        id: 1,
-        name: 'Jane Doe',
-        email: 'jane@example.com',
-        email_verified_at: null as string | null,
-        company_id: 1,
-        created_at: '',
-        updated_at: '',
-    };
-
-    const baseStaticAssetsData = useMemo(
-        (): StaticAssetsTableRow[] => [
-            {
-                id: 1,
-                cutName: 'Key Art – Still in Cart',
-                width: 1400,
-                height: 400,
-                dueDate: '1/15/25',
-                assigned: null,
-                status: 'Still in Cart',
-            },
-            {
-                id: 2,
-                cutName: 'Key Art – Client Review',
-                width: 1400,
-                height: 400,
-                dueDate: '1/15/25',
-                assigned: staticAssetsMockUser,
-                status: 'Client Review',
-                deliverables: { onReject: () => {}, onApprove: () => {} },
-            },
-            {
-                id: 3,
-                cutName: 'Key Art – In Production',
-                width: 1400,
-                height: 400,
-                dueDate: '1/18/25',
-                assigned: staticAssetsMockUser,
-                status: 'In Production',
-            },
-            {
-                id: 4,
-                cutName: 'Key Art – Out for Delivery',
-                width: 1400,
-                height: 400,
-                dueDate: '1/20/25',
-                assigned: staticAssetsMockUser,
-                status: 'Out for Delivery',
-                deliverables: { onReject: () => {}, onApprove: () => {} },
-            },
-            {
-                id: 5,
-                cutName: 'Key Art – Cancelled',
-                width: 1400,
-                height: 400,
-                dueDate: '1/22/25',
-                assigned: null,
-                status: 'Cancelled',
-            },
-            {
-                id: 6,
-                cutName: 'Key Art – Revision Requested',
-                width: 1400,
-                height: 400,
-                dueDate: '1/25/25',
-                assigned: staticAssetsMockUser,
-                status: 'Revision Requested',
-            },
-            {
-                id: 7,
-                cutName: 'Socials & Web Banners – Unassigned',
-                width: 1400,
-                height: 400,
-                dueDate: '1/28/25',
-                assigned: null,
-                status: 'Unassigned',
-            },
-        ],
-        [staticAssetsMockUser],
-    );
-
-    const staticAssetsExampleData = useMemo(
+    const venueStaticAssetsWithCallbacks = useMemo(
         () =>
-            baseStaticAssetsData.map((row) => ({
+            venueSlideoutStaticAssetsData.map((row) => ({
                 ...row,
                 deliverables: row.deliverables
                     ? {
@@ -285,7 +91,7 @@ function GeneralMediaView({
                       }
                     : undefined,
             })),
-        [baseStaticAssetsData],
+        [],
     );
 
     const [audioModalOpen, setAudioModalOpen] = useState(false);
@@ -314,26 +120,28 @@ function GeneralMediaView({
         );
     }, [venueItem]);
 
+    const orders = venueItem ? venueOrders : [];
+
     const filteredMediaData = useMemo(
         () =>
             filterAndSortRows(
-                exampleData,
-                venueOrders,
+                venueMediaWithCallbacks,
+                orders,
                 statusFilter,
                 sortDirection,
             ),
-        [exampleData, venueOrders, statusFilter, sortDirection],
+        [venueMediaWithCallbacks, venueItem, venueOrders, statusFilter, sortDirection],
     );
 
     const filteredStaticAssetsData = useMemo(
         () =>
             filterAndSortRows(
-                staticAssetsExampleData,
-                venueOrders,
+                venueStaticAssetsWithCallbacks,
+                orders,
                 statusFilter,
                 sortDirection,
             ),
-        [staticAssetsExampleData, venueOrders, statusFilter, sortDirection],
+        [venueStaticAssetsWithCallbacks, venueItem, venueOrders, statusFilter, sortDirection],
     );
 
     return (
@@ -439,7 +247,9 @@ function GeneralMediaView({
             <AddKeyArtStaticAssetsModal
                 isOpen={keyArtModalOpen}
                 onClose={() => setKeyArtModalOpen(false)}
-                isUSOrder={venueItem?.venue?.country_id === 1}
+                isUSOrder={
+                    venueItem ? venueItem.venue.country_id === 1 : true
+                }
             />
             <RevisionRequestModal
                 isOpen={revisionModalOpen}

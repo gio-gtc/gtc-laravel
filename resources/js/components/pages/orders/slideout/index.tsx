@@ -100,9 +100,11 @@ export default function VenueDetailSlideout({
         useState<AttachFileModalContext | null>(null);
     const [isMaximized, setIsMaximized] = useState(false);
 
-    if (!venueItem || !order) {
+    if (!order) {
         return null;
     }
+
+    const isDemo = venueItem === null;
 
     return (
         <Sheet open={isOpen} onOpenChange={onClose}>
@@ -119,14 +121,14 @@ export default function VenueDetailSlideout({
             >
                 <VenueSlideoutHeader
                     tour={order.name}
-                    venue={venueItem.venue.name}
-                    state={venueItem.venue.state}
-                    status={venueItem.orderVenue.status}
-                    city={venueItem.venue.city}
-                    eventDates={formatEventDates}
-                    ticketSaleDate={mockTicketSaleDate}
-                    website={mockWebsite}
-                    presaleInfo={mockPresaleInfo}
+                    venue={isDemo ? 'Demo' : venueItem.venue.name}
+                    state={isDemo ? '' : venueItem.venue.state}
+                    status={isDemo ? 'pending' : venueItem.orderVenue.status}
+                    city={isDemo ? undefined : venueItem.venue.city}
+                    eventDates={isDemo ? undefined : formatEventDates}
+                    ticketSaleDate={isDemo ? undefined : mockTicketSaleDate}
+                    website={isDemo ? undefined : mockWebsite}
+                    presaleInfo={isDemo ? undefined : mockPresaleInfo}
                     onAttach={() => {
                         setAttachModalContext(null);
                         setAttachModalOpen(true);
