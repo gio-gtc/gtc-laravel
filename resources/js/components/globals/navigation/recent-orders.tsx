@@ -10,10 +10,11 @@ import {
 import { useRecentOrders } from '@/hooks/use-recent-orders';
 import { cn, resolveUrl } from '@/lib/utils';
 import { orders } from '@/routes';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { History } from 'lucide-react';
 
 export function RecentOrders() {
+    const page = usePage();
     const { recentOrders } = useRecentOrders();
     const { state } = useSidebar();
 
@@ -22,11 +23,19 @@ export function RecentOrders() {
         return null;
     }
 
-    const ordersUrl = resolveUrl(orders());
+    const ordersBaseUrl = resolveUrl(orders());
+    const hasMyTasksFilter =
+        page.url.includes('?') &&
+        new URLSearchParams(page.url.slice(page.url.indexOf('?'))).get(
+            'filter',
+        ) === 'my-tasks';
 
     const handleClick = (tourVenueId: number) => (e: React.MouseEvent) => {
         e.preventDefault();
-        const url = `${ordersUrl}?openVenue=${tourVenueId}`;
+        const params = new URLSearchParams();
+        if (hasMyTasksFilter) params.set('filter', 'my-tasks');
+        params.set('openVenue', String(tourVenueId));
+        const url = `${ordersBaseUrl}?${params.toString()}`;
         router.visit(url, { preserveState: true });
     };
 

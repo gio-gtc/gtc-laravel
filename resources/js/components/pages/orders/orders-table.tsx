@@ -29,7 +29,14 @@ import {
 } from '@/types';
 import { router, usePage } from '@inertiajs/react';
 import { ChevronRight } from 'lucide-react';
-import { Fragment, startTransition, useEffect, useMemo, useState } from 'react';
+import {
+    Fragment,
+    startTransition,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import AddVenueModal from './add-venue-modal';
 import CollaboratorEditDialog from './collaborator-edit-dialog';
 import OrdersTableHeaderActions, {
@@ -101,6 +108,45 @@ function OrdersTable() {
         }
     }, [selectedVenueForSlideout, addRecentOrder]);
 
+    // Sync URL filter param to myCollaborators (e.g. ?filter=my-tasks)
+    useEffect(() => {
+        const queryIndex = page.url.indexOf('?');
+        const params = new URLSearchParams(
+            queryIndex >= 0 ? page.url.slice(queryIndex) : '',
+        );
+        const filter = params.get('filter');
+        const shouldShowMyTasks = filter === 'my-tasks';
+        setFilters((prev) =>
+            prev.myCollaborators !== shouldShowMyTasks
+                ? { ...prev, myCollaborators: shouldShowMyTasks }
+                : prev,
+        );
+    }, [page.url, setFilters]);
+
+    // Sync myCollaborators filter changes to URL (filters → URL)
+    const handleFilterChange = useCallback(
+        (newFilters: typeof filters) => {
+            setFilters(newFilters);
+            if (newFilters.myCollaborators !== filters.myCollaborators) {
+                const queryIndex = page.url.indexOf('?');
+                const params = new URLSearchParams(
+                    queryIndex >= 0 ? page.url.slice(queryIndex) : '',
+                );
+                if (newFilters.myCollaborators) {
+                    params.set('filter', 'my-tasks');
+                } else {
+                    params.delete('filter');
+                }
+                const query = params.toString();
+                const url = query
+                    ? `${resolveUrl(orders())}?${query}`
+                    : resolveUrl(orders());
+                router.visit(url, { preserveState: true });
+            }
+        },
+        [filters.myCollaborators, page.url, setFilters],
+    );
+
     // Open venue slideout from URL param (e.g. from Recent Orders sidebar link)
     useEffect(() => {
         const url = page.url;
@@ -125,7 +171,16 @@ function OrdersTable() {
                         order: group.order,
                     });
                 });
-                router.visit(resolveUrl(orders()), {
+                // Preserve filter param (e.g. my-tasks) when clearing openVenue
+                const params = new URLSearchParams(
+                    queryIndex >= 0 ? url.slice(queryIndex) : '',
+                );
+                params.delete('openVenue');
+                const baseUrl = resolveUrl(orders());
+                const visitUrl = params.toString()
+                    ? `${baseUrl}?${params.toString()}`
+                    : baseUrl;
+                router.visit(visitUrl, {
                     replace: true,
                     preserveState: true,
                 });
@@ -384,7 +439,7 @@ function OrdersTable() {
                 selectedVenueCount={selectedVenueIds.length}
                 onAddVenueClick={() => setIsAddVenueModalOpen(true)}
                 filters={filters}
-                onFilterChange={setFilters}
+                onFilterChange={handleFilterChange}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
                 groupedData={groupedData}

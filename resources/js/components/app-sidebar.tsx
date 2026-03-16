@@ -1,5 +1,6 @@
 import { NavMain, RecentOrders } from '@/components/globals/navigation/';
 import { Sidebar, SidebarContent } from '@/components/ui/sidebar';
+import { resolveUrl } from '@/lib/utils';
 import { dashboard, invoices, orders } from '@/routes';
 import { type NavItem } from '@/types';
 import { ClipboardCheck, House, Receipt } from 'lucide-react';
@@ -18,8 +19,9 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'My Tasks',
-        href: orders(),
+        href: `${resolveUrl(orders())}?filter=my-tasks`,
         icon: ClipboardCheck,
+        filterParam: 'my-tasks',
     },
     // TODO: only seen by managers and Russ/James/David
     {

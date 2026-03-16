@@ -20,6 +20,8 @@ export interface NavItem {
     href: NonNullable<InertiaLinkProps['href']>;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    /** When set, item is active only when URL has matching filter param (e.g. filter=my-tasks) */
+    filterParam?: string;
 }
 
 export interface SharedData {
