@@ -397,43 +397,6 @@ function OrdersTable() {
         );
     }, [selectedVenueIds]);
 
-    // Column definitions for table headers (used for sizing only)
-    const columns = useMemo(
-        () => [
-            {
-                id: 'name',
-                header: 'Name',
-                minSize: 100,
-            },
-            {
-                id: 'venue',
-                header: 'Venue',
-                minSize: 150,
-            },
-            {
-                id: 'dueDate',
-                header: 'Due Date',
-                minSize: 100,
-            },
-            {
-                id: 'client',
-                header: 'Client',
-                minSize: 80,
-            },
-            {
-                id: 'collaborators',
-                header: 'Collaborators',
-                minSize: 100,
-            },
-            {
-                id: 'status',
-                header: 'Status',
-                minSize: 80,
-            },
-        ],
-        [],
-    );
-
     return (
         <div className="table-content-max-width space-y-4">
             <OrdersTableHeaderActions
@@ -757,7 +720,7 @@ function OrdersTable() {
                         ) : (
                             <TableRow>
                                 <TableCell
-                                    colSpan={columns.length}
+                                    colSpan={6}
                                     className="h-24 text-center"
                                 >
                                     No results.
