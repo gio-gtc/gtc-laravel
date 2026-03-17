@@ -3,15 +3,13 @@ import {
     type Country,
     type Invoice,
     type InvoiceItem,
-    type LocalizedArtTableRow,
-    type MediaTableRow,
     type Order,
-    type StaticAssetsTableRow,
     type Tour,
     type TourVenue,
     type User,
     type Venue,
     type VenueCollaborator,
+    type VenueItemsRow,
 } from '@/types';
 
 // Mock data for mini charts - static data showing upward trend TODO: Delete and use actual mockdata schema (Anything without a type must go!)
@@ -2411,12 +2409,15 @@ export const invoiceItemsData: InvoiceItem[] = [
 // Default user for slideout mock data (from mockUsers)
 const slideoutAssignedUser = mockUsers.find((u) => u.id === 3) ?? mockUsers[0];
 
-// Venue slideout media (General Media tab - used when venueItem is set)
-export const venueSlideoutMediaData: MediaTableRow[] = [
+// Venue items data (unified base table - media, static, localized)
+export const venueItemsData: VenueItemsRow[] = [
+    // Media rows (id 1-7)
     {
         id: 1,
+        tour_venue_id: 1,
+        type: 'media',
+        label: 'Generic Presale',
         isci: 'GTC1818843',
-        cutName: 'Generic Presale',
         duration: ':45',
         dueDate: '1/15/25',
         assigned: null,
@@ -2426,8 +2427,10 @@ export const venueSlideoutMediaData: MediaTableRow[] = [
     },
     {
         id: 2,
+        tour_venue_id: 1,
+        type: 'media',
+        label: 'Generic Coming soon',
         isci: 'GTC1818847',
-        cutName: 'Generic Coming soon',
         duration: ':30',
         dueDate: '1/15/25',
         assigned: slideoutAssignedUser,
@@ -2437,8 +2440,10 @@ export const venueSlideoutMediaData: MediaTableRow[] = [
     },
     {
         id: 3,
+        tour_venue_id: 1,
+        type: 'media',
+        label: 'Generic Teaser',
         isci: 'GTC1818848',
-        cutName: 'Generic Teaser',
         duration: ':15',
         dueDate: '1/18/25',
         assigned: slideoutAssignedUser,
@@ -2448,8 +2453,10 @@ export const venueSlideoutMediaData: MediaTableRow[] = [
     },
     {
         id: 4,
+        tour_venue_id: 1,
+        type: 'media',
+        label: 'Generic Final',
         isci: 'GTC1818849',
-        cutName: 'Generic Final',
         duration: ':60',
         dueDate: '1/20/25',
         assigned: slideoutAssignedUser,
@@ -2459,8 +2466,10 @@ export const venueSlideoutMediaData: MediaTableRow[] = [
     },
     {
         id: 5,
+        tour_venue_id: 1,
+        type: 'media',
+        label: 'Generic Dropped',
         isci: 'GTC1818850',
-        cutName: 'Generic Dropped',
         duration: ':30',
         dueDate: '1/22/25',
         assigned: null,
@@ -2470,8 +2479,10 @@ export const venueSlideoutMediaData: MediaTableRow[] = [
     },
     {
         id: 6,
+        tour_venue_id: 1,
+        type: 'media',
+        label: 'Generic Revise',
         isci: 'GTC1818851',
-        cutName: 'Generic Revise',
         duration: ':45',
         dueDate: '1/25/25',
         assigned: slideoutAssignedUser,
@@ -2481,8 +2492,10 @@ export const venueSlideoutMediaData: MediaTableRow[] = [
     },
     {
         id: 7,
+        tour_venue_id: 1,
+        type: 'media',
+        label: 'Generic Unassigned',
         isci: 'GTC1818852',
-        cutName: 'Generic Unassigned',
         duration: ':20',
         dueDate: '1/28/25',
         assigned: null,
@@ -2490,13 +2503,12 @@ export const venueSlideoutMediaData: MediaTableRow[] = [
         previewIcons: [],
         deliverables: undefined,
     },
-];
-
-// Venue slideout static assets (General Media tab)
-export const venueSlideoutStaticAssetsData: StaticAssetsTableRow[] = [
+    // Static rows (id 8-14)
     {
-        id: 1,
-        cutName: 'Key Art – Still in Cart',
+        id: 8,
+        tour_venue_id: 1,
+        type: 'static',
+        label: 'Key Art – Still in Cart',
         width: 1400,
         height: 400,
         dueDate: '1/15/25',
@@ -2504,8 +2516,10 @@ export const venueSlideoutStaticAssetsData: StaticAssetsTableRow[] = [
         status: 'Still in Cart',
     },
     {
-        id: 2,
-        cutName: 'Key Art – Client Review',
+        id: 9,
+        tour_venue_id: 1,
+        type: 'static',
+        label: 'Key Art – Client Review',
         width: 1400,
         height: 400,
         dueDate: '1/15/25',
@@ -2514,8 +2528,10 @@ export const venueSlideoutStaticAssetsData: StaticAssetsTableRow[] = [
         deliverables: { onReject: () => {}, onApprove: () => {} },
     },
     {
-        id: 3,
-        cutName: 'Key Art – In Production',
+        id: 10,
+        tour_venue_id: 1,
+        type: 'static',
+        label: 'Key Art – In Production',
         width: 1400,
         height: 400,
         dueDate: '1/18/25',
@@ -2523,8 +2539,10 @@ export const venueSlideoutStaticAssetsData: StaticAssetsTableRow[] = [
         status: 'In Production',
     },
     {
-        id: 4,
-        cutName: 'Key Art – Out for Delivery',
+        id: 11,
+        tour_venue_id: 1,
+        type: 'static',
+        label: 'Key Art – Out for Delivery',
         width: 1400,
         height: 400,
         dueDate: '1/20/25',
@@ -2533,8 +2551,10 @@ export const venueSlideoutStaticAssetsData: StaticAssetsTableRow[] = [
         deliverables: { onReject: () => {}, onApprove: () => {} },
     },
     {
-        id: 5,
-        cutName: 'Key Art – Cancelled',
+        id: 12,
+        tour_venue_id: 1,
+        type: 'static',
+        label: 'Key Art – Cancelled',
         width: 1400,
         height: 400,
         dueDate: '1/22/25',
@@ -2542,8 +2562,10 @@ export const venueSlideoutStaticAssetsData: StaticAssetsTableRow[] = [
         status: 'Cancelled',
     },
     {
-        id: 6,
-        cutName: 'Key Art – Revision Requested',
+        id: 13,
+        tour_venue_id: 1,
+        type: 'static',
+        label: 'Key Art – Revision Requested',
         width: 1400,
         height: 400,
         dueDate: '1/25/25',
@@ -2551,21 +2573,22 @@ export const venueSlideoutStaticAssetsData: StaticAssetsTableRow[] = [
         status: 'Revision Requested',
     },
     {
-        id: 7,
-        cutName: 'Socials & Web Banners – Unassigned',
+        id: 14,
+        tour_venue_id: 1,
+        type: 'static',
+        label: 'Socials & Web Banners – Unassigned',
         width: 1400,
         height: 400,
         dueDate: '1/28/25',
         assigned: null,
         status: 'Unassigned',
     },
-];
-
-// Venue slideout localized art (Local Art tab)
-export const venueSlideoutLocalizedArtData: LocalizedArtTableRow[] = [
+    // Localized rows (id 15-17)
     {
-        id: 1,
-        description: 'Advert for FFFFFFFF',
+        id: 15,
+        tour_venue_id: 1,
+        type: 'localized',
+        label: 'Advert for FFFFFFFF',
         width: 1400,
         height: 400,
         cta: 'Save the Date',
@@ -2583,8 +2606,10 @@ export const venueSlideoutLocalizedArtData: LocalizedArtTableRow[] = [
         ],
     },
     {
-        id: 2,
-        description: 'Advert for FFFFFFFF',
+        id: 16,
+        tour_venue_id: 1,
+        type: 'localized',
+        label: 'Advert for FFFFFFFF',
         width: 1400,
         height: 400,
         cta: 'Last Chance',
@@ -2592,8 +2617,10 @@ export const venueSlideoutLocalizedArtData: LocalizedArtTableRow[] = [
         assigned: slideoutAssignedUser,
     },
     {
-        id: 3,
-        description: 'Advert for FFFFFFFF',
+        id: 17,
+        tour_venue_id: 1,
+        type: 'localized',
+        label: 'Advert for FFFFFFFF',
         width: 1400,
         height: 400,
         cta: 'Black Friday Sale',

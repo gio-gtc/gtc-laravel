@@ -245,6 +245,50 @@ export interface LocalizedArtNote {
     savedAt: string;
 }
 
+export type VenueItemsRowType = 'media' | 'static' | 'localized';
+
+export interface VenueItemsRowBase {
+    id: string | number;
+    tour_venue_id: number;
+    type: VenueItemsRowType;
+    dueDate: string;
+    assigned: User | null;
+    label: string;
+}
+
+export interface VenueItemsMediaRow extends VenueItemsRowBase {
+    type: 'media';
+    isci: string;
+    duration: string;
+    status: MediaTableRow['status'];
+    previewIcons: React.ReactNode[];
+    previewVideoUrl?: string | null;
+    deliverables?: MediaTableRow['deliverables'];
+    order_id?: number;
+}
+
+export interface VenueItemsStaticRow extends VenueItemsRowBase {
+    type: 'static';
+    width: number;
+    height: number;
+    status: StaticAssetsTableRow['status'];
+    deliverables?: StaticAssetsTableRow['deliverables'];
+    order_id?: number;
+}
+
+export interface VenueItemsLocalizedRow extends VenueItemsRowBase {
+    type: 'localized';
+    width: number;
+    height: number;
+    cta: string;
+    notes?: LocalizedArtNote[];
+}
+
+export type VenueItemsRow =
+    | VenueItemsMediaRow
+    | VenueItemsStaticRow
+    | VenueItemsLocalizedRow;
+
 export interface LocalizedArtTableRow {
     id: string | number;
     description: string;

@@ -38,7 +38,7 @@ export default function SwitchView({
                 />
             </div>
             {isSwitched ? (
-                <LocalArtView />
+                <LocalArtView venueItem={venueItem} />
             ) : (
                 <GeneralMediaView
                     order={order}

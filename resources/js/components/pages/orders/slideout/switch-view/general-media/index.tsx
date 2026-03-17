@@ -1,9 +1,12 @@
 import {
     invoicesData,
     orderData,
-    venueSlideoutMediaData,
-    venueSlideoutStaticAssetsData,
+    venueItemsData,
 } from '@/components/mockdata';
+import {
+    venueItemsMediaTableRow,
+    venueItemsStaticTableRow,
+} from '@/components/utils/venue-items';
 import { Button } from '@/components/ui/button';
 import {
     type Invoice,
@@ -11,6 +14,8 @@ import {
     type Tour,
     type TourVenue,
     type Venue,
+    type VenueItemsMediaRow,
+    type VenueItemsStaticRow,
 } from '@/types';
 import { Link, PlayIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -57,42 +62,58 @@ function GeneralMediaView({
     const [statusFilter, setStatusFilter] = useState<MediaStatusFilter>([]);
     const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
-    const venueMediaWithCallbacks = useMemo(
-        () =>
-            venueSlideoutMediaData.map((row) => ({
-                ...row,
-                previewIcons:
-                    row.previewIcons.length > 0
-                        ? row.previewIcons
-                        : defaultPreviewIcons,
-                deliverables: row.deliverables
-                    ? {
-                          ...row.deliverables,
-                          onReject: () => {
-                              setRevisionRequestRow(row);
-                              setRevisionModalOpen(true);
-                          },
-                      }
-                    : undefined,
-            })),
-        [],
-    );
+    const venueMediaWithCallbacks = useMemo(() => {
+        if (!venueItem) return [];
+        return venueItemsData
+            .filter(
+                (r): r is VenueItemsMediaRow =>
+                    r.type === 'media' &&
+                    r.tour_venue_id === venueItem.orderVenue.id,
+            )
+            .map((row) => {
+                const mediaRow = venueItemsMediaTableRow(row);
+                return {
+                    ...mediaRow,
+                    previewIcons:
+                        row.previewIcons.length > 0
+                            ? row.previewIcons
+                            : defaultPreviewIcons,
+                    deliverables: row.deliverables
+                        ? {
+                              ...row.deliverables,
+                              onReject: () => {
+                                  setRevisionRequestRow(mediaRow);
+                                  setRevisionModalOpen(true);
+                              },
+                          }
+                        : undefined,
+                };
+            });
+    }, [venueItem]);
 
-    const venueStaticAssetsWithCallbacks = useMemo(
-        () =>
-            venueSlideoutStaticAssetsData.map((row) => ({
-                ...row,
-                deliverables: row.deliverables
-                    ? {
-                          ...row.deliverables,
-                          onReject: () => {
-                              setRevisionModalOpen(true);
-                          },
-                      }
-                    : undefined,
-            })),
-        [],
-    );
+    const venueStaticAssetsWithCallbacks = useMemo(() => {
+        if (!venueItem) return [];
+        return venueItemsData
+            .filter(
+                (r): r is VenueItemsStaticRow =>
+                    r.type === 'static' &&
+                    r.tour_venue_id === venueItem.orderVenue.id,
+            )
+            .map((row) => {
+                const staticRow = venueItemsStaticTableRow(row);
+                return {
+                    ...staticRow,
+                    deliverables: row.deliverables
+                        ? {
+                              ...row.deliverables,
+                              onReject: () => {
+                                  setRevisionModalOpen(true);
+                              },
+                          }
+                        : undefined,
+                };
+            });
+    }, [venueItem]);
 
     const [audioModalOpen, setAudioModalOpen] = useState(false);
     const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
