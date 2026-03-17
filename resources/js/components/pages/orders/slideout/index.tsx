@@ -3,6 +3,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { type Tour, type TourVenue, type Venue } from '@/types';
 import { useMemo, useState } from 'react';
+import AddVenueModal from '../add-venue-modal';
 import SwitchView from './switch-view';
 import AttachFileOrDropboxModal, {
     type AttachFileModalContext,
@@ -104,6 +105,7 @@ export default function VenueDetailSlideout({
     const [attachModalContext, setAttachModalContext] =
         useState<AttachFileModalContext | null>(null);
     const [isMaximized, setIsMaximized] = useState(false);
+    const [isEditVenueModalOpen, setIsEditVenueModalOpen] = useState(false);
 
     if (!order) {
         return null;
@@ -140,6 +142,12 @@ export default function VenueDetailSlideout({
                         setAttachModalOpen(true);
                     }}
                     onMaximize={() => setIsMaximized((m) => !m)}
+                    onMore={
+                        isDemo
+                            ? undefined
+                            : () => setIsEditVenueModalOpen(true)
+                    }
+                    showMoreButton={!isDemo}
                     onClose={onClose}
                     isMaximized={isMaximized}
                 />
@@ -160,6 +168,15 @@ export default function VenueDetailSlideout({
                         setAttachModalContext(null);
                     }}
                     context={attachModalContext}
+                />
+
+                <AddVenueModal
+                    isOpen={isEditVenueModalOpen}
+                    onClose={() => setIsEditVenueModalOpen(false)}
+                    orderId={order.id}
+                    order={order}
+                    mode="edit"
+                    venueItem={venueItem}
                 />
             </SheetContent>
         </Sheet>

@@ -23,12 +23,12 @@ interface VenueSlideoutHeaderProps {
     ticketSaleDate?: string;
     website?: string;
     presaleInfo?: string;
-    onAttach?: () => void;
-    onCloud?: () => void;
-    onMaximize?: () => void;
+    onAttach: () => void;
+    onMaximize: () => void;
     onMore?: () => void;
     onClose: () => void;
     isMaximized?: boolean;
+    showMoreButton?: boolean;
 }
 
 export default function VenueSlideoutHeader({
@@ -42,11 +42,12 @@ export default function VenueSlideoutHeader({
     ticketSaleDate,
     website,
     presaleInfo,
-    onAttach = () => {},
-    onMaximize = () => {},
+    onAttach,
+    onMaximize,
     onMore = () => {},
     onClose,
     isMaximized = false,
+    showMoreButton = true,
 }: VenueSlideoutHeaderProps) {
     // Format venue display with city if available (demo mode: venue only)
     const venueDisplay =
@@ -84,11 +85,12 @@ export default function VenueSlideoutHeader({
                         onClick={onMaximize}
                         icon={isMaximized ? ShrinkIcon : ExpandIcon}
                     />
-                    <NavOptionButton
-                        onClick={onMore}
-                        icon={MoreHorizontalIcon}
-                    />
-
+                    {showMoreButton && (
+                        <NavOptionButton
+                            onClick={onMore}
+                            icon={MoreHorizontalIcon}
+                        />
+                    )}
                     <NavOptionButton
                         onClick={onClose}
                         icon={ArrowRightToLine}

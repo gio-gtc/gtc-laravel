@@ -13,15 +13,22 @@ import {
 } from '@/components/utils/column-row-layouts';
 import DatePickerInput from '@/components/utils/date-picker-input';
 import Divider from '@/components/utils/divider';
-import { type Tour, type Venue } from '@/types';
+import { type Tour, type TourVenue, type Venue } from '@/types';
 import { useEffect, useState } from 'react';
 import VenueAutocomplete from './venue-autocomplete';
+
+interface VenueItem {
+    orderVenue: TourVenue;
+    venue: Venue | null;
+}
 
 interface AddVenueModalProps {
     isOpen: boolean;
     onClose: () => void;
     orderId: number;
     order: Tour | null;
+    mode?: 'add' | 'edit';
+    venueItem?: VenueItem | null;
 }
 
 export default function AddVenueModal({
@@ -29,6 +36,8 @@ export default function AddVenueModal({
     onClose,
     orderId,
     order,
+    mode = 'add',
+    venueItem = null,
 }: AddVenueModalProps) {
     const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
     const [showStartDate, setShowStartDate] = useState<string | null>(null);
@@ -36,10 +45,27 @@ export default function AddVenueModal({
     const [dueDate, setDueDate] = useState<string>();
     const [localDeliverables, setLocalDeliverables] = useState<string>('');
 
-    // Initialize due date with order's due_date when modal opens or order changes
+    const isEditMode = mode === 'edit' && venueItem;
+
+    // Initialize form when modal opens
     useEffect(() => {
-        setDueDate(new Date().toISOString().split('T')[0]);
-    }, [isOpen, order]);
+        if (!isOpen) return;
+
+        if (isEditMode && venueItem) {
+            setSelectedVenue(venueItem.venue);
+            setShowStartDate(
+                venueItem.orderVenue.start_date.split('T')[0] ?? null,
+            );
+            setShowEndDate(venueItem.orderVenue.end_date.split('T')[0] ?? null);
+            setDueDate(
+                order?.due_date?.split?.('T')[0] ??
+                    new Date().toISOString().split('T')[0],
+            );
+            setLocalDeliverables('');
+        } else {
+            setDueDate(new Date().toISOString().split('T')[0]);
+        }
+    }, [isOpen, order, isEditMode, venueItem]);
 
     // Reset form when modal closes
     useEffect(() => {
@@ -48,44 +74,42 @@ export default function AddVenueModal({
             setShowStartDate(null);
             setShowEndDate(null);
             setLocalDeliverables('');
-            // Due date will be reset by the above effect when modal opens
         }
     }, [isOpen]);
 
-    const handleDateRangeChange = (range: {
-        startDate: string | null;
-        endDate: string | null;
-    }) => {
-        setShowStartDate(range.startDate);
-        setShowEndDate(range.endDate);
-    };
-
     const handleSave = () => {
-        // Validate required fields
-        if (!selectedVenue) {
-            alert('Please select a venue');
-            return;
-        }
         if (!showStartDate || !showEndDate) {
             alert('Please select show dates');
             return;
         }
-        if (!dueDate) {
-            alert('Please select a due date');
-            return;
-        }
 
-        // TODO: Implement actual save logic with API call
-        // This would create a new TourVenue entry in tourVenueData table
-        console.log('Adding venue to order:', {
-            orderId,
-            venueId: selectedVenue.id,
-            venueName: selectedVenue.name,
-            startDate: showStartDate,
-            endDate: showEndDate,
-            dueDate,
-            localDeliverables,
-        });
+        if (isEditMode && venueItem) {
+            // TODO: Implement actual save logic with API call
+            console.log('Updating venue show dates:', {
+                tour_venue_id: venueItem.orderVenue.id,
+                startDate: showStartDate,
+                endDate: showEndDate,
+            });
+        } else {
+            if (!selectedVenue) {
+                alert('Please select a venue');
+                return;
+            }
+            if (!dueDate) {
+                alert('Please select a due date');
+                return;
+            }
+            // TODO: Implement actual save logic with API call
+            console.log('Adding venue to order:', {
+                orderId,
+                venueId: selectedVenue.id,
+                venueName: selectedVenue.name,
+                startDate: showStartDate,
+                endDate: showEndDate,
+                dueDate,
+                localDeliverables,
+            });
+        }
 
         onClose();
     };
@@ -94,22 +118,39 @@ export default function AddVenueModal({
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[890px]">
                 <DialogHeader>
-                    <DialogTitle>Add Venue</DialogTitle>
+                    <DialogTitle>
+                        {isEditMode ? 'Edit Venue Info' : 'Add Venue'}
+                    </DialogTitle>
                 </DialogHeader>
 
                 <Divider />
                 <ColumnedRowsParent>
-                    {/* Venue Name - Autocomplete */}
+                    {/* Venue Name - Autocomplete or read-only */}
                     <ColumnedRowsChild
                         labelFor="venue-name"
                         labelContent="Venue Name"
-                        required
+                        required={!isEditMode}
                     >
-                        <VenueAutocomplete
-                            value={selectedVenue}
-                            onChange={setSelectedVenue}
-                            required
-                        />
+                        {isEditMode ? (
+                            <Input
+                                id="venue-name"
+                                type="text"
+                                value={
+                                    selectedVenue?.name ??
+                                    venueItem?.venue?.name ??
+                                    ''
+                                }
+                                readOnly
+                                disabled
+                                className="bg-muted"
+                            />
+                        ) : (
+                            <VenueAutocomplete
+                                value={selectedVenue}
+                                onChange={setSelectedVenue}
+                                required
+                            />
+                        )}
                     </ColumnedRowsChild>
 
                     {/* Show Dates - Date Range */}
@@ -122,7 +163,7 @@ export default function AddVenueModal({
                         <DatePickerInput
                             id="show-date-start"
                             className="max-w-[140px]"
-                            value={dueDate || ''}
+                            value={showStartDate || ''}
                             onChange={(value) => setShowStartDate(value)}
                             required
                         />
@@ -130,8 +171,8 @@ export default function AddVenueModal({
                         <DatePickerInput
                             id="show-date-end"
                             className="max-w-[140px]"
-                            value={dueDate || ''}
-                            onChange={(value) => setShowStartDate(value)}
+                            value={showEndDate || ''}
+                            onChange={(value) => setShowEndDate(value)}
                             required
                         />
                     </ColumnedRowsChild>
@@ -140,14 +181,15 @@ export default function AddVenueModal({
                     <ColumnedRowsChild
                         labelFor="due-date"
                         labelContent="Due Date"
-                        required
+                        required={!isEditMode}
                     >
                         <DatePickerInput
                             id="due-date"
                             className="max-w-[140px]"
                             value={dueDate || ''}
                             onChange={(value) => setDueDate(value)}
-                            required
+                            required={!isEditMode}
+                            disabled={isEditMode}
                         />
                     </ColumnedRowsChild>
 
@@ -164,6 +206,9 @@ export default function AddVenueModal({
                                 setLocalDeliverables(e.target.value)
                             }
                             placeholder="Enter local deliverables..."
+                            disabled={isEditMode}
+                            readOnly={isEditMode}
+                            className={isEditMode ? 'bg-muted' : ''}
                         />
                     </ColumnedRowsChild>
                 </ColumnedRowsParent>
@@ -173,7 +218,9 @@ export default function AddVenueModal({
                     <Button variant="outline" onClick={onClose}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSave}>Add Venue</Button>
+                    <Button onClick={handleSave}>
+                        {isEditMode ? 'Save' : 'Add Venue'}
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
