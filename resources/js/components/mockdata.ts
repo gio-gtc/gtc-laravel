@@ -934,7 +934,7 @@ export const venuesData: Venue[] = [
 ];
 
 // Mock venue collaborators data (many-to-many join table)
-export const venueCollaboratorData: VenueCollaborator[] = [
+export const venueItemCollaborators: VenueCollaborator[] = [
     // Venue 1 (Maddison Square Garden) collaborators
     { id: 1, venue_id: 1, mockUser_id: 6 }, // Robert Taylor
     { id: 2, venue_id: 1, mockUser_id: 7 }, // Amanda Brown

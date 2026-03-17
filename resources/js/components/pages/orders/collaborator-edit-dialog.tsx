@@ -1,4 +1,4 @@
-import { venueCollaboratorData } from '@/components/mockdata';
+import { venueItemCollaborators } from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -8,7 +8,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
-import { type Venue, type User } from '@/types';
+import { type User, type Venue } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
 import UserMultiSelect from './user-multi-select';
 
@@ -30,7 +30,7 @@ function CollaboratorEditDialog({
     // Get current collaborators from join table
     const currentCollaborators = useMemo(() => {
         if (!venue) return [];
-        const collaboratorIds = venueCollaboratorData
+        const collaboratorIds = venueItemCollaborators
             .filter((vc) => vc.venue_id === venue.id)
             .map((vc) => vc.mockUser_id);
         return usersWithFallback.filter((user) =>
@@ -38,9 +38,8 @@ function CollaboratorEditDialog({
         );
     }, [venue, usersWithFallback]);
 
-    const [selectedUsers, setSelectedUsers] = useState<User[]>(
-        currentCollaborators,
-    );
+    const [selectedUsers, setSelectedUsers] =
+        useState<User[]>(currentCollaborators);
 
     // Update selected users when venue changes
     useEffect(() => {
@@ -49,7 +48,7 @@ function CollaboratorEditDialog({
 
     const handleSave = () => {
         // TODO: Implement actual save logic with API call
-        // This would update venueCollaboratorData join table
+        // This would update venueItemCollaborators join table
         console.log(
             'Saving collaborators for venue:',
             venueId,

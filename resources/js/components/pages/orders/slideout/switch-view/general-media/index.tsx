@@ -130,7 +130,13 @@ function GeneralMediaView({
                 statusFilter,
                 sortDirection,
             ),
-        [venueMediaWithCallbacks, venueItem, venueOrders, statusFilter, sortDirection],
+        [
+            venueMediaWithCallbacks,
+            venueItem,
+            venueOrders,
+            statusFilter,
+            sortDirection,
+        ],
     );
 
     const filteredStaticAssetsData = useMemo(
@@ -141,7 +147,13 @@ function GeneralMediaView({
                 statusFilter,
                 sortDirection,
             ),
-        [venueStaticAssetsWithCallbacks, venueItem, venueOrders, statusFilter, sortDirection],
+        [
+            venueStaticAssetsWithCallbacks,
+            venueItem,
+            venueOrders,
+            statusFilter,
+            sortDirection,
+        ],
     );
 
     return (
@@ -247,9 +259,7 @@ function GeneralMediaView({
             <AddKeyArtStaticAssetsModal
                 isOpen={keyArtModalOpen}
                 onClose={() => setKeyArtModalOpen(false)}
-                isUSOrder={
-                    venueItem ? venueItem.venue.country_id === 1 : true
-                }
+                isUSOrder={venueItem ? venueItem.venue.country_id === 1 : true}
             />
             <RevisionRequestModal
                 isOpen={revisionModalOpen}

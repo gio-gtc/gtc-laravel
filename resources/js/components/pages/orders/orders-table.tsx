@@ -1,7 +1,7 @@
 import {
     tourData,
     tourVenueData,
-    venueCollaboratorData,
+    venueItemCollaborators,
     venuesData,
 } from '@/components/mockdata';
 import { FilledArrow } from '@/components/ui/icons';
@@ -83,7 +83,7 @@ function OrdersTable() {
     // Helper function to get collaborators for a venue
     const getVenueCollaborators = useMemo(() => {
         return (venueId: number): User[] => {
-            const collaboratorIds = venueCollaboratorData
+            const collaboratorIds = venueItemCollaborators
                 .filter((vc) => vc.venue_id === venueId)
                 .map((vc) => vc.mockUser_id);
             return usersWithFallback.filter((user) =>

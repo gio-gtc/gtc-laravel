@@ -8,9 +8,8 @@ import NotesModal from '../reuse/notes-modal';
 import SectionContainers from '../reuse/section-containers';
 
 function LocalArtView() {
-    const [notesModalRow, setNotesModalRow] = useState<
-        LocalizedArtTableRow | null
-    >(null);
+    const [notesModalRow, setNotesModalRow] =
+        useState<LocalizedArtTableRow | null>(null);
 
     return (
         <>
