@@ -8,7 +8,7 @@ export type GroupedOrderData = {
     order: Tour;
     venues: Array<{
         orderVenue: TourVenue;
-        venue: Venue;
+        venue: Venue | null;
     }>;
 };
 

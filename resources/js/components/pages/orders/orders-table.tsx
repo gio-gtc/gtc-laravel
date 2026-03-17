@@ -61,22 +61,30 @@ function OrdersTable() {
         order: Tour;
         venueItem: {
             orderVenue: TourVenue;
-            venue: Venue;
+            venue: Venue | null;
         } | null;
     } | null>(null);
     const usersWithFallback = useUsersWithFallback();
 
-    // Transform data into grouped structure
+    // Transform data into grouped structure (includes demo TourVenues with venue: null)
     const groupedData = useMemo<GroupedOrderData[]>(() => {
         return tourData.map((order) => ({
             order,
             venues: tourVenueData
                 .filter((ov) => ov.tour_id === order.id)
-                .map((ov) => ({
-                    orderVenue: ov,
-                    venue: venuesData.find((v) => v.id === ov.venue_id)!,
-                }))
-                .filter((item) => item.venue !== undefined),
+                .map((ov) =>
+                    ov.venue_id == null
+                        ? { orderVenue: ov, venue: null as Venue | null }
+                        : {
+                              orderVenue: ov,
+                              venue: venuesData.find(
+                                  (v) => v.id === ov.venue_id,
+                              ) as Venue | null,
+                          },
+                )
+                .filter(
+                    (item) => item.venue !== undefined || item.venue === null,
+                ),
         }));
     }, []);
 
@@ -99,13 +107,13 @@ function OrdersTable() {
         };
     }, [usersWithFallback]);
 
-    // Record venue to recent list when slideout is opened (skip demo mode)
+    // Record venue to recent list when slideout is opened (including demo)
     useEffect(() => {
         if (selectedSlideout?.venueItem) {
             addRecentOrder({
                 tourVenueId: selectedSlideout.venueItem.orderVenue.id,
                 tourName: selectedSlideout.order.name,
-                venueName: selectedSlideout.venueItem.venue.name,
+                venueName: selectedSlideout.venueItem.venue?.name ?? 'Demo',
             });
         }
     }, [selectedSlideout, addRecentOrder]);
@@ -203,8 +211,15 @@ function OrdersTable() {
             const query = searchQuery.toLowerCase().trim();
             const venueMatchesSearch = (venueItem: {
                 orderVenue: TourVenue;
-                venue: Venue;
+                venue: Venue | null;
             }) => {
+                if (venueItem.venue == null) {
+                    const client = getClientUser(venueItem.orderVenue.client);
+                    return (
+                        'demo'.includes(query) ||
+                        (client?.name?.toLowerCase().includes(query) ?? false)
+                    );
+                }
                 const region = `${venueItem.venue.city}, ${venueItem.venue.state}`;
                 const client = getClientUser(venueItem.orderVenue.client);
                 const collaborators = getVenueCollaborators(venueItem.venue.id);
@@ -245,8 +260,10 @@ function OrdersTable() {
 
         const venueMatchesAdvancedFilters = (venueItem: {
             orderVenue: TourVenue;
-            venue: Venue;
+            venue: Venue | null;
         }): boolean => {
+            const isDemo = venueItem.venue == null;
+
             // Client filter (when myClients, ignore clientIds per plan)
             if (hasClientFilter) {
                 if (filters.myClients) {
@@ -260,19 +277,34 @@ function OrdersTable() {
                 }
             }
 
-            // Collaborator filter (when myCollaborators, ignore collaboratorIds per plan)
+            // Collaborator filter (demo uses owner as sole collaborator)
             if (hasCollaboratorFilter) {
-                const collaborators = getVenueCollaborators(venueItem.venue.id);
-                if (filters.myCollaborators) {
-                    if (!collaborators.some((c) => c.id === auth.user.id))
-                        return false;
-                } else {
-                    if (
-                        !collaborators.some((c) =>
-                            filters.collaboratorIds.includes(c.id),
+                if (isDemo) {
+                    const owner = getClientUser(venueItem.orderVenue.client);
+                    if (filters.myCollaborators) {
+                        if (owner?.id !== auth.user.id) return false;
+                    } else {
+                        if (
+                            !owner ||
+                            !filters.collaboratorIds.includes(owner.id)
                         )
-                    )
-                        return false;
+                            return false;
+                    }
+                } else {
+                    const collaborators = getVenueCollaborators(
+                        venueItem.venue!.id,
+                    );
+                    if (filters.myCollaborators) {
+                        if (!collaborators.some((c) => c.id === auth.user.id))
+                            return false;
+                    } else {
+                        if (
+                            !collaborators.some((c) =>
+                                filters.collaboratorIds.includes(c.id),
+                            )
+                        )
+                            return false;
+                    }
                 }
             }
 
@@ -282,9 +314,10 @@ function OrdersTable() {
                     return false;
             }
 
-            // Country filter
+            // Country filter (demo has no venue, exclude when country filter active)
             if (hasCountryFilter) {
-                const isUS = venueItem.venue.country_id === 1;
+                if (isDemo) return false;
+                const isUS = venueItem.venue!.country_id === 1;
                 const usMatch = filters.country.us && isUS;
                 const internationalMatch =
                     filters.country.international && !isUS;
@@ -465,10 +498,14 @@ function OrdersTable() {
                                             </TableCell>
                                         </TableRow>
 
-                                        {/* Demo Row - first when expanded */}
+                                        {/* Demo Row - first when expanded (data-driven from TourVenue with venue_id null) */}
                                         {isExpanded &&
                                             !hasVenueLevelFilter &&
                                             (() => {
+                                                const demoTourVenue =
+                                                    group.venues.find(
+                                                        (v) => v.venue === null,
+                                                    );
                                                 const owner = getClientUser(
                                                     group.order
                                                         .owner_contact_id,
@@ -502,6 +539,7 @@ function OrdersTable() {
                                                         .includes(q) ??
                                                         false);
                                                 const shouldShowDemo =
+                                                    demoTourVenue &&
                                                     demoMatchesClient &&
                                                     demoMatchesCollaborator &&
                                                     searchMatchesDemo;
@@ -516,7 +554,7 @@ function OrdersTable() {
                                                                 {
                                                                     order: group.order,
                                                                     venueItem:
-                                                                        null,
+                                                                        demoTourVenue,
                                                                 },
                                                             );
                                                         }}
@@ -539,7 +577,7 @@ function OrdersTable() {
                                                                             {
                                                                                 order: group.order,
                                                                                 venueItem:
-                                                                                    null,
+                                                                                    demoTourVenue,
                                                                             },
                                                                         );
                                                                     }}
@@ -570,150 +608,164 @@ function OrdersTable() {
                                                 );
                                             })()}
 
-                                        {/* Venue Detail Rows */}
+                                        {/* Venue Detail Rows (exclude demo - venue null) */}
                                         {isExpanded &&
-                                            group.venues.map((venueItem) => {
-                                                const venueIsSelected =
-                                                    selectedVenueIds.includes(
-                                                        venueItem.orderVenue.id,
-                                                    );
-                                                const client = getClientUser(
-                                                    venueItem.orderVenue.client,
-                                                );
-                                                const collaborators =
-                                                    getVenueCollaborators(
-                                                        venueItem.venue.id,
-                                                    );
+                                            group.venues
+                                                .filter((v) => v.venue !== null)
+                                                .map((venueItem) => {
+                                                    const venueIsSelected =
+                                                        selectedVenueIds.includes(
+                                                            venueItem.orderVenue
+                                                                .id,
+                                                        );
+                                                    const client =
+                                                        getClientUser(
+                                                            venueItem.orderVenue
+                                                                .client,
+                                                        );
+                                                    const collaborators =
+                                                        getVenueCollaborators(
+                                                            venueItem.venue!.id,
+                                                        );
 
-                                                return (
-                                                    <TableRow
-                                                        key={`venue-${venueItem.orderVenue.id}`}
-                                                        data-state={
-                                                            venueIsSelected &&
-                                                            'selected'
-                                                        }
-                                                        className={cn(
-                                                            'xs-gray-500-weight-600 cursor-pointer hover:bg-gray-100',
-                                                            venueIsSelected &&
-                                                                'data-[state=selected]:bg-red-100',
-                                                        )}
-                                                        onClick={() =>
-                                                            handleVenueRowClick(
-                                                                venueItem
-                                                                    .orderVenue
-                                                                    .id,
-                                                                group.order.id,
-                                                            )
-                                                        }
-                                                    >
-                                                        <TableCell
-                                                            className={cn(
-                                                                'px-2 py-0.5 text-gray-500',
-                                                            )}
-                                                        >
-                                                            <div className="flex items-center justify-between">
-                                                                <span className="pl-2">
-                                                                    {
-                                                                        venueItem
-                                                                            .venue
-                                                                            .city
-                                                                    }
-                                                                    ,{' '}
-                                                                    {
-                                                                        venueItem
-                                                                            .venue
-                                                                            .state
-                                                                    }
-                                                                </span>
-                                                                <ChevronRight
-                                                                    className="h-2.5 w-2.5 cursor-pointer text-gray-400 hover:text-gray-600"
-                                                                    strokeWidth={
-                                                                        3
-                                                                    }
-                                                                    onClick={(
-                                                                        e,
-                                                                    ) => {
-                                                                        e.stopPropagation();
-                                                                        setSelectedSlideout(
-                                                                            {
-                                                                                order: group.order,
-                                                                                venueItem:
-                                                                                    {
-                                                                                        orderVenue:
-                                                                                            venueItem.orderVenue,
-                                                                                        venue: venueItem.venue,
-                                                                                    },
-                                                                            },
-                                                                        );
-                                                                    }}
-                                                                />
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell
-                                                            className={cn(
-                                                                'px-2 py-0.5 text-gray-500',
-                                                            )}
-                                                        >
-                                                            {
-                                                                venueItem.venue
-                                                                    .name
+                                                    return (
+                                                        <TableRow
+                                                            key={`venue-${venueItem.orderVenue.id}`}
+                                                            data-state={
+                                                                venueIsSelected &&
+                                                                'selected'
                                                             }
-                                                        </TableCell>
-                                                        <TableCell
                                                             className={cn(
-                                                                'px-2 py-0.5 text-gray-500',
+                                                                'xs-gray-500-weight-600 cursor-pointer hover:bg-gray-100',
+                                                                venueIsSelected &&
+                                                                    'data-[state=selected]:bg-red-100',
                                                             )}
-                                                        >
-                                                            {formatDate(
-                                                                venueItem
-                                                                    .orderVenue
-                                                                    .start_date,
-                                                            )}
-                                                        </TableCell>
-                                                        <TableCell
-                                                            className={cn(
-                                                                'px-2 py-0.5 text-gray-500',
-                                                            )}
-                                                        >
-                                                            {client && (
-                                                                <UserAvatar
-                                                                    user={
-                                                                        client
-                                                                    }
-                                                                />
-                                                            )}
-                                                        </TableCell>
-                                                        <TableCell
-                                                            className={cn(
-                                                                'px-2 py-0.5 text-gray-500',
-                                                            )}
-                                                        >
-                                                            <UserAvatarsStack
-                                                                users={
-                                                                    collaborators
-                                                                }
-                                                                maxCount={3}
-                                                                onClick={() =>
-                                                                    setEditingVenueId(
-                                                                        venueItem
-                                                                            .venue
-                                                                            .id,
-                                                                    )
-                                                                }
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell className="px-2 py-[1px] text-gray-500">
-                                                            <StatusIcon
-                                                                status={
+                                                            onClick={() =>
+                                                                handleVenueRowClick(
                                                                     venueItem
                                                                         .orderVenue
-                                                                        .status
-                                                                }
-                                                            />
-                                                        </TableCell>
-                                                    </TableRow>
-                                                );
-                                            })}
+                                                                        .id,
+                                                                    group.order
+                                                                        .id,
+                                                                )
+                                                            }
+                                                        >
+                                                            <TableCell
+                                                                className={cn(
+                                                                    'px-2 py-0.5 text-gray-500',
+                                                                )}
+                                                            >
+                                                                <div className="flex items-center justify-between">
+                                                                    <span className="pl-2">
+                                                                        {venueItem
+                                                                            ?.venue
+                                                                            ?.city ||
+                                                                            ''}
+                                                                        ,{' '}
+                                                                        {venueItem
+                                                                            ?.venue
+                                                                            ?.state ||
+                                                                            ''}
+                                                                    </span>
+                                                                    <ChevronRight
+                                                                        className="h-2.5 w-2.5 cursor-pointer text-gray-400 hover:text-gray-600"
+                                                                        strokeWidth={
+                                                                            3
+                                                                        }
+                                                                        onClick={(
+                                                                            e,
+                                                                        ) => {
+                                                                            e.stopPropagation();
+                                                                            setSelectedSlideout(
+                                                                                {
+                                                                                    order: group.order,
+                                                                                    venueItem:
+                                                                                        {
+                                                                                            orderVenue:
+                                                                                                venueItem.orderVenue,
+                                                                                            venue: venueItem.venue,
+                                                                                        },
+                                                                                },
+                                                                            );
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell
+                                                                className={cn(
+                                                                    'px-2 py-0.5 text-gray-500',
+                                                                )}
+                                                            >
+                                                                {venueItem
+                                                                    ?.venue
+                                                                    ?.name ||
+                                                                    ''}
+                                                            </TableCell>
+                                                            <TableCell
+                                                                className={cn(
+                                                                    'px-2 py-0.5 text-gray-500',
+                                                                )}
+                                                            >
+                                                                {formatDate(
+                                                                    venueItem
+                                                                        .orderVenue
+                                                                        .start_date,
+                                                                )}
+                                                            </TableCell>
+                                                            <TableCell
+                                                                className={cn(
+                                                                    'px-2 py-0.5 text-gray-500',
+                                                                )}
+                                                            >
+                                                                {client && (
+                                                                    <UserAvatar
+                                                                        user={
+                                                                            client
+                                                                        }
+                                                                    />
+                                                                )}
+                                                            </TableCell>
+                                                            <TableCell
+                                                                className={cn(
+                                                                    'px-2 py-0.5 text-gray-500',
+                                                                )}
+                                                            >
+                                                                <UserAvatarsStack
+                                                                    users={
+                                                                        collaborators
+                                                                    }
+                                                                    maxCount={3}
+                                                                    onClick={() => {
+                                                                        if (
+                                                                            venueItem
+                                                                                ?.venue
+                                                                                ?.id
+                                                                        ) {
+                                                                            setEditingVenueId(
+                                                                                venueItem
+                                                                                    .venue
+                                                                                    .id,
+                                                                            );
+                                                                        } else {
+                                                                            console.log(
+                                                                                'No venue item -> venue -> id!',
+                                                                            );
+                                                                        }
+                                                                    }}
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell className="px-2 py-[1px] text-gray-500">
+                                                                <StatusIcon
+                                                                    status={
+                                                                        venueItem
+                                                                            .orderVenue
+                                                                            .status
+                                                                    }
+                                                                />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
                                     </Fragment>
                                 );
                             })

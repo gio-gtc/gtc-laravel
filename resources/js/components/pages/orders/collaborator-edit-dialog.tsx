@@ -61,7 +61,7 @@ function CollaboratorEditDialog({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-2xl">
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>Edit Collaborators</DialogTitle>
                     <div className="text-sm text-muted-foreground">

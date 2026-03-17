@@ -11,7 +11,7 @@ import VenueSlideoutHeader from './venue-slideout-header';
 interface VenueDetailSlideoutProps {
     venueItem: {
         orderVenue: TourVenue;
-        venue: Venue;
+        venue: Venue | null;
     } | null;
     order: Tour | null;
     isOpen: boolean;
@@ -104,7 +104,7 @@ export default function VenueDetailSlideout({
         return null;
     }
 
-    const isDemo = venueItem === null;
+    const isDemo = venueItem?.venue == null;
 
     return (
         <Sheet open={isOpen} onOpenChange={onClose}>
@@ -121,10 +121,12 @@ export default function VenueDetailSlideout({
             >
                 <VenueSlideoutHeader
                     tour={order.name}
-                    venue={isDemo ? 'Demo' : venueItem.venue.name}
-                    state={isDemo ? '' : venueItem.venue.state}
-                    status={isDemo ? 'pending' : venueItem.orderVenue.status}
-                    city={isDemo ? undefined : venueItem.venue.city}
+                    venue={venueItem?.venue?.name ?? 'Demo'}
+                    state={venueItem?.venue?.state ?? ''}
+                    status={
+                        venueItem?.orderVenue?.status ?? 'pending'
+                    }
+                    city={venueItem?.venue?.city}
                     eventDates={isDemo ? undefined : formatEventDates}
                     ticketSaleDate={isDemo ? undefined : mockTicketSaleDate}
                     website={isDemo ? undefined : mockWebsite}

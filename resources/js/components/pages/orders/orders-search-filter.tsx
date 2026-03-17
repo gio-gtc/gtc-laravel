@@ -22,7 +22,7 @@ type GroupedOrderData = {
     order: Tour;
     venues: Array<{
         orderVenue: TourVenue;
-        venue: Venue;
+        venue: Venue | null;
     }>;
 };
 
@@ -80,25 +80,39 @@ export default function OrdersSearchFilter({
             }
 
             for (const { orderVenue, venue } of group.venues) {
-                // Regions (city, state)
-                const region = `${venue.city}, ${venue.state}`;
-                if (region && !seen.has(`region:${region}`)) {
-                    seen.add(`region:${region}`);
-                    items.push({
-                        type: 'region',
-                        value: region,
-                        label: `${TYPE_LABELS.region}: ${region}`,
-                    });
-                }
+                const isDemo = venue == null;
 
-                // Venue names
-                if (venue.name && !seen.has(`venue:${venue.name}`)) {
-                    seen.add(`venue:${venue.name}`);
-                    items.push({
-                        type: 'venue',
-                        value: venue.name,
-                        label: `${TYPE_LABELS.venue}: ${venue.name}`,
-                    });
+                // Regions (city, state) - skip for demo
+                if (!isDemo) {
+                    const region = `${venue.city}, ${venue.state}`;
+                    if (region && !seen.has(`region:${region}`)) {
+                        seen.add(`region:${region}`);
+                        items.push({
+                            type: 'region',
+                            value: region,
+                            label: `${TYPE_LABELS.region}: ${region}`,
+                        });
+                    }
+
+                    // Venue names
+                    if (venue.name && !seen.has(`venue:${venue.name}`)) {
+                        seen.add(`venue:${venue.name}`);
+                        items.push({
+                            type: 'venue',
+                            value: venue.name,
+                            label: `${TYPE_LABELS.venue}: ${venue.name}`,
+                        });
+                    }
+                } else {
+                    // Demo - add "Demo" as venue suggestion
+                    if (!seen.has('venue:Demo')) {
+                        seen.add('venue:Demo');
+                        items.push({
+                            type: 'venue',
+                            value: 'Demo',
+                            label: `${TYPE_LABELS.venue}: Demo`,
+                        });
+                    }
                 }
 
                 // Clients
@@ -112,8 +126,10 @@ export default function OrdersSearchFilter({
                     });
                 }
 
-                // Collaborators
-                const collaborators = getVenueCollaborators(venue.id);
+                // Collaborators (demo uses owner as sole collaborator)
+                const collaborators = isDemo
+                    ? (client ? [client] : [])
+                    : getVenueCollaborators(venue.id);
                 for (const collab of collaborators) {
                     if (collab.name && !seen.has(`collaborator:${collab.name}`)) {
                         seen.add(`collaborator:${collab.name}`);

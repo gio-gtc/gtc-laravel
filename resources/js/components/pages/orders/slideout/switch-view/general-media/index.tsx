@@ -39,7 +39,7 @@ import VideoPlayerModal from './modals/video-player-modal';
 
 interface GeneralMediaViewProps {
     order: Tour | null;
-    venueItem: { orderVenue: TourVenue; venue: Venue } | null;
+    venueItem: { orderVenue: TourVenue; venue: Venue | null } | null;
     onOpenAttachModal?: (context?: {
         rowId: string | number;
         isci: string;
@@ -125,12 +125,12 @@ function GeneralMediaView({
     const [audioPlaceholderMode, setAudioPlaceholderMode] = useState(false);
 
     const billingInvoices = useMemo((): Invoice[] => {
-        if (!order || !venueItem) return [];
+        if (!order || !venueItem || venueItem.venue == null) return [];
         return invoicesData.filter(
             (inv) =>
                 !inv.isDeleted &&
                 inv.tour === order.name &&
-                inv.venue_id === venueItem.venue.id,
+                inv.venue_id === venueItem.venue!.id,
         );
     }, [order, venueItem]);
 
@@ -280,7 +280,11 @@ function GeneralMediaView({
             <AddKeyArtStaticAssetsModal
                 isOpen={keyArtModalOpen}
                 onClose={() => setKeyArtModalOpen(false)}
-                isUSOrder={venueItem ? venueItem.venue.country_id === 1 : true}
+                isUSOrder={
+                    venueItem?.venue
+                        ? venueItem.venue.country_id === 1
+                        : true
+                }
             />
             <RevisionRequestModal
                 isOpen={revisionModalOpen}

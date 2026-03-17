@@ -138,7 +138,7 @@ export interface Tour {
 export interface TourVenue {
     id: number;
     tour_id: number;
-    venue_id: number;
+    venue_id: number | null;
     start_date: string;
     end_date: string;
     client: number;
@@ -150,7 +150,6 @@ export interface Order {
     tour_venue_id: number;
     date: string;
     hold_invoices: 0 | 1;
-    demo: 0 | 1;
     hash: string;
 }
 

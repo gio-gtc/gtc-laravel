@@ -8,7 +8,7 @@ import LocalArtView from './local-art';
 interface SwitchViewProps {
     defaultToSwitched?: boolean;
     order: Tour | null;
-    venueItem: { orderVenue: TourVenue; venue: Venue } | null;
+    venueItem: { orderVenue: TourVenue; venue: Venue | null } | null;
     onOpenAttachModal?: (context?: {
         rowId: string | number;
         isci: string;

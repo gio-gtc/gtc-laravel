@@ -869,6 +869,79 @@ export const tourVenueData: TourVenue[] = [
         client: 15,
         status: 'pending',
     }, // Chase Center
+    // Demo TourVenues (venue_id null = tour-level demo)
+    {
+        id: 22,
+        tour_id: 1,
+        venue_id: null,
+        start_date: '2024-10-01T00:00:00Z',
+        end_date: '2024-12-15T00:00:00Z',
+        client: 6,
+        status: 'in-progress',
+    },
+    {
+        id: 23,
+        tour_id: 2,
+        venue_id: null,
+        start_date: '2024-11-01T00:00:00Z',
+        end_date: '2024-12-20T00:00:00Z',
+        client: 15,
+        status: 'in-progress',
+    },
+    {
+        id: 24,
+        tour_id: 3,
+        venue_id: null,
+        start_date: '2024-09-15T00:00:00Z',
+        end_date: '2024-12-10T00:00:00Z',
+        client: 20,
+        status: 'in-progress',
+    },
+    {
+        id: 25,
+        tour_id: 4,
+        venue_id: null,
+        start_date: '2024-08-01T00:00:00Z',
+        end_date: '2024-12-25T00:00:00Z',
+        client: 9,
+        status: 'in-progress',
+    },
+    {
+        id: 26,
+        tour_id: 5,
+        venue_id: null,
+        start_date: '2024-12-01T00:00:00Z',
+        end_date: '2025-01-05T00:00:00Z',
+        client: 22,
+        status: 'in-progress',
+    },
+    {
+        id: 27,
+        tour_id: 6,
+        venue_id: null,
+        start_date: '2024-11-15T00:00:00Z',
+        end_date: '2024-12-18T00:00:00Z',
+        client: 11,
+        status: 'in-progress',
+    },
+    {
+        id: 28,
+        tour_id: 7,
+        venue_id: null,
+        start_date: '2024-10-20T00:00:00Z',
+        end_date: '2024-12-22T00:00:00Z',
+        client: 16,
+        status: 'in-progress',
+    },
+    {
+        id: 29,
+        tour_id: 8,
+        venue_id: null,
+        start_date: '2024-07-01T00:00:00Z',
+        end_date: '2024-12-30T00:00:00Z',
+        client: 24,
+        status: 'in-progress',
+    },
 ];
 
 // Mock venues data
@@ -1785,15 +1858,14 @@ export const orderData: Order[] = [
         tour_venue_id: 1,
         date: '2024-11-08T19:00:00Z',
         hold_invoices: 1,
-        demo: 0,
         hash: 'mattmsg001',
     },
+    // Order for tour_venue 22 (Matt Rife 2024 - Demo)
     {
         id: 2,
-        tour_venue_id: 1,
+        tour_venue_id: 22,
         date: '2024-11-08T20:00:00Z',
         hold_invoices: 0,
-        demo: 1,
         hash: 'mattmsg002',
     },
     // Orders for tour_venue 2 (Matt Rife 2024 - Sunset Amphitheater)
@@ -1802,7 +1874,6 @@ export const orderData: Order[] = [
         tour_venue_id: 2,
         date: '2024-11-08T18:00:00Z',
         hold_invoices: 0,
-        demo: 0,
         hash: 'mattsun001',
     },
     // Orders for tour_venue 3 (Matt Rife 2024 - Alys Robinson Stephens)
@@ -1811,7 +1882,6 @@ export const orderData: Order[] = [
         tour_venue_id: 3,
         date: '2024-11-08T19:30:00Z',
         hold_invoices: 1,
-        demo: 0,
         hash: 'mattalys001',
     },
     // Orders for tour_venue 4 (Eagles Tour 2024 - The Coca Cola Charlotte Harbor)
@@ -1820,7 +1890,6 @@ export const orderData: Order[] = [
         tour_venue_id: 4,
         date: '2024-11-08T18:30:00Z',
         hold_invoices: 0,
-        demo: 0,
         hash: 'eaglecoca001',
     },
     // Orders for tour_venue 5 (Eagles Tour 2024 - Hollywood Bowl)
@@ -1829,7 +1898,6 @@ export const orderData: Order[] = [
         tour_venue_id: 5,
         date: '2024-11-15T19:00:00Z',
         hold_invoices: 1,
-        demo: 0,
         hash: 'eagleholly001',
     },
     // Orders for tour_venue 6 (Cirque du Soleil Echo - Maddison Square Garden)
@@ -1838,7 +1906,6 @@ export const orderData: Order[] = [
         tour_venue_id: 6,
         date: '2024-11-08T19:00:00Z',
         hold_invoices: 0,
-        demo: 0,
         hash: 'cirquemsg001',
     },
     // Orders for tour_venue 7 (Cirque du Soleil Echo - Hollywood Bowl)
@@ -1847,7 +1914,6 @@ export const orderData: Order[] = [
         tour_venue_id: 7,
         date: '2024-11-15T19:00:00Z',
         hold_invoices: 1,
-        demo: 0,
         hash: 'cirqueholly001',
     },
     // Orders for tour_venue 8 (Cirque du Soleil Echo - Chase Center)
@@ -1856,7 +1922,6 @@ export const orderData: Order[] = [
         tour_venue_id: 8,
         date: '2024-11-16T19:30:00Z',
         hold_invoices: 0,
-        demo: 0,
         hash: 'cirquechase001',
     },
     // Orders for tour_venue 9 (Live Nation Concerts - Sunset Amphitheater)
@@ -1865,7 +1930,6 @@ export const orderData: Order[] = [
         tour_venue_id: 9,
         date: '2024-11-08T18:00:00Z',
         hold_invoices: 0,
-        demo: 0,
         hash: 'livesun001',
     },
     // Orders for tour_venue 10 (Live Nation Concerts - Alys Robinson Stephens)
@@ -1874,7 +1938,6 @@ export const orderData: Order[] = [
         tour_venue_id: 10,
         date: '2024-11-08T19:30:00Z',
         hold_invoices: 1,
-        demo: 0,
         hash: 'livealys001',
     },
     // Orders for tour_venue 11 (Live Nation Concerts - The Coca Cola Charlotte Harbor)
@@ -1883,7 +1946,6 @@ export const orderData: Order[] = [
         tour_venue_id: 11,
         date: '2024-11-08T18:30:00Z',
         hold_invoices: 0,
-        demo: 0,
         hash: 'livecoca001',
     },
     // Orders for tour_venue 12 (Live Nation Concerts - Hollywood Bowl)
@@ -1892,7 +1954,6 @@ export const orderData: Order[] = [
         tour_venue_id: 12,
         date: '2024-11-15T19:00:00Z',
         hold_invoices: 0,
-        demo: 0,
         hash: 'liveholly001',
     },
     // Orders for tour_venue 13 (Bon Jovi 2024 - Maddison Square Garden)
@@ -1901,7 +1962,6 @@ export const orderData: Order[] = [
         tour_venue_id: 13,
         date: '2024-11-08T19:00:00Z',
         hold_invoices: 1,
-        demo: 0,
         hash: 'bonjovimsg001',
     },
     // Orders for tour_venue 14 (Bon Jovi 2024 - Chase Center)
@@ -1910,7 +1970,6 @@ export const orderData: Order[] = [
         tour_venue_id: 14,
         date: '2024-11-16T19:30:00Z',
         hold_invoices: 0,
-        demo: 0,
         hash: 'bonjovichase001',
     },
     // Orders for tour_venue 15 (Demi Lovato Tour - Alys Robinson Stephens)
@@ -1919,7 +1978,6 @@ export const orderData: Order[] = [
         tour_venue_id: 15,
         date: '2024-11-08T19:30:00Z',
         hold_invoices: 1,
-        demo: 0,
         hash: 'demialys001',
     },
     // Orders for tour_venue 16 (Demi Lovato Tour - The Coca Cola Charlotte Harbor)
@@ -1928,7 +1986,6 @@ export const orderData: Order[] = [
         tour_venue_id: 16,
         date: '2024-11-08T18:30:00Z',
         hold_invoices: 0,
-        demo: 0,
         hash: 'demicoca001',
     },
     // Orders for tour_venue 17 (Renee Rapp - Snow Tour - Sunset Amphitheater)
@@ -1937,7 +1994,6 @@ export const orderData: Order[] = [
         tour_venue_id: 17,
         date: '2024-11-08T18:00:00Z',
         hold_invoices: 0,
-        demo: 0,
         hash: 'reneesun001',
     },
     // Orders for tour_venue 18 (Renee Rapp - Snow Tour - Hollywood Bowl)
@@ -1946,7 +2002,6 @@ export const orderData: Order[] = [
         tour_venue_id: 18,
         date: '2024-11-15T19:00:00Z',
         hold_invoices: 1,
-        demo: 0,
         hash: 'reneeholly001',
     },
     // Orders for tour_venue 19 (Renee Rapp - Snow Tour - Chase Center)
@@ -1955,16 +2010,14 @@ export const orderData: Order[] = [
         tour_venue_id: 19,
         date: '2024-11-16T19:30:00Z',
         hold_invoices: 0,
-        demo: 0,
         hash: 'reneechase001',
     },
-    // Orders for tour_venue 20 (Cirque du Soleil Portfolio - Maddison Square Garden)
+    // Order for tour_venue 29 (Cirque du Soleil Portfolio - Demo)
     {
         id: 21,
-        tour_venue_id: 20,
+        tour_venue_id: 29,
         date: '2024-11-08T19:00:00Z',
         hold_invoices: 0,
-        demo: 1,
         hash: 'portfoliomsg001',
     },
     // Orders for tour_venue 21 (Cirque du Soleil Portfolio - Chase Center)
@@ -1973,7 +2026,6 @@ export const orderData: Order[] = [
         tour_venue_id: 21,
         date: '2024-11-16T19:30:00Z',
         hold_invoices: 0,
-        demo: 0,
         hash: 'portfoliochase001',
     },
 ];

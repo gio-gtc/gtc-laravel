@@ -14,7 +14,7 @@ import NotesModal from '../reuse/notes-modal';
 import SectionContainers from '../reuse/section-containers';
 
 interface LocalArtViewProps {
-    venueItem: { orderVenue: TourVenue; venue: Venue } | null;
+    venueItem: { orderVenue: TourVenue; venue: Venue | null } | null;
 }
 
 function LocalArtView({ venueItem }: LocalArtViewProps) {
