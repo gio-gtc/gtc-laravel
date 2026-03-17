@@ -323,8 +323,7 @@ function OrdersTable() {
         !filters.country.us ||
         !filters.country.international;
 
-    const hasClientFilter =
-        filters.clientIds.length > 0 || filters.myClients;
+    const hasClientFilter = filters.clientIds.length > 0 || filters.myClients;
     const hasCollaboratorFilter =
         filters.collaboratorIds.length > 0 || filters.myCollaborators;
 
@@ -404,44 +403,32 @@ function OrdersTable() {
             {
                 id: 'name',
                 header: 'Name',
-                size: 200,
                 minSize: 100,
-                maxSize: 500,
             },
             {
                 id: 'venue',
                 header: 'Venue',
-                size: 200,
                 minSize: 150,
-                maxSize: 400,
             },
             {
                 id: 'dueDate',
                 header: 'Due Date',
-                size: 150,
                 minSize: 100,
-                maxSize: 200,
             },
             {
                 id: 'client',
                 header: 'Client',
-                size: 100,
                 minSize: 80,
-                maxSize: 200,
             },
             {
                 id: 'collaborators',
                 header: 'Collaborators',
-                size: 150,
                 minSize: 100,
-                maxSize: 300,
             },
             {
                 id: 'status',
                 header: 'Status',
-                size: 100,
                 minSize: 80,
-                maxSize: 150,
             },
         ],
         [],
@@ -520,7 +507,8 @@ function OrdersTable() {
                                             !hasVenueLevelFilter &&
                                             (() => {
                                                 const owner = getClientUser(
-                                                    group.order.owner_contact_id,
+                                                    group.order
+                                                        .owner_contact_id,
                                                 );
                                                 const demoMatchesClient =
                                                     !hasClientFilter ||
@@ -554,7 +542,8 @@ function OrdersTable() {
                                                     demoMatchesClient &&
                                                     demoMatchesCollaborator &&
                                                     searchMatchesDemo;
-                                                if (!shouldShowDemo) return null;
+                                                if (!shouldShowDemo)
+                                                    return null;
                                                 return (
                                                     <TableRow
                                                         key={`demo-${group.order.id}`}
@@ -563,20 +552,17 @@ function OrdersTable() {
                                                             setSelectedSlideout(
                                                                 {
                                                                     order: group.order,
-                                                                    venueItem: null,
+                                                                    venueItem:
+                                                                        null,
                                                                 },
                                                             );
                                                         }}
                                                     >
-                                                        <TableCell
-                                                            style={{
-                                                                width: columns[0]
-                                                                    .size,
-                                                            }}
-                                                            className="px-2 py-0.5 text-gray-500"
-                                                        >
+                                                        <TableCell className="px-2 py-0.5 text-gray-500">
                                                             <div className="flex items-center justify-between">
-                                                                <span className="pl-2">—</span>
+                                                                <span className="pl-2">
+                                                                    Demo
+                                                                </span>
                                                                 <ChevronRight
                                                                     className="h-2.5 w-2.5 cursor-pointer text-gray-400 hover:text-gray-600"
                                                                     strokeWidth={
@@ -589,71 +575,34 @@ function OrdersTable() {
                                                                         setSelectedSlideout(
                                                                             {
                                                                                 order: group.order,
-                                                                                venueItem: null,
+                                                                                venueItem:
+                                                                                    null,
                                                                             },
                                                                         );
                                                                     }}
                                                                 />
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell
-                                                            style={{
-                                                                width: columns[1]
-                                                                    .size,
-                                                            }}
-                                                            className="px-2 py-0.5 text-gray-500"
-                                                        >
-                                                            demo
-                                                        </TableCell>
-                                                        <TableCell
-                                                            style={{
-                                                                width: columns[2]
-                                                                    .size,
-                                                            }}
-                                                            className="px-2 py-0.5 text-gray-500"
-                                                        >
-                                                            —
-                                                        </TableCell>
-                                                        <TableCell
-                                                            style={{
-                                                                width: columns[3]
-                                                                    .size,
-                                                            }}
-                                                            className="px-2 py-0.5 text-gray-500"
-                                                        >
+                                                        <TableCell className="px-2 py-0.5 text-gray-500"></TableCell>
+                                                        <TableCell className="px-2 py-0.5 text-gray-500"></TableCell>
+                                                        <TableCell className="px-2 py-0.5 text-gray-500">
                                                             {owner && (
                                                                 <UserAvatar
-                                                                    user={
-                                                                        owner
-                                                                    }
+                                                                    user={owner}
                                                                 />
                                                             )}
                                                         </TableCell>
-                                                        <TableCell
-                                                            style={{
-                                                                width: columns[4]
-                                                                    .size,
-                                                            }}
-                                                            className="px-2 py-0.5 text-gray-500"
-                                                        >
+                                                        <TableCell className="px-2 py-0.5 text-gray-500">
                                                             {owner && (
                                                                 <UserAvatarsStack
                                                                     users={[
                                                                         owner,
                                                                     ]}
-                                                                    maxCount={
-                                                                        3
-                                                                    }
+                                                                    maxCount={3}
                                                                 />
                                                             )}
                                                         </TableCell>
-                                                        <TableCell
-                                                            style={{
-                                                                width: columns[5]
-                                                                    .size,
-                                                            }}
-                                                            className="px-2 py-[1px] text-gray-500"
-                                                        />
+                                                        <TableCell className="px-2 py-[1px] text-gray-500" />
                                                     </TableRow>
                                                 );
                                             })()}
@@ -695,10 +644,6 @@ function OrdersTable() {
                                                         }
                                                     >
                                                         <TableCell
-                                                            style={{
-                                                                width: columns[0]
-                                                                    .size,
-                                                            }}
                                                             className={cn(
                                                                 'px-2 py-0.5 text-gray-500',
                                                             )}
@@ -729,11 +674,12 @@ function OrdersTable() {
                                                                         setSelectedSlideout(
                                                                             {
                                                                                 order: group.order,
-                                                                                venueItem: {
-                                                                                    orderVenue:
-                                                                                        venueItem.orderVenue,
-                                                                                    venue: venueItem.venue,
-                                                                                },
+                                                                                venueItem:
+                                                                                    {
+                                                                                        orderVenue:
+                                                                                            venueItem.orderVenue,
+                                                                                        venue: venueItem.venue,
+                                                                                    },
                                                                             },
                                                                         );
                                                                     }}
@@ -741,10 +687,6 @@ function OrdersTable() {
                                                             </div>
                                                         </TableCell>
                                                         <TableCell
-                                                            style={{
-                                                                width: columns[1]
-                                                                    .size,
-                                                            }}
                                                             className={cn(
                                                                 'px-2 py-0.5 text-gray-500',
                                                             )}
@@ -755,10 +697,6 @@ function OrdersTable() {
                                                             }
                                                         </TableCell>
                                                         <TableCell
-                                                            style={{
-                                                                width: columns[2]
-                                                                    .size,
-                                                            }}
                                                             className={cn(
                                                                 'px-2 py-0.5 text-gray-500',
                                                             )}
@@ -770,10 +708,6 @@ function OrdersTable() {
                                                             )}
                                                         </TableCell>
                                                         <TableCell
-                                                            style={{
-                                                                width: columns[3]
-                                                                    .size,
-                                                            }}
                                                             className={cn(
                                                                 'px-2 py-0.5 text-gray-500',
                                                             )}
@@ -787,10 +721,6 @@ function OrdersTable() {
                                                             )}
                                                         </TableCell>
                                                         <TableCell
-                                                            style={{
-                                                                width: columns[4]
-                                                                    .size,
-                                                            }}
                                                             className={cn(
                                                                 'px-2 py-0.5 text-gray-500',
                                                             )}
@@ -809,13 +739,7 @@ function OrdersTable() {
                                                                 }
                                                             />
                                                         </TableCell>
-                                                        <TableCell
-                                                            style={{
-                                                                width: columns[5]
-                                                                    .size,
-                                                            }}
-                                                            className="px-2 py-[1px] text-gray-500"
-                                                        >
+                                                        <TableCell className="px-2 py-[1px] text-gray-500">
                                                             <StatusIcon
                                                                 status={
                                                                     venueItem
