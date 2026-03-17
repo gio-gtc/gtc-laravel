@@ -111,7 +111,7 @@ export interface Invoice {
     deleted_reason: string | null;
 }
 
-export interface Item {
+export interface InvoiceItem {
     id: number;
     order_id: number;
     invoice_id: number;

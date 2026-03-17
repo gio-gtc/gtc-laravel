@@ -2,7 +2,7 @@ import {
     type Company,
     type Country,
     type Invoice,
-    type Item,
+    type InvoiceItem,
     type LocalizedArtTableRow,
     type MediaTableRow,
     type Order,
@@ -1981,7 +1981,7 @@ export const orderData: Order[] = [
 ];
 
 // Mock items data (was invoice items, now connects orders to invoices)
-export const itemsData: Item[] = [
+export const invoiceItemsData: InvoiceItem[] = [
     // Invoice 1 - 1 item (total: 8750.0)
     {
         id: 1,

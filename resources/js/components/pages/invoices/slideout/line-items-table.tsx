@@ -10,11 +10,11 @@ import {
 import { EditableTableCell } from '@/components/utils/editable-table-cell';
 import { formatCurrency } from '@/components/utils/functions';
 import { cn } from '@/lib/utils';
-import { type Item } from '@/types';
+import { type InvoiceItem } from '@/types';
 import { Plus, X } from 'lucide-react';
 
 interface InvoiceLineItemsTableProps {
-    items: Item[];
+    items: InvoiceItem[];
     onItemChange: (
         itemId: number | string,
         field: string,

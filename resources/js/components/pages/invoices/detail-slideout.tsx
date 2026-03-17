@@ -1,6 +1,6 @@
 import {
     companiesData,
-    itemsData,
+    invoiceItemsData,
     venuesData,
 } from '@/components/mockdata';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
@@ -11,7 +11,7 @@ import {
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
-import { type Invoice, type Item } from '@/types';
+import { type Invoice, type InvoiceItem } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
 import InvoiceActionButtons from './slideout/action-buttons';
 import InvoiceAddressForm from './slideout/address-form';
@@ -106,7 +106,7 @@ export default function InvoiceDetailSlideout({
     // Get filtered invoice items for the current invoice
     const invoiceItems = useMemo(() => {
         if (!invoice) return [];
-        return itemsData.filter((item) => item.invoice_id === invoice.id);
+        return invoiceItemsData.filter((item) => item.invoice_id === invoice.id);
     }, [invoice]);
 
     // Use editable table hook
@@ -120,7 +120,7 @@ export default function InvoiceDetailSlideout({
         addItem,
         removeItem,
         startEditing,
-    } = useEditableTable<Item>({
+    } = useEditableTable<InvoiceItem>({
         data: invoiceItems,
         getId: (item) => item.id,
     });
@@ -132,7 +132,7 @@ export default function InvoiceDetailSlideout({
     const handleAddItem = () => {
         if (!invoice) return;
         const tempId = -Date.now();
-        const newItem: Item = {
+        const newItem: InvoiceItem = {
             id: tempId,
             order_id: firstOrderId,
             invoice_id: invoice.id,
