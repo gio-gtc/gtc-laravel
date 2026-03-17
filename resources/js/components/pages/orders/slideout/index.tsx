@@ -1,3 +1,4 @@
+import { mockUsers } from '@/components/mockdata';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { type Tour, type TourVenue, type Venue } from '@/types';
@@ -55,6 +56,10 @@ export default function VenueDetailSlideout({
 
         return `${startFormatted} & ${endFormattedShort}`;
     }, [venueItem]);
+
+    const client = mockUsers.find(
+        (client) => client.id === venueItem?.orderVenue.client,
+    );
 
     // Generate mock data for ticket sale, website, and presale
     const mockTicketSaleDate = useMemo(() => {
@@ -121,11 +126,10 @@ export default function VenueDetailSlideout({
             >
                 <VenueSlideoutHeader
                     tour={order.name}
+                    client={client}
                     venue={venueItem?.venue?.name ?? 'Demo'}
                     state={venueItem?.venue?.state ?? ''}
-                    status={
-                        venueItem?.orderVenue?.status ?? 'pending'
-                    }
+                    status={venueItem?.orderVenue?.status ?? 'pending'}
                     city={venueItem?.venue?.city}
                     eventDates={isDemo ? undefined : formatEventDates}
                     ticketSaleDate={isDemo ? undefined : mockTicketSaleDate}

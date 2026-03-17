@@ -1,8 +1,7 @@
-import { DropBox } from '@/components/ui/icons';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import NavOptionButton from '@/components/ui/slideout/nav-option-button';
 import Divider from '@/components/utils/divider';
-import { type TourVenue } from '@/types';
+import { User, type TourVenue } from '@/types';
 import {
     ArrowRightToLine,
     ExpandIcon,
@@ -15,6 +14,7 @@ import StatusIcon from '../status-icon';
 
 interface VenueSlideoutHeaderProps {
     tour: string;
+    client: User | undefined;
     venue: string;
     state: string;
     status: TourVenue['status'];
@@ -25,7 +25,6 @@ interface VenueSlideoutHeaderProps {
     presaleInfo?: string;
     onAttach?: () => void;
     onCloud?: () => void;
-    onSend?: () => void;
     onMaximize?: () => void;
     onMore?: () => void;
     onClose: () => void;
@@ -34,6 +33,7 @@ interface VenueSlideoutHeaderProps {
 
 export default function VenueSlideoutHeader({
     tour,
+    client,
     venue,
     state,
     status,
@@ -43,8 +43,6 @@ export default function VenueSlideoutHeader({
     website,
     presaleInfo,
     onAttach = () => {},
-    onCloud = () => {},
-    onSend = () => {},
     onMaximize = () => {},
     onMore = () => {},
     onClose,
@@ -52,7 +50,25 @@ export default function VenueSlideoutHeader({
 }: VenueSlideoutHeaderProps) {
     // Format venue display with city if available (demo mode: venue only)
     const venueDisplay =
-        !state && !city ? venue : city ? `${venue}, ${city}, ${state}` : `${venue}, ${state}`;
+        !state && !city
+            ? venue
+            : city
+              ? `${venue}, ${city}, ${state}`
+              : `${venue}, ${state}`;
+
+    const onSend = () => {
+        if (!client) {
+            console.log('No client!');
+            return;
+        }
+
+        const recipient = `${client.email}`;
+        const subject = `${tour} - ${venue} - ${eventDates}`;
+        const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${encodeURIComponent(subject)}`;
+
+        // Open in a new tab
+        window.open(gmailLink, '_blank');
+    };
 
     return (
         <SheetHeader className="relative gap-0 p-0">
@@ -63,7 +79,6 @@ export default function VenueSlideoutHeader({
                 {/* Action buttons */}
                 <div className="flex items-center gap-0.5">
                     <NavOptionButton onClick={onAttach} icon={PaperclipIcon} />
-                    <NavOptionButton onClick={onCloud} icon={DropBox} />
                     <NavOptionButton onClick={onSend} icon={SendIcon} />
                     <NavOptionButton
                         onClick={onMaximize}
