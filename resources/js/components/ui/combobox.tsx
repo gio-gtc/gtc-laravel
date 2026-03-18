@@ -66,85 +66,93 @@ export function MultiSelectCombobox({
     }, [options, search]);
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <div
-                    id={id}
-                    role="combobox"
-                    aria-expanded={open}
-                    tabIndex={0}
-                    className={cn(
-                        'flex h-9 w-full min-w-0 cursor-pointer items-center gap-2 overflow-hidden rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
-                        triggerClassName,
-                    )}
-                >
-                    <div className="flex min-w-0 flex-1 flex-col flex-wrap gap-1 overflow-y-auto">
-                        {value.length === 0 ? (
-                            <span className="text-muted-foreground">
-                                {placeholder}
-                            </span>
-                        ) : (
-                            value.slice(0, maxBadges).map((v) => {
-                                return (
-                                    <Badge
-                                        key={v}
-                                        variant="secondary"
-                                        className="shrink-0 gap-0.5 px-1.5 py-0 text-xs font-normal"
-                                    >
-                                        {v}
-                                        <button
-                                            type="button"
-                                            onClick={(e) => removeOption(e, v)}
-                                            className="ml-0.5 rounded-full p-0.5 hover:bg-muted"
-                                            aria-label={`Remove ${v}`}
+        <>
+            <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                    <div
+                        id={id}
+                        role="combobox"
+                        aria-expanded={open}
+                        tabIndex={0}
+                        className={cn(
+                            'flex h-9 w-full min-w-0 cursor-pointer items-center gap-2 overflow-hidden rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
+                            triggerClassName,
+                        )}
+                    >
+                        <div className="flex min-w-0 flex-1 flex-col flex-wrap gap-1 overflow-y-auto">
+                            {value.length === 0 ? (
+                                <span className="text-muted-foreground">
+                                    {placeholder}
+                                </span>
+                            ) : (
+                                value.slice(0, maxBadges).map((v) => {
+                                    return (
+                                        <Badge
+                                            key={v}
+                                            variant="secondary"
+                                            className="shrink-0 gap-0.5 px-1.5 py-0 text-xs font-normal"
                                         >
-                                            <X className="size-3" />
-                                        </button>
-                                    </Badge>
-                                );
-                            })
-                        )}
-                        {value.length > maxBadges && (
-                            <span className="shrink-0 text-xs text-muted-foreground">
-                                +{value.length - maxBadges} more
-                            </span>
-                        )}
+                                            {v}
+                                            <button
+                                                type="button"
+                                                onClick={(e) =>
+                                                    removeOption(e, v)
+                                                }
+                                                className="ml-0.5 rounded-full p-0.5 hover:bg-muted"
+                                                aria-label={`Remove ${v}`}
+                                            >
+                                                <X className="size-3" />
+                                            </button>
+                                        </Badge>
+                                    );
+                                })
+                            )}
+                        </div>
+                        <ChevronDown className="size-4 shrink-0 opacity-50" />
                     </div>
-                    <ChevronDown className="size-4 shrink-0 opacity-50" />
-                </div>
-            </PopoverTrigger>
-            <PopoverContent
-                className="w-[var(--radix-popover-trigger-width)] p-0"
-                align="start"
-            >
-                <Command shouldFilter={false} className={cn('p-2', className)}>
-                    {!removeSearch && (
-                        <CommandInput
-                            placeholder="Search..."
-                            value={search}
-                            onValueChange={setSearch}
-                        />
-                    )}
-                    <CommandList>
-                        <CommandEmpty>{emptyMessage}</CommandEmpty>
-                        <CommandGroup>
-                            {filteredOptions.map((option) => (
-                                <CommandItem
-                                    key={option}
-                                    value={option}
-                                    onSelect={() => toggleOption(option)}
-                                    className="flex items-center gap-1 pb-1"
-                                >
-                                    <Checkbox
-                                        checked={value.includes(option)}
-                                    />
-                                    {option}
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
-                    </CommandList>
-                </Command>
-            </PopoverContent>
-        </Popover>
+                </PopoverTrigger>
+                <PopoverContent
+                    className="w-[var(--radix-popover-trigger-width)] p-0"
+                    align="start"
+                >
+                    <Command
+                        shouldFilter={false}
+                        className={cn('p-2', className)}
+                    >
+                        {!removeSearch && (
+                            <CommandInput
+                                placeholder="Search..."
+                                value={search}
+                                onValueChange={setSearch}
+                            />
+                        )}
+                        <CommandList>
+                            <CommandEmpty>{emptyMessage}</CommandEmpty>
+                            <CommandGroup>
+                                {filteredOptions.map((option) => (
+                                    <CommandItem
+                                        key={option}
+                                        value={option}
+                                        onSelect={() => toggleOption(option)}
+                                        className="flex items-center gap-1 pb-1"
+                                    >
+                                        <Checkbox
+                                            checked={value.includes(option)}
+                                        />
+                                        {option}
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
+
+            {value.length > maxBadges && (
+                <span className="shrink-0 text-xs text-muted-foreground">
+                    +{value.length - maxBadges} more
+                </span>
+            )}
+        </>
     );
 }
