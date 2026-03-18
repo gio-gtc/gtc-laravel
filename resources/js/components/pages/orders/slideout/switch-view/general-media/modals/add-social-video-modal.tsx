@@ -17,7 +17,7 @@ const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French'] as const;
 
 export interface AddSocialVideoFormValues {
     type: string;
-    cut: string;
+    cuts: string;
     cardHolder: string[];
     duration: string[];
     language: string[];
@@ -34,16 +34,16 @@ export default function AddSocialVideoModal({
     onClose,
     onAdd,
 }: AddSocialVideoModalProps) {
-    const [type, setType] = useState('Generic');
-    const [cut, setCut] = useState('cut');
+    const [type, setType] = useState('');
+    const [cuts, setCuts] = useState('');
     const [cardHolder, setCardHolder] = useState<string[]>([]);
     const [duration, setDuration] = useState<string[]>([]);
     const [language, setLanguage] = useState<string[]>([]);
 
     useEffect(() => {
         if (!isOpen) {
-            setType('Generic');
-            setType('Cut');
+            setType('');
+            setType('');
             setCardHolder([]);
             setDuration([]);
             setLanguage([]);
@@ -51,7 +51,7 @@ export default function AddSocialVideoModal({
     }, [isOpen]);
 
     const handleAddToOrder = () => {
-        onAdd?.({ type, cut, cardHolder, duration, language });
+        onAdd?.({ type, cuts, cardHolder, duration, language });
         onClose();
     };
 
@@ -81,7 +81,7 @@ export default function AddSocialVideoModal({
                                 id="type"
                                 className={orderModalStyles.selectTrigger}
                             >
-                                <SelectValue placeholder="Select the type of Social Video" />
+                                <SelectValue placeholder="Select Type" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="Generic">Generic</SelectItem>
@@ -91,7 +91,7 @@ export default function AddSocialVideoModal({
 
                     <div className="flex flex-3 flex-col gap-1.5">
                         <Label
-                            htmlFor="type"
+                            htmlFor="cuts"
                             className={orderModalStyles.label}
                         >
                             Cuts
@@ -99,12 +99,12 @@ export default function AddSocialVideoModal({
                         <p className={orderModalStyles.helper}>
                             Select the type of Cuts
                         </p>
-                        <Select value={cut} onValueChange={setCut}>
+                        <Select value={cuts} onValueChange={setCuts}>
                             <SelectTrigger
-                                id="cut"
+                                id="cuts"
                                 className={orderModalStyles.selectTrigger}
                             >
-                                <SelectValue placeholder="Cuts" />
+                                <SelectValue placeholder="Select Cuts" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="Cuts">Cuts</SelectItem>
