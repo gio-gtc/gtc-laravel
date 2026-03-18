@@ -11,6 +11,7 @@ import {
     ColumnedRowsParent,
 } from '@/components/utils/column-row-layouts';
 import Divider from '@/components/utils/divider';
+import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
@@ -247,7 +248,10 @@ export default function AddBroadcastStreamingModal({
                         >
                             <SelectTrigger
                                 id="on-sale-now"
-                                className={orderModalStyles.selectTrigger}
+                                className={cn(
+                                    'max-w-[167px]',
+                                    orderModalStyles.selectTrigger,
+                                )}
                             >
                                 <SelectValue placeholder="Encoding Types" />
                             </SelectTrigger>
