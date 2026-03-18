@@ -1,3 +1,4 @@
+import { MultiSelectCombobox } from '@/components/ui/combobox';
 import { Label } from '@/components/ui/label';
 import {
     Select,
@@ -12,12 +13,22 @@ import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
 
 const CARD_HOLDER_OPTIONS = ['Amex', 'Citi'] as const;
+const CUTS_OPTIONS = [
+    'Sign Up Now',
+    'Pre Sale',
+    'On Sale Now',
+    'Week of',
+    'Day Prior',
+    'Day of',
+    'Superless',
+    'Sample',
+] as const;
 const DURATION_OPTIONS = [':10', ':15', ':30'] as const;
 const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French'] as const;
 
 export interface AddSocialVideoFormValues {
     type: string;
-    cuts: string;
+    cuts: string[];
     cardHolder: string[];
     duration: string[];
     language: string[];
@@ -35,7 +46,7 @@ export default function AddSocialVideoModal({
     onAdd,
 }: AddSocialVideoModalProps) {
     const [type, setType] = useState('');
-    const [cuts, setCuts] = useState('');
+    const [cuts, setCuts] = useState<string[]>([]);
     const [cardHolder, setCardHolder] = useState<string[]>([]);
     const [duration, setDuration] = useState<string[]>([]);
     const [language, setLanguage] = useState<string[]>([]);
@@ -43,7 +54,7 @@ export default function AddSocialVideoModal({
     useEffect(() => {
         if (!isOpen) {
             setType('');
-            setType('');
+            setCuts([]);
             setCardHolder([]);
             setDuration([]);
             setLanguage([]);
@@ -85,6 +96,25 @@ export default function AddSocialVideoModal({
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="Generic">Generic</SelectItem>
+                                <SelectItem value="AmEx">AmEx</SelectItem>
+                                <SelectItem value="Verizon">Verizon</SelectItem>
+                                <SelectItem value="Citi">Citi</SelectItem>
+                                <SelectItem value="International">
+                                    International
+                                </SelectItem>
+                                <SelectItem value="Social-16-9">
+                                    Social - 16:9
+                                </SelectItem>
+                                <SelectItem value="FBIGStory">
+                                    FB/IG Story
+                                </SelectItem>
+                                <SelectItem value="TikTok">TikTok</SelectItem>
+                                <SelectItem value="SocialSquare">
+                                    Social Square
+                                </SelectItem>
+                                <SelectItem value="Social-4-5">
+                                    Social - 4:5
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -99,17 +129,15 @@ export default function AddSocialVideoModal({
                         <p className={orderModalStyles.helper}>
                             Select the type of Cuts
                         </p>
-                        <Select value={cuts} onValueChange={setCuts}>
-                            <SelectTrigger
-                                id="cuts"
-                                className={orderModalStyles.selectTrigger}
-                            >
-                                <SelectValue placeholder="Select Cuts" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Cuts">Cuts</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <MultiSelectCombobox
+                            id="cuts"
+                            options={CUTS_OPTIONS}
+                            value={cuts}
+                            onValueChange={setCuts}
+                            placeholder="Select Cuts"
+                            emptyMessage="No cuts found."
+                            triggerClassName={orderModalStyles.selectTrigger}
+                        />
                     </div>
                 </div>
 
