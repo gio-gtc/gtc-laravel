@@ -68,24 +68,31 @@ function OrdersTable() {
 
     // Transform data into grouped structure (includes demo TourVenues with venue: null)
     const groupedData = useMemo<GroupedOrderData[]>(() => {
-        return tourData.map((order) => ({
-            order,
-            venues: tourVenueData
-                .filter((ov) => ov.tour_id === order.id)
-                .map((ov) =>
-                    ov.venue_id == null
-                        ? { orderVenue: ov, venue: null as Venue | null }
-                        : {
-                              orderVenue: ov,
-                              venue: venuesData.find(
-                                  (v) => v.id === ov.venue_id,
-                              ) as Venue | null,
-                          },
-                )
-                .filter(
-                    (item) => item.venue !== undefined || item.venue === null,
-                ),
-        }));
+        return tourData
+            .map((order) => ({
+                order,
+                venues: tourVenueData
+                    .filter((ov) => ov.tour_id === order.id)
+                    .map((ov) =>
+                        ov.venue_id == null
+                            ? { orderVenue: ov, venue: null as Venue | null }
+                            : {
+                                  orderVenue: ov,
+                                  venue: venuesData.find(
+                                      (v) => v.id === ov.venue_id,
+                                  ) as Venue | null,
+                              },
+                    )
+                    .filter(
+                        (item) =>
+                            item.venue !== undefined || item.venue === null,
+                    ),
+            }))
+            .sort((a, b) => {
+                const aTime = new Date(a.order.created_at).getTime();
+                const bTime = new Date(b.order.created_at).getTime();
+                return bTime - aTime; // descending (newest first)
+            });
     }, []);
 
     // Helper function to get collaborators for a venue
@@ -612,6 +619,15 @@ function OrdersTable() {
                                         {isExpanded &&
                                             group.venues
                                                 .filter((v) => v.venue !== null)
+                                                .sort((a, b) => {
+                                                    const aTime = new Date(
+                                                        a.orderVenue.created_at,
+                                                    ).getTime();
+                                                    const bTime = new Date(
+                                                        b.orderVenue.created_at,
+                                                    ).getTime();
+                                                    return bTime - aTime; // descending
+                                                })
                                                 .map((venueItem) => {
                                                     const venueIsSelected =
                                                         selectedVenueIds.includes(

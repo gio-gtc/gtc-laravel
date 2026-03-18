@@ -559,11 +559,11 @@ export const mockUsers: User[] = [
 export const tourData: Tour[] = [
     {
         id: 1,
-        name: 'Matt Rife 2024',
+        name: 'Matt Rife 2026',
         performer: 'Matt Rife',
         owner_contact_id: 6,
         date_started: '2024-10-01T00:00:00Z',
-        created_at: '2024-10-26T10:27:15Z',
+        created_at: '2026-10-26T10:27:15Z',
         live: 1,
         require_owner_approval: 1,
         special_instructions:
@@ -578,7 +578,7 @@ export const tourData: Tour[] = [
         performer: 'Eagles',
         owner_contact_id: 15,
         date_started: '2024-11-01T00:00:00Z',
-        created_at: '2024-10-20T18:52:25Z',
+        created_at: '2025-10-20T18:52:25Z',
         live: 1,
         require_owner_approval: 0,
         special_instructions:
@@ -689,7 +689,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T23:00:00Z',
         client: 7,
         status: ['new-order'],
-        created_at: '2025-02-22T03:56:51Z',
+        created_at: '2026-02-22T03:56:51Z',
     }, // Maddison Square Garden
     {
         id: 2,
