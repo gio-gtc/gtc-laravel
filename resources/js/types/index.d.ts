@@ -142,7 +142,15 @@ export interface TourVenue {
     start_date: string;
     end_date: string;
     client: number;
-    status: 'completed' | 'in-progress' | 'pending' | 'paused' | 'edit';
+    status: Array<
+        | 'completed'
+        | 'new-order'
+        | 'voice-over'
+        | 'audio'
+        | 'art'
+        | 'paused'
+        | 'in-progress'
+    >;
 }
 
 export interface Order {

@@ -754,14 +754,20 @@ function OrdersTable() {
                                                                     }}
                                                                 />
                                                             </TableCell>
-                                                            <TableCell className="px-2 py-[1px] text-gray-500">
-                                                                <StatusIcon
-                                                                    status={
-                                                                        venueItem
-                                                                            .orderVenue
-                                                                            .status
-                                                                    }
-                                                                />
+                                                            <TableCell className="flex gap-0.5 px-2 py-[1px] text-gray-500">
+                                                                {venueItem.orderVenue.status.map(
+                                                                    (
+                                                                        status,
+                                                                    ) => {
+                                                                        return (
+                                                                            <StatusIcon
+                                                                                status={
+                                                                                    status
+                                                                                }
+                                                                            />
+                                                                        );
+                                                                    },
+                                                                )}
                                                             </TableCell>
                                                         </TableRow>
                                                     );

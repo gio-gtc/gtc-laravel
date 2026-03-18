@@ -1,31 +1,42 @@
 import { cn } from '@/lib/utils';
-import { CircleCheck, ClipboardPlus, Image, Mic, Pause } from 'lucide-react';
-
-// interface StatusIconProps {
-//     status: 'completed' | 'in-progress' | 'pending' | 'paused' | 'edit';
-// }
+import {
+    CircleCheck,
+    ClipboardPlus,
+    Image,
+    MessageCircleQuestion,
+    Mic,
+    Pause,
+    Volume2,
+} from 'lucide-react';
 
 const ICON_MAP = {
     completed: {
         icon: CircleCheck,
         containerClass: 'bg-green-500',
     },
-    edit: {
+    'new-order': {
         icon: ClipboardPlus,
         containerClass: 'bg-green-500',
     },
-    'in-progress': {
-        // icon: Volume2,?
+    'voice-over': {
         icon: Mic,
+        containerClass: 'bg-yellow-500',
+    },
+    audio: {
+        icon: Volume2,
+        containerClass: 'bg-yellow-500',
+    },
+    art: {
+        icon: Image,
         containerClass: 'bg-yellow-500',
     },
     paused: {
         icon: Pause,
         containerClass: 'bg-red-500',
     },
-    pending: {
-        icon: Image,
-        containerClass: 'bg-yellow-500',
+    'in-progress': {
+        icon: MessageCircleQuestion,
+        containerClass: 'bg-red-500',
     },
 } as const;
 type IconVariant = keyof typeof ICON_MAP;
