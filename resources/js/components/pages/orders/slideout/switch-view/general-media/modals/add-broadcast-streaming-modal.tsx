@@ -25,6 +25,8 @@ export interface AddBroadcastStreamingFormValues {
     duration: string[];
     language: string[];
     presaleEncoding: string;
+    encodeLater: boolean;
+    encodeAll: boolean;
     onSaleNowEncoding: string;
 }
 
@@ -44,6 +46,8 @@ export default function AddBroadcastStreamingModal({
     const [duration, setDuration] = useState<string[]>([]);
     const [language, setLanguage] = useState<string[]>([]);
     const [presaleEncoding, setPresaleEncoding] = useState('Encoding Types');
+    const [encodeLater, setEncodeLater] = useState(false);
+    const [encodeAll, setEncodeAll] = useState(false);
     const [onSaleNowEncoding, setOnSaleNowEncoding] =
         useState('Encoding Types');
 
@@ -54,9 +58,20 @@ export default function AddBroadcastStreamingModal({
             setDuration([]);
             setLanguage([]);
             setPresaleEncoding('Encoding Types');
+            setEncodeLater(false);
+            setEncodeAll(false);
             setOnSaleNowEncoding('Encoding Types');
         }
     }, [isOpen]);
+
+    const togglePill = (pill: 'later' | 'all') => {
+        if (pill === 'later') {
+            setEncodeLater(!encodeLater);
+        } else if (pill === 'all') {
+            setEncodeAll(!encodeAll);
+        }
+        return;
+    };
 
     const handleAddToOrder = () => {
         onAdd?.({
@@ -65,6 +80,8 @@ export default function AddBroadcastStreamingModal({
             duration,
             language,
             presaleEncoding,
+            encodeLater,
+            encodeAll,
             onSaleNowEncoding,
         });
         onClose();
@@ -180,23 +197,44 @@ export default function AddBroadcastStreamingModal({
                     <ColumnedRowsChild
                         labelFor="presale"
                         labelContent="Presale"
+                        childrenContainerClasses="flex gap-1"
                     >
-                        <Select
-                            value={presaleEncoding}
-                            onValueChange={setPresaleEncoding}
-                        >
-                            <SelectTrigger
-                                id="presale"
-                                className={orderModalStyles.selectTrigger}
+                        <>
+                            <Select
+                                value={presaleEncoding}
+                                onValueChange={setPresaleEncoding}
                             >
-                                <SelectValue placeholder="Encoding Types" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Encoding Types">
-                                    Encoding Types
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
+                                <SelectTrigger
+                                    id="presale"
+                                    className={orderModalStyles.selectTrigger}
+                                >
+                                    <SelectValue placeholder="Encoding Types" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Encoding Types">
+                                        Encoding Types
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+
+                            <PillButton
+                                selected={encodeLater}
+                                onClick={() => togglePill('later')}
+                                baseClassName={orderModalStyles.pillBase}
+                                className="justify-start px-2 hover:text-white"
+                            >
+                                Encode Later
+                            </PillButton>
+
+                            <PillButton
+                                selected={encodeAll}
+                                onClick={() => togglePill('all')}
+                                baseClassName={orderModalStyles.pillBase}
+                                className="justify-start px-2 hover:text-white"
+                            >
+                                Encode All
+                            </PillButton>
+                        </>
                     </ColumnedRowsChild>
 
                     <ColumnedRowsChild
