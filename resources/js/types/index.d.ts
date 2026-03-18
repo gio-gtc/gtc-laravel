@@ -127,6 +127,7 @@ export interface Tour {
     performer: string;
     owner_contact_id: number;
     date_started: string;
+    created_at: string;
     live: 0 | 1;
     require_owner_approval: 0 | 1;
     special_instructions: string | null;
@@ -142,6 +143,7 @@ export interface TourVenue {
     start_date: string;
     end_date: string;
     client: number;
+    created_at: string;
     status: Array<
         | 'completed'
         | 'new-order'

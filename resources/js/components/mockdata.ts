@@ -563,6 +563,7 @@ export const tourData: Tour[] = [
         performer: 'Matt Rife',
         owner_contact_id: 6,
         date_started: '2024-10-01T00:00:00Z',
+        created_at: '2024-10-26T10:27:15Z',
         live: 1,
         require_owner_approval: 1,
         special_instructions:
@@ -577,6 +578,7 @@ export const tourData: Tour[] = [
         performer: 'Eagles',
         owner_contact_id: 15,
         date_started: '2024-11-01T00:00:00Z',
+        created_at: '2024-10-20T18:52:25Z',
         live: 1,
         require_owner_approval: 0,
         special_instructions:
@@ -591,6 +593,7 @@ export const tourData: Tour[] = [
         performer: 'Cirque du Soleil',
         owner_contact_id: 20,
         date_started: '2024-09-15T00:00:00Z',
+        created_at: '2025-01-03T12:43:30Z',
         live: 1,
         require_owner_approval: 1,
         special_instructions:
@@ -605,6 +608,7 @@ export const tourData: Tour[] = [
         performer: 'Various Artists',
         owner_contact_id: 9,
         date_started: '2024-08-01T00:00:00Z',
+        created_at: '2024-12-17T04:59:52Z',
         live: 1,
         require_owner_approval: 0,
         special_instructions: null,
@@ -618,6 +622,7 @@ export const tourData: Tour[] = [
         performer: 'Bon Jovi',
         owner_contact_id: 22,
         date_started: '2024-12-01T00:00:00Z',
+        created_at: '2025-03-14T13:00:20Z',
         live: 1,
         require_owner_approval: 1,
         special_instructions:
@@ -632,6 +637,7 @@ export const tourData: Tour[] = [
         performer: 'Demi Lovato',
         owner_contact_id: 11,
         date_started: '2024-11-15T00:00:00Z',
+        created_at: '2025-02-12T03:43:56Z',
         live: 1,
         require_owner_approval: 0,
         special_instructions:
@@ -646,6 +652,7 @@ export const tourData: Tour[] = [
         performer: 'Renee Rapp',
         owner_contact_id: 16,
         date_started: '2024-10-20T00:00:00Z',
+        created_at: '2025-03-16T03:15:59Z',
         live: 1,
         require_owner_approval: 1,
         special_instructions:
@@ -660,6 +667,7 @@ export const tourData: Tour[] = [
         performer: 'Cirque du Soleil',
         owner_contact_id: 24,
         date_started: '2024-07-01T00:00:00Z',
+        created_at: '2024-09-27T19:44:42Z',
         live: 0,
         require_owner_approval: 0,
         special_instructions:
@@ -681,6 +689,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T23:00:00Z',
         client: 7,
         status: ['new-order'],
+        created_at: '2025-02-22T03:56:51Z',
     }, // Maddison Square Garden
     {
         id: 2,
@@ -690,6 +699,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T22:30:00Z',
         client: 9,
         status: ['in-progress'],
+        created_at: '2024-10-27T19:34:45Z',
     }, // Sunset Amphitheater
     {
         id: 3,
@@ -699,6 +709,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T23:00:00Z',
         client: 10,
         status: ['art'],
+        created_at: '2024-12-04T05:39:38Z',
     }, // Alys Robinson Stephens
     // Tour 2 (Eagles Tour 2024) connected to venues
     {
@@ -709,6 +720,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T22:00:00Z',
         client: 11,
         status: ['paused'],
+        created_at: '2025-02-02T16:09:29Z',
     }, // The Coca Cola Charlotte Harbor
     {
         id: 5,
@@ -718,6 +730,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-15T23:30:00Z',
         client: 12,
         status: ['new-order', 'art', 'voice-over', 'audio'],
+        created_at: '2024-10-25T00:41:56Z',
     }, // Hollywood Bowl
     // Tour 3 (Cirque du Soleil Echo) connected to venues
     {
@@ -728,6 +741,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T23:00:00Z',
         client: 7,
         status: ['new-order'],
+        created_at: '2025-01-23T21:46:07Z',
     }, // Maddison Square Garden
     {
         id: 7,
@@ -737,6 +751,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-15T23:30:00Z',
         client: 12,
         status: ['completed'],
+        created_at: '2024-12-17T01:58:45Z',
     }, // Hollywood Bowl
     {
         id: 8,
@@ -746,6 +761,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-16T23:00:00Z',
         client: 15,
         status: ['voice-over', 'audio'],
+        created_at: '2024-10-04T21:06:34Z',
     }, // Chase Center
     // Tour 4 (Live Nation Concerts) connected to venues
     {
@@ -756,6 +772,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T22:30:00Z',
         client: 9,
         status: ['in-progress'],
+        created_at: '2025-03-14T14:58:34Z',
     }, // Sunset Amphitheater
     {
         id: 10,
@@ -765,6 +782,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T23:00:00Z',
         client: 10,
         status: ['completed'],
+        created_at: '2025-02-25T00:55:21Z',
     }, // Alys Robinson Stephens
     {
         id: 11,
@@ -774,6 +792,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T22:00:00Z',
         client: 11,
         status: ['paused'],
+        created_at: '2024-10-26T09:09:27Z',
     }, // The Coca Cola Charlotte Harbor
     {
         id: 12,
@@ -783,6 +802,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-15T23:30:00Z',
         client: 12,
         status: ['in-progress'],
+        created_at: '2024-11-14T23:06:57Z',
     }, // Hollywood Bowl
     // Tour 5 (Bon Jovi 2024) connected to venues
     {
@@ -793,6 +813,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T23:00:00Z',
         client: 7,
         status: ['new-order'],
+        created_at: '2024-12-15T00:43:25Z',
     }, // Maddison Square Garden
     {
         id: 14,
@@ -802,6 +823,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-16T23:00:00Z',
         client: 15,
         status: ['voice-over', 'audio'],
+        created_at: '2025-02-01T04:13:12Z',
     }, // Chase Center
     // Tour 6 (Demi Lovato Tour) connected to venues
     {
@@ -812,6 +834,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T23:00:00Z',
         client: 10,
         status: ['in-progress'],
+        created_at: '2025-01-19T19:57:02Z',
     }, // Alys Robinson Stephens
     {
         id: 16,
@@ -821,6 +844,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T22:00:00Z',
         client: 11,
         status: ['paused'],
+        created_at: '2024-12-17T13:28:40Z',
     }, // The Coca Cola Charlotte Harbor
     // Tour 7 (Renee Rapp - Snow Tour) connected to venues
     {
@@ -831,6 +855,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T22:30:00Z',
         client: 9,
         status: ['art'],
+        created_at: '2025-01-29T17:51:05Z',
     }, // Sunset Amphitheater
     {
         id: 18,
@@ -840,6 +865,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-15T23:30:00Z',
         client: 12,
         status: ['completed'],
+        created_at: '2024-11-29T07:28:29Z',
     }, // Hollywood Bowl
     {
         id: 19,
@@ -849,6 +875,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-16T23:00:00Z',
         client: 15,
         status: ['voice-over', 'audio'],
+        created_at: '2025-02-28T13:57:20Z',
     }, // Chase Center
     // Tour 8 (Cirque du Soleil Portfolio) connected to venues
     {
@@ -859,6 +886,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-08T23:00:00Z',
         client: 7,
         status: ['new-order'],
+        created_at: '2024-10-10T04:00:16Z',
     }, // Maddison Square Garden
     {
         id: 21,
@@ -868,6 +896,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-11-16T23:00:00Z',
         client: 15,
         status: ['voice-over', 'audio'],
+        created_at: '2024-09-20T08:14:47Z',
     }, // Chase Center
     // Demo TourVenues (venue_id null = tour-level demo)
     {
@@ -878,6 +907,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-12-15T00:00:00Z',
         client: 6,
         status: ['in-progress'],
+        created_at: '2025-03-09T09:52:49Z',
     },
     {
         id: 23,
@@ -887,6 +917,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-12-20T00:00:00Z',
         client: 15,
         status: ['art'],
+        created_at: '2024-10-28T23:33:09Z',
     },
     {
         id: 24,
@@ -896,6 +927,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-12-10T00:00:00Z',
         client: 20,
         status: ['in-progress'],
+        created_at: '2024-11-14T00:55:21Z',
     },
     {
         id: 25,
@@ -905,6 +937,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-12-25T00:00:00Z',
         client: 9,
         status: [],
+        created_at: '2024-11-21T21:29:12Z',
     },
     {
         id: 26,
@@ -914,6 +947,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2025-01-05T00:00:00Z',
         client: 22,
         status: ['in-progress'],
+        created_at: '2024-09-28T21:03:09Z',
     },
     {
         id: 27,
@@ -923,6 +957,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-12-18T00:00:00Z',
         client: 11,
         status: ['in-progress'],
+        created_at: '2025-02-26T16:35:29Z',
     },
     {
         id: 28,
@@ -932,6 +967,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-12-22T00:00:00Z',
         client: 16,
         status: ['in-progress'],
+        created_at: '2024-10-18T00:31:28Z',
     },
     {
         id: 29,
@@ -941,6 +977,7 @@ export const tourVenueData: TourVenue[] = [
         end_date: '2024-12-30T00:00:00Z',
         client: 24,
         status: ['in-progress'],
+        created_at: '2025-01-20T02:44:35Z',
     },
 ];
 
