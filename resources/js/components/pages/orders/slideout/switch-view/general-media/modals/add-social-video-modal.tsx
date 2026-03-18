@@ -23,32 +23,32 @@ const CUTS_OPTIONS = [
     'Superless',
     'Sample',
 ] as const;
+const VENUE_CUT_OPTIONS = ['Pre Sale', 'Now Through'] as const;
+const SOCIAL_CUT_OPTIONS = [
+    'Pre Sale',
+    'On Sale Now',
+    'Evergreen',
+    'Sign Up Now',
+] as const;
 const DURATION_OPTIONS = [':10', ':15', ':30'] as const;
 const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French'] as const;
 
 const OPTIONS_BY_TYPE: Record<string, { cuts: readonly string[] }> = {
     Generic: { cuts: CUTS_OPTIONS },
     AmEx: {
-        cuts: [
-            'On Sale Now',
-            'Week of',
-            'Day Prior',
-            'Day of',
-            'Superless',
-            'Sample',
-        ],
+        cuts: VENUE_CUT_OPTIONS,
     },
     Verizon: {
-        cuts: ['Sign Up Now', 'Pre Sale', 'On Sale Now'],
+        cuts: VENUE_CUT_OPTIONS,
     },
-    Citi: { cuts: CUTS_OPTIONS },
+    Citi: { cuts: VENUE_CUT_OPTIONS },
     International: { cuts: CUTS_OPTIONS },
     'Social-16-9': {
-        cuts: ['On Sale Now', 'Week of', 'Day of'],
+        cuts: SOCIAL_CUT_OPTIONS,
     },
-    FBIGStory: { cuts: ['Day of', 'Superless'] },
+    FBIGStory: { cuts: SOCIAL_CUT_OPTIONS },
     TikTok: {
-        cuts: ['Day of', 'Superless', 'Sample'],
+        cuts: SOCIAL_CUT_OPTIONS,
     },
     SocialSquare: { cuts: CUTS_OPTIONS },
     'Social-4-5': { cuts: CUTS_OPTIONS },
@@ -143,10 +143,7 @@ export default function AddSocialVideoModal({
                                 id="type"
                                 className={orderModalStyles.selectTrigger}
                             >
-                                <SelectValue
-                                    // defaultValue={'Generic'}
-                                    placeholder="Select Type"
-                                />
+                                <SelectValue placeholder="Select Type" />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="Generic">Generic</SelectItem>
