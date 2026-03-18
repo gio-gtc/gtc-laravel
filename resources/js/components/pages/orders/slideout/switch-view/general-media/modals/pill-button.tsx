@@ -9,6 +9,7 @@ interface PillButtonProps {
     baseClassName?: string;
     className?: string;
     size?: 'default' | 'sm';
+    disabled?: boolean;
 }
 
 export default function PillButton({
@@ -18,12 +19,14 @@ export default function PillButton({
     baseClassName,
     className,
     size = 'sm',
+    disabled,
 }: PillButtonProps) {
     return (
         <Button
             type="button"
             variant="outline"
             size={size}
+            disabled={disabled}
             className={pillButtonClassName(
                 selected,
                 baseClassName ?? orderModalStyles.pillBase,

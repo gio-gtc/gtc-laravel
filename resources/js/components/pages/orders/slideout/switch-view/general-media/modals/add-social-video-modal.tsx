@@ -7,7 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
@@ -25,6 +25,34 @@ const CUTS_OPTIONS = [
 ] as const;
 const DURATION_OPTIONS = [':10', ':15', ':30'] as const;
 const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French'] as const;
+
+const OPTIONS_BY_TYPE: Record<string, { cuts: readonly string[] }> = {
+    Generic: { cuts: CUTS_OPTIONS },
+    AmEx: {
+        cuts: [
+            'On Sale Now',
+            'Week of',
+            'Day Prior',
+            'Day of',
+            'Superless',
+            'Sample',
+        ],
+    },
+    Verizon: {
+        cuts: ['Sign Up Now', 'Pre Sale', 'On Sale Now'],
+    },
+    Citi: { cuts: CUTS_OPTIONS },
+    International: { cuts: CUTS_OPTIONS },
+    'Social-16-9': {
+        cuts: ['On Sale Now', 'Week of', 'Day of'],
+    },
+    FBIGStory: { cuts: ['Day of', 'Superless'] },
+    TikTok: {
+        cuts: ['Day of', 'Superless', 'Sample'],
+    },
+    SocialSquare: { cuts: CUTS_OPTIONS },
+    'Social-4-5': { cuts: CUTS_OPTIONS },
+};
 
 export interface AddSocialVideoFormValues {
     type: string;
@@ -45,23 +73,46 @@ export default function AddSocialVideoModal({
     onClose,
     onAdd,
 }: AddSocialVideoModalProps) {
-    const [type, setType] = useState('');
+    const [type, setType] = useState('Generic');
     const [cuts, setCuts] = useState<string[]>([]);
     const [cardHolder, setCardHolder] = useState<string[]>([]);
     const [duration, setDuration] = useState<string[]>([]);
-    const [language, setLanguage] = useState<string[]>([]);
+    const [language, setLanguage] = useState<string[]>(['English']);
+
+    const { availableCuts } = useMemo(() => {
+        const config = type ? OPTIONS_BY_TYPE[type] : null;
+        return {
+            availableCuts: config?.cuts ?? [],
+        };
+    }, [type]);
+
+    const resetForm = () => {
+        setCuts([]);
+        setCardHolder([]);
+        setDuration([]);
+        setLanguage(['English']);
+    };
+
+    const handleTypeChange = (newType: string) => {
+        resetForm();
+        setType(newType);
+        const config = OPTIONS_BY_TYPE[newType];
+        if (config) {
+            setCuts((prev) => prev.filter((c) => config.cuts.includes(c)));
+        } else {
+            setCuts([]);
+            setDuration([]);
+        }
+    };
 
     useEffect(() => {
         if (!isOpen) {
-            setType('');
-            setCuts([]);
-            setCardHolder([]);
-            setDuration([]);
-            setLanguage([]);
+            resetForm();
         }
     }, [isOpen]);
 
     const handleAddToOrder = () => {
+        console.log({ type, cuts, cardHolder, duration, language });
         onAdd?.({ type, cuts, cardHolder, duration, language });
         onClose();
     };
@@ -87,12 +138,15 @@ export default function AddSocialVideoModal({
                         <p className={orderModalStyles.helper}>
                             Select the type of Social Video
                         </p>
-                        <Select value={type} onValueChange={setType}>
+                        <Select value={type} onValueChange={handleTypeChange}>
                             <SelectTrigger
                                 id="type"
                                 className={orderModalStyles.selectTrigger}
                             >
-                                <SelectValue placeholder="Select Type" />
+                                <SelectValue
+                                    // defaultValue={'Generic'}
+                                    placeholder="Select Type"
+                                />
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="Generic">Generic</SelectItem>
@@ -131,7 +185,7 @@ export default function AddSocialVideoModal({
                         </p>
                         <MultiSelectCombobox
                             id="cuts"
-                            options={CUTS_OPTIONS}
+                            options={availableCuts}
                             value={cuts}
                             onValueChange={setCuts}
                             placeholder="Select Cuts"
@@ -170,19 +224,26 @@ export default function AddSocialVideoModal({
                         </Label>
                         <p className="hidden pt-2 sm:block"> </p>
                         <div className="flex flex-col gap-2">
-                            {DURATION_OPTIONS.map((d) => (
-                                <PillButton
-                                    key={d}
-                                    selected={duration.includes(d)}
-                                    onClick={() =>
-                                        setDuration((prev) =>
-                                            toggleInArray(prev, d),
-                                        )
-                                    }
-                                >
-                                    {d}
-                                </PillButton>
-                            ))}
+                            {DURATION_OPTIONS.map((d, i) => {
+                                let isDisabled =
+                                    d == ':10' && type != 'Generic';
+
+                                return (
+                                    <PillButton
+                                        key={d}
+                                        selected={duration.includes(d)}
+                                        disabled={isDisabled}
+                                        onClick={() =>
+                                            !isDisabled &&
+                                            setDuration((prev) =>
+                                                toggleInArray(prev, d),
+                                            )
+                                        }
+                                    >
+                                        {d}
+                                    </PillButton>
+                                );
+                            })}
                         </div>
                     </div>
 
