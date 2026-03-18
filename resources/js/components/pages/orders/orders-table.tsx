@@ -38,7 +38,6 @@ import {
     useState,
 } from 'react';
 import AddVenueModal from './add-venue-modal';
-import CollaboratorEditDialog from './collaborator-edit-dialog';
 import OrdersTableHeaderActions, {
     type GroupedOrderData,
 } from './orders-table-header-actions';
@@ -55,7 +54,6 @@ function OrdersTable() {
     );
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedVenueIds, setSelectedVenueIds] = useState<number[]>([]);
-    const [editingVenueId, setEditingVenueId] = useState<number | null>(null);
     const [isAddVenueModalOpen, setIsAddVenueModalOpen] = useState(false);
     const [selectedSlideout, setSelectedSlideout] = useState<{
         order: Tour;
@@ -403,25 +401,15 @@ function OrdersTable() {
         });
     };
 
-    // Handle venue row selection
+    // Handle venue row selection (single selection across entire table)
     const handleVenueRowClick = (orderVenueId: number, orderId: number) => {
         setSelectedVenueIds((prev) => {
-            // Check if any existing selection belongs to a different order group
-            const existingOrderId =
-                prev.length > 0
-                    ? tourVenueData.find((ov) => ov.id === prev[0])?.tour_id
-                    : null;
-
-            // If selecting from a different group, clear and start fresh
-            if (existingOrderId !== null && existingOrderId !== orderId) {
-                return [orderVenueId];
-            }
-
-            // Toggle selection within the same group
+            // Toggle off if this venue was already selected
             if (prev.includes(orderVenueId)) {
-                return prev.filter((id) => id !== orderVenueId);
+                return [];
             }
-            return [...prev, orderVenueId];
+            // Single selection: replace with just this venue
+            return [orderVenueId];
         });
     };
 
@@ -751,38 +739,21 @@ function OrdersTable() {
                                                                         collaborators
                                                                     }
                                                                     maxCount={3}
-                                                                    onClick={() => {
-                                                                        if (
-                                                                            venueItem
-                                                                                ?.venue
-                                                                                ?.id
-                                                                        ) {
-                                                                            setEditingVenueId(
-                                                                                venueItem
-                                                                                    .venue
-                                                                                    .id,
-                                                                            );
-                                                                        } else {
-                                                                            console.log(
-                                                                                'No venue item -> venue -> id!',
-                                                                            );
-                                                                        }
-                                                                    }}
                                                                 />
                                                             </TableCell>
                                                             <TableCell className="flex gap-0.5 px-2 py-[1px] text-gray-500">
                                                                 {venueItem.orderVenue.status.map(
                                                                     (
                                                                         status,
-                                                                    ) => {
-                                                                        return (
-                                                                            <StatusIcon
-                                                                                status={
-                                                                                    status
-                                                                                }
-                                                                            />
-                                                                        );
-                                                                    },
+                                                                        index,
+                                                                    ) => (
+                                                                        <StatusIcon
+                                                                            key={`${venueItem.orderVenue.id}-${status}-${index}`}
+                                                                            status={
+                                                                                status
+                                                                            }
+                                                                        />
+                                                                    ),
                                                                 )}
                                                             </TableCell>
                                                         </TableRow>
@@ -804,18 +775,6 @@ function OrdersTable() {
                     </TableBody>
                 </Table>
             </div>
-
-            {/* Collaborator Edit Dialog */}
-            {editingVenueId && (
-                <CollaboratorEditDialog
-                    venueId={editingVenueId}
-                    venue={
-                        venuesData.find((v) => v.id === editingVenueId) || null
-                    }
-                    isOpen={!!editingVenueId}
-                    onClose={() => setEditingVenueId(null)}
-                />
-            )}
 
             {/* Add Venue Modal */}
             <AddVenueModal

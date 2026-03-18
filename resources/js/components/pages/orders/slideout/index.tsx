@@ -131,7 +131,7 @@ export default function VenueDetailSlideout({
                     client={client}
                     venue={venueItem?.venue?.name ?? 'Demo'}
                     state={venueItem?.venue?.state ?? ''}
-                    status={venueItem?.orderVenue?.status ?? 'pending'}
+                    status={venueItem?.orderVenue?.status ?? ['demo']}
                     city={venueItem?.venue?.city}
                     eventDates={isDemo ? undefined : formatEventDates}
                     ticketSaleDate={isDemo ? undefined : mockTicketSaleDate}
@@ -143,9 +143,7 @@ export default function VenueDetailSlideout({
                     }}
                     onMaximize={() => setIsMaximized((m) => !m)}
                     onMore={
-                        isDemo
-                            ? undefined
-                            : () => setIsEditVenueModalOpen(true)
+                        isDemo ? undefined : () => setIsEditVenueModalOpen(true)
                     }
                     showMoreButton={!isDemo}
                     onClose={onClose}

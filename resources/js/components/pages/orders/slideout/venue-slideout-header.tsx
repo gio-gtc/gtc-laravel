@@ -17,7 +17,7 @@ interface VenueSlideoutHeaderProps {
     client: User | undefined;
     venue: string;
     state: string;
-    status: TourVenue['status'];
+    status: TourVenue['status'] | ['demo'];
     city?: string;
     eventDates?: string;
     ticketSaleDate?: string;
@@ -75,7 +75,11 @@ export default function VenueSlideoutHeader({
         <SheetHeader className="relative gap-0 p-0">
             {/* Top row: Status icon on left, action buttons on right */}
             <div className="slide-out-container flex items-center justify-between">
-                <StatusIcon status={status} />
+                <div className="flex gap-0.5">
+                    {status.map((s) => (
+                        <StatusIcon key={`${tour}-${venue}-${s}`} status={s} />
+                    ))}
+                </div>
 
                 {/* Action buttons */}
                 <div className="flex items-center gap-0.5">

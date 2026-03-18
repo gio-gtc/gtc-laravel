@@ -38,6 +38,7 @@ const ICON_MAP = {
         icon: MessageCircleQuestion,
         containerClass: 'bg-red-500',
     },
+    demo: {},
 } as const;
 type IconVariant = keyof typeof ICON_MAP;
 
@@ -46,6 +47,8 @@ interface StatusIconProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 function StatusIcon({ status, className, ...props }: StatusIconProps) {
+    if (status == 'demo') return;
+
     const { icon: Icon, containerClass } = ICON_MAP[status];
 
     return (
