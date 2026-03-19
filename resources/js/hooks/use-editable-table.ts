@@ -5,6 +5,8 @@ import {
     type KeyboardEvent,
 } from 'react';
 
+type TableCellKeyboardEvent = KeyboardEvent<HTMLElement>;
+
 interface UseEditableTableOptions<T> {
     data: T[];
     onChange?: (updatedData: T[]) => void;
@@ -31,7 +33,7 @@ interface UseEditableTableReturn<T> {
     ) => void;
     handleCellBlur: () => void;
     handleCellKeyDown: (
-        e: KeyboardEvent<HTMLInputElement>,
+        e: TableCellKeyboardEvent,
         itemId: number | string,
         field: string,
         scope?: string,
@@ -123,7 +125,7 @@ export function useEditableTable<T extends object>({
 
     // Handle keyboard events
     const handleCellKeyDown = (
-        e: KeyboardEvent<HTMLInputElement>,
+        e: TableCellKeyboardEvent,
         itemId: number | string,
         field: string,
         _scope?: string,

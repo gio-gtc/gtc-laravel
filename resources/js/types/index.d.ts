@@ -15,7 +15,7 @@ export interface VenueTableCellEditing {
     ) => void;
     onCellBlur: () => void;
     onCellKeyDown: (
-        e: KeyboardEvent<HTMLInputElement>,
+        e: KeyboardEvent<HTMLElement>,
         itemId: number | string,
         field: string,
         scope?: string,

@@ -14,6 +14,9 @@ import {
 } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
+import { EditableCellSelect } from '@/components/utils/editable-table/editable-cell-select';
+import { VENUE_ITEM_STATUS_SELECT_OPTIONS } from '@/components/utils/editable-table/venue-item-status-options';
+import { VenueItemStatusBadge } from '@/components/utils/venue-item-status-badge';
 import { cn } from '@/lib/utils';
 import type {
     StaticAssetsMediaTableProps,
@@ -22,35 +25,6 @@ import type {
 import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { DeliverablesCell } from './deliverables-buttons';
-
-function getStatusBadge(
-    status: StaticAssetsTableRow['status'],
-): React.ReactNode {
-    const baseClasses =
-        'inline-flex items-center rounded-full border-2 border-solid px-2.5 py-0.5 text-xs font-medium';
-
-    let colorClasses = '';
-
-    switch (status) {
-        case 'Still in Cart':
-        case 'Client Review':
-            colorClasses = 'border-yellow-400 bg-yellow-50 text-yellow-700';
-            break;
-        case 'In Production':
-        case 'Out for Delivery':
-            colorClasses = 'border-green-400 bg-green-50 text-green-700';
-            break;
-        case 'Cancelled':
-        case 'Revision Requested':
-            colorClasses = 'border-gray-400 bg-gray-50 text-gray-700';
-            break;
-        case 'Unassigned':
-            colorClasses = 'border-red-400 bg-red-50 text-red-700';
-            break;
-    }
-
-    return <span className={cn(baseClasses, colorClasses)}>{status}</span>;
-}
 
 export default function StaticAssetsMediaTable({
     title,
@@ -247,11 +221,56 @@ export default function StaticAssetsMediaTable({
 
                                                 {/* Preview Icons */}
                                                 <TableCell>
-                                                    <p className="flex justify-center rounded-full focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 focus:outline-none">
-                                                        {getStatusBadge(
-                                                            row.status,
+                                                    <div className="flex justify-center rounded-full focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 focus:outline-none">
+                                                        {cellEditing ? (
+                                                            <EditableCellSelect
+                                                                value={
+                                                                    row.status
+                                                                }
+                                                                itemId={
+                                                                    row.id
+                                                                }
+                                                                field="status"
+                                                                options={
+                                                                    VENUE_ITEM_STATUS_SELECT_OPTIONS
+                                                                }
+                                                                renderDisplay={(
+                                                                    v,
+                                                                ) => (
+                                                                    <VenueItemStatusBadge
+                                                                        status={
+                                                                            v as StaticAssetsTableRow['status']
+                                                                        }
+                                                                    />
+                                                                )}
+                                                                onChange={
+                                                                    cellEditing.onCellChange
+                                                                }
+                                                                onDoubleClick={
+                                                                    cellEditing.onCellDoubleClick
+                                                                }
+                                                                onBlur={
+                                                                    cellEditing.onCellBlur
+                                                                }
+                                                                onKeyDown={
+                                                                    cellEditing.onCellKeyDown
+                                                                }
+                                                                isEditing={cellEditing.isCellEditing(
+                                                                    row.id,
+                                                                    'status',
+                                                                )}
+                                                                disabled={
+                                                                    false
+                                                                }
+                                                            />
+                                                        ) : (
+                                                            <VenueItemStatusBadge
+                                                                status={
+                                                                    row.status
+                                                                }
+                                                            />
                                                         )}
-                                                    </p>
+                                                    </div>
                                                 </TableCell>
 
                                                 <TableCell className="flex h-[30px] items-center justify-center gap-2 py-0">

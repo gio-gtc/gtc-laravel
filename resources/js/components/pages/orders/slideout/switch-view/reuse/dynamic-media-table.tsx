@@ -20,38 +20,20 @@ import {
 } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
+import { EditableCellSelect } from '@/components/utils/editable-table/editable-cell-select';
+import { MEDIA_DURATION_OPTIONS } from '@/components/utils/editable-table/media-duration-options';
+import { VENUE_ITEM_STATUS_SELECT_OPTIONS } from '@/components/utils/editable-table/venue-item-status-options';
+import { VenueItemStatusBadge } from '@/components/utils/venue-item-status-badge';
 import { cn } from '@/lib/utils';
 import { MediaTableProps, MediaTableRow } from '@/types';
 import { AudioLines, ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { DeliverablesCell } from './deliverables-buttons';
 
-function getStatusBadge(status: MediaTableRow['status']): React.ReactNode {
-    const baseClasses =
-        'xs-gray-700-weight-600 inline-flex items-center rounded-full border-2 border-solid px-2.5 py-0.5';
-
-    let colorClasses = '';
-
-    switch (status) {
-        case 'Still in Cart':
-        case 'Client Review':
-            colorClasses = 'border-yellow-400 bg-yellow-50';
-            break;
-        case 'In Production':
-        case 'Out for Delivery':
-            colorClasses = 'border-green-400 bg-green-50';
-            break;
-        case 'Cancelled':
-        case 'Revision Requested':
-            colorClasses = 'border-gray-400 bg-gray-50';
-            break;
-        case 'Unassigned':
-            colorClasses = 'border-red-400 bg-red-50';
-            break;
-    }
-
-    return <span className={cn(baseClasses, colorClasses)}>{status}</span>;
-}
+const DURATION_SELECT_OPTIONS = MEDIA_DURATION_OPTIONS.map((v) => ({
+    value: v,
+    label: v,
+}));
 
 export default function MediaTable({
     title,
@@ -236,7 +218,54 @@ export default function MediaTable({
                                                     )}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {row.duration}
+                                                    {cellEditing ? (
+                                                        <EditableCellSelect
+                                                            value={row.duration}
+                                                            itemId={row.id}
+                                                            field="duration"
+                                                            options={
+                                                                DURATION_SELECT_OPTIONS
+                                                            }
+                                                            onChange={
+                                                                cellEditing.onCellChange
+                                                            }
+                                                            onDoubleClick={(
+                                                                id,
+                                                                field,
+                                                            ) =>
+                                                                cellEditing.onCellDoubleClick(
+                                                                    id,
+                                                                    field,
+                                                                    editScope,
+                                                                )
+                                                            }
+                                                            onBlur={
+                                                                cellEditing.onCellBlur
+                                                            }
+                                                            onKeyDown={(
+                                                                e,
+                                                                id,
+                                                                field,
+                                                            ) =>
+                                                                cellEditing.onCellKeyDown(
+                                                                    e,
+                                                                    id,
+                                                                    field,
+                                                                    editScope,
+                                                                )
+                                                            }
+                                                            isEditing={cellEditing.isCellEditing(
+                                                                row.id,
+                                                                'duration',
+                                                                editScope,
+                                                            )}
+                                                            disabled={
+                                                                isDisabledRow
+                                                            }
+                                                        />
+                                                    ) : (
+                                                        row.duration
+                                                    )}
                                                 </TableCell>
                                                 <TableCell>
                                                     {row.dueDate}
@@ -250,9 +279,66 @@ export default function MediaTable({
                                                     )}
                                                 </TableCell>
 
-                                                {/* Preview Icons */}
                                                 <TableCell className="h-[30px] py-0 text-center">
-                                                    {getStatusBadge(row.status)}
+                                                    {cellEditing ? (
+                                                        <EditableCellSelect
+                                                            value={row.status}
+                                                            itemId={row.id}
+                                                            field="status"
+                                                            options={
+                                                                VENUE_ITEM_STATUS_SELECT_OPTIONS
+                                                            }
+                                                            renderDisplay={(
+                                                                v,
+                                                            ) => (
+                                                                <VenueItemStatusBadge
+                                                                    status={
+                                                                        v as MediaTableRow['status']
+                                                                    }
+                                                                    className="xs-gray-700-weight-600"
+                                                                />
+                                                            )}
+                                                            onChange={
+                                                                cellEditing.onCellChange
+                                                            }
+                                                            onDoubleClick={(
+                                                                id,
+                                                                field,
+                                                            ) =>
+                                                                cellEditing.onCellDoubleClick(
+                                                                    id,
+                                                                    field,
+                                                                    editScope,
+                                                                )
+                                                            }
+                                                            onBlur={
+                                                                cellEditing.onCellBlur
+                                                            }
+                                                            onKeyDown={(
+                                                                e,
+                                                                id,
+                                                                field,
+                                                            ) =>
+                                                                cellEditing.onCellKeyDown(
+                                                                    e,
+                                                                    id,
+                                                                    field,
+                                                                    editScope,
+                                                                )
+                                                            }
+                                                            isEditing={cellEditing.isCellEditing(
+                                                                row.id,
+                                                                'status',
+                                                                editScope,
+                                                            )}
+                                                            disabled={false}
+                                                        />
+                                                    ) : (
+                                                        <VenueItemStatusBadge
+                                                            status={row.status}
+                                                            className="xs-gray-700-weight-600"
+                                                        />
+                                                    )}
                                                 </TableCell>
 
                                                 <TableCell>
