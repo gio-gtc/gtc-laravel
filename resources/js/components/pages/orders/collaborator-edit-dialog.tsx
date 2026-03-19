@@ -1,4 +1,3 @@
-import { venueItemCollaborators } from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -7,65 +6,61 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { getUniqueAssignedUsersForTourVenue } from '@/components/utils/venue-items';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
-import { type User, type Venue } from '@/types';
+import { type User } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
 import UserMultiSelect from './user-multi-select';
 
 interface CollaboratorEditDialogProps {
-    venueId: number;
-    venue: Venue | null;
+    tourVenueId: number;
+    /** Venue or tour-venue label for display */
+    venueName: string;
     isOpen: boolean;
     onClose: () => void;
 }
 
 function CollaboratorEditDialog({
-    venueId,
-    venue,
+    tourVenueId,
+    venueName,
     isOpen,
     onClose,
 }: CollaboratorEditDialogProps) {
     const usersWithFallback = useUsersWithFallback();
 
-    // Get current collaborators from join table
-    const currentCollaborators = useMemo(() => {
-        if (!venue) return [];
-        const collaboratorIds = venueItemCollaborators
-            .filter((vc) => vc.venue_id === venue.id)
-            .map((vc) => vc.mockUser_id);
-        return usersWithFallback.filter((user) =>
-            collaboratorIds.includes(user.id),
-        );
-    }, [venue, usersWithFallback]);
+    const currentAssignees = useMemo(
+        () =>
+            getUniqueAssignedUsersForTourVenue(
+                tourVenueId,
+                usersWithFallback,
+            ),
+        [tourVenueId, usersWithFallback],
+    );
 
     const [selectedUsers, setSelectedUsers] =
-        useState<User[]>(currentCollaborators);
+        useState<User[]>(currentAssignees);
 
-    // Update selected users when venue changes
     useEffect(() => {
-        setSelectedUsers(currentCollaborators);
-    }, [currentCollaborators]);
+        setSelectedUsers(currentAssignees);
+    }, [currentAssignees]);
 
     const handleSave = () => {
-        // TODO: Implement actual save logic with API call
-        // This would update venueItemCollaborators join table
+        // TODO: API — persist assignees (venueItemAssigned / server model)
         console.log(
-            'Saving collaborators for venue:',
-            venueId,
+            'Saving assignees for tour venue:',
+            tourVenueId,
             selectedUsers.map((u) => u.id),
         );
         onClose();
     };
 
-    if (!venue) return null;
-
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
                 <DialogHeader>
-                    <DialogTitle>Edit Collaborators</DialogTitle>
+                    <DialogTitle>Edit assignees</DialogTitle>
                     <div className="text-sm text-muted-foreground">
-                        {venue.name}
+                        {venueName}
                     </div>
                 </DialogHeader>
                 <div className="py-4">

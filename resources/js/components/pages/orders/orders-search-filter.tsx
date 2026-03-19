@@ -31,7 +31,7 @@ interface OrdersSearchFilterProps {
     onSearchChange: (query: string) => void;
     groupedData: GroupedOrderData[];
     getClientUser: (clientId: number) => User | undefined;
-    getVenueCollaborators: (venueId: number) => User[];
+    getTourVenueAssignees: (tourVenueId: number) => User[];
     expandedWidth?: string;
     transitionDuration?: number;
     className?: string;
@@ -50,7 +50,7 @@ export default function OrdersSearchFilter({
     onSearchChange,
     groupedData,
     getClientUser,
-    getVenueCollaborators,
+    getTourVenueAssignees,
     expandedWidth = 'w-64',
     transitionDuration = 300,
     className,
@@ -126,11 +126,8 @@ export default function OrdersSearchFilter({
                     });
                 }
 
-                // Collaborators (demo uses owner as sole collaborator)
-                const collaborators = isDemo
-                    ? (client ? [client] : [])
-                    : getVenueCollaborators(venue.id);
-                for (const collab of collaborators) {
+                const assignees = getTourVenueAssignees(orderVenue.id);
+                for (const collab of assignees) {
                     if (collab.name && !seen.has(`collaborator:${collab.name}`)) {
                         seen.add(`collaborator:${collab.name}`);
                         items.push({
@@ -144,7 +141,7 @@ export default function OrdersSearchFilter({
         }
 
         return items;
-    }, [groupedData, getClientUser, getVenueCollaborators]);
+    }, [groupedData, getClientUser, getTourVenueAssignees]);
 
     // Filter suggestions by search query
     const filteredSuggestions = useMemo(() => {

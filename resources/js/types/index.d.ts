@@ -172,12 +172,6 @@ export interface Venue {
     country_id: number;
 }
 
-export interface VenueCollaborator {
-    id: number;
-    venue_id: number;
-    mockUser_id: number;
-}
-
 export interface VenueItemAssigned {
     id: number;
     venue_item_id: number;

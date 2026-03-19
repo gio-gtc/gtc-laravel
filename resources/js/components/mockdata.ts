@@ -8,7 +8,6 @@ import {
     type TourVenue,
     type User,
     type Venue,
-    type VenueCollaborator,
     type VenueItemAssigned,
     type VenueItemsRow,
 } from '@/types';
@@ -1040,32 +1039,6 @@ export const venuesData: Venue[] = [
         state: '',
         country_id: 1,
     },
-];
-
-// Mock venue collaborators data (many-to-many join table)
-export const venueItemCollaborators: VenueCollaborator[] = [
-    // Venue 1 (Maddison Square Garden) collaborators
-    { id: 1, venue_id: 1, mockUser_id: 6 }, // Robert Taylor
-    { id: 2, venue_id: 1, mockUser_id: 7 }, // Amanda Brown
-    { id: 3, venue_id: 1, mockUser_id: 8 }, // James Wilson
-    // Venue 2 (Sunset Amphitheater) collaborators
-    { id: 4, venue_id: 2, mockUser_id: 6 }, // Robert Taylor
-    { id: 5, venue_id: 2, mockUser_id: 7 }, // Amanda Brown
-    { id: 6, venue_id: 2, mockUser_id: 8 }, // James Wilson
-    // Venue 3 (Alys Robinson Stephens) collaborators
-    { id: 7, venue_id: 3, mockUser_id: 6 }, // Robert Taylor
-    { id: 8, venue_id: 3, mockUser_id: 7 }, // Amanda Brown
-    { id: 9, venue_id: 3, mockUser_id: 8 }, // James Wilson
-    // Venue 4 (Coca Cola Charlotte Harbor) collaborators
-    { id: 10, venue_id: 4, mockUser_id: 6 }, // Robert Taylor
-    { id: 11, venue_id: 4, mockUser_id: 7 }, // Amanda Brown
-    { id: 12, venue_id: 4, mockUser_id: 8 }, // James Wilson
-    // Venue 5 (Hollywood Bowl) collaborators
-    { id: 13, venue_id: 5, mockUser_id: 13 }, // Daniel Garcia
-    { id: 14, venue_id: 5, mockUser_id: 14 }, // Michelle Davis
-    // Venue 6 (Chase Center) collaborators
-    { id: 15, venue_id: 6, mockUser_id: 13 }, // Daniel Garcia
-    { id: 16, venue_id: 6, mockUser_id: 14 }, // Michelle Davis
 ];
 
 // Mock country data

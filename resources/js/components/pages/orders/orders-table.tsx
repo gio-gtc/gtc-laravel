@@ -1,9 +1,4 @@
-import {
-    tourData,
-    tourVenueData,
-    venueItemCollaborators,
-    venuesData,
-} from '@/components/mockdata';
+import { tourData, tourVenueData, venuesData } from '@/components/mockdata';
 import { FilledArrow } from '@/components/ui/icons';
 import {
     Table,
@@ -15,6 +10,7 @@ import {
 } from '@/components/ui/table';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
+import { getUniqueAssignedUsersForTourVenue } from '@/components/utils/venue-items';
 import { useOrdersFilters } from '@/hooks/use-orders-filters';
 import { useRecentOrders } from '@/hooks/use-recent-orders';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
@@ -93,16 +89,9 @@ function OrdersTable() {
             });
     }, []);
 
-    // Helper function to get collaborators for a venue
-    const getVenueCollaborators = useMemo(() => {
-        return (venueId: number): User[] => {
-            const collaboratorIds = venueItemCollaborators
-                .filter((vc) => vc.venue_id === venueId)
-                .map((vc) => vc.mockUser_id);
-            return usersWithFallback.filter((user) =>
-                collaboratorIds.includes(user.id),
-            );
-        };
+    const getTourVenueAssignees = useMemo(() => {
+        return (tourVenueId: number): User[] =>
+            getUniqueAssignedUsersForTourVenue(tourVenueId, usersWithFallback);
     }, [usersWithFallback]);
 
     // Helper function to get client user by ID
@@ -220,21 +209,28 @@ function OrdersTable() {
             }) => {
                 if (venueItem.venue == null) {
                     const client = getClientUser(venueItem.orderVenue.client);
+                    const assignees = getTourVenueAssignees(
+                        venueItem.orderVenue.id,
+                    );
                     return (
                         'demo'.includes(query) ||
-                        (client?.name?.toLowerCase().includes(query) ?? false)
+                        (client?.name?.toLowerCase().includes(query) ??
+                            false) ||
+                        assignees.some((c) =>
+                            c.name.toLowerCase().includes(query),
+                        )
                     );
                 }
                 const region = `${venueItem.venue.city}, ${venueItem.venue.state}`;
                 const client = getClientUser(venueItem.orderVenue.client);
-                const collaborators = getVenueCollaborators(venueItem.venue.id);
+                const assignees = getTourVenueAssignees(
+                    venueItem.orderVenue.id,
+                );
                 return (
                     region.toLowerCase().includes(query) ||
                     venueItem.venue.name.toLowerCase().includes(query) ||
                     (client?.name?.toLowerCase().includes(query) ?? false) ||
-                    collaborators.some((c) =>
-                        c.name.toLowerCase().includes(query),
-                    )
+                    assignees.some((c) => c.name.toLowerCase().includes(query))
                 );
             };
             const hasTourMatch = groupedData.some((g) =>
@@ -282,34 +278,20 @@ function OrdersTable() {
                 }
             }
 
-            // Collaborator filter (demo uses owner as sole collaborator)
             if (hasCollaboratorFilter) {
-                if (isDemo) {
-                    const owner = getClientUser(venueItem.orderVenue.client);
-                    if (filters.myCollaborators) {
-                        if (owner?.id !== auth.user.id) return false;
-                    } else {
-                        if (
-                            !owner ||
-                            !filters.collaboratorIds.includes(owner.id)
-                        )
-                            return false;
-                    }
+                const assignees = getTourVenueAssignees(
+                    venueItem.orderVenue.id,
+                );
+                if (filters.myCollaborators) {
+                    if (!assignees.some((c) => c.id === auth.user.id))
+                        return false;
                 } else {
-                    const collaborators = getVenueCollaborators(
-                        venueItem.venue!.id,
-                    );
-                    if (filters.myCollaborators) {
-                        if (!collaborators.some((c) => c.id === auth.user.id))
-                            return false;
-                    } else {
-                        if (
-                            !collaborators.some((c) =>
-                                filters.collaboratorIds.includes(c.id),
-                            )
+                    if (
+                        !assignees.some((c) =>
+                            filters.collaboratorIds.includes(c.id),
                         )
-                            return false;
-                    }
+                    )
+                        return false;
                 }
             }
 
@@ -353,7 +335,7 @@ function OrdersTable() {
         filters,
         auth.user.id,
         getClientUser,
-        getVenueCollaborators,
+        getTourVenueAssignees,
     ]);
 
     const hasVenueLevelFilter =
@@ -436,7 +418,7 @@ function OrdersTable() {
                 onSearchChange={setSearchQuery}
                 groupedData={groupedData}
                 getClientUser={getClientUser}
-                getVenueCollaborators={getVenueCollaborators}
+                getTourVenueAssignees={getTourVenueAssignees}
             />
 
             {/* Table */}
@@ -514,14 +496,27 @@ function OrdersTable() {
                                                           filters.clientIds.includes(
                                                               owner.id,
                                                           ));
+                                                const demoAssignees =
+                                                    demoTourVenue
+                                                        ? getTourVenueAssignees(
+                                                              demoTourVenue
+                                                                  .orderVenue
+                                                                  .id,
+                                                          )
+                                                        : [];
                                                 const demoMatchesCollaborator =
                                                     !hasCollaboratorFilter ||
                                                     (filters.myCollaborators
-                                                        ? owner?.id ===
-                                                          auth.user.id
-                                                        : owner &&
-                                                          filters.collaboratorIds.includes(
-                                                              owner.id,
+                                                        ? demoAssignees.some(
+                                                              (c) =>
+                                                                  c.id ===
+                                                                  auth.user.id,
+                                                          )
+                                                        : demoAssignees.some(
+                                                              (c) =>
+                                                                  filters.collaboratorIds.includes(
+                                                                      c.id,
+                                                                  ),
                                                           ));
                                                 const q = searchQuery
                                                     .toLowerCase()
@@ -532,7 +527,12 @@ function OrdersTable() {
                                                     (owner?.name
                                                         ?.toLowerCase()
                                                         .includes(q) ??
-                                                        false);
+                                                        false) ||
+                                                    demoAssignees.some((a) =>
+                                                        a.name
+                                                            .toLowerCase()
+                                                            .includes(q),
+                                                    );
                                                 const shouldShowDemo =
                                                     demoTourVenue &&
                                                     demoMatchesClient &&
@@ -589,12 +589,12 @@ function OrdersTable() {
                                                             )}
                                                         </TableCell>
                                                         <TableCell className="px-2 py-0.5 text-gray-500">
-                                                            {owner && (
+                                                            {demoAssignees.length >
+                                                                0 && (
                                                                 <UserAvatarsStack
-                                                                    users={[
-                                                                        owner,
-                                                                    ]}
-                                                                    maxCount={3}
+                                                                    users={
+                                                                        demoAssignees
+                                                                    }
                                                                 />
                                                             )}
                                                         </TableCell>
@@ -627,9 +627,10 @@ function OrdersTable() {
                                                             venueItem.orderVenue
                                                                 .client,
                                                         );
-                                                    const collaborators =
-                                                        getVenueCollaborators(
-                                                            venueItem.venue!.id,
+                                                    const assignees =
+                                                        getTourVenueAssignees(
+                                                            venueItem.orderVenue
+                                                                .id,
                                                         );
 
                                                     return (
@@ -736,9 +737,8 @@ function OrdersTable() {
                                                             >
                                                                 <UserAvatarsStack
                                                                     users={
-                                                                        collaborators
+                                                                        assignees
                                                                     }
-                                                                    maxCount={3}
                                                                 />
                                                             </TableCell>
                                                             <TableCell className="flex gap-0.5 px-2 py-[1px] text-gray-500">

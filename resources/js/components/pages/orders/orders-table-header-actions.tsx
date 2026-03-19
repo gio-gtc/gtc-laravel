@@ -21,7 +21,7 @@ interface OrdersTableHeaderActionsProps {
     onSearchChange: (query: string) => void;
     groupedData: GroupedOrderData[];
     getClientUser: (clientId: number) => User | undefined;
-    getVenueCollaborators: (venueId: number) => User[];
+    getTourVenueAssignees: (tourVenueId: number) => User[];
 }
 
 export default function OrdersTableHeaderActions({
@@ -33,7 +33,7 @@ export default function OrdersTableHeaderActions({
     onSearchChange,
     groupedData,
     getClientUser,
-    getVenueCollaborators,
+    getTourVenueAssignees,
 }: OrdersTableHeaderActionsProps) {
     return (
         <div className="flex items-center justify-between">
@@ -57,7 +57,7 @@ export default function OrdersTableHeaderActions({
                     onSearchChange={onSearchChange}
                     groupedData={groupedData}
                     getClientUser={getClientUser}
-                    getVenueCollaborators={getVenueCollaborators}
+                    getTourVenueAssignees={getTourVenueAssignees}
                 />
             </div>
         </div>
