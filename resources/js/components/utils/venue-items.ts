@@ -1,6 +1,7 @@
 import {
     mockUsers,
     venueItemAssigned,
+    venueItemStatus,
     venueItemsData,
 } from '@/components/mockdata';
 import type {
@@ -12,6 +13,15 @@ import type {
     VenueItemsMediaRow,
     VenueItemsStaticRow,
 } from '@/types';
+
+type VenueLineItemStatusLabel = MediaTableRow['status'];
+
+function venueItemStatusIdToLabel(
+    statusId: number,
+): VenueLineItemStatusLabel {
+    const found = venueItemStatus.find((s) => s.id === statusId);
+    return (found?.type ?? 'Still in Cart') as VenueLineItemStatusLabel;
+}
 
 const userById = new Map(mockUsers.map((u) => [u.id, u] as const));
 
@@ -74,16 +84,26 @@ export function venueItemsMediaTableRow(
     row: VenueItemsMediaRow,
     assigned: User[],
 ): MediaTableRow {
-    const { label, ...rest } = row;
-    return { ...rest, cutName: label, assigned };
+    const { label, status_id, ...rest } = row;
+    return {
+        ...rest,
+        cutName: label,
+        assigned,
+        status: venueItemStatusIdToLabel(status_id),
+    };
 }
 
 export function venueItemsStaticTableRow(
     row: VenueItemsStaticRow,
     assigned: User[],
 ): StaticAssetsTableRow {
-    const { label, ...rest } = row;
-    return { ...rest, cutName: label, assigned };
+    const { label, status_id, ...rest } = row;
+    return {
+        ...rest,
+        cutName: label,
+        assigned,
+        status: venueItemStatusIdToLabel(status_id),
+    };
 }
 
 export function venueItemsLocalizedTableRow(

@@ -178,14 +178,9 @@ export interface VenueItemAssigned {
     mockUser_id: number;
 }
 
-export interface MediaTableRow {
-    id: string | number;
-    isci: string;
-    cutName: string;
-    duration: string; // e.g., ":45"
-    dueDate: string; // e.g., "1/15/25"
-    assigned: User[];
-    status:
+export interface VenueItemStatus {
+    id: number;
+    type:
         | 'Still in Cart'
         | 'Client Review'
         | 'In Production'
@@ -193,6 +188,16 @@ export interface MediaTableRow {
         | 'Cancelled'
         | 'Revision Requested'
         | 'Unassigned';
+}
+
+export interface MediaTableRow {
+    id: string | number;
+    isci: string;
+    cutName: string;
+    duration: string;
+    dueDate: string;
+    assigned: User[];
+    status: VenueItemStatus['type'];
     previewIcons: React.ReactNode[]; // Array of icon components
     /** Optional video URL for the preview (eye) modal. When absent, a default placeholder video is used. */
     previewVideoUrl?: string | null;
@@ -225,14 +230,7 @@ export interface StaticAssetsTableRow {
     height: number;
     dueDate: string; // e.g., "1/15/25"
     assigned: User[];
-    status:
-        | 'Still in Cart'
-        | 'Client Review'
-        | 'In Production'
-        | 'Out for Delivery'
-        | 'Cancelled'
-        | 'Revision Requested'
-        | 'Unassigned';
+    status: VenueItemStatus['type'];
     deliverables?: {
         onReject?: () => void;
         onApprove?: () => void;
@@ -268,7 +266,7 @@ export interface VenueItemsMediaRow extends VenueItemsRowBase {
     type: 'media';
     isci: string;
     duration: string;
-    status: MediaTableRow['status'];
+    status_id: number;
     previewIcons: React.ReactNode[];
     previewVideoUrl?: string | null;
     deliverables?: MediaTableRow['deliverables'];
@@ -279,7 +277,7 @@ export interface VenueItemsStaticRow extends VenueItemsRowBase {
     type: 'static';
     width: number;
     height: number;
-    status: StaticAssetsTableRow['status'];
+    status_id: number;
     deliverables?: StaticAssetsTableRow['deliverables'];
     order_id?: number;
 }

@@ -9,6 +9,7 @@ import {
     type User,
     type Venue,
     type VenueItemAssigned,
+    type VenueItemStatus,
     type VenueItemsRow,
 } from '@/types';
 
@@ -2486,6 +2487,16 @@ export const venueItemAssigned: VenueItemAssigned[] = [
     { id: 13, venue_item_id: 17, mockUser_id: 3 },
 ];
 
+export const venueItemStatus: VenueItemStatus[] = [
+    { id: 1, type: 'Still in Cart' },
+    { id: 2, type: 'Client Review' },
+    { id: 3, type: 'In Production' },
+    { id: 4, type: 'Out for Delivery' },
+    { id: 5, type: 'Cancelled' },
+    { id: 6, type: 'Revision Requested' },
+    { id: 7, type: 'Unassigned' },
+];
+
 // Venue items data (unified base table - media, static, localized)
 export const venueItemsData: VenueItemsRow[] = [
     // Media rows (id 1-7)
@@ -2497,7 +2508,7 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818843',
         duration: ':45',
         dueDate: '1/15/25',
-        status: 'Still in Cart',
+        status_id: 1,
         previewIcons: [],
         deliverables: { onReject: () => {}, onApprove: () => {} },
     },
@@ -2509,7 +2520,7 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818847',
         duration: ':30',
         dueDate: '1/15/25',
-        status: 'Client Review',
+        status_id: 2,
         previewIcons: [],
         deliverables: { onReject: () => {}, onApprove: () => {} },
     },
@@ -2521,7 +2532,7 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818848',
         duration: ':15',
         dueDate: '1/18/25',
-        status: 'In Production',
+        status_id: 3,
         previewIcons: [],
         deliverables: { onReject: () => {}, onApprove: () => {} },
     },
@@ -2533,7 +2544,7 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818849',
         duration: ':60',
         dueDate: '1/20/25',
-        status: 'Out for Delivery',
+        status_id: 4,
         previewIcons: [],
         deliverables: { onReject: () => {}, onApprove: () => {} },
     },
@@ -2545,7 +2556,7 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818850',
         duration: ':30',
         dueDate: '1/22/25',
-        status: 'Cancelled',
+        status_id: 5,
         previewIcons: [],
         deliverables: undefined,
     },
@@ -2557,7 +2568,7 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818851',
         duration: ':45',
         dueDate: '1/25/25',
-        status: 'Revision Requested',
+        status_id: 6,
         previewIcons: [],
         deliverables: { onReject: () => {}, onApprove: () => {} },
     },
@@ -2569,7 +2580,7 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818852',
         duration: ':20',
         dueDate: '1/28/25',
-        status: 'Unassigned',
+        status_id: 7,
         previewIcons: [],
         deliverables: undefined,
     },
@@ -2582,7 +2593,7 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/15/25',
-        status: 'Still in Cart',
+        status_id: 1,
     },
     {
         id: 9,
@@ -2592,7 +2603,7 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/15/25',
-        status: 'Client Review',
+        status_id: 2,
         deliverables: { onReject: () => {}, onApprove: () => {} },
     },
     {
@@ -2603,7 +2614,7 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/18/25',
-        status: 'In Production',
+        status_id: 3,
     },
     {
         id: 11,
@@ -2613,7 +2624,7 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/20/25',
-        status: 'Out for Delivery',
+        status_id: 4,
         deliverables: { onReject: () => {}, onApprove: () => {} },
     },
     {
@@ -2624,7 +2635,7 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/22/25',
-        status: 'Cancelled',
+        status_id: 5,
     },
     {
         id: 13,
@@ -2634,7 +2645,7 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/25/25',
-        status: 'Revision Requested',
+        status_id: 6,
     },
     {
         id: 14,
@@ -2644,7 +2655,7 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/28/25',
-        status: 'Unassigned',
+        status_id: 7,
     },
     // Localized rows (id 15-17)
     {
