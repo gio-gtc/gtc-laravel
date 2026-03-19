@@ -4,6 +4,7 @@ import {
     venueItemsData,
 } from '@/components/mockdata';
 import {
+    getAssignedUsersForVenueItem,
     venueItemsMediaTableRow,
     venueItemsStaticTableRow,
 } from '@/components/utils/venue-items';
@@ -71,7 +72,10 @@ function GeneralMediaView({
                     r.tour_venue_id === venueItem.orderVenue.id,
             )
             .map((row) => {
-                const mediaRow = venueItemsMediaTableRow(row);
+                const mediaRow = venueItemsMediaTableRow(
+                    row,
+                    getAssignedUsersForVenueItem(row.id),
+                );
                 return {
                     ...mediaRow,
                     previewIcons:
@@ -100,7 +104,10 @@ function GeneralMediaView({
                     r.tour_venue_id === venueItem.orderVenue.id,
             )
             .map((row) => {
-                const staticRow = venueItemsStaticTableRow(row);
+                const staticRow = venueItemsStaticTableRow(
+                    row,
+                    getAssignedUsersForVenueItem(row.id),
+                );
                 return {
                     ...staticRow,
                     deliverables: row.deliverables

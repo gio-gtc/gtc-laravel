@@ -12,7 +12,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { UserAvatar } from '@/components/ui/user-avatar';
+import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { cn } from '@/lib/utils';
 import type {
     StaticAssetsMediaTableProps,
@@ -139,9 +139,10 @@ export default function StaticAssetsMediaTable({
                                                     {row.dueDate}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {row.assigned && (
-                                                        <UserAvatar
-                                                            user={row.assigned}
+                                                    {row.assigned.length >
+                                                        0 && (
+                                                        <UserAvatarsStack
+                                                            users={row.assigned}
                                                         />
                                                     )}
                                                 </TableCell>

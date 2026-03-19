@@ -178,13 +178,19 @@ export interface VenueCollaborator {
     mockUser_id: number;
 }
 
+export interface VenueItemAssigned {
+    id: number;
+    venue_item_id: number;
+    mockUser_id: number;
+}
+
 export interface MediaTableRow {
     id: string | number;
     isci: string;
     cutName: string;
     duration: string; // e.g., ":45"
     dueDate: string; // e.g., "1/15/25"
-    assigned: User | null;
+    assigned: User[];
     status:
         | 'Still in Cart'
         | 'Client Review'
@@ -224,7 +230,7 @@ export interface StaticAssetsTableRow {
     width: number;
     height: number;
     dueDate: string; // e.g., "1/15/25"
-    assigned: User | null;
+    assigned: User[];
     status:
         | 'Still in Cart'
         | 'Client Review'
@@ -261,7 +267,6 @@ export interface VenueItemsRowBase {
     tour_venue_id: number;
     type: VenueItemsRowType;
     dueDate: string;
-    assigned: User | null;
     label: string;
 }
 
@@ -305,7 +310,7 @@ export interface LocalizedArtTableRow {
     height: number;
     cta: string;
     dueDate: string;
-    assigned: User | null;
+    assigned: User[];
     notes?: LocalizedArtNote[];
 }
 

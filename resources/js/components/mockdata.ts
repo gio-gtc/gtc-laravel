@@ -9,6 +9,7 @@ import {
     type User,
     type Venue,
     type VenueCollaborator,
+    type VenueItemAssigned,
     type VenueItemsRow,
 } from '@/types';
 
@@ -2495,8 +2496,22 @@ export const invoiceItemsData: InvoiceItem[] = [
     },
 ];
 
-// Default user for slideout mock data (from mockUsers)
-const slideoutAssignedUser = mockUsers.find((u) => u.id === 3) ?? mockUsers[0];
+// Per–venue-item assignees (join mockUsers); no rows when unassigned
+export const venueItemAssigned: VenueItemAssigned[] = [
+    { id: 1, venue_item_id: 2, mockUser_id: 3 },
+    { id: 2, venue_item_id: 2, mockUser_id: 6 },
+    { id: 3, venue_item_id: 3, mockUser_id: 3 },
+    { id: 4, venue_item_id: 3, mockUser_id: 6 },
+    { id: 5, venue_item_id: 4, mockUser_id: 3 },
+    { id: 6, venue_item_id: 6, mockUser_id: 3 },
+    { id: 7, venue_item_id: 9, mockUser_id: 3 },
+    { id: 8, venue_item_id: 10, mockUser_id: 3 },
+    { id: 9, venue_item_id: 11, mockUser_id: 3 },
+    { id: 10, venue_item_id: 13, mockUser_id: 3 },
+    { id: 11, venue_item_id: 15, mockUser_id: 3 },
+    { id: 12, venue_item_id: 16, mockUser_id: 3 },
+    { id: 13, venue_item_id: 17, mockUser_id: 3 },
+];
 
 // Venue items data (unified base table - media, static, localized)
 export const venueItemsData: VenueItemsRow[] = [
@@ -2509,7 +2524,6 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818843',
         duration: ':45',
         dueDate: '1/15/25',
-        assigned: null,
         status: 'Still in Cart',
         previewIcons: [],
         deliverables: { onReject: () => {}, onApprove: () => {} },
@@ -2522,7 +2536,6 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818847',
         duration: ':30',
         dueDate: '1/15/25',
-        assigned: slideoutAssignedUser,
         status: 'Client Review',
         previewIcons: [],
         deliverables: { onReject: () => {}, onApprove: () => {} },
@@ -2535,7 +2548,6 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818848',
         duration: ':15',
         dueDate: '1/18/25',
-        assigned: slideoutAssignedUser,
         status: 'In Production',
         previewIcons: [],
         deliverables: { onReject: () => {}, onApprove: () => {} },
@@ -2548,7 +2560,6 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818849',
         duration: ':60',
         dueDate: '1/20/25',
-        assigned: slideoutAssignedUser,
         status: 'Out for Delivery',
         previewIcons: [],
         deliverables: { onReject: () => {}, onApprove: () => {} },
@@ -2561,7 +2572,6 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818850',
         duration: ':30',
         dueDate: '1/22/25',
-        assigned: null,
         status: 'Cancelled',
         previewIcons: [],
         deliverables: undefined,
@@ -2574,7 +2584,6 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818851',
         duration: ':45',
         dueDate: '1/25/25',
-        assigned: slideoutAssignedUser,
         status: 'Revision Requested',
         previewIcons: [],
         deliverables: { onReject: () => {}, onApprove: () => {} },
@@ -2587,7 +2596,6 @@ export const venueItemsData: VenueItemsRow[] = [
         isci: 'GTC1818852',
         duration: ':20',
         dueDate: '1/28/25',
-        assigned: null,
         status: 'Unassigned',
         previewIcons: [],
         deliverables: undefined,
@@ -2601,7 +2609,6 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/15/25',
-        assigned: null,
         status: 'Still in Cart',
     },
     {
@@ -2612,7 +2619,6 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/15/25',
-        assigned: slideoutAssignedUser,
         status: 'Client Review',
         deliverables: { onReject: () => {}, onApprove: () => {} },
     },
@@ -2624,7 +2630,6 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/18/25',
-        assigned: slideoutAssignedUser,
         status: 'In Production',
     },
     {
@@ -2635,7 +2640,6 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/20/25',
-        assigned: slideoutAssignedUser,
         status: 'Out for Delivery',
         deliverables: { onReject: () => {}, onApprove: () => {} },
     },
@@ -2647,7 +2651,6 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/22/25',
-        assigned: null,
         status: 'Cancelled',
     },
     {
@@ -2658,7 +2661,6 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/25/25',
-        assigned: slideoutAssignedUser,
         status: 'Revision Requested',
     },
     {
@@ -2669,7 +2671,6 @@ export const venueItemsData: VenueItemsRow[] = [
         width: 1400,
         height: 400,
         dueDate: '1/28/25',
-        assigned: null,
         status: 'Unassigned',
     },
     // Localized rows (id 15-17)
@@ -2682,7 +2683,6 @@ export const venueItemsData: VenueItemsRow[] = [
         height: 400,
         cta: 'Save the Date',
         dueDate: '1/15/25',
-        assigned: slideoutAssignedUser,
         notes: [
             {
                 text: 'Do not put city/state on artwork even though the admat has it.',
@@ -2703,7 +2703,6 @@ export const venueItemsData: VenueItemsRow[] = [
         height: 400,
         cta: 'Last Chance',
         dueDate: '1/15/25',
-        assigned: slideoutAssignedUser,
     },
     {
         id: 17,
@@ -2714,6 +2713,5 @@ export const venueItemsData: VenueItemsRow[] = [
         height: 400,
         cta: 'Black Friday Sale',
         dueDate: '1/15/25',
-        assigned: slideoutAssignedUser,
     },
 ];

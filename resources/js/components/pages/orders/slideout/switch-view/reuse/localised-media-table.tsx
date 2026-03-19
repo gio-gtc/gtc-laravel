@@ -12,7 +12,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { UserAvatar } from '@/components/ui/user-avatar';
+import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { useInitials } from '@/hooks/use-initials';
 import type { LocalizedArtTableProps } from '@/types';
 import { ChevronDown, ChevronRight, Paperclip, Plus } from 'lucide-react';
@@ -102,9 +102,9 @@ export default function LocalizedArtTable({
                                             <TableCell>{row.cta}</TableCell>
                                             <TableCell>{row.dueDate}</TableCell>
                                             <TableCell>
-                                                {row.assigned && (
-                                                    <UserAvatar
-                                                        user={row.assigned}
+                                                {row.assigned.length > 0 && (
+                                                    <UserAvatarsStack
+                                                        users={row.assigned}
                                                     />
                                                 )}
                                             </TableCell>

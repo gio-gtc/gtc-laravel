@@ -1,5 +1,8 @@
 import { venueItemsData } from '@/components/mockdata';
-import { venueItemsLocalizedTableRow } from '@/components/utils/venue-items';
+import {
+    getAssignedUsersForVenueItem,
+    venueItemsLocalizedTableRow,
+} from '@/components/utils/venue-items';
 import {
     type LocalizedArtTableRow,
     type TourVenue,
@@ -29,7 +32,12 @@ function LocalArtView({ venueItem }: LocalArtViewProps) {
                     r.type === 'localized' &&
                     r.tour_venue_id === venueItem.orderVenue.id,
             )
-            .map(venueItemsLocalizedTableRow);
+            .map((row) =>
+                venueItemsLocalizedTableRow(
+                    row,
+                    getAssignedUsersForVenueItem(row.id),
+                ),
+            );
     }, [venueItem]);
 
     return (

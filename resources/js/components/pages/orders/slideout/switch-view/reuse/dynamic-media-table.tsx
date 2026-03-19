@@ -18,7 +18,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { UserAvatar } from '@/components/ui/user-avatar';
+import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { cn } from '@/lib/utils';
 import { MediaTableProps, MediaTableRow } from '@/types';
 import { AudioLines, ChevronDown, ChevronRight, Plus } from 'lucide-react';
@@ -194,9 +194,10 @@ export default function MediaTable({
                                                     {row.dueDate}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {row.assigned && (
-                                                        <UserAvatar
-                                                            user={row.assigned}
+                                                    {row.assigned.length >
+                                                        0 && (
+                                                        <UserAvatarsStack
+                                                            users={row.assigned}
                                                         />
                                                     )}
                                                 </TableCell>
