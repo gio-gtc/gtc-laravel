@@ -106,7 +106,9 @@ export default function InvoiceDetailSlideout({
     // Get filtered invoice items for the current invoice
     const invoiceItems = useMemo(() => {
         if (!invoice) return [];
-        return invoiceItemsData.filter((item) => item.invoice_id === invoice.id);
+        return invoiceItemsData.filter(
+            (item) => item.invoice_id === invoice.id,
+        );
     }, [invoice]);
 
     // Use editable table hook
@@ -131,7 +133,7 @@ export default function InvoiceDetailSlideout({
 
     const handleAddItem = () => {
         if (!invoice) return;
-        const tempId = -Date.now();
+        const tempId = Date.now();
         const newItem: InvoiceItem = {
             id: tempId,
             order_id: firstOrderId,

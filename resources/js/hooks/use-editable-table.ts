@@ -1,4 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import {
+    useEffect,
+    useRef,
+    useState,
+    type KeyboardEvent,
+} from 'react';
 
 interface UseEditableTableOptions<T> {
     data: T[];
@@ -7,11 +12,17 @@ interface UseEditableTableOptions<T> {
 }
 
 interface UseEditableTableReturn<T> {
-    editingCell: { itemId: number | string; field: string } | null;
+    editingCell: {
+        itemId: number | string;
+        field: string;
+        /** Disambiguates the same row id rendered in multiple tables (e.g. venue media). */
+        scope?: string;
+    } | null;
     localData: T[];
     handleDoubleClick: (
         itemId: number | string,
         field: string,
+        scope?: string,
     ) => void;
     handleCellChange: (
         itemId: number | string,
@@ -20,14 +31,23 @@ interface UseEditableTableReturn<T> {
     ) => void;
     handleCellBlur: () => void;
     handleCellKeyDown: (
-        e: React.KeyboardEvent<HTMLInputElement>,
+        e: KeyboardEvent<HTMLInputElement>,
         itemId: number | string,
         field: string,
+        scope?: string,
     ) => void;
-    isEditing: (itemId: number | string, field: string) => boolean;
+    isEditing: (
+        itemId: number | string,
+        field: string,
+        scope?: string,
+    ) => boolean;
     addItem: (item: T) => void;
     removeItem: (itemId: number | string) => void;
-    startEditing: (itemId: number | string, field: string) => void;
+    startEditing: (
+        itemId: number | string,
+        field: string,
+        scope?: string,
+    ) => void;
 }
 
 export function useEditableTable<T extends object>({
@@ -39,6 +59,7 @@ export function useEditableTable<T extends object>({
     const [editingCell, setEditingCell] = useState<{
         itemId: number | string;
         field: string;
+        scope?: string;
     } | null>(null);
 
     // State to store original value when editing starts (for Escape key)
@@ -62,13 +83,14 @@ export function useEditableTable<T extends object>({
     const handleDoubleClick = (
         itemId: number | string,
         field: string,
+        scope?: string,
     ) => {
-        const item = localData.find((i) => getId(i) === itemId);
+        const item = localDataRef.current.find((i) => getId(i) === itemId);
         if (item) {
             setOriginalValue(
                 (item[field as keyof T] as string | number) || null,
             );
-            setEditingCell({ itemId, field });
+            setEditingCell({ itemId, field, scope });
         }
     };
 
@@ -101,9 +123,10 @@ export function useEditableTable<T extends object>({
 
     // Handle keyboard events
     const handleCellKeyDown = (
-        e: React.KeyboardEvent<HTMLInputElement>,
+        e: KeyboardEvent<HTMLInputElement>,
         itemId: number | string,
         field: string,
+        _scope?: string,
     ) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -128,9 +151,12 @@ export function useEditableTable<T extends object>({
     const isEditing = (
         itemId: number | string,
         field: string,
+        scope?: string,
     ): boolean => {
         return (
-            editingCell?.itemId === itemId && editingCell?.field === field
+            editingCell?.itemId === itemId &&
+            editingCell?.field === field &&
+            editingCell?.scope === scope
         );
     };
 
@@ -157,13 +183,17 @@ export function useEditableTable<T extends object>({
     };
 
     // Programmatically start editing a cell (uses ref to support immediate use after addItem)
-    const startEditing = (itemId: number | string, field: string) => {
+    const startEditing = (
+        itemId: number | string,
+        field: string,
+        scope?: string,
+    ) => {
         const item = localDataRef.current.find((i) => getId(i) === itemId);
         const value = item
             ? ((item[field as keyof T] as string | number) ?? null)
             : null;
         setOriginalValue(value);
-        setEditingCell({ itemId, field });
+        setEditingCell({ itemId, field, scope });
     };
 
     return {

@@ -1,5 +1,31 @@
 import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
+import type { KeyboardEvent } from 'react';
+
+export interface VenueTableCellEditing {
+    onCellChange: (
+        itemId: number | string,
+        field: string,
+        value: string | number,
+    ) => void;
+    onCellDoubleClick: (
+        itemId: number | string,
+        field: string,
+        scope?: string,
+    ) => void;
+    onCellBlur: () => void;
+    onCellKeyDown: (
+        e: KeyboardEvent<HTMLInputElement>,
+        itemId: number | string,
+        field: string,
+        scope?: string,
+    ) => void;
+    isCellEditing: (
+        itemId: number | string,
+        field: string,
+        scope?: string,
+    ) => boolean;
+}
 
 export interface Auth {
     user: User;
@@ -221,6 +247,10 @@ export interface MediaTableProps {
     onUploadRow?: (row: MediaTableRow) => void;
     /** Called when a preview icon is clicked (row, iconIndex). Index 0 is typically the eye/preview icon. */
     onPreviewClick?: (row: MediaTableRow, iconIndex: number) => void;
+    /** When set, Cut Name uses EditableCellInput (parent should own useEditableTable) */
+    cellEditing?: VenueTableCellEditing;
+    /** Unique when the same `data` rows are shown in multiple MediaTables (general media: broadcast / social / audio). */
+    editScope?: string;
 }
 
 export interface StaticAssetsTableRow {
@@ -245,6 +275,8 @@ export interface StaticAssetsMediaTableProps {
     data: StaticAssetsTableRow[];
     defaultOpen?: boolean;
     onAdd?: () => void;
+    /** When set, Cut Name / W / H use EditableCellInput */
+    cellEditing?: VenueTableCellEditing;
 }
 
 export interface LocalizedArtNote {

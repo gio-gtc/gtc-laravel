@@ -125,7 +125,6 @@ export default function Filters({
 type RowWithStatus = {
     status: MediaTableRow['status'];
     order_id?: number;
-    [key: string]: unknown;
 };
 
 export function filterAndSortRows<T extends RowWithStatus>(

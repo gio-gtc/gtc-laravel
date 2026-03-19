@@ -7,7 +7,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { EditableTableCell } from '@/components/utils/editable-table-cell';
+import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
 import { formatCurrency } from '@/components/utils/functions';
 import { cn } from '@/lib/utils';
 import { type InvoiceItem } from '@/types';
@@ -90,7 +90,7 @@ export default function InvoiceLineItemsTable({
                                     {item.id}
                                 </TableCell>
                                 <TableCell>
-                                    <EditableTableCell
+                                    <EditableCellInput
                                         value={item.code}
                                         itemId={item.id}
                                         field="code"
@@ -104,7 +104,7 @@ export default function InvoiceLineItemsTable({
                                     />
                                 </TableCell>
                                 <TableCell>
-                                    <EditableTableCell
+                                    <EditableCellInput
                                         value={item.description || ''}
                                         itemId={item.id}
                                         field="description"
@@ -128,7 +128,7 @@ export default function InvoiceLineItemsTable({
                                     />
                                 </TableCell>
                                 <TableCell>
-                                    <EditableTableCell
+                                    <EditableCellInput
                                         className="text-gray-400"
                                         value={item.quantity}
                                         itemId={item.id}
@@ -151,7 +151,7 @@ export default function InvoiceLineItemsTable({
                                     />
                                 </TableCell>
                                 <TableCell>
-                                    <EditableTableCell
+                                    <EditableCellInput
                                         className="text-gray-400"
                                         value={item.price}
                                         itemId={item.id}

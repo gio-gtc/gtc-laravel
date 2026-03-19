@@ -12,12 +12,14 @@ import { Button } from '@/components/ui/button';
 import {
     type Invoice,
     type MediaTableRow,
+    type StaticAssetsTableRow,
     type Tour,
     type TourVenue,
     type Venue,
     type VenueItemsMediaRow,
     type VenueItemsStaticRow,
 } from '@/types';
+import { useEditableTable } from '@/hooks/use-editable-table';
 import { Link, PlayIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import AttachmentsSection from '../reuse/attachments-section';
@@ -122,6 +124,30 @@ function GeneralMediaView({
             });
     }, [venueItem]);
 
+    const {
+        localData: localMediaRows,
+        handleDoubleClick: handleMediaCellDoubleClick,
+        handleCellChange: handleMediaCellChange,
+        handleCellBlur: handleMediaCellBlur,
+        handleCellKeyDown: handleMediaCellKeyDown,
+        isEditing: isMediaCellEditing,
+    } = useEditableTable<MediaTableRow>({
+        data: venueMediaWithCallbacks,
+        getId: (r) => r.id,
+    });
+
+    const {
+        localData: localStaticRows,
+        handleDoubleClick: handleStaticCellDoubleClick,
+        handleCellChange: handleStaticCellChange,
+        handleCellBlur: handleStaticCellBlur,
+        handleCellKeyDown: handleStaticCellKeyDown,
+        isEditing: isStaticCellEditing,
+    } = useEditableTable<StaticAssetsTableRow>({
+        data: venueStaticAssetsWithCallbacks,
+        getId: (r) => r.id,
+    });
+
     const [audioModalOpen, setAudioModalOpen] = useState(false);
     const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
     const [keyArtModalOpen, setKeyArtModalOpen] = useState(false);
@@ -150,18 +176,25 @@ function GeneralMediaView({
 
     const orders = venueItem ? venueOrders : [];
 
+    const sharedMediaCellEditing = {
+        onCellChange: handleMediaCellChange,
+        onCellDoubleClick: handleMediaCellDoubleClick,
+        onCellBlur: handleMediaCellBlur,
+        onCellKeyDown: handleMediaCellKeyDown,
+        isCellEditing: isMediaCellEditing,
+    };
+
     const filteredMediaData = useMemo(
         () =>
             filterAndSortRows(
-                venueMediaWithCallbacks,
+                localMediaRows,
                 orders,
                 statusFilter,
                 sortDirection,
             ),
         [
-            venueMediaWithCallbacks,
-            venueItem,
-            venueOrders,
+            localMediaRows,
+            orders,
             statusFilter,
             sortDirection,
         ],
@@ -170,15 +203,14 @@ function GeneralMediaView({
     const filteredStaticAssetsData = useMemo(
         () =>
             filterAndSortRows(
-                venueStaticAssetsWithCallbacks,
+                localStaticRows,
                 orders,
                 statusFilter,
                 sortDirection,
             ),
         [
-            venueStaticAssetsWithCallbacks,
-            venueItem,
-            venueOrders,
+            localStaticRows,
+            orders,
             statusFilter,
             sortDirection,
         ],
@@ -197,6 +229,8 @@ function GeneralMediaView({
                 <MediaTable
                     title="Broadcast & Streaming Video"
                     data={filteredMediaData}
+                    cellEditing={sharedMediaCellEditing}
+                    editScope="broadcast"
                     onAdd={() => setBroadcastModalOpen(true)}
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
@@ -212,6 +246,8 @@ function GeneralMediaView({
                 <MediaTable
                     title="Social Video"
                     data={filteredMediaData}
+                    cellEditing={sharedMediaCellEditing}
+                    editScope="social"
                     onAdd={() => setSocialVideoModalOpen(true)}
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
@@ -227,6 +263,8 @@ function GeneralMediaView({
                 <MediaTable
                     title="Audio"
                     data={filteredMediaData}
+                    cellEditing={sharedMediaCellEditing}
+                    editScope="audio"
                     onAdd={() => setAudioModalOpen(true)}
                     previewVariant="audio"
                     onUploadRow={(row) =>
@@ -243,6 +281,13 @@ function GeneralMediaView({
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
                     data={filteredStaticAssetsData}
+                    cellEditing={{
+                        onCellChange: handleStaticCellChange,
+                        onCellDoubleClick: handleStaticCellDoubleClick,
+                        onCellBlur: handleStaticCellBlur,
+                        onCellKeyDown: handleStaticCellKeyDown,
+                        isCellEditing: isStaticCellEditing,
+                    }}
                     onAdd={() => setKeyArtModalOpen(true)}
                 />
             </div>

@@ -2,7 +2,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
 
-interface EditableTableCellProps {
+interface EditableCellInputProps {
     value: string | number;
     itemId: number | string;
     field: string;
@@ -32,7 +32,7 @@ interface EditableTableCellProps {
     emptyPlaceholder?: string;
 }
 
-export function EditableTableCell({
+export function EditableCellInput({
     value,
     itemId,
     field,
@@ -50,7 +50,7 @@ export function EditableTableCell({
     disabled = false,
     emptyValue,
     emptyPlaceholder,
-}: EditableTableCellProps) {
+}: EditableCellInputProps) {
     const isEmpty =
         emptyValue !== undefined &&
         (value === emptyValue || (type === 'number' && Number(value) === 0));
@@ -103,7 +103,7 @@ export function EditableTableCell({
                 min={min}
                 step={step}
                 disabled={disabled}
-                className={cn('h-8 w-full', alignmentClasses[align], className)}
+                className={cn('w-full', alignmentClasses[align], className)}
             />
         );
     }
@@ -112,8 +112,9 @@ export function EditableTableCell({
         <p
             onDoubleClick={handleDoubleClick}
             className={cn(
-                'xs-gray-500-weight-600',
-                disabled ? 'cursor-default' : 'cursor-pointer',
+                disabled
+                    ? 'cursor-default'
+                    : 'xs-gray-500-weight-600 cursor-pointer',
                 alignmentClasses[align],
                 className,
             )}

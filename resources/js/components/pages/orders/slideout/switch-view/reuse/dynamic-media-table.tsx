@@ -19,6 +19,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
+import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
 import { cn } from '@/lib/utils';
 import { MediaTableProps, MediaTableRow } from '@/types';
 import { AudioLines, ChevronDown, ChevronRight, Plus } from 'lucide-react';
@@ -60,6 +61,8 @@ export default function MediaTable({
     previewVariant = 'default',
     onUploadRow,
     onPreviewClick,
+    cellEditing,
+    editScope,
 }: MediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -185,7 +188,52 @@ export default function MediaTable({
                                                     </DropdownMenu>
                                                 </TableCell>
                                                 <TableCell>
-                                                    {row.cutName}
+                                                    {cellEditing ? (
+                                                        <EditableCellInput
+                                                            value={row.cutName}
+                                                            itemId={row.id}
+                                                            field="cutName"
+                                                            type="text"
+                                                            onChange={
+                                                                cellEditing.onCellChange
+                                                            }
+                                                            onDoubleClick={(
+                                                                id,
+                                                                field,
+                                                            ) =>
+                                                                cellEditing.onCellDoubleClick(
+                                                                    id,
+                                                                    field,
+                                                                    editScope,
+                                                                )
+                                                            }
+                                                            onBlur={
+                                                                cellEditing.onCellBlur
+                                                            }
+                                                            onKeyDown={(
+                                                                e,
+                                                                id,
+                                                                field,
+                                                            ) =>
+                                                                cellEditing.onCellKeyDown(
+                                                                    e,
+                                                                    id,
+                                                                    field,
+                                                                    editScope,
+                                                                )
+                                                            }
+                                                            isEditing={cellEditing.isCellEditing(
+                                                                row.id,
+                                                                'cutName',
+                                                                editScope,
+                                                            )}
+                                                            disabled={
+                                                                isDisabledRow
+                                                            }
+                                                        />
+                                                    ) : (
+                                                        row.cutName
+                                                    )}
                                                 </TableCell>
                                                 <TableCell>
                                                     {row.duration}

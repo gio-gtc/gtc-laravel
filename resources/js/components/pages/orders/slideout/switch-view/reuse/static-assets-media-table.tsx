@@ -13,6 +13,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
+import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
 import { cn } from '@/lib/utils';
 import type {
     StaticAssetsMediaTableProps,
@@ -56,6 +57,7 @@ export default function StaticAssetsMediaTable({
     data,
     defaultOpen = true,
     onAdd,
+    cellEditing,
 }: StaticAssetsMediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -127,13 +129,109 @@ export default function StaticAssetsMediaTable({
                                                 )}
                                             >
                                                 <TableCell>
-                                                    {row.cutName}
+                                                    {cellEditing ? (
+                                                        <EditableCellInput
+                                                            value={row.cutName}
+                                                            itemId={row.id}
+                                                            field="cutName"
+                                                            type="text"
+                                                            onChange={
+                                                                cellEditing.onCellChange
+                                                            }
+                                                            onDoubleClick={
+                                                                cellEditing.onCellDoubleClick
+                                                            }
+                                                            onBlur={
+                                                                cellEditing.onCellBlur
+                                                            }
+                                                            onKeyDown={
+                                                                cellEditing.onCellKeyDown
+                                                            }
+                                                            isEditing={cellEditing.isCellEditing(
+                                                                row.id,
+                                                                'cutName',
+                                                            )}
+                                                            disabled={
+                                                                isDisabledRow
+                                                            }
+                                                        />
+                                                    ) : (
+                                                        row.cutName
+                                                    )}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {row.width}
+                                                    {cellEditing ? (
+                                                        <EditableCellInput
+                                                            className=""
+                                                            value={row.width}
+                                                            itemId={row.id}
+                                                            field="width"
+                                                            type="number"
+                                                            min={0}
+                                                            step={1}
+                                                            emptyValue={0}
+                                                            emptyPlaceholder="0"
+                                                            onChange={
+                                                                cellEditing.onCellChange
+                                                            }
+                                                            onDoubleClick={
+                                                                cellEditing.onCellDoubleClick
+                                                            }
+                                                            onBlur={
+                                                                cellEditing.onCellBlur
+                                                            }
+                                                            onKeyDown={
+                                                                cellEditing.onCellKeyDown
+                                                            }
+                                                            isEditing={cellEditing.isCellEditing(
+                                                                row.id,
+                                                                'width',
+                                                            )}
+                                                            align="center"
+                                                            disabled={
+                                                                isDisabledRow
+                                                            }
+                                                        />
+                                                    ) : (
+                                                        row.width
+                                                    )}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {row.height}
+                                                    {cellEditing ? (
+                                                        <EditableCellInput
+                                                            className="text-gray-400"
+                                                            value={row.height}
+                                                            itemId={row.id}
+                                                            field="height"
+                                                            type="number"
+                                                            min={0}
+                                                            step={1}
+                                                            emptyValue={0}
+                                                            emptyPlaceholder="0"
+                                                            onChange={
+                                                                cellEditing.onCellChange
+                                                            }
+                                                            onDoubleClick={
+                                                                cellEditing.onCellDoubleClick
+                                                            }
+                                                            onBlur={
+                                                                cellEditing.onCellBlur
+                                                            }
+                                                            onKeyDown={
+                                                                cellEditing.onCellKeyDown
+                                                            }
+                                                            isEditing={cellEditing.isCellEditing(
+                                                                row.id,
+                                                                'height',
+                                                            )}
+                                                            align="center"
+                                                            disabled={
+                                                                isDisabledRow
+                                                            }
+                                                        />
+                                                    ) : (
+                                                        row.height
+                                                    )}
                                                 </TableCell>
                                                 <TableCell>
                                                     {row.dueDate}

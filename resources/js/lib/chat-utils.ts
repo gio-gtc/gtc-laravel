@@ -31,24 +31,6 @@ function nodeToText(node: any): string {
 
 /** TipTap JSON doc or string → plain text for display. */
 export function messageContentToText(content: any): string {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/f262f02f-61a3-4dd5-8909-48951be086c9', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            location: 'chat-utils.ts:messageContentToText:entry',
-            message: 'messageContentToText called',
-            data: {
-                contentType: typeof content,
-                isDoc: content?.type === 'doc',
-                blockTypes: content?.type === 'doc' ? (content.content ?? []).map((b: any) => b?.type) : [],
-            },
-            timestamp: Date.now(),
-            sessionId: 'debug-session',
-            hypothesisId: 'H1',
-        }),
-    }).catch(() => {});
-    // #endregion
     if (typeof content === 'string') return content;
     if (content?.type === 'doc') {
         const blocks = content.content ?? [];
@@ -59,20 +41,6 @@ export function messageContentToText(content: any): string {
         });
         const result = parts.join('').trim();
         const out = result === '' ? '(Empty)' : result;
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/f262f02f-61a3-4dd5-8909-48951be086c9', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                location: 'chat-utils.ts:messageContentToText:exit',
-                message: 'messageContentToText result',
-                data: { resultLength: out.length, resultPreview: out.slice(0, 50), partsLength: parts.length },
-                timestamp: Date.now(),
-                sessionId: 'debug-session',
-                hypothesisId: 'H1',
-            }),
-        }).catch(() => {});
-        // #endregion
         return out;
     }
     return 'Unsupported content';
