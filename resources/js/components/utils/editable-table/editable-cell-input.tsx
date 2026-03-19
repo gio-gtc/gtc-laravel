@@ -103,7 +103,11 @@ export function EditableCellInput({
                 min={min}
                 step={step}
                 disabled={disabled}
-                className={cn('w-full', alignmentClasses[align], className)}
+                className={cn(
+                    'xs-gray-700-weight-500 w-full p-0.5',
+                    alignmentClasses[align],
+                    className,
+                )}
             />
         );
     }
