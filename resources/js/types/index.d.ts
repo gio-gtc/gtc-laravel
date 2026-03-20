@@ -181,6 +181,9 @@ export interface TourVenue {
     >;
 }
 
+/** Single status flag from `TourVenue.status` (the array element type). */
+export type TourVenueStatusValue = TourVenue['status'][number];
+
 export interface Order {
     id: number;
     tour_venue_id: number;

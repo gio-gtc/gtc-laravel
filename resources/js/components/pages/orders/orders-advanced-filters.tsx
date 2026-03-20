@@ -11,18 +11,11 @@ import {
     DEFAULT_FILTERS,
 } from '@/hooks/use-orders-filters';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
+import { TOUR_VENUE_STATUS_OPTIONS } from '@/lib/tour-venue-status';
 import { cn } from '@/lib/utils';
-import { type TourVenue } from '@/types';
+import { type TourVenueStatusValue } from '@/types';
 import { Filter, X } from 'lucide-react';
 import { useMemo } from 'react';
-
-const STATUS_OPTIONS: { value: TourVenue['status']; label: string }[] = [
-    { value: 'edit', label: 'Edit' },
-    { value: 'in-progress', label: 'In Progress' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'paused', label: 'Paused' },
-    { value: 'completed', label: 'Completed' },
-];
 
 interface OrdersAdvancedFiltersProps {
     filter: OrdersFilterState;
@@ -63,7 +56,7 @@ export default function OrdersAdvancedFilters({
         onFilterChange(DEFAULT_FILTERS);
     };
 
-    const toggleStatus = (status: TourVenue['status']) => {
+    const toggleStatus = (status: TourVenueStatusValue) => {
         const isSelected = filter.statuses.includes(status);
         onFilterChange({
             ...filter,
@@ -137,9 +130,9 @@ export default function OrdersAdvancedFilters({
                     <div className="space-y-2">
                         <p className="text-sm font-medium">Status</p>
                         <div className="flex flex-wrap gap-2">
-                            {STATUS_OPTIONS.map((opt) => (
+                            {TOUR_VENUE_STATUS_OPTIONS.map((opt) => (
                                 <Button
-                                    key={opt.label}
+                                    key={opt.value}
                                     variant={
                                         filter.statuses.includes(opt.value)
                                             ? 'default'

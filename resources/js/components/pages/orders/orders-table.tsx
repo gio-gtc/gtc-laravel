@@ -295,9 +295,13 @@ function OrdersTable() {
                 }
             }
 
-            // Status filter
+            // Status filter: match if any selected status appears on the venue
             if (hasStatusFilter) {
-                if (!filters.statuses.includes(venueItem.orderVenue.status))
+                if (
+                    !filters.statuses.some((s) =>
+                        venueItem.orderVenue.status.includes(s),
+                    )
+                )
                     return false;
             }
 

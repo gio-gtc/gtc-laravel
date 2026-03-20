@@ -1,5 +1,6 @@
+import { TOUR_VENUE_STATUS_VALUES } from '@/lib/tour-venue-status';
+import { type TourVenueStatusValue } from '@/types';
 import { useEffect, useState } from 'react';
-import { type TourVenue } from '@/types';
 
 const STORAGE_KEY = 'gtc-orders-filters';
 
@@ -8,7 +9,7 @@ export type OrdersFilterState = {
     collaboratorIds: number[];
     myClients: boolean;
     myCollaborators: boolean;
-    statuses: TourVenue['status'][];
+    statuses: TourVenueStatusValue[];
     country: { us: boolean; international: boolean };
 };
 
@@ -20,14 +21,6 @@ export const DEFAULT_FILTERS: OrdersFilterState = {
     statuses: [],
     country: { us: true, international: true },
 };
-
-const VALID_STATUSES: TourVenue['status'][] = [
-    'completed',
-    'in-progress',
-    'pending',
-    'paused',
-    'edit',
-];
 
 function loadFilters(): OrdersFilterState {
     if (typeof window === 'undefined') return DEFAULT_FILTERS;
@@ -52,7 +45,7 @@ function loadFilters(): OrdersFilterState {
                     : DEFAULT_FILTERS.myCollaborators,
             statuses: Array.isArray(parsed.statuses)
                 ? parsed.statuses.filter((s) =>
-                      VALID_STATUSES.includes(s as TourVenue['status']),
+                      TOUR_VENUE_STATUS_VALUES.includes(s as TourVenueStatusValue),
                   )
                 : DEFAULT_FILTERS.statuses,
             country:
