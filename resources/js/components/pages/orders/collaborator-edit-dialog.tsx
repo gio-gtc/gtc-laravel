@@ -10,7 +10,7 @@ import { getUniqueAssignedUsersForTourVenue } from '@/components/utils/venue-ite
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { type User } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
-import UserMultiSelect from './user-multi-select';
+import UserMultiSelect from '@/components/utils/user-multi-select';
 
 interface CollaboratorEditDialogProps {
     tourVenueId: number;

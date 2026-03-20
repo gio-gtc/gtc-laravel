@@ -1,21 +1,20 @@
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Divider from '@/components/utils/divider';
+import FilterUserGroupSection from '@/components/utils/filter-user-group-section';
 import {
     type OrdersFilterState,
     DEFAULT_FILTERS,
 } from '@/hooks/use-orders-filters';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
-import { type TourVenue, type User } from '@/types';
+import { type TourVenue } from '@/types';
 import { Filter, X } from 'lucide-react';
 import { useMemo } from 'react';
-import UserMultiSelect from './user-multi-select';
 
 const STATUS_OPTIONS: { value: TourVenue['status']; label: string }[] = [
     { value: 'edit', label: 'Edit' },
@@ -92,86 +91,55 @@ export default function OrdersAdvancedFilters({
                 className="max-h-[80vh] w-80 overflow-y-auto p-4"
             >
                 <div className="space-y-4">
-                    {/* Clients Section */}
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                            <p className="text-sm font-medium text-muted-foreground">
-                                Clients
-                            </p>
-                            <label className="flex cursor-pointer items-center gap-2 text-sm">
-                                <Checkbox
-                                    checked={filter.myClients}
-                                    onCheckedChange={(checked) =>
-                                        onFilterChange({
-                                            ...filter,
-                                            myClients: !!checked,
-                                        })
-                                    }
-                                />
-                                My
-                            </label>
-                        </div>
-                        <div className="max-h-48 overflow-y-auto">
-                            <UserMultiSelect
-                                selectedUsers={selectedClients}
-                                onSelectionChange={(users) =>
-                                    onFilterChange({
-                                        ...filter,
-                                        clientIds: users.map((u) => u.id),
-                                    })
-                                }
-                                availableUsers={usersWithFallback.filter(
-                                    (u) => !filter.clientIds.includes(u.id),
-                                )}
-                            />
-                        </div>
-                    </div>
+                    <FilterUserGroupSection
+                        title="Clients"
+                        myChecked={filter.myClients}
+                        onMyChange={(checked) =>
+                            onFilterChange({
+                                ...filter,
+                                myClients: checked,
+                            })
+                        }
+                        selectedUsers={selectedClients}
+                        onUsersChange={(users) =>
+                            onFilterChange({
+                                ...filter,
+                                clientIds: users.map((u) => u.id),
+                            })
+                        }
+                        availableUsers={usersWithFallback.filter(
+                            (u) => !filter.clientIds.includes(u.id),
+                        )}
+                    />
 
-                    {/* Collaborators Section */}
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                            <p className="text-sm font-medium text-muted-foreground">
-                                Collaborators
-                            </p>
-                            <label className="flex cursor-pointer items-center gap-2 text-sm">
-                                <Checkbox
-                                    checked={filter.myCollaborators}
-                                    onCheckedChange={(checked) =>
-                                        onFilterChange({
-                                            ...filter,
-                                            myCollaborators: !!checked,
-                                        })
-                                    }
-                                />
-                                My
-                            </label>
-                        </div>
-                        <div className="max-h-48 overflow-y-auto">
-                            <UserMultiSelect
-                                selectedUsers={selectedCollaborators}
-                                onSelectionChange={(users: User[]) =>
-                                    onFilterChange({
-                                        ...filter,
-                                        collaboratorIds: users.map((u) => u.id),
-                                    })
-                                }
-                                availableUsers={usersWithFallback.filter(
-                                    (u) =>
-                                        !filter.collaboratorIds.includes(u.id),
-                                )}
-                            />
-                        </div>
-                    </div>
+                    <FilterUserGroupSection
+                        title="Collaborators"
+                        myChecked={filter.myCollaborators}
+                        onMyChange={(checked) =>
+                            onFilterChange({
+                                ...filter,
+                                myCollaborators: checked,
+                            })
+                        }
+                        selectedUsers={selectedCollaborators}
+                        onUsersChange={(users) =>
+                            onFilterChange({
+                                ...filter,
+                                collaboratorIds: users.map((u) => u.id),
+                            })
+                        }
+                        availableUsers={usersWithFallback.filter(
+                            (u) => !filter.collaboratorIds.includes(u.id),
+                        )}
+                    />
 
                     {/* Status Section */}
                     <div className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground">
-                            Status
-                        </p>
+                        <p className="text-sm font-medium">Status</p>
                         <div className="flex flex-wrap gap-2">
                             {STATUS_OPTIONS.map((opt) => (
                                 <Button
-                                    key={opt.value}
+                                    key={opt.label}
                                     variant={
                                         filter.statuses.includes(opt.value)
                                             ? 'default'
@@ -189,9 +157,7 @@ export default function OrdersAdvancedFilters({
 
                     {/* Country Section */}
                     <div className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground">
-                            Country
-                        </p>
+                        <p className="text-sm font-medium">Country</p>
                         <div className="flex flex-col gap-2 sm:flex-row">
                             <Button
                                 variant={
