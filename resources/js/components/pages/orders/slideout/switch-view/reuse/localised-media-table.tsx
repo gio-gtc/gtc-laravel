@@ -13,6 +13,8 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
+import { toggleRowSelectionOnRowClick } from '@/lib/row-select-toggle';
+import { cn } from '@/lib/utils';
 import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
 import { useInitials } from '@/hooks/use-initials';
 import type { LocalizedArtTableProps } from '@/types';
@@ -26,6 +28,8 @@ export default function LocalizedArtTable({
     onAdd,
     onOpenNotes,
     cellEditing,
+    selectedRowIds,
+    onRowSelectToggle,
 }: LocalizedArtTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const getInitials = useInitials();
@@ -94,7 +98,18 @@ export default function LocalizedArtTable({
                                     data.map((row) => (
                                         <TableRow
                                             key={row.id}
-                                            className="xs-gray-500-weight-600"
+                                            className={cn(
+                                                'xs-gray-500-weight-600',
+                                                selectedRowIds?.has(row.id) &&
+                                                    'bg-red-100',
+                                            )}
+                                            onClick={(e) =>
+                                                toggleRowSelectionOnRowClick(
+                                                    e,
+                                                    row.id,
+                                                    onRowSelectToggle,
+                                                )
+                                            }
                                         >
                                             <TableCell>
                                                 {cellEditing ? (

@@ -19,9 +19,15 @@ import SectionContainers from '../reuse/section-containers';
 
 interface LocalArtViewProps {
     venueItem: { orderVenue: TourVenue; venue: Venue | null } | null;
+    selectedRowIds: ReadonlySet<string | number>;
+    onRowSelectToggle: (rowId: string | number) => void;
 }
 
-function LocalArtView({ venueItem }: LocalArtViewProps) {
+function LocalArtView({
+    venueItem,
+    selectedRowIds,
+    onRowSelectToggle,
+}: LocalArtViewProps) {
     const [notesModalRow, setNotesModalRow] =
         useState<LocalizedArtTableRow | null>(null);
 
@@ -59,6 +65,8 @@ function LocalArtView({ venueItem }: LocalArtViewProps) {
                 <LocalizedArtTable
                     title="Localized Art"
                     data={localLocalizedRows}
+                    selectedRowIds={selectedRowIds}
+                    onRowSelectToggle={onRowSelectToggle}
                     onOpenNotes={(row) => setNotesModalRow(row)}
                     cellEditing={{
                         onCellChange: handleLocalizedCellChange,

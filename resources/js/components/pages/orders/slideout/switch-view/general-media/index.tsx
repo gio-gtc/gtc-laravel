@@ -43,6 +43,8 @@ import VideoPlayerModal from './modals/video-player-modal';
 interface GeneralMediaViewProps {
     order: Tour | null;
     venueItem: { orderVenue: TourVenue; venue: Venue | null } | null;
+    selectedRowIds: ReadonlySet<string | number>;
+    onRowSelectToggle: (rowId: string | number) => void;
     onOpenAttachModal?: (context?: {
         rowId: string | number;
         isci: string;
@@ -57,6 +59,8 @@ const defaultPreviewIcons = [
 function GeneralMediaView({
     order,
     venueItem,
+    selectedRowIds,
+    onRowSelectToggle,
     onOpenAttachModal,
 }: GeneralMediaViewProps) {
     const [revisionModalOpen, setRevisionModalOpen] = useState(false);
@@ -231,6 +235,8 @@ function GeneralMediaView({
                     data={filteredMediaData}
                     cellEditing={sharedMediaCellEditing}
                     editScope="broadcast"
+                    selectedRowIds={selectedRowIds}
+                    onRowSelectToggle={onRowSelectToggle}
                     onAdd={() => setBroadcastModalOpen(true)}
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
@@ -248,6 +254,8 @@ function GeneralMediaView({
                     data={filteredMediaData}
                     cellEditing={sharedMediaCellEditing}
                     editScope="social"
+                    selectedRowIds={selectedRowIds}
+                    onRowSelectToggle={onRowSelectToggle}
                     onAdd={() => setSocialVideoModalOpen(true)}
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
@@ -265,6 +273,8 @@ function GeneralMediaView({
                     data={filteredMediaData}
                     cellEditing={sharedMediaCellEditing}
                     editScope="audio"
+                    selectedRowIds={selectedRowIds}
+                    onRowSelectToggle={onRowSelectToggle}
                     onAdd={() => setAudioModalOpen(true)}
                     previewVariant="audio"
                     onUploadRow={(row) =>
@@ -281,6 +291,8 @@ function GeneralMediaView({
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
                     data={filteredStaticAssetsData}
+                    selectedRowIds={selectedRowIds}
+                    onRowSelectToggle={onRowSelectToggle}
                     cellEditing={{
                         onCellChange: handleStaticCellChange,
                         onCellDoubleClick: handleStaticCellDoubleClick,

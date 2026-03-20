@@ -251,6 +251,8 @@ export interface MediaTableProps {
     cellEditing?: VenueTableCellEditing;
     /** Unique when the same `data` rows are shown in multiple MediaTables (general media: broadcast / social / audio). */
     editScope?: string;
+    selectedRowIds?: ReadonlySet<string | number>;
+    onRowSelectToggle?: (rowId: string | number) => void;
 }
 
 export interface StaticAssetsTableRow {
@@ -277,6 +279,8 @@ export interface StaticAssetsMediaTableProps {
     onAdd?: () => void;
     /** When set, Cut Name / W / H use EditableCellInput */
     cellEditing?: VenueTableCellEditing;
+    selectedRowIds?: ReadonlySet<string | number>;
+    onRowSelectToggle?: (rowId: string | number) => void;
 }
 
 export interface LocalizedArtNote {
@@ -346,4 +350,6 @@ export interface LocalizedArtTableProps {
     onOpenNotes?: (row: LocalizedArtTableRow) => void;
     /** When set, Description / W / H / CTA use EditableCellInput */
     cellEditing?: VenueTableCellEditing;
+    selectedRowIds?: ReadonlySet<string | number>;
+    onRowSelectToggle?: (rowId: string | number) => void;
 }

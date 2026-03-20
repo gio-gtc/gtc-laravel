@@ -17,6 +17,7 @@ import { EditableCellInput } from '@/components/utils/editable-table/editable-ce
 import { EditableCellSelect } from '@/components/utils/editable-table/editable-cell-select';
 import { VENUE_ITEM_STATUS_SELECT_OPTIONS } from '@/components/utils/editable-table/venue-item-status-options';
 import { VenueItemStatusBadge } from '@/components/utils/venue-item-status-badge';
+import { toggleRowSelectionOnRowClick } from '@/lib/row-select-toggle';
 import { cn } from '@/lib/utils';
 import type {
     StaticAssetsMediaTableProps,
@@ -32,6 +33,8 @@ export default function StaticAssetsMediaTable({
     defaultOpen = true,
     onAdd,
     cellEditing,
+    selectedRowIds,
+    onRowSelectToggle,
 }: StaticAssetsMediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -100,7 +103,20 @@ export default function StaticAssetsMediaTable({
                                                     'xs-gray-500-weight-600',
                                                     isDisabledRow &&
                                                         'xs-gray-300-weight-600',
+                                                    selectedRowIds?.has(
+                                                        row.id,
+                                                    ) &&
+                                                        !isDisabledRow &&
+                                                        'bg-red-100',
                                                 )}
+                                                onClick={(e) =>
+                                                    toggleRowSelectionOnRowClick(
+                                                        e,
+                                                        row.id,
+                                                        onRowSelectToggle,
+                                                        isDisabledRow,
+                                                    )
+                                                }
                                             >
                                                 <TableCell>
                                                     {cellEditing ? (

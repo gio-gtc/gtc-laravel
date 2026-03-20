@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { type Tour, type TourVenue, type Venue } from '@/types';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import GeneralMediaView from './general-media';
 import LocalArtView from './local-art';
 
@@ -9,6 +9,9 @@ interface SwitchViewProps {
     defaultToSwitched?: boolean;
     order: Tour | null;
     venueItem: { orderVenue: TourVenue; venue: Venue | null } | null;
+    selectedRowIds: ReadonlySet<string | number>;
+    onToggleRowSelection: (rowId: string | number) => void;
+    onClearSelection: () => void;
     onOpenAttachModal?: (context?: {
         rowId: string | number;
         isci: string;
@@ -19,9 +22,16 @@ export default function SwitchView({
     defaultToSwitched = false,
     order,
     venueItem,
+    selectedRowIds,
+    onToggleRowSelection,
+    onClearSelection,
     onOpenAttachModal,
 }: SwitchViewProps) {
     const [isSwitched, setIsSwitched] = useState(defaultToSwitched);
+
+    useEffect(() => {
+        onClearSelection();
+    }, [isSwitched, onClearSelection]);
 
     return (
         <>
@@ -38,11 +48,17 @@ export default function SwitchView({
                 />
             </div>
             {isSwitched ? (
-                <LocalArtView venueItem={venueItem} />
+                <LocalArtView
+                    venueItem={venueItem}
+                    selectedRowIds={selectedRowIds}
+                    onRowSelectToggle={onToggleRowSelection}
+                />
             ) : (
                 <GeneralMediaView
                     order={order}
                     venueItem={venueItem}
+                    selectedRowIds={selectedRowIds}
+                    onRowSelectToggle={onToggleRowSelection}
                     onOpenAttachModal={onOpenAttachModal}
                 />
             )}

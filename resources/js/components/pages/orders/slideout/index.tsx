@@ -2,7 +2,7 @@ import { mockUsers } from '@/components/mockdata';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { type Tour, type TourVenue, type Venue } from '@/types';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import AddVenueModal from '../add-venue-modal';
 import SwitchView from './switch-view';
 import AttachFileOrDropboxModal, {
@@ -106,6 +106,32 @@ export default function VenueDetailSlideout({
         useState<AttachFileModalContext | null>(null);
     const [isMaximized, setIsMaximized] = useState(false);
     const [isEditVenueModalOpen, setIsEditVenueModalOpen] = useState(false);
+    const [selectedRowIds, setSelectedRowIds] = useState<
+        Set<string | number>
+    >(() => new Set());
+
+    const toggleRowSelection = useCallback((id: string | number) => {
+        setSelectedRowIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    }, []);
+
+    const clearRowSelection = useCallback(() => {
+        setSelectedRowIds(new Set());
+    }, []);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setSelectedRowIds(new Set());
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
+        setSelectedRowIds(new Set());
+    }, [venueItem?.orderVenue.id, order?.id]);
 
     if (!order) {
         return null;
@@ -153,6 +179,9 @@ export default function VenueDetailSlideout({
                 <SwitchView
                     order={order}
                     venueItem={venueItem}
+                    selectedRowIds={selectedRowIds}
+                    onToggleRowSelection={toggleRowSelection}
+                    onClearSelection={clearRowSelection}
                     onOpenAttachModal={(ctx) => {
                         setAttachModalContext(ctx ?? null);
                         setAttachModalOpen(true);
