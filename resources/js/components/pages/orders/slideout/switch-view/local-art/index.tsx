@@ -3,6 +3,7 @@ import {
     getAssignedUsersForVenueItem,
     venueItemsLocalizedTableRow,
 } from '@/components/utils/venue-items';
+import { useEditableTable } from '@/hooks/use-editable-table';
 import {
     type LocalizedArtTableRow,
     type TourVenue,
@@ -10,7 +11,6 @@ import {
     type Venue,
     type VenueItemsLocalizedRow,
 } from '@/types';
-import { useEditableTable } from '@/hooks/use-editable-table';
 import { format, isValid, parse, parseISO } from 'date-fns';
 import { useCallback, useMemo, useState } from 'react';
 import AttachmentsSection from '../reuse/attachments-section';
@@ -136,14 +136,12 @@ function LocalArtView({
             <BulkEditDueDateModal
                 isOpen={dueDateModalOpen}
                 onClose={() => setDueDateModalOpen(false)}
-                selectedCount={selectedRowIds.size}
                 initialDueDateIso={dueDateSeedIso}
                 onSave={handleDueDateBulkSave}
             />
             <BulkEditAssignedModal
                 isOpen={assignedModalOpen}
                 onClose={() => setAssignedModalOpen(false)}
-                selectedCount={selectedRowIds.size}
                 initialAssigned={assignedSeed}
                 onSave={handleAssignedBulkSave}
             />

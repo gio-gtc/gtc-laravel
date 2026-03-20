@@ -122,7 +122,7 @@ export default function MediaTable({
                                             <TableRow
                                                 key={row.id}
                                                 className={cn(
-                                                    'xs-gray-500-weight-600',
+                                                    'xs-gray-500-weight-600 hover:bg-gray-100',
                                                     isDisabledRow &&
                                                         'xs-gray-300-weight-600',
                                                     selectedRowIds?.has(

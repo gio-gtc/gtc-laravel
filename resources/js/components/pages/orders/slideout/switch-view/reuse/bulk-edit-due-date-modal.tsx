@@ -18,7 +18,6 @@ import { useEffect, useState } from 'react';
 export interface BulkEditDueDateModalProps {
     isOpen: boolean;
     onClose: () => void;
-    selectedCount: number;
     initialDueDateIso?: string;
     onSave: (payload: { dueDateIso: string }) => void;
 }
@@ -26,7 +25,6 @@ export interface BulkEditDueDateModalProps {
 export default function BulkEditDueDateModal({
     isOpen,
     onClose,
-    selectedCount,
     initialDueDateIso,
     onSave,
 }: BulkEditDueDateModalProps) {

@@ -101,10 +101,14 @@ export default function LocalizedArtTable({
                                         <TableRow
                                             key={row.id}
                                             className={cn(
-                                                'xs-gray-500-weight-600',
+                                                'xs-gray-500-weight-600 hover:bg-gray-100',
                                                 selectedRowIds?.has(row.id) &&
                                                     'bg-red-100',
                                             )}
+                                            // className={cn(
+                                            //     'cursor-pointer select-none hover:bg-gray-100',
+                                            //     isSelected && 'bg-red-100',
+                                            // )}
                                             onClick={(e) =>
                                                 toggleRowSelectionOnRowClick(
                                                     e,

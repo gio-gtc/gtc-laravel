@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { type User } from '@/types';
 import { Search, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { UserAvatar } from '../ui/user-avatar';
 
 interface UserMultiSelectProps {
     selectedUsers: User[];
@@ -73,15 +74,7 @@ function UserMultiSelect({
                                 className="flex items-center gap-2 rounded-md border bg-muted px-2 py-1"
                             >
                                 {/* TODO: change to reuseable avatar component */}
-                                <Avatar className="h-6 w-6">
-                                    <AvatarImage
-                                        src={user.avatar || ''}
-                                        alt={user.name}
-                                    />
-                                    <AvatarFallback className="bg-neutral-200 text-black">
-                                        {getInitials(user.name)}
-                                    </AvatarFallback>
-                                </Avatar>
+                                {user && <UserAvatar user={user} />}
                                 <span className="text-sm">{user.name}</span>
                                 <Button
                                     variant="ghost"

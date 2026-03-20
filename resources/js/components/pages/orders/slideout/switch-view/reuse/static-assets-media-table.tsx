@@ -104,7 +104,7 @@ export default function StaticAssetsMediaTable({
                                                 className={cn(
                                                     'xs-gray-500-weight-600',
                                                     isDisabledRow &&
-                                                        'xs-gray-300-weight-600',
+                                                        'xs-gray-300-weight-600 hover:bg-gray-100',
                                                     selectedRowIds?.has(
                                                         row.id,
                                                     ) &&
