@@ -48,7 +48,7 @@ export default function BulkEditDueDateModal({
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Update due date</DialogTitle>
+                    <DialogTitle>Update Due Date</DialogTitle>
                 </DialogHeader>
 
                 <Divider />
@@ -80,9 +80,7 @@ export default function BulkEditDueDateModal({
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" className="bg-brand-gtc-red">
-                            Save
-                        </Button>
+                        <Button type="submit">Save</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

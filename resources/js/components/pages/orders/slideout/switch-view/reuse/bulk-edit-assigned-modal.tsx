@@ -7,10 +7,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import {
-    ColumnedRowsChild,
-    ColumnedRowsParent,
-} from '@/components/utils/column-row-layouts';
 import Divider from '@/components/utils/divider';
 import FilterUserGroupSection from '@/components/utils/filter-user-group-section';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
@@ -21,7 +17,6 @@ import { useEffect, useMemo, useState } from 'react';
 export interface BulkEditAssignedModalProps {
     isOpen: boolean;
     onClose: () => void;
-    selectedCount: number;
     initialAssigned: User[];
     onSave: (payload: { assigned: User[] }) => void;
 }
@@ -29,7 +24,6 @@ export interface BulkEditAssignedModalProps {
 export default function BulkEditAssignedModal({
     isOpen,
     onClose,
-    selectedCount,
     initialAssigned,
     onSave,
 }: BulkEditAssignedModalProps) {
@@ -37,20 +31,15 @@ export default function BulkEditAssignedModal({
     const usersWithFallback = useUsersWithFallback();
 
     const [selectedAssignees, setSelectedAssignees] = useState<User[]>([]);
-    const [myAssigned, setMyAssigned] = useState(false);
 
     useEffect(() => {
         if (!isOpen) return;
         setSelectedAssignees([...initialAssigned]);
-        setMyAssigned(false);
     }, [isOpen, initialAssigned]);
 
     const assigneePool = useMemo(() => {
-        if (myAssigned) {
-            return usersWithFallback.filter((u) => u.id === auth.user.id);
-        }
         return usersWithFallback;
-    }, [myAssigned, usersWithFallback, auth.user.id]);
+    }, [usersWithFallback, auth.user.id]);
 
     const availableUsers = useMemo(
         () =>
@@ -68,32 +57,20 @@ export default function BulkEditAssignedModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent>
+            <DialogContent className="sm:max-w-[350px]">
                 <DialogHeader>
-                    <DialogTitle>Update assignees</DialogTitle>
+                    <DialogTitle>Update Assignees</DialogTitle>
                 </DialogHeader>
 
                 <Divider />
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <ColumnedRowsParent>
-                        <ColumnedRowsChild
-                            labelFor="bulk-assigned"
-                            labelContent="Assigned"
-                            childrenContainerClasses="modal-child-container"
-                            multiInput
-                        >
-                            <FilterUserGroupSection
-                                title=""
-                                myChecked={myAssigned}
-                                onMyChange={setMyAssigned}
-                                selectedUsers={selectedAssignees}
-                                onUsersChange={setSelectedAssignees}
-                                availableUsers={availableUsers}
-                                myLabel="My"
-                            />
-                            <InputError message={undefined} />
-                        </ColumnedRowsChild>
-                    </ColumnedRowsParent>
+                    <FilterUserGroupSection
+                        title="Assignees"
+                        selectedUsers={selectedAssignees}
+                        onUsersChange={setSelectedAssignees}
+                        availableUsers={availableUsers}
+                    />
+                    <InputError message={undefined} />
                     <Divider />
                     <DialogFooter className="gap-3 sm:gap-2">
                         <Button
@@ -103,9 +80,7 @@ export default function BulkEditAssignedModal({
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" className="bg-brand-gtc-red">
-                            Save
-                        </Button>
+                        <Button type="submit">Save</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
