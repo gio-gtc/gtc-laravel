@@ -48,7 +48,8 @@ export default function MediaTable({
     editScope,
     selectedRowIds,
     onRowSelectToggle,
-    onBulkEditTargetDoubleClick,
+    onBulkEditDueDateDoubleClick,
+    onBulkEditAssignedDoubleClick,
 }: MediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -286,20 +287,22 @@ export default function MediaTable({
                                                 </TableCell>
                                                 <TableCell>
                                                     <div
-                                                        className="min-h-[inherit]"
-                                                        onDoubleClick={(
-                                                            e,
-                                                        ) => {
+                                                        className={cn(
+                                                            'min-h-[inherit]',
+                                                            !isDisabledRow &&
+                                                                'cursor-pointer',
+                                                        )}
+                                                        onDoubleClick={(e) => {
                                                             e.stopPropagation();
                                                             if (
                                                                 !selectedRowIds?.has(
                                                                     row.id,
                                                                 ) ||
                                                                 isDisabledRow ||
-                                                                !onBulkEditTargetDoubleClick
+                                                                !onBulkEditDueDateDoubleClick
                                                             )
                                                                 return;
-                                                            onBulkEditTargetDoubleClick(
+                                                            onBulkEditDueDateDoubleClick(
                                                                 row.id,
                                                             );
                                                         }}
@@ -309,20 +312,22 @@ export default function MediaTable({
                                                 </TableCell>
                                                 <TableCell>
                                                     <div
-                                                        className="min-h-[inherit]"
-                                                        onDoubleClick={(
-                                                            e,
-                                                        ) => {
+                                                        className={cn(
+                                                            'min-h-[inherit]',
+                                                            !isDisabledRow &&
+                                                                'cursor-pointer',
+                                                        )}
+                                                        onDoubleClick={(e) => {
                                                             e.stopPropagation();
                                                             if (
                                                                 !selectedRowIds?.has(
                                                                     row.id,
                                                                 ) ||
                                                                 isDisabledRow ||
-                                                                !onBulkEditTargetDoubleClick
+                                                                !onBulkEditAssignedDoubleClick
                                                             )
                                                                 return;
-                                                            onBulkEditTargetDoubleClick(
+                                                            onBulkEditAssignedDoubleClick(
                                                                 row.id,
                                                             );
                                                         }}

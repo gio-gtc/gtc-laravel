@@ -13,10 +13,10 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
-import { toggleRowSelectionOnRowClick } from '@/lib/row-select-toggle';
-import { cn } from '@/lib/utils';
 import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
 import { useInitials } from '@/hooks/use-initials';
+import { toggleRowSelectionOnRowClick } from '@/lib/row-select-toggle';
+import { cn } from '@/lib/utils';
 import type { LocalizedArtTableProps } from '@/types';
 import { ChevronDown, ChevronRight, Paperclip, Plus } from 'lucide-react';
 import { useState } from 'react';
@@ -30,7 +30,8 @@ export default function LocalizedArtTable({
     cellEditing,
     selectedRowIds,
     onRowSelectToggle,
-    onBulkEditTargetDoubleClick,
+    onBulkEditDueDateDoubleClick,
+    onBulkEditAssignedDoubleClick,
 }: LocalizedArtTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const getInitials = useInitials();
@@ -115,9 +116,7 @@ export default function LocalizedArtTable({
                                             <TableCell>
                                                 {cellEditing ? (
                                                     <EditableCellInput
-                                                        value={
-                                                            row.description
-                                                        }
+                                                        value={row.description}
                                                         itemId={row.id}
                                                         field="description"
                                                         type="text"
@@ -238,17 +237,17 @@ export default function LocalizedArtTable({
                                             </TableCell>
                                             <TableCell>
                                                 <div
-                                                    className="min-h-[inherit]"
+                                                    className="min-h-[inherit] cursor-pointer"
                                                     onDoubleClick={(e) => {
                                                         e.stopPropagation();
                                                         if (
                                                             !selectedRowIds?.has(
                                                                 row.id,
                                                             ) ||
-                                                            !onBulkEditTargetDoubleClick
+                                                            !onBulkEditDueDateDoubleClick
                                                         )
                                                             return;
-                                                        onBulkEditTargetDoubleClick(
+                                                        onBulkEditDueDateDoubleClick(
                                                             row.id,
                                                         );
                                                     }}
@@ -258,17 +257,17 @@ export default function LocalizedArtTable({
                                             </TableCell>
                                             <TableCell>
                                                 <div
-                                                    className="min-h-[inherit]"
+                                                    className="min-h-[inherit] cursor-pointer"
                                                     onDoubleClick={(e) => {
                                                         e.stopPropagation();
                                                         if (
                                                             !selectedRowIds?.has(
                                                                 row.id,
                                                             ) ||
-                                                            !onBulkEditTargetDoubleClick
+                                                            !onBulkEditAssignedDoubleClick
                                                         )
                                                             return;
-                                                        onBulkEditTargetDoubleClick(
+                                                        onBulkEditAssignedDoubleClick(
                                                             row.id,
                                                         );
                                                     }}
@@ -276,9 +275,7 @@ export default function LocalizedArtTable({
                                                     {row.assigned.length >
                                                         0 && (
                                                         <UserAvatarsStack
-                                                            users={
-                                                                row.assigned
-                                                            }
+                                                            users={row.assigned}
                                                         />
                                                     )}
                                                 </div>

@@ -14,7 +14,8 @@ import { useEditableTable } from '@/hooks/use-editable-table';
 import { format, isValid, parse, parseISO } from 'date-fns';
 import { useCallback, useMemo, useState } from 'react';
 import AttachmentsSection from '../reuse/attachments-section';
-import BulkEditVenueRowsModal from '../reuse/bulk-edit-venue-rows-modal';
+import BulkEditAssignedModal from '../reuse/bulk-edit-assigned-modal';
+import BulkEditDueDateModal from '../reuse/bulk-edit-due-date-modal';
 import ChatBox from '../reuse/chat';
 import LocalizedArtTable from '../reuse/localised-media-table';
 import NotesModal from '../reuse/notes-modal';
@@ -71,35 +72,42 @@ function LocalArtView({
         getId: (r) => r.id,
     });
 
-    const [bulkEditModalOpen, setBulkEditModalOpen] = useState(false);
-    const [bulkEditSeed, setBulkEditSeed] = useState<{
-        initialDueDateIso?: string;
-        initialAssigned: User[];
-    }>({ initialAssigned: [] });
+    const [dueDateModalOpen, setDueDateModalOpen] = useState(false);
+    const [assignedModalOpen, setAssignedModalOpen] = useState(false);
+    const [dueDateSeedIso, setDueDateSeedIso] = useState<string | undefined>();
+    const [assignedSeed, setAssignedSeed] = useState<User[]>([]);
 
-    const openBulkEditForRow = useCallback(
+    const openDueDateBulkEdit = useCallback(
         (rowId: string | number) => {
             const row = localLocalizedRows.find((r) => r.id === rowId);
             if (!row) return;
-            setBulkEditSeed({
-                initialDueDateIso: tableDueDateDisplayToIso(row.dueDate),
-                initialAssigned: [...row.assigned],
-            });
-            setBulkEditModalOpen(true);
+            setDueDateSeedIso(tableDueDateDisplayToIso(row.dueDate));
+            setDueDateModalOpen(true);
         },
         [localLocalizedRows],
     );
 
-    const handleBulkEditSave = useCallback(
-        ({
-            dueDateIso,
-            assigned,
-        }: {
-            dueDateIso: string;
-            assigned: User[];
-        }) => {
+    const openAssignedBulkEdit = useCallback(
+        (rowId: string | number) => {
+            const row = localLocalizedRows.find((r) => r.id === rowId);
+            if (!row) return;
+            setAssignedSeed([...row.assigned]);
+            setAssignedModalOpen(true);
+        },
+        [localLocalizedRows],
+    );
+
+    const handleDueDateBulkSave = useCallback(
+        ({ dueDateIso }: { dueDateIso: string }) => {
             const dueDate = format(parseISO(dueDateIso), 'M/d/yy');
-            bulkPatchLocalizedRows(selectedRowIds, { dueDate, assigned });
+            bulkPatchLocalizedRows(selectedRowIds, { dueDate });
+        },
+        [bulkPatchLocalizedRows, selectedRowIds],
+    );
+
+    const handleAssignedBulkSave = useCallback(
+        ({ assigned }: { assigned: User[] }) => {
+            bulkPatchLocalizedRows(selectedRowIds, { assigned });
         },
         [bulkPatchLocalizedRows, selectedRowIds],
     );
@@ -112,7 +120,8 @@ function LocalArtView({
                     data={localLocalizedRows}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
-                    onBulkEditTargetDoubleClick={openBulkEditForRow}
+                    onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
+                    onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
                     onOpenNotes={(row) => setNotesModalRow(row)}
                     cellEditing={{
                         onCellChange: handleLocalizedCellChange,
@@ -124,13 +133,19 @@ function LocalArtView({
                 />
             </div>
 
-            <BulkEditVenueRowsModal
-                isOpen={bulkEditModalOpen}
-                onClose={() => setBulkEditModalOpen(false)}
+            <BulkEditDueDateModal
+                isOpen={dueDateModalOpen}
+                onClose={() => setDueDateModalOpen(false)}
                 selectedCount={selectedRowIds.size}
-                initialDueDateIso={bulkEditSeed.initialDueDateIso}
-                initialAssigned={bulkEditSeed.initialAssigned}
-                onSave={handleBulkEditSave}
+                initialDueDateIso={dueDateSeedIso}
+                onSave={handleDueDateBulkSave}
+            />
+            <BulkEditAssignedModal
+                isOpen={assignedModalOpen}
+                onClose={() => setAssignedModalOpen(false)}
+                selectedCount={selectedRowIds.size}
+                initialAssigned={assignedSeed}
+                onSave={handleAssignedBulkSave}
             />
             <NotesModal
                 isOpen={notesModalRow !== null}

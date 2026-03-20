@@ -35,7 +35,8 @@ export default function StaticAssetsMediaTable({
     cellEditing,
     selectedRowIds,
     onRowSelectToggle,
-    onBulkEditTargetDoubleClick,
+    onBulkEditDueDateDoubleClick,
+    onBulkEditAssignedDoubleClick,
 }: StaticAssetsMediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -226,20 +227,22 @@ export default function StaticAssetsMediaTable({
                                                 </TableCell>
                                                 <TableCell>
                                                     <div
-                                                        className="min-h-[inherit]"
-                                                        onDoubleClick={(
-                                                            e,
-                                                        ) => {
+                                                        className={cn(
+                                                            'min-h-[inherit]',
+                                                            !isDisabledRow &&
+                                                                'cursor-pointer',
+                                                        )}
+                                                        onDoubleClick={(e) => {
                                                             e.stopPropagation();
                                                             if (
                                                                 !selectedRowIds?.has(
                                                                     row.id,
                                                                 ) ||
                                                                 isDisabledRow ||
-                                                                !onBulkEditTargetDoubleClick
+                                                                !onBulkEditDueDateDoubleClick
                                                             )
                                                                 return;
-                                                            onBulkEditTargetDoubleClick(
+                                                            onBulkEditDueDateDoubleClick(
                                                                 row.id,
                                                             );
                                                         }}
@@ -249,20 +252,22 @@ export default function StaticAssetsMediaTable({
                                                 </TableCell>
                                                 <TableCell>
                                                     <div
-                                                        className="min-h-[inherit]"
-                                                        onDoubleClick={(
-                                                            e,
-                                                        ) => {
+                                                        className={cn(
+                                                            'min-h-[inherit]',
+                                                            !isDisabledRow &&
+                                                                'cursor-pointer',
+                                                        )}
+                                                        onDoubleClick={(e) => {
                                                             e.stopPropagation();
                                                             if (
                                                                 !selectedRowIds?.has(
                                                                     row.id,
                                                                 ) ||
                                                                 isDisabledRow ||
-                                                                !onBulkEditTargetDoubleClick
+                                                                !onBulkEditAssignedDoubleClick
                                                             )
                                                                 return;
-                                                            onBulkEditTargetDoubleClick(
+                                                            onBulkEditAssignedDoubleClick(
                                                                 row.id,
                                                             );
                                                         }}
@@ -286,9 +291,7 @@ export default function StaticAssetsMediaTable({
                                                                 value={
                                                                     row.status
                                                                 }
-                                                                itemId={
-                                                                    row.id
-                                                                }
+                                                                itemId={row.id}
                                                                 field="status"
                                                                 options={
                                                                     VENUE_ITEM_STATUS_SELECT_OPTIONS
@@ -318,9 +321,7 @@ export default function StaticAssetsMediaTable({
                                                                     row.id,
                                                                     'status',
                                                                 )}
-                                                                disabled={
-                                                                    false
-                                                                }
+                                                                disabled={false}
                                                             />
                                                         ) : (
                                                             <VenueItemStatusBadge

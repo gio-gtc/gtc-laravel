@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -12,7 +11,6 @@ import {
     ColumnedRowsChild,
     ColumnedRowsParent,
 } from '@/components/utils/column-row-layouts';
-import DatePickerInput from '@/components/utils/date-picker-input';
 import Divider from '@/components/utils/divider';
 import FilterUserGroupSection from '@/components/utils/filter-user-group-section';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
@@ -20,36 +18,32 @@ import type { SharedData, User } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
 
-export interface BulkEditVenueRowsModalProps {
+export interface BulkEditAssignedModalProps {
     isOpen: boolean;
     onClose: () => void;
     selectedCount: number;
-    initialDueDateIso?: string;
     initialAssigned: User[];
-    onSave: (payload: { dueDateIso: string; assigned: User[] }) => void;
+    onSave: (payload: { assigned: User[] }) => void;
 }
 
-export default function BulkEditVenueRowsModal({
+export default function BulkEditAssignedModal({
     isOpen,
     onClose,
     selectedCount,
-    initialDueDateIso,
     initialAssigned,
     onSave,
-}: BulkEditVenueRowsModalProps) {
+}: BulkEditAssignedModalProps) {
     const { auth } = usePage<SharedData>().props;
     const usersWithFallback = useUsersWithFallback();
 
-    const [dueDateIso, setDueDateIso] = useState('');
     const [selectedAssignees, setSelectedAssignees] = useState<User[]>([]);
     const [myAssigned, setMyAssigned] = useState(false);
 
     useEffect(() => {
         if (!isOpen) return;
-        setDueDateIso(initialDueDateIso ?? '');
         setSelectedAssignees([...initialAssigned]);
         setMyAssigned(false);
-    }, [isOpen, initialDueDateIso, initialAssigned]);
+    }, [isOpen, initialAssigned]);
 
     const assigneePool = useMemo(() => {
         if (myAssigned) {
@@ -68,41 +62,20 @@ export default function BulkEditVenueRowsModal({
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!dueDateIso.trim()) return;
-        onSave({ dueDateIso, assigned: selectedAssignees });
+        onSave({ assigned: selectedAssignees });
         onClose();
     };
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="sm:max-w-[800px]">
+            <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Update due date & assignees</DialogTitle>
-                    <DialogDescription>
-                        Applies to {selectedCount} selected row
-                        {selectedCount === 1 ? '' : 's'}.
-                    </DialogDescription>
+                    <DialogTitle>Update assignees</DialogTitle>
                 </DialogHeader>
 
                 <Divider />
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <ColumnedRowsParent>
-                        <ColumnedRowsChild
-                            labelFor="bulk-due-date"
-                            labelContent="Due date"
-                            childrenContainerClasses="modal-child-container"
-                            required
-                        >
-                            <DatePickerInput
-                                id="bulk-due-date"
-                                label=""
-                                value={dueDateIso}
-                                onChange={setDueDateIso}
-                                required
-                                dialogTitle="Due date"
-                            />
-                            <InputError message={undefined} />
-                        </ColumnedRowsChild>
                         <ColumnedRowsChild
                             labelFor="bulk-assigned"
                             labelContent="Assigned"
