@@ -1,4 +1,5 @@
 import {
+    useCallback,
     useEffect,
     useRef,
     useState,
@@ -49,6 +50,10 @@ interface UseEditableTableReturn<T> {
         itemId: number | string,
         field: string,
         scope?: string,
+    ) => void;
+    bulkPatchByIds: (
+        ids: ReadonlySet<string | number>,
+        patch: Partial<T>,
     ) => void;
 }
 
@@ -198,6 +203,23 @@ export function useEditableTable<T extends object>({
         setEditingCell({ itemId, field, scope });
     };
 
+    const bulkPatchByIds = useCallback(
+        (ids: ReadonlySet<string | number>, patch: Partial<T>) => {
+            if (ids.size === 0) return;
+            const updated = localDataRef.current.map((item) =>
+                ids.has(getId(item)) ? { ...item, ...patch } : item,
+            );
+            localDataRef.current = updated;
+            setLocalData(updated);
+            setEditingCell(null);
+            setOriginalValue(null);
+            if (onChange) {
+                onChange(updated);
+            }
+        },
+        [getId, onChange],
+    );
+
     return {
         editingCell,
         localData,
@@ -209,5 +231,6 @@ export function useEditableTable<T extends object>({
         addItem,
         removeItem,
         startEditing,
+        bulkPatchByIds,
     };
 }

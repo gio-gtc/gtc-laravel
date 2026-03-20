@@ -253,6 +253,7 @@ export interface MediaTableProps {
     editScope?: string;
     selectedRowIds?: ReadonlySet<string | number>;
     onRowSelectToggle?: (rowId: string | number) => void;
+    onBulkEditTargetDoubleClick?: (rowId: string | number) => void;
 }
 
 export interface StaticAssetsTableRow {
@@ -281,6 +282,7 @@ export interface StaticAssetsMediaTableProps {
     cellEditing?: VenueTableCellEditing;
     selectedRowIds?: ReadonlySet<string | number>;
     onRowSelectToggle?: (rowId: string | number) => void;
+    onBulkEditTargetDoubleClick?: (rowId: string | number) => void;
 }
 
 export interface LocalizedArtNote {
@@ -352,4 +354,5 @@ export interface LocalizedArtTableProps {
     cellEditing?: VenueTableCellEditing;
     selectedRowIds?: ReadonlySet<string | number>;
     onRowSelectToggle?: (rowId: string | number) => void;
+    onBulkEditTargetDoubleClick?: (rowId: string | number) => void;
 }

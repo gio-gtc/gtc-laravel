@@ -35,6 +35,7 @@ export default function StaticAssetsMediaTable({
     cellEditing,
     selectedRowIds,
     onRowSelectToggle,
+    onBulkEditTargetDoubleClick,
 }: StaticAssetsMediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -224,15 +225,57 @@ export default function StaticAssetsMediaTable({
                                                     )}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {row.dueDate}
+                                                    <div
+                                                        className="min-h-[inherit]"
+                                                        onDoubleClick={(
+                                                            e,
+                                                        ) => {
+                                                            e.stopPropagation();
+                                                            if (
+                                                                !selectedRowIds?.has(
+                                                                    row.id,
+                                                                ) ||
+                                                                isDisabledRow ||
+                                                                !onBulkEditTargetDoubleClick
+                                                            )
+                                                                return;
+                                                            onBulkEditTargetDoubleClick(
+                                                                row.id,
+                                                            );
+                                                        }}
+                                                    >
+                                                        {row.dueDate}
+                                                    </div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    {row.assigned.length >
-                                                        0 && (
-                                                        <UserAvatarsStack
-                                                            users={row.assigned}
-                                                        />
-                                                    )}
+                                                    <div
+                                                        className="min-h-[inherit]"
+                                                        onDoubleClick={(
+                                                            e,
+                                                        ) => {
+                                                            e.stopPropagation();
+                                                            if (
+                                                                !selectedRowIds?.has(
+                                                                    row.id,
+                                                                ) ||
+                                                                isDisabledRow ||
+                                                                !onBulkEditTargetDoubleClick
+                                                            )
+                                                                return;
+                                                            onBulkEditTargetDoubleClick(
+                                                                row.id,
+                                                            );
+                                                        }}
+                                                    >
+                                                        {row.assigned.length >
+                                                            0 && (
+                                                            <UserAvatarsStack
+                                                                users={
+                                                                    row.assigned
+                                                                }
+                                                            />
+                                                        )}
+                                                    </div>
                                                 </TableCell>
 
                                                 {/* Preview Icons */}

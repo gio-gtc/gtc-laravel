@@ -30,6 +30,7 @@ export default function LocalizedArtTable({
     cellEditing,
     selectedRowIds,
     onRowSelectToggle,
+    onBulkEditTargetDoubleClick,
 }: LocalizedArtTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const getInitials = useInitials();
@@ -235,13 +236,52 @@ export default function LocalizedArtTable({
                                                     row.cta
                                                 )}
                                             </TableCell>
-                                            <TableCell>{row.dueDate}</TableCell>
                                             <TableCell>
-                                                {row.assigned.length > 0 && (
-                                                    <UserAvatarsStack
-                                                        users={row.assigned}
-                                                    />
-                                                )}
+                                                <div
+                                                    className="min-h-[inherit]"
+                                                    onDoubleClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (
+                                                            !selectedRowIds?.has(
+                                                                row.id,
+                                                            ) ||
+                                                            !onBulkEditTargetDoubleClick
+                                                        )
+                                                            return;
+                                                        onBulkEditTargetDoubleClick(
+                                                            row.id,
+                                                        );
+                                                    }}
+                                                >
+                                                    {row.dueDate}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div
+                                                    className="min-h-[inherit]"
+                                                    onDoubleClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (
+                                                            !selectedRowIds?.has(
+                                                                row.id,
+                                                            ) ||
+                                                            !onBulkEditTargetDoubleClick
+                                                        )
+                                                            return;
+                                                        onBulkEditTargetDoubleClick(
+                                                            row.id,
+                                                        );
+                                                    }}
+                                                >
+                                                    {row.assigned.length >
+                                                        0 && (
+                                                        <UserAvatarsStack
+                                                            users={
+                                                                row.assigned
+                                                            }
+                                                        />
+                                                    )}
+                                                </div>
                                             </TableCell>
 
                                             <TableCell className="text-center">

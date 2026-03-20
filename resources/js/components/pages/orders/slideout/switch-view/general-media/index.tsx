@@ -15,14 +15,17 @@ import {
     type StaticAssetsTableRow,
     type Tour,
     type TourVenue,
+    type User,
     type Venue,
     type VenueItemsMediaRow,
     type VenueItemsStaticRow,
 } from '@/types';
 import { useEditableTable } from '@/hooks/use-editable-table';
+import { format, isValid, parse, parseISO } from 'date-fns';
 import { Link, PlayIcon } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import AttachmentsSection from '../reuse/attachments-section';
+import BulkEditVenueRowsModal from '../reuse/bulk-edit-venue-rows-modal';
 import ChatBox from '../reuse/chat';
 import MediaTable from '../reuse/dynamic-media-table';
 import SectionContainers from '../reuse/section-containers';
@@ -55,6 +58,14 @@ const defaultPreviewIcons = [
     <PlayIcon key="p1" className="h-4 w-4" />,
     <Link key="p2" className="h-4 w-4" />,
 ];
+
+function tableDueDateDisplayToIso(display: string): string | undefined {
+    const trimmed = display.trim();
+    if (!trimmed) return undefined;
+    const d = parse(trimmed, 'M/d/yy', new Date());
+    if (!isValid(d)) return undefined;
+    return format(d, 'yyyy-MM-dd');
+}
 
 function GeneralMediaView({
     order,
@@ -135,6 +146,7 @@ function GeneralMediaView({
         handleCellBlur: handleMediaCellBlur,
         handleCellKeyDown: handleMediaCellKeyDown,
         isEditing: isMediaCellEditing,
+        bulkPatchByIds: bulkPatchMediaRows,
     } = useEditableTable<MediaTableRow>({
         data: venueMediaWithCallbacks,
         getId: (r) => r.id,
@@ -147,10 +159,17 @@ function GeneralMediaView({
         handleCellBlur: handleStaticCellBlur,
         handleCellKeyDown: handleStaticCellKeyDown,
         isEditing: isStaticCellEditing,
+        bulkPatchByIds: bulkPatchStaticRows,
     } = useEditableTable<StaticAssetsTableRow>({
         data: venueStaticAssetsWithCallbacks,
         getId: (r) => r.id,
     });
+
+    const [bulkEditModalOpen, setBulkEditModalOpen] = useState(false);
+    const [bulkEditSeed, setBulkEditSeed] = useState<{
+        initialDueDateIso?: string;
+        initialAssigned: User[];
+    }>({ initialAssigned: [] });
 
     const [audioModalOpen, setAudioModalOpen] = useState(false);
     const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
@@ -179,6 +198,36 @@ function GeneralMediaView({
     }, [venueItem]);
 
     const orders = venueItem ? venueOrders : [];
+
+    const openBulkEditForRow = useCallback(
+        (rowId: string | number) => {
+            const mediaRow = localMediaRows.find((r) => r.id === rowId);
+            const staticRow = localStaticRows.find((r) => r.id === rowId);
+            const row = mediaRow ?? staticRow;
+            if (!row) return;
+            setBulkEditSeed({
+                initialDueDateIso: tableDueDateDisplayToIso(row.dueDate),
+                initialAssigned: [...row.assigned],
+            });
+            setBulkEditModalOpen(true);
+        },
+        [localMediaRows, localStaticRows],
+    );
+
+    const handleBulkEditSave = useCallback(
+        ({
+            dueDateIso,
+            assigned,
+        }: {
+            dueDateIso: string;
+            assigned: User[];
+        }) => {
+            const dueDate = format(parseISO(dueDateIso), 'M/d/yy');
+            bulkPatchMediaRows(selectedRowIds, { dueDate, assigned });
+            bulkPatchStaticRows(selectedRowIds, { dueDate, assigned });
+        },
+        [bulkPatchMediaRows, bulkPatchStaticRows, selectedRowIds],
+    );
 
     const sharedMediaCellEditing = {
         onCellChange: handleMediaCellChange,
@@ -237,6 +286,7 @@ function GeneralMediaView({
                     editScope="broadcast"
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
+                    onBulkEditTargetDoubleClick={openBulkEditForRow}
                     onAdd={() => setBroadcastModalOpen(true)}
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
@@ -256,6 +306,7 @@ function GeneralMediaView({
                     editScope="social"
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
+                    onBulkEditTargetDoubleClick={openBulkEditForRow}
                     onAdd={() => setSocialVideoModalOpen(true)}
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
@@ -275,6 +326,7 @@ function GeneralMediaView({
                     editScope="audio"
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
+                    onBulkEditTargetDoubleClick={openBulkEditForRow}
                     onAdd={() => setAudioModalOpen(true)}
                     previewVariant="audio"
                     onUploadRow={(row) =>
@@ -293,6 +345,7 @@ function GeneralMediaView({
                     data={filteredStaticAssetsData}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
+                    onBulkEditTargetDoubleClick={openBulkEditForRow}
                     cellEditing={{
                         onCellChange: handleStaticCellChange,
                         onCellDoubleClick: handleStaticCellDoubleClick,
@@ -329,6 +382,14 @@ function GeneralMediaView({
                 <ChatBox />
             </SectionContainers>
 
+            <BulkEditVenueRowsModal
+                isOpen={bulkEditModalOpen}
+                onClose={() => setBulkEditModalOpen(false)}
+                selectedCount={selectedRowIds.size}
+                initialDueDateIso={bulkEditSeed.initialDueDateIso}
+                initialAssigned={bulkEditSeed.initialAssigned}
+                onSave={handleBulkEditSave}
+            />
             <AddBroadcastStreamingModal
                 isOpen={broadcastModalOpen}
                 onClose={() => setBroadcastModalOpen(false)}
