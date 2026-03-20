@@ -344,4 +344,6 @@ export interface LocalizedArtTableProps {
     defaultOpen?: boolean;
     onAdd?: () => void;
     onOpenNotes?: (row: LocalizedArtTableRow) => void;
+    /** When set, Description / W / H / CTA use EditableCellInput */
+    cellEditing?: VenueTableCellEditing;
 }

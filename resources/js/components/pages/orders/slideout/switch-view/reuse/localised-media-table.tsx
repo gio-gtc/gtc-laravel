@@ -13,6 +13,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
+import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
 import { useInitials } from '@/hooks/use-initials';
 import type { LocalizedArtTableProps } from '@/types';
 import { ChevronDown, ChevronRight, Paperclip, Plus } from 'lucide-react';
@@ -24,6 +25,7 @@ export default function LocalizedArtTable({
     defaultOpen = true,
     onAdd,
     onOpenNotes,
+    cellEditing,
 }: LocalizedArtTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const getInitials = useInitials();
@@ -95,11 +97,129 @@ export default function LocalizedArtTable({
                                             className="xs-gray-500-weight-600"
                                         >
                                             <TableCell>
-                                                {row.description}
+                                                {cellEditing ? (
+                                                    <EditableCellInput
+                                                        value={
+                                                            row.description
+                                                        }
+                                                        itemId={row.id}
+                                                        field="description"
+                                                        type="text"
+                                                        onChange={
+                                                            cellEditing.onCellChange
+                                                        }
+                                                        onDoubleClick={
+                                                            cellEditing.onCellDoubleClick
+                                                        }
+                                                        onBlur={
+                                                            cellEditing.onCellBlur
+                                                        }
+                                                        onKeyDown={
+                                                            cellEditing.onCellKeyDown
+                                                        }
+                                                        isEditing={cellEditing.isCellEditing(
+                                                            row.id,
+                                                            'description',
+                                                        )}
+                                                    />
+                                                ) : (
+                                                    row.description
+                                                )}
                                             </TableCell>
-                                            <TableCell>{row.width}</TableCell>
-                                            <TableCell>{row.height}</TableCell>
-                                            <TableCell>{row.cta}</TableCell>
+                                            <TableCell>
+                                                {cellEditing ? (
+                                                    <EditableCellInput
+                                                        value={row.width}
+                                                        itemId={row.id}
+                                                        field="width"
+                                                        type="number"
+                                                        min={0}
+                                                        step={1}
+                                                        emptyValue={0}
+                                                        emptyPlaceholder="0"
+                                                        onChange={
+                                                            cellEditing.onCellChange
+                                                        }
+                                                        onDoubleClick={
+                                                            cellEditing.onCellDoubleClick
+                                                        }
+                                                        onBlur={
+                                                            cellEditing.onCellBlur
+                                                        }
+                                                        onKeyDown={
+                                                            cellEditing.onCellKeyDown
+                                                        }
+                                                        isEditing={cellEditing.isCellEditing(
+                                                            row.id,
+                                                            'width',
+                                                        )}
+                                                        align="center"
+                                                    />
+                                                ) : (
+                                                    row.width
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                {cellEditing ? (
+                                                    <EditableCellInput
+                                                        value={row.height}
+                                                        itemId={row.id}
+                                                        field="height"
+                                                        type="number"
+                                                        min={0}
+                                                        step={1}
+                                                        emptyValue={0}
+                                                        emptyPlaceholder="0"
+                                                        onChange={
+                                                            cellEditing.onCellChange
+                                                        }
+                                                        onDoubleClick={
+                                                            cellEditing.onCellDoubleClick
+                                                        }
+                                                        onBlur={
+                                                            cellEditing.onCellBlur
+                                                        }
+                                                        onKeyDown={
+                                                            cellEditing.onCellKeyDown
+                                                        }
+                                                        isEditing={cellEditing.isCellEditing(
+                                                            row.id,
+                                                            'height',
+                                                        )}
+                                                        align="center"
+                                                    />
+                                                ) : (
+                                                    row.height
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                {cellEditing ? (
+                                                    <EditableCellInput
+                                                        value={row.cta}
+                                                        itemId={row.id}
+                                                        field="cta"
+                                                        type="text"
+                                                        onChange={
+                                                            cellEditing.onCellChange
+                                                        }
+                                                        onDoubleClick={
+                                                            cellEditing.onCellDoubleClick
+                                                        }
+                                                        onBlur={
+                                                            cellEditing.onCellBlur
+                                                        }
+                                                        onKeyDown={
+                                                            cellEditing.onCellKeyDown
+                                                        }
+                                                        isEditing={cellEditing.isCellEditing(
+                                                            row.id,
+                                                            'cta',
+                                                        )}
+                                                    />
+                                                ) : (
+                                                    row.cta
+                                                )}
+                                            </TableCell>
                                             <TableCell>{row.dueDate}</TableCell>
                                             <TableCell>
                                                 {row.assigned.length > 0 && (

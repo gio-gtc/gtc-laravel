@@ -9,6 +9,7 @@ import {
     type Venue,
     type VenueItemsLocalizedRow,
 } from '@/types';
+import { useEditableTable } from '@/hooks/use-editable-table';
 import { useMemo, useState } from 'react';
 import AttachmentsSection from '../reuse/attachments-section';
 import ChatBox from '../reuse/chat';
@@ -40,13 +41,32 @@ function LocalArtView({ venueItem }: LocalArtViewProps) {
             );
     }, [venueItem]);
 
+    const {
+        localData: localLocalizedRows,
+        handleDoubleClick: handleLocalizedCellDoubleClick,
+        handleCellChange: handleLocalizedCellChange,
+        handleCellBlur: handleLocalizedCellBlur,
+        handleCellKeyDown: handleLocalizedCellKeyDown,
+        isEditing: isLocalizedCellEditing,
+    } = useEditableTable<LocalizedArtTableRow>({
+        data: localizedArtData,
+        getId: (r) => r.id,
+    });
+
     return (
         <>
             <div className="slide-out-container space-y-4">
                 <LocalizedArtTable
                     title="Localized Art"
-                    data={localizedArtData}
+                    data={localLocalizedRows}
                     onOpenNotes={(row) => setNotesModalRow(row)}
+                    cellEditing={{
+                        onCellChange: handleLocalizedCellChange,
+                        onCellDoubleClick: handleLocalizedCellDoubleClick,
+                        onCellBlur: handleLocalizedCellBlur,
+                        onCellKeyDown: handleLocalizedCellKeyDown,
+                        isCellEditing: isLocalizedCellEditing,
+                    }}
                 />
             </div>
 
