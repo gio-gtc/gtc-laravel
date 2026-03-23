@@ -436,6 +436,11 @@ function GeneralMediaView({
                         ? `${videoPreviewRow.isci} – ${videoPreviewRow.cutName}`
                         : undefined
                 }
+                clientReviewActions={
+                    videoPreviewRow?.status === 'Client Review'
+                }
+                onClientReviewReject={videoPreviewRow?.deliverables?.onReject}
+                onClientReviewApprove={videoPreviewRow?.deliverables?.onApprove}
             />
         </>
     );

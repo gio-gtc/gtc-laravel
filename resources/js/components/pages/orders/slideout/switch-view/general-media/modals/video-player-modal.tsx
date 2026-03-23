@@ -1,5 +1,6 @@
 'use client';
 
+import { ApprovalButtons } from '@/components/pages/orders/slideout/switch-view/reuse/deliverables-buttons';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import videojs from 'video.js';
@@ -89,6 +90,10 @@ interface VideoPlayerModalProps {
     label?: string;
     /** When true, use the placeholder tune as the playing content (e.g. when opening from Audio table). */
     useAudioPlaceholder?: boolean;
+    /** Show X / approve controls (same as table deliverables) when row is in client review. */
+    clientReviewActions?: boolean;
+    onClientReviewReject?: () => void;
+    onClientReviewApprove?: () => void;
 }
 
 export default function VideoPlayerModal({
@@ -97,6 +102,9 @@ export default function VideoPlayerModal({
     videoSrc,
     label,
     useAudioPlaceholder = false,
+    clientReviewActions = false,
+    onClientReviewReject,
+    onClientReviewApprove,
 }: VideoPlayerModalProps) {
     const videoJsContainerRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<ReturnType<typeof videojs> | null>(null);
@@ -252,7 +260,7 @@ export default function VideoPlayerModal({
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
-                className="min-w-[560px] gap-0 overflow-hidden rounded-xl border-0 bg-white p-0 shadow-2xl"
+                className="min-w-[560px] gap-0 overflow-hidden border-0 bg-transparent p-0 shadow-none"
                 onPointerDownOutside={onClose}
                 onEscapeKeyDown={onClose}
             >
@@ -260,7 +268,7 @@ export default function VideoPlayerModal({
                     {label ?? 'Video preview'}
                 </DialogTitle>
                 <div
-                    className={`video-player-modal relative aspect-video w-full overflow-hidden rounded-xl bg-black ${isAudio ? 'is-audio' : ''}`}
+                    className={`video-player-modal relative aspect-video w-full overflow-hidden rounded-xl bg-black shadow-2xl ${clientReviewActions ? 'rounded-t-xl' : 'rounded-xl'} ${isAudio ? 'is-audio' : ''}`}
                 >
                     {isAudio && (
                         <style>{`.video-player-modal.is-audio .vjs-poster { display: block !important; }`}</style>
@@ -309,6 +317,14 @@ export default function VideoPlayerModal({
                         </div>
                     )}
                 </div>
+                {clientReviewActions && (
+                    <div className="flex justify-center px-4 py-3">
+                        <ApprovalButtons
+                            onReject={onClientReviewReject}
+                            onApprove={onClientReviewApprove}
+                        />
+                    </div>
+                )}
             </DialogContent>
         </Dialog>
     );
