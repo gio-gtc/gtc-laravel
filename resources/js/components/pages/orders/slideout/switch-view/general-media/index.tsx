@@ -1,14 +1,11 @@
-import {
-    invoicesData,
-    orderData,
-    venueItemsData,
-} from '@/components/mockdata';
+import { invoicesData, orderData, venueItemsData } from '@/components/mockdata';
+import { Button } from '@/components/ui/button';
 import {
     getAssignedUsersForVenueItem,
     venueItemsMediaTableRow,
     venueItemsStaticTableRow,
 } from '@/components/utils/venue-items';
-import { Button } from '@/components/ui/button';
+import { useEditableTable } from '@/hooks/use-editable-table';
 import {
     type Invoice,
     type MediaTableRow,
@@ -20,7 +17,6 @@ import {
     type VenueItemsMediaRow,
     type VenueItemsStaticRow,
 } from '@/types';
-import { useEditableTable } from '@/hooks/use-editable-table';
 import { format, isValid, parse, parseISO } from 'date-fns';
 import { Link, PlayIcon } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
@@ -256,12 +252,7 @@ function GeneralMediaView({
                 statusFilter,
                 sortDirection,
             ),
-        [
-            localMediaRows,
-            orders,
-            statusFilter,
-            sortDirection,
-        ],
+        [localMediaRows, orders, statusFilter, sortDirection],
     );
 
     const filteredStaticAssetsData = useMemo(
@@ -272,12 +263,7 @@ function GeneralMediaView({
                 statusFilter,
                 sortDirection,
             ),
-        [
-            localStaticRows,
-            orders,
-            statusFilter,
-            sortDirection,
-        ],
+        [localStaticRows, orders, statusFilter, sortDirection],
     );
 
     return (
@@ -400,14 +386,12 @@ function GeneralMediaView({
             <BulkEditDueDateModal
                 isOpen={dueDateModalOpen}
                 onClose={() => setDueDateModalOpen(false)}
-                selectedCount={selectedRowIds.size}
                 initialDueDateIso={dueDateSeedIso}
                 onSave={handleDueDateBulkSave}
             />
             <BulkEditAssignedModal
                 isOpen={assignedModalOpen}
                 onClose={() => setAssignedModalOpen(false)}
-                selectedCount={selectedRowIds.size}
                 initialAssigned={assignedSeed}
                 onSave={handleAssignedBulkSave}
             />
@@ -427,9 +411,7 @@ function GeneralMediaView({
                 isOpen={keyArtModalOpen}
                 onClose={() => setKeyArtModalOpen(false)}
                 isUSOrder={
-                    venueItem?.venue
-                        ? venueItem.venue.country_id === 1
-                        : true
+                    venueItem?.venue ? venueItem.venue.country_id === 1 : true
                 }
             />
             <RevisionRequestModal

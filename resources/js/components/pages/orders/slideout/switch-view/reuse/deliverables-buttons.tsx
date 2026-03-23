@@ -5,74 +5,52 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+    AmazonIcon,
+    ConnectOneIcon,
+    HuluIcon,
+    MP4Icon,
+    MPEG2Icon,
+    NetflixIcon,
+} from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
-import { Check, Download, File, Power, RefreshCw, X } from 'lucide-react';
+import { Check, Download, RefreshCw, X } from 'lucide-react';
 
 const DOWNLOAD_OPTIONS = [
     {
         id: 'all',
         label: 'All',
-        icon: <Download className="size-4" />,
+        icon: <Download className="size-[20px]" />,
     },
     {
         id: 'hulu',
         label: 'Hulu',
-        icon: (
-            <span className="dark: flex size-6 items-center justify-center rounded-full bg-gray-200 text-[10px] font-medium text-gray-600">
-                H
-            </span>
-        ),
+        icon: <HuluIcon />,
     },
     {
         id: 'amazon',
         label: 'Amazon',
-        icon: (
-            <span className="flex size-6 items-center justify-center rounded-full bg-gray-200 text-[10px] font-medium text-gray-600">
-                A
-            </span>
-        ),
+        icon: <AmazonIcon />,
     },
     {
         id: 'netflix',
         label: 'Netflix',
-        icon: (
-            <span className="flex size-6 items-center justify-center rounded-full bg-gray-200 text-[10px] font-medium text-gray-600">
-                N
-            </span>
-        ),
+        icon: <NetflixIcon />,
     },
     {
         id: 'connected-tv',
         label: 'Connected TV',
-        icon: (
-            <span className="flex size-6 items-center justify-center rounded-full bg-gray-200">
-                <Power className="size-3 text-gray-600" />
-            </span>
-        ),
+        icon: <ConnectOneIcon />,
     },
     {
         id: 'mp4',
         label: 'MP4',
-        icon: (
-            <span className="relative">
-                <File className="size-4 text-gray-400" />
-                <span className="absolute -right-1 -bottom-1 rounded bg-gray-200 px-0.5 text-[8px] font-medium text-gray-600">
-                    MP4
-                </span>
-            </span>
-        ),
+        icon: <MP4Icon />,
     },
     {
         id: 'mpeg2',
         label: 'MPEG-2',
-        icon: (
-            <span className="relative">
-                <File className="size-4 text-gray-400" />
-                <span className="absolute -right-1 -bottom-1 rounded bg-gray-200 px-0.5 text-[8px] font-medium text-gray-600">
-                    MPEG2
-                </span>
-            </span>
-        ),
+        icon: <MPEG2Icon />,
     },
 ] as const;
 
