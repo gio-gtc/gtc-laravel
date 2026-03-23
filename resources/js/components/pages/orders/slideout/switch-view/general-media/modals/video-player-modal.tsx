@@ -53,7 +53,7 @@ function registerElapsedTimeDisplay() {
         updateContent() {
             if (!this.contentEl_) return;
             const t = this.player_?.currentTime() ?? 0;
-            this.contentEl_.textContent = videojs.formatTime(t);
+            this.contentEl_.textContent = videojs.time.formatTime(t);
         }
         dispose() {
             this.contentEl_ = null;
