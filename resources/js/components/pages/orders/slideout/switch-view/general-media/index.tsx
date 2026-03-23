@@ -5,10 +5,14 @@ import {
     venueItemsMediaTableRow,
     venueItemsStaticTableRow,
 } from '@/components/utils/venue-items';
+import { useChat } from '@/hooks/use-chat';
 import { useEditableTable } from '@/hooks/use-editable-table';
+import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
+import { plainTextToChatDoc } from '@/lib/chat-utils';
 import {
     type Invoice,
     type MediaTableRow,
+    type SharedData,
     type StaticAssetsTableRow,
     type Tour,
     type TourVenue,
@@ -17,13 +21,14 @@ import {
     type VenueItemsMediaRow,
     type VenueItemsStaticRow,
 } from '@/types';
+import { usePage } from '@inertiajs/react';
 import { format, isValid, parse, parseISO } from 'date-fns';
 import { Link, PlayIcon } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import AttachmentsSection from '../reuse/attachments-section';
 import BulkEditAssignedModal from '../reuse/bulk-edit-assigned-modal';
 import BulkEditDueDateModal from '../reuse/bulk-edit-due-date-modal';
-import ChatBox from '../reuse/chat';
+import { ChatThread } from '../reuse/chat';
 import MediaTable from '../reuse/dynamic-media-table';
 import SectionContainers from '../reuse/section-containers';
 import StaticAssetsMediaTable from '../reuse/static-assets-media-table';
@@ -71,6 +76,18 @@ function GeneralMediaView({
     onRowSelectToggle,
     onOpenAttachModal,
 }: GeneralMediaViewProps) {
+    const { auth } = usePage<SharedData>().props;
+    const usersWithFallback = useUsersWithFallback();
+    const chatChannelId = venueItem
+        ? `tour-venue-${venueItem.orderVenue.id}`
+        : 'general';
+    const {
+        messages: chatMessages,
+        sendMessage: sendChatMessage,
+        editMessage: editChatMessage,
+        deleteMessage: deleteChatMessage,
+    } = useChat(chatChannelId, auth.user.id);
+
     const [revisionModalOpen, setRevisionModalOpen] = useState(false);
     const [revisionRequestRow, setRevisionRequestRow] =
         useState<MediaTableRow | null>(null);
@@ -380,7 +397,14 @@ function GeneralMediaView({
 
             {/* Chat Section */}
             <SectionContainers title="Comments">
-                <ChatBox />
+                <ChatThread
+                    messages={chatMessages}
+                    sendMessage={sendChatMessage}
+                    editMessage={editChatMessage}
+                    deleteMessage={deleteChatMessage}
+                    currentUserId={auth.user.id}
+                    users={usersWithFallback}
+                />
             </SectionContainers>
 
             <BulkEditDueDateModal
@@ -441,6 +465,9 @@ function GeneralMediaView({
                 }
                 onClientReviewReject={videoPreviewRow?.deliverables?.onReject}
                 onClientReviewApprove={videoPreviewRow?.deliverables?.onApprove}
+                onClientReviewCommentSubmit={(text) =>
+                    sendChatMessage(plainTextToChatDoc(text))
+                }
             />
         </>
     );

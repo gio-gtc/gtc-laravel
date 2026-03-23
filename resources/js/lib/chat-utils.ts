@@ -29,6 +29,19 @@ function nodeToText(node: any): string {
     return children.map((child: any) => nodeToText(child)).join('');
 }
 
+/** Build minimal TipTap JSON (one paragraph) for `sendMessage` / Supabase `content`. */
+export function plainTextToChatDoc(text: string) {
+    return {
+        type: 'doc',
+        content: [
+            {
+                type: 'paragraph',
+                content: [{ type: 'text', text }],
+            },
+        ],
+    };
+}
+
 /** TipTap JSON doc or string → plain text for display. */
 export function messageContentToText(content: any): string {
     if (typeof content === 'string') return content;
@@ -52,8 +65,7 @@ export function formatMessageTimestamp(date: Date): string {
     const minutesDiff = differenceInMinutes(now, date);
 
     if (minutesDiff < 1) return 'Just now';
-    if (minutesDiff < 60)
-        return formatDistanceToNow(date, { addSuffix: true });
+    if (minutesDiff < 60) return formatDistanceToNow(date, { addSuffix: true });
     if (isToday(date)) return `Today ${format(date, 'h:mm a')}`;
     if (isYesterday(date)) return `Yesterday ${format(date, 'h:mm a')}`;
     return format(date, 'EEEE h:mm a');

@@ -1,8 +1,16 @@
 'use client';
 
 import { ApprovalButtons } from '@/components/pages/orders/slideout/switch-view/reuse/deliverables-buttons';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Input } from '@/components/ui/input';
+import {
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+    type FormEvent,
+} from 'react';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 
@@ -94,6 +102,7 @@ interface VideoPlayerModalProps {
     clientReviewActions?: boolean;
     onClientReviewReject?: () => void;
     onClientReviewApprove?: () => void;
+    onClientReviewCommentSubmit?: (text: string) => void | Promise<void>;
 }
 
 export default function VideoPlayerModal({
@@ -105,6 +114,7 @@ export default function VideoPlayerModal({
     clientReviewActions = false,
     onClientReviewReject,
     onClientReviewApprove,
+    onClientReviewCommentSubmit,
 }: VideoPlayerModalProps) {
     const videoJsContainerRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<ReturnType<typeof videojs> | null>(null);
@@ -115,6 +125,9 @@ export default function VideoPlayerModal({
     const [userActive, setUserActive] = useState(true);
     const [containerReady, setContainerReady] = useState(false);
     const [hiddenVideoReady, setHiddenVideoReady] = useState(false);
+    const [clientReviewComment, setClientReviewComment] = useState('');
+    const [clientReviewCommentSending, setClientReviewCommentSending] =
+        useState(false);
 
     const effectiveSrc = useAudioPlaceholder
         ? AUDIO_PLACEHOLDER_SRC
@@ -254,8 +267,26 @@ export default function VideoPlayerModal({
             setContainerReady(false);
             setHiddenVideoReady(false);
             posterCapturedForSrc.current = null;
+            setClientReviewComment('');
+            setClientReviewCommentSending(false);
         }
     }, [isOpen]);
+
+    const handleClientReviewCommentSubmit = useCallback(
+        async (e: FormEvent) => {
+            e.preventDefault();
+            const text = clientReviewComment.trim();
+            if (!text || !onClientReviewCommentSubmit) return;
+            setClientReviewCommentSending(true);
+            try {
+                await Promise.resolve(onClientReviewCommentSubmit(text));
+                setClientReviewComment('');
+            } finally {
+                setClientReviewCommentSending(false);
+            }
+        },
+        [clientReviewComment, onClientReviewCommentSubmit],
+    );
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -318,11 +349,38 @@ export default function VideoPlayerModal({
                     )}
                 </div>
                 {clientReviewActions && (
-                    <div className="flex justify-center px-4 py-3">
-                        <ApprovalButtons
-                            onReject={onClientReviewReject}
-                            onApprove={onClientReviewApprove}
-                        />
+                    <div className="rounded-b-xl px-4 py-3 shadow-2xl">
+                        <div className="flex justify-center">
+                            <ApprovalButtons
+                                onReject={onClientReviewReject}
+                                onApprove={onClientReviewApprove}
+                            />
+                        </div>
+                        <form
+                            className="mt-3 flex gap-2 border-neutral-200 pt-3"
+                            onSubmit={handleClientReviewCommentSubmit}
+                        >
+                            <Input
+                                value={clientReviewComment}
+                                onChange={(ev) =>
+                                    setClientReviewComment(ev.target.value)
+                                }
+                                placeholder="Add comment to Tour Venue"
+                                className="flex-1 bg-white"
+                                disabled={clientReviewCommentSending}
+                                aria-label="Add comment to Tour Venue"
+                            />
+                            <Button
+                                type="submit"
+                                className="shrink-0 bg-brand-gtc-red hover:bg-brand-gtc-red/90"
+                                disabled={
+                                    clientReviewCommentSending ||
+                                    !clientReviewComment.trim()
+                                }
+                            >
+                                Submit
+                            </Button>
+                        </form>
                     </div>
                 )}
             </DialogContent>
