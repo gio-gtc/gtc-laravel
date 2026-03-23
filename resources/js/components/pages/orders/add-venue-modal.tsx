@@ -45,7 +45,7 @@ export default function AddVenueModal({
     const [dueDate, setDueDate] = useState<string>();
     const [localDeliverables, setLocalDeliverables] = useState<string>('');
 
-    const isEditMode = mode === 'edit' && venueItem;
+    const isEditMode = mode === 'edit' && venueItem != null;
 
     // Initialize form when modal opens
     useEffect(() => {

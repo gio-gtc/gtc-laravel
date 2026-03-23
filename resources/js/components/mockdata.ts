@@ -679,8 +679,8 @@ export const tourData: Tour[] = [
     },
 ];
 
-// Mock tour-venue pivot data (many-to-many relationship)
-export const tourVenueData: TourVenue[] = [
+// Mock tour-venue rows with a real venue (many-to-many tour ↔ venue stops).
+export const tourVenueStopData: TourVenue[] = [
     // Tour 1 (Matt Rife 2024) connected to venues
     {
         id: 1,
@@ -899,7 +899,10 @@ export const tourVenueData: TourVenue[] = [
         status: ['voice-over', 'audio'],
         created_at: '2024-09-20T08:14:47Z',
     }, // Chase Center
-    // Demo TourVenues (venue_id null = tour-level demo)
+];
+
+// Tour-level demos (venue_id null). At most one row per tour_id.
+export const tourDemoVenueData: TourVenue[] = [
     {
         id: 22,
         tour_id: 1,
@@ -980,6 +983,12 @@ export const tourVenueData: TourVenue[] = [
         status: ['in-progress'],
         created_at: '2025-01-20T02:44:35Z',
     },
+];
+
+/** All tour–venue rows: stops then demos (legacy flat list for id lookups). */
+export const tourVenueData: TourVenue[] = [
+    ...tourVenueStopData,
+    ...tourDemoVenueData,
 ];
 
 // Mock venues data
