@@ -10,14 +10,14 @@ import {
     SendIcon,
     ShrinkIcon,
 } from 'lucide-react';
-import StatusIcon from '../status-icon';
+import StatusIconGroup from '../status-icon';
 
 interface VenueSlideoutHeaderProps {
     tour: string;
     client: User | undefined;
     venue: string;
     state: string;
-    status: Array<TourVenueStatusValue | 'demo'>;
+    status: TourVenueStatusValue[] | null;
     city?: string;
     eventDates?: string;
     ticketSaleDate?: string;
@@ -76,9 +76,7 @@ export default function VenueSlideoutHeader({
             {/* Top row: Status icon on left, action buttons on right */}
             <div className="slide-out-container flex items-center justify-between">
                 <div className="flex gap-0.5">
-                    {status.map((s) => (
-                        <StatusIcon key={`${tour}-${venue}-${s}`} status={s} />
-                    ))}
+                    <StatusIconGroup status={status} />
                 </div>
 
                 {/* Action buttons */}

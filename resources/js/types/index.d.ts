@@ -170,8 +170,7 @@ export interface TourVenue {
     end_date: string;
     client: number;
     created_at: string;
-    /** Workflow flag ids; see `tourVenueStatusData` in mockdata. */
-    status: number[];
+    status: number[] | null;
 }
 
 /** Row shape for `tourVenueStatusData` (id for logic, label for display). */
@@ -180,8 +179,7 @@ export interface TourVenueStatusRow {
     label: string;
 }
 
-/** Single status id from `TourVenue.status` (matches `TourVenueStatusRow.id`). */
-export type TourVenueStatusValue = TourVenue['status'][number];
+export type TourVenueStatusValue = Exclude<TourVenue['status'], null>[number];
 
 export interface Order {
     id: number;

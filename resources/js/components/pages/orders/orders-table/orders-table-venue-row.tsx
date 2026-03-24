@@ -4,7 +4,7 @@ import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { cn } from '@/lib/utils';
 import { type Tour, type User } from '@/types';
 import { ChevronRight } from 'lucide-react';
-import StatusIcon from '../status-icon';
+import StatusIconGroup from '../status-icon';
 import { type OrderGroupVenueItem } from './orders-table-group-helpers';
 
 type OrdersTableVenueRowProps = {
@@ -70,12 +70,7 @@ export default function OrdersTableVenueRow({
                 <UserAvatarsStack users={assignees} />
             </TableCell>
             <TableCell className="flex gap-0.5 px-2 py-[1px] text-gray-500">
-                {venueItem.orderVenue.status.map((status, index) => (
-                    <StatusIcon
-                        key={`${venueItem.orderVenue.id}-${status}-${index}`}
-                        status={status}
-                    />
-                ))}
+                <StatusIconGroup status={venueItem.orderVenue.status} />
             </TableCell>
         </TableRow>
     );

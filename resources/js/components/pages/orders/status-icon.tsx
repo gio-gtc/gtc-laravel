@@ -46,12 +46,10 @@ const ICON_MAP: Record<
 };
 
 interface StatusIconProps extends React.HTMLAttributes<HTMLDivElement> {
-    status: TourVenueStatusValue | 'demo';
+    status: TourVenueStatusValue;
 }
 
 function StatusIcon({ status, className, ...props }: StatusIconProps) {
-    if (status === 'demo') return;
-
     const { icon: Icon, containerClass } = ICON_MAP[status];
 
     return (
@@ -68,4 +66,17 @@ function StatusIcon({ status, className, ...props }: StatusIconProps) {
     );
 }
 
-export default StatusIcon;
+const StatusIconGroup = ({
+    status,
+}: {
+    status: TourVenueStatusValue[] | null;
+}) => {
+    if (status == null) return <></>;
+
+    return status.map((status, index) => (
+        // TODO: Check if key is unique enough
+        <StatusIcon key={`${status}-${index}`} status={status} />
+    ));
+};
+
+export default StatusIconGroup;

@@ -921,7 +921,7 @@ export const tourDemoVenueData: TourVenue[] = [
         start_date: '2024-10-01T00:00:00Z',
         end_date: '2024-12-15T00:00:00Z',
         client: 6,
-        status: [2],
+        status: null,
         created_at: '2025-03-09T09:52:49Z',
     },
     {
@@ -931,7 +931,7 @@ export const tourDemoVenueData: TourVenue[] = [
         start_date: '2024-11-01T00:00:00Z',
         end_date: '2024-12-20T00:00:00Z',
         client: 15,
-        status: [5],
+        status: null,
         created_at: '2024-10-28T23:33:09Z',
     },
     {
@@ -941,7 +941,7 @@ export const tourDemoVenueData: TourVenue[] = [
         start_date: '2024-09-15T00:00:00Z',
         end_date: '2024-12-10T00:00:00Z',
         client: 20,
-        status: [2],
+        status: null,
         created_at: '2024-11-14T00:55:21Z',
     },
     {
@@ -951,7 +951,7 @@ export const tourDemoVenueData: TourVenue[] = [
         start_date: '2024-08-01T00:00:00Z',
         end_date: '2024-12-25T00:00:00Z',
         client: 9,
-        status: [],
+        status: null,
         created_at: '2024-11-21T21:29:12Z',
     },
     {
@@ -961,7 +961,7 @@ export const tourDemoVenueData: TourVenue[] = [
         start_date: '2024-12-01T00:00:00Z',
         end_date: '2025-01-05T00:00:00Z',
         client: 22,
-        status: [2],
+        status: null,
         created_at: '2024-09-28T21:03:09Z',
     },
     {
@@ -971,7 +971,7 @@ export const tourDemoVenueData: TourVenue[] = [
         start_date: '2024-11-15T00:00:00Z',
         end_date: '2024-12-18T00:00:00Z',
         client: 11,
-        status: [2],
+        status: null,
         created_at: '2025-02-26T16:35:29Z',
     },
     {
@@ -981,7 +981,7 @@ export const tourDemoVenueData: TourVenue[] = [
         start_date: '2024-10-20T00:00:00Z',
         end_date: '2024-12-22T00:00:00Z',
         client: 16,
-        status: [2],
+        status: null,
         created_at: '2024-10-18T00:31:28Z',
     },
     {
@@ -991,7 +991,7 @@ export const tourDemoVenueData: TourVenue[] = [
         start_date: '2024-07-01T00:00:00Z',
         end_date: '2024-12-30T00:00:00Z',
         client: 24,
-        status: [2],
+        status: null,
         created_at: '2025-01-20T02:44:35Z',
     },
 ];

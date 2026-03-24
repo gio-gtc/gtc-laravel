@@ -106,9 +106,9 @@ export default function VenueDetailSlideout({
         useState<AttachFileModalContext | null>(null);
     const [isMaximized, setIsMaximized] = useState(false);
     const [isEditVenueModalOpen, setIsEditVenueModalOpen] = useState(false);
-    const [selectedRowIds, setSelectedRowIds] = useState<
-        Set<string | number>
-    >(() => new Set());
+    const [selectedRowIds, setSelectedRowIds] = useState<Set<string | number>>(
+        () => new Set(),
+    );
 
     const toggleRowSelection = useCallback((id: string | number) => {
         setSelectedRowIds((prev) => {
@@ -157,7 +157,7 @@ export default function VenueDetailSlideout({
                     client={client}
                     venue={venueItem?.venue?.name ?? 'Demo'}
                     state={venueItem?.venue?.state ?? ''}
-                    status={venueItem?.orderVenue?.status ?? ['demo']}
+                    status={venueItem?.orderVenue?.status ?? null}
                     city={venueItem?.venue?.city}
                     eventDates={isDemo ? undefined : formatEventDates}
                     ticketSaleDate={isDemo ? undefined : mockTicketSaleDate}
