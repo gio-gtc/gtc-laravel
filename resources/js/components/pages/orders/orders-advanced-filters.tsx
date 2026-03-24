@@ -1,3 +1,4 @@
+import { tourVenueStatusData } from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -11,7 +12,6 @@ import {
     DEFAULT_FILTERS,
 } from '@/hooks/use-orders-filters';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
-import { TOUR_VENUE_STATUS_OPTIONS } from '@/lib/tour-venue-status';
 import { cn } from '@/lib/utils';
 import { type TourVenueStatusValue } from '@/types';
 import { Filter, X } from 'lucide-react';
@@ -130,17 +130,16 @@ export default function OrdersAdvancedFilters({
                     <div className="space-y-2">
                         <p className="text-sm font-medium">Status</p>
                         <div className="flex flex-wrap gap-2">
-                            {TOUR_VENUE_STATUS_OPTIONS.map((opt) => (
+                            {tourVenueStatusData.map((opt) => (
                                 <Button
-                                    key={opt.value}
+                                    key={opt.id}
                                     variant={
-                                        filter.statuses.includes(opt.value)
+                                        filter.statuses.includes(opt.id)
                                             ? 'default'
                                             : 'secondary'
                                     }
                                     size="sm"
-                                    className="capitalize"
-                                    onClick={() => toggleStatus(opt.value)}
+                                    onClick={() => toggleStatus(opt.id)}
                                 >
                                     {opt.label}
                                 </Button>

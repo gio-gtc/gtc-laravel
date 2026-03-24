@@ -1,8 +1,16 @@
-import { TOUR_VENUE_STATUS_VALUES } from '@/lib/tour-venue-status';
+import { TOUR_VENUE_STATUS_IDS } from '@/lib/tour-venue-status';
 import { type TourVenueStatusValue } from '@/types';
 import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'gtc-orders-filters';
+
+function normalizeStoredStatuses(raw: unknown): TourVenueStatusValue[] {
+    if (!Array.isArray(raw)) return [];
+    return raw.filter(
+        (s): s is TourVenueStatusValue =>
+            typeof s === 'number' && TOUR_VENUE_STATUS_IDS.includes(s),
+    );
+}
 
 export type OrdersFilterState = {
     clientIds: number[];
@@ -43,11 +51,7 @@ function loadFilters(): OrdersFilterState {
                 typeof parsed.myCollaborators === 'boolean'
                     ? parsed.myCollaborators
                     : DEFAULT_FILTERS.myCollaborators,
-            statuses: Array.isArray(parsed.statuses)
-                ? parsed.statuses.filter((s) =>
-                      TOUR_VENUE_STATUS_VALUES.includes(s as TourVenueStatusValue),
-                  )
-                : DEFAULT_FILTERS.statuses,
+            statuses: normalizeStoredStatuses(parsed.statuses),
             country:
                 parsed.country &&
                 typeof parsed.country.us === 'boolean' &&

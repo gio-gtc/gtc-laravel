@@ -1,7 +1,7 @@
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import NavOptionButton from '@/components/ui/slideout/nav-option-button';
 import Divider from '@/components/utils/divider';
-import { User, type TourVenue } from '@/types';
+import { User, type TourVenueStatusValue } from '@/types';
 import {
     ArrowRightToLine,
     ExpandIcon,
@@ -17,7 +17,7 @@ interface VenueSlideoutHeaderProps {
     client: User | undefined;
     venue: string;
     state: string;
-    status: TourVenue['status'] | ['demo'];
+    status: Array<TourVenueStatusValue | 'demo'>;
     city?: string;
     eventDates?: string;
     ticketSaleDate?: string;

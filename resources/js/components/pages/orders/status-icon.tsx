@@ -1,53 +1,56 @@
 import { cn } from '@/lib/utils';
+import { type TourVenueStatusValue } from '@/types';
 import {
     CircleCheck,
     ClipboardPlus,
     Image,
+    type LucideIcon,
     MessageCircleQuestion,
     Mic,
     Pause,
     Volume2,
 } from 'lucide-react';
 
-const ICON_MAP = {
-    completed: {
+const ICON_MAP: Record<
+    TourVenueStatusValue,
+    { icon: LucideIcon; containerClass: string }
+> = {
+    7: {
         icon: CircleCheck,
         containerClass: 'bg-green-500',
     },
-    'new-order': {
+    1: {
         icon: ClipboardPlus,
         containerClass: 'bg-green-500',
     },
-    'voice-over': {
+    3: {
         icon: Mic,
         containerClass: 'bg-yellow-500',
     },
-    audio: {
+    4: {
         icon: Volume2,
         containerClass: 'bg-yellow-500',
     },
-    art: {
+    5: {
         icon: Image,
         containerClass: 'bg-yellow-500',
     },
-    paused: {
+    6: {
         icon: Pause,
         containerClass: 'bg-red-500',
     },
-    'in-progress': {
+    2: {
         icon: MessageCircleQuestion,
         containerClass: 'bg-red-500',
     },
-    demo: {},
-} as const;
-type IconVariant = keyof typeof ICON_MAP;
+};
 
 interface StatusIconProps extends React.HTMLAttributes<HTMLDivElement> {
-    status: IconVariant;
+    status: TourVenueStatusValue | 'demo';
 }
 
 function StatusIcon({ status, className, ...props }: StatusIconProps) {
-    if (status == 'demo') return;
+    if (status === 'demo') return;
 
     const { icon: Icon, containerClass } = ICON_MAP[status];
 

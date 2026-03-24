@@ -170,18 +170,17 @@ export interface TourVenue {
     end_date: string;
     client: number;
     created_at: string;
-    status: Array<
-        | 'completed'
-        | 'new-order'
-        | 'voice-over'
-        | 'audio'
-        | 'art'
-        | 'paused'
-        | 'in-progress'
-    >;
+    /** Workflow flag ids; see `tourVenueStatusData` in mockdata. */
+    status: number[];
 }
 
-/** Single status flag from `TourVenue.status` (the array element type). */
+/** Row shape for `tourVenueStatusData` (id for logic, label for display). */
+export interface TourVenueStatusRow {
+    id: number;
+    label: string;
+}
+
+/** Single status id from `TourVenue.status` (matches `TourVenueStatusRow.id`). */
 export type TourVenueStatusValue = TourVenue['status'][number];
 
 export interface Order {
