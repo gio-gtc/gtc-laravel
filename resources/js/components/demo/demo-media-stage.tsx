@@ -20,6 +20,22 @@ export default function DemoMediaStage({ asset }: { asset: DemoAsset | null }) {
         );
     }
 
+    if (asset.kind === 'audio') {
+        return (
+            <div
+                key={asset.id}
+                className="flex size-full items-center justify-center bg-black px-8"
+            >
+                <audio
+                    className="w-full max-w-xl"
+                    controls
+                    preload="metadata"
+                    src={asset.mediaUrl}
+                />
+            </div>
+        );
+    }
+
     return (
         <video
             key={asset.id}

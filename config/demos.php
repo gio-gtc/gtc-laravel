@@ -52,8 +52,8 @@ return [
                     'title' => '30s spot — clean',
                     'durationLabel' => '00:30',
                     'thumbnailUrl' => 'https://picsum.photos/seed/gtc-r1/320/180',
-                    'mediaUrl' => 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
-                    'kind' => 'video',
+                    'mediaUrl' => 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+                    'kind' => 'audio',
                 ],
                 [
                     'id' => 'asset-art-1',

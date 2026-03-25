@@ -1,6 +1,6 @@
 export type DemoTab = 'broadcast' | 'social' | 'radio' | 'art';
 
-export type DemoAssetKind = 'video' | 'image';
+export type DemoAssetKind = 'video' | 'audio' | 'image';
 
 export interface DemoAsset {
     id: string;

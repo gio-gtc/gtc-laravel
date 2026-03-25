@@ -179,6 +179,64 @@
         -moz-appearance: textfield;
         appearance: textfield;
     }
+
+    /* Demo viewer: header + brand use demo-root hover. Sidebar uses rail hover / touch toggle (see .demo-sidebar-*). */
+    .demo-chrome-header,
+    .demo-chrome-brand {
+        transition: opacity 0.28s ease;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .demo-root:not(:hover) .demo-chrome-header {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .demo-root:not(:hover) .demo-chrome-brand {
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        .demo-root:hover .demo-chrome-header,
+        .demo-root:hover .demo-chrome-brand {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    }
+
+    .demo-sidebar-panel {
+        transition:
+            transform 0.28s ease,
+            opacity 0.28s ease;
+    }
+
+    @media (hover: none), (pointer: coarse) {
+        .demo-sidebar-rail:not(.demo-sidebar-rail--open) .demo-sidebar-panel {
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .demo-sidebar-rail--open .demo-sidebar-panel {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .demo-sidebar-rail .demo-sidebar-panel {
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .demo-sidebar-rail:hover .demo-sidebar-panel {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+    }
 }
 
 @layer components {
@@ -270,22 +328,5 @@
 
     .xs-gray-300-weight-400 {
         @apply text-xs font-normal text-gray-300;
-    }
-}
-
-/* Demo viewer: chrome visible by default (touch / coarse pointer). Hide until hover on fine pointers. */
-.demo-chrome {
-    transition: opacity 0.28s ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .demo-root:not(:hover) .demo-chrome {
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    .demo-root:hover .demo-chrome {
-        opacity: 1;
-        pointer-events: auto;
     }
 }

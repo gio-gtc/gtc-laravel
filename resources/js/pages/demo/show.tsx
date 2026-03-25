@@ -34,6 +34,10 @@ export default function DemoShow({
     const selectedAsset =
         assets.find((a) => a.id === selectedId) ?? filteredAssets[0] ?? null;
 
+    const reserveBottomForMedia =
+        selectedAsset?.kind === 'video' ||
+        selectedAsset?.kind === 'audio';
+
     const handleTabChange = useCallback(
         (tab: DemoTab) => {
             setActiveTab(tab);
@@ -62,6 +66,7 @@ export default function DemoShow({
                     assets={filteredAssets}
                     selectedId={selectedAsset?.id ?? selectedId}
                     onSelectAsset={setSelectedId}
+                    reserveBottomForMedia={reserveBottomForMedia}
                 />
                 <DemoBrandBadge />
             </div>
