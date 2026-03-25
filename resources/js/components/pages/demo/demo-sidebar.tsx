@@ -49,7 +49,7 @@ export default function DemoSidebar({
                     {!touchOpen ? (
                         <button
                             type="button"
-                            className="fixed top-1/2 right-0 z-[11] flex -translate-y-1/2 items-center gap-0.5 rounded-l-lg border border-white/10 border-r-0 bg-zinc-900/90 py-6 pl-1 pr-0.5 text-[0.6rem] font-semibold tracking-wide text-white uppercase shadow-lg"
+                            className="fixed top-1/2 right-0 z-[11] flex -translate-y-1/2 items-center gap-0.5 rounded-l-lg border border-r-0 border-white/10 bg-zinc-900/90 py-6 pr-0.5 pl-1 text-[0.6rem] font-semibold tracking-wide text-white uppercase shadow-lg"
                             onClick={openTouch}
                         >
                             <span className="sr-only">Open assets panel</span>
@@ -77,17 +77,17 @@ export default function DemoSidebar({
             ) : null}
             <div
                 className={cn(
-                    'demo-sidebar-rail absolute right-0 top-0 z-10 flex justify-end overflow-visible',
+                    'demo-sidebar-rail absolute top-0 right-0 z-10 flex justify-end overflow-visible',
                     bottomClass,
                     isCoarse && !touchOpen && 'w-0',
                     (!isCoarse || touchOpen) &&
-                        'w-[min(22rem,90vw)] sm:w-[min(22rem,28vw)]',
+                        'w-[min(22rem,90vw)] sm:w-[min(26rem,28vw)]',
                     isCoarse && touchOpen && 'demo-sidebar-rail--open z-[25]',
                 )}
             >
                 <aside
                     className={cn(
-                        'demo-sidebar-panel absolute top-0 right-0 bottom-0 flex min-h-0 w-full flex-col border-l border-white/10 bg-zinc-900/85 pt-20 backdrop-blur-md',
+                        'demo-sidebar-panel absolute top-0 right-0 bottom-0 flex min-h-0 w-full flex-col bg-zinc-900/10 backdrop-blur-md',
                     )}
                 >
                     {isCoarse ? (
@@ -100,7 +100,7 @@ export default function DemoSidebar({
                             <X className="size-4" aria-hidden />
                         </button>
                     ) : null}
-                    <div className="flex shrink-0 gap-1 border-b border-white/10 px-2 pt-2 pb-3">
+                    <div className="flex shrink-0">
                         {TABS.map(({ id, label, icon: Icon }) => {
                             const active = activeTab === id;
                             return (
@@ -108,18 +108,18 @@ export default function DemoSidebar({
                                     key={id}
                                     type="button"
                                     onClick={() => onTabChange(id)}
-                                    className={`flex min-w-0 flex-1 flex-col items-center gap-1 rounded-md px-1 py-2 text-[0.65rem] font-medium tracking-wide text-white uppercase transition-colors ${
+                                    className={`flex min-w-0 flex-1 flex-col items-center gap-2 px-2 py-4 text-white uppercase transition-colors ${
                                         active
                                             ? 'bg-white/15 text-white'
                                             : 'text-white/70 hover:bg-white/10 hover:text-white'
                                     }`}
                                 >
                                     <Icon
-                                        className="size-4 shrink-0 opacity-90"
+                                        className="size-[40px] shrink-0 opacity-90"
                                         strokeWidth={1.5}
                                         aria-hidden
                                     />
-                                    <span className="truncate">{label}</span>
+                                    <span className="text-xl">{label}</span>
                                 </button>
                             );
                         })}
@@ -134,20 +134,20 @@ export default function DemoSidebar({
                                         onClick={() => onSelectAsset(asset.id)}
                                         className={`flex w-full gap-3 rounded-lg p-2 text-left transition-colors ${
                                             selected
-                                                ? 'bg-white/20'
-                                                : 'hover:bg-white/10'
+                                                ? 'border bg-white/10'
+                                                : 'hover:bg-white/5'
                                         }`}
                                     >
                                         <img
                                             src={asset.thumbnailUrl}
                                             alt=""
-                                            className="size-16 shrink-0 rounded object-cover"
+                                            className="h-16 w-30 shrink-0 rounded object-cover"
                                         />
                                         <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
-                                            <span className="text-xs font-semibold tracking-wide text-white uppercase">
+                                            <span className="text-white uppercase">
                                                 {asset.title}
                                             </span>
-                                            <span className="text-[0.65rem] text-white/60 tabular-nums">
+                                            <span className="text-gray-400 tabular-nums">
                                                 {asset.durationLabel}
                                             </span>
                                         </div>

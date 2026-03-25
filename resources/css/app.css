@@ -180,7 +180,17 @@
         appearance: textfield;
     }
 
-    /* Demo viewer: header + brand use demo-root hover. Sidebar uses rail hover / touch toggle (see .demo-sidebar-*). */
+    /* DEMO PAGE STYLES */
+    .demo-root {
+        font-family: 'Bebas Neue', sans-serif;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .demo-chrome-header {
+        @apply text-[40px];
+    }
+
     .demo-chrome-header,
     .demo-chrome-brand {
         transition: opacity 0.28s ease;
@@ -224,7 +234,7 @@
         }
     }
 
-    @media (hover: hover) and (pointer: fine) {
+    /* @media (hover: hover) and (pointer: fine) {
         .demo-sidebar-rail .demo-sidebar-panel {
             transform: translateX(100%);
             opacity: 0;
@@ -236,7 +246,7 @@
             opacity: 1;
             pointer-events: auto;
         }
-    }
+    } */
 }
 
 @layer components {
