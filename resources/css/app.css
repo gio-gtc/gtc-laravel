@@ -234,7 +234,7 @@
         }
     }
 
-    /* @media (hover: hover) and (pointer: fine) {
+    @media (hover: hover) and (pointer: fine) {
         .demo-sidebar-rail .demo-sidebar-panel {
             transform: translateX(100%);
             opacity: 0;
@@ -246,7 +246,7 @@
             opacity: 1;
             pointer-events: auto;
         }
-    } */
+    }
 }
 
 @layer components {
