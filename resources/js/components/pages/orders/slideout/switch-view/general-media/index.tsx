@@ -253,6 +253,8 @@ function GeneralMediaView({
 
     const orders = venueItem ? venueOrders : [];
 
+    const isDemoRow = venueItem != null && venueItem.venue === null;
+
     const openDueDateBulkEdit = useCallback(
         (rowId: string | number) => {
             const mediaRow = localMediaRows.find((r) => r.id === rowId);
@@ -335,6 +337,11 @@ function GeneralMediaView({
                     onStatusFilterChange={setStatusFilter}
                     sortDirection={sortDirection}
                     onSortDirectionChange={setSortDirection}
+                    demoLinkHref={
+                        isDemoRow
+                            ? '/demo/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'
+                            : undefined
+                    }
                 />
                 <MediaTable
                     title="Broadcast & Streaming Video"

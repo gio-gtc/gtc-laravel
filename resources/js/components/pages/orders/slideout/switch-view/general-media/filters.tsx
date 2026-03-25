@@ -30,6 +30,7 @@ interface FiltersProps {
     onStatusFilterChange: (filter: MediaStatusFilter) => void;
     sortDirection: SortDirection;
     onSortDirectionChange: (direction: SortDirection) => void;
+    demoLinkHref?: string;
 }
 
 export default function Filters({
@@ -37,6 +38,7 @@ export default function Filters({
     onStatusFilterChange,
     sortDirection,
     onSortDirectionChange,
+    demoLinkHref,
 }: FiltersProps) {
     const hasActiveStatusFilter = statusFilter.length > 0;
 
@@ -68,6 +70,17 @@ export default function Filters({
 
     return (
         <div className="flex items-center justify-end gap-1">
+            {demoLinkHref != null && demoLinkHref !== '' ? (
+                <Button variant="outline" asChild>
+                    <a
+                        href={demoLinkHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Demo Link
+                    </a>
+                </Button>
+            ) : null}
             <Popover>
                 <PopoverTrigger asChild>
                     <Button variant="outline">
