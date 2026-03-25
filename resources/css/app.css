@@ -272,3 +272,20 @@
         @apply text-xs font-normal text-gray-300;
     }
 }
+
+/* Demo viewer: chrome visible by default (touch / coarse pointer). Hide until hover on fine pointers. */
+.demo-chrome {
+    transition: opacity 0.28s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .demo-root:not(:hover) .demo-chrome {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .demo-root:hover .demo-chrome {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
