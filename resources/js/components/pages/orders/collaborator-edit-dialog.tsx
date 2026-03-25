@@ -6,7 +6,11 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { getUniqueAssignedUsersForTourVenue } from '@/components/utils/venue-items';
+import {
+    getUniqueAssignedUsersForTourVenue,
+    type OrdersVenueLineCatalog,
+} from '@/components/utils/venue-items';
+import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { type User } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
@@ -26,15 +30,29 @@ function CollaboratorEditDialog({
     isOpen,
     onClose,
 }: CollaboratorEditDialogProps) {
+    const catalog = useOrdersCatalog();
     const usersWithFallback = useUsersWithFallback();
+
+    const venueLineCatalog = useMemo((): OrdersVenueLineCatalog => {
+        return {
+            venue_items: catalog.venue_items,
+            venue_item_assigned: catalog.venue_item_assigned,
+            venue_item_status: catalog.venue_item_status,
+        };
+    }, [
+        catalog.venue_items,
+        catalog.venue_item_assigned,
+        catalog.venue_item_status,
+    ]);
 
     const currentAssignees = useMemo(
         () =>
             getUniqueAssignedUsersForTourVenue(
                 tourVenueId,
                 usersWithFallback,
+                venueLineCatalog,
             ),
-        [tourVenueId, usersWithFallback],
+        [tourVenueId, usersWithFallback, venueLineCatalog],
     );
 
     const [selectedUsers, setSelectedUsers] =

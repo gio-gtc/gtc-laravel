@@ -1,9 +1,13 @@
-import DemoBrandBadge from '@/components/demo/demo-brand-badge';
-import DemoHeaderTitle from '@/components/demo/demo-header-title';
-import DemoMediaStage from '@/components/demo/demo-media-stage';
-import DemoSidebar from '@/components/demo/demo-sidebar';
+import DemoBrandBadge from '@/components/pages/demo/demo-brand-badge';
+import DemoHeaderTitle from '@/components/pages/demo/demo-header-title';
+import DemoMediaStage from '@/components/pages/demo/demo-media-stage';
+import DemoSidebar from '@/components/pages/demo/demo-sidebar';
 import DemoLayout from '@/layouts/demo-layout';
-import { type DemoAsset, type DemoShowPageProps, type DemoTab } from '@/types/demo';
+import {
+    type DemoAsset,
+    type DemoShowPageProps,
+    type DemoTab,
+} from '@/types/demo';
 import { useCallback, useMemo, useState } from 'react';
 
 function defaultTab(assets: DemoAsset[]): DemoTab {
@@ -35,8 +39,7 @@ export default function DemoShow({
         assets.find((a) => a.id === selectedId) ?? filteredAssets[0] ?? null;
 
     const reserveBottomForMedia =
-        selectedAsset?.kind === 'video' ||
-        selectedAsset?.kind === 'audio';
+        selectedAsset?.kind === 'video' || selectedAsset?.kind === 'audio';
 
     const handleTabChange = useCallback(
         (tab: DemoTab) => {

@@ -1,8 +1,10 @@
-import { venueItemsData } from '@/components/mockdata';
 import {
     getAssignedUsersForVenueItem,
+    type OrdersVenueLineCatalog,
     venueItemsLocalizedTableRow,
 } from '@/components/utils/venue-items';
+import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
+import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import {
     type LocalizedArtTableRow,
@@ -40,12 +42,27 @@ function LocalArtView({
     selectedRowIds,
     onRowSelectToggle,
 }: LocalArtViewProps) {
+    const catalog = useOrdersCatalog();
+    const usersWithFallback = useUsersWithFallback();
+
+    const venueLineCatalog = useMemo((): OrdersVenueLineCatalog => {
+        return {
+            venue_items: catalog.venue_items,
+            venue_item_assigned: catalog.venue_item_assigned,
+            venue_item_status: catalog.venue_item_status,
+        };
+    }, [
+        catalog.venue_items,
+        catalog.venue_item_assigned,
+        catalog.venue_item_status,
+    ]);
+
     const [notesModalRow, setNotesModalRow] =
         useState<LocalizedArtTableRow | null>(null);
 
     const localizedArtData = useMemo(() => {
         if (!venueItem) return [];
-        return venueItemsData
+        return catalog.venue_items
             .filter(
                 (r): r is VenueItemsLocalizedRow =>
                     r.type === 'localized' &&
@@ -54,10 +71,14 @@ function LocalArtView({
             .map((row) =>
                 venueItemsLocalizedTableRow(
                     row,
-                    getAssignedUsersForVenueItem(row.id),
+                    getAssignedUsersForVenueItem(
+                        row.id,
+                        venueLineCatalog,
+                        usersWithFallback,
+                    ),
                 ),
             );
-    }, [venueItem]);
+    }, [venueItem, catalog.venue_items, venueLineCatalog, usersWithFallback]);
 
     const {
         localData: localLocalizedRows,

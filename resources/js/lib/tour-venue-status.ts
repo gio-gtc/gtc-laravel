@@ -1,5 +1,5 @@
-import { tourVenueStatusData } from '@/components/mockdata';
+import type { TourVenueStatusRow } from '@/types';
 
-export const TOUR_VENUE_STATUS_IDS: number[] = tourVenueStatusData.map(
-    (row) => row.id,
-);
+export function tourVenueStatusIds(rows: TourVenueStatusRow[]): number[] {
+    return rows.map((row) => row.id);
+}

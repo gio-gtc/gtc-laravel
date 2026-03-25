@@ -1,9 +1,3 @@
-import {
-    companiesData,
-    countriesData,
-    invoicesData,
-    venuesData,
-} from '@/components/mockdata';
 import InvoiceAdvancedFilters from '@/components/pages/invoices/advanced-filters';
 import InvoiceDetailSlideout from '@/components/pages/invoices/detail-slideout';
 import InvoiceStatusFilters from '@/components/pages/invoices/status-filters';
@@ -15,11 +9,23 @@ import {
     getInvoiceAddress,
     getInvoiceVenueName,
 } from '@/components/utils/functions';
-import { type Invoice } from '@/types';
+import {
+    type Company,
+    type Country,
+    type Invoice,
+    type SharedData,
+    type Venue,
+} from '@/types';
+import { type InvoicesPageProps } from '@/types/inertia-pages';
+import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
-function getInvoiceCountryCode(invoice: Invoice): 'US' | 'International' {
-    const company = companiesData.find((c) => c.id === invoice.company_id);
+function getInvoiceCountryCode(
+    invoice: Invoice,
+    companies: Company[],
+    countries: Country[],
+): 'US' | 'International' {
+    const company = companies.find((c) => c.id === invoice.company_id);
     if (!company) return 'International';
 
     const addressData = getInvoiceAddress(invoice, company);
@@ -29,11 +35,17 @@ function getInvoiceCountryCode(invoice: Invoice): 'US' | 'International' {
 
     if (!countryId) return 'International';
 
-    const country = countriesData.find((c) => c.id === countryId);
+    const country = countries.find((c) => c.id === countryId);
     return country?.code === 'US' ? 'US' : 'International';
 }
 
 function InvoicesTable() {
+    const { props } = usePage<SharedData & InvoicesPageProps>();
+    const invoicesData = props.invoices;
+    const companiesData = props.companies;
+    const countriesData = props.countries;
+    const venuesData = props.venues;
+    const invoiceItemsData = props.invoice_items;
     const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(
         null,
     );
@@ -94,7 +106,11 @@ function InvoicesTable() {
     // Apply country filter
     if (countryFilter.us || countryFilter.international) {
         filteredData = filteredData.filter((invoice) => {
-            const countryCode = getInvoiceCountryCode(invoice);
+            const countryCode = getInvoiceCountryCode(
+                invoice,
+                companiesData,
+                countriesData,
+            );
             if (countryFilter.us && countryFilter.international) {
                 return true;
             } else if (countryFilter.us) {
@@ -239,6 +255,7 @@ function InvoicesTable() {
                 <>
                     <PaymentReminderTable
                         data={filteredData}
+                        venues={venuesData}
                         onSelectionChange={setSelectedReleasedInvoiceIds}
                     />
 
@@ -261,6 +278,7 @@ function InvoicesTable() {
             ) : (
                 <InvoiceDetailTable
                     data={filteredData}
+                    venues={venuesData}
                     onInvoiceSelect={setSelectedInvoice}
                     selectedInvoice={selectedInvoice}
                 />
@@ -271,6 +289,10 @@ function InvoicesTable() {
                 invoice={selectedInvoice}
                 isOpen={selectedInvoice !== null}
                 onClose={() => setSelectedInvoice(null)}
+                companies={companiesData}
+                countries={countriesData}
+                venues={venuesData}
+                invoiceItems={invoiceItemsData}
             />
         </div>
     );

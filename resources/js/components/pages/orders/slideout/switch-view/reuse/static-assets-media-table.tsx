@@ -15,7 +15,6 @@ import {
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
 import { EditableCellSelect } from '@/components/utils/editable-table/editable-cell-select';
-import { VENUE_ITEM_STATUS_SELECT_OPTIONS } from '@/components/utils/editable-table/venue-item-status-options';
 import { VenueItemStatusBadge } from '@/components/utils/venue-item-status-badge';
 import { toggleRowSelectionOnRowClick } from '@/lib/row-select-toggle';
 import { cn } from '@/lib/utils';
@@ -37,6 +36,7 @@ export default function StaticAssetsMediaTable({
     onRowSelectToggle,
     onBulkEditDueDateDoubleClick,
     onBulkEditAssignedDoubleClick,
+    venueItemStatusSelectOptions,
 }: StaticAssetsMediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -294,7 +294,7 @@ export default function StaticAssetsMediaTable({
                                                                 itemId={row.id}
                                                                 field="status"
                                                                 options={
-                                                                    VENUE_ITEM_STATUS_SELECT_OPTIONS
+                                                                    venueItemStatusSelectOptions
                                                                 }
                                                                 renderDisplay={(
                                                                     v,

@@ -1,10 +1,12 @@
-import { invoicesData, orderData, venueItemsData } from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
+import { buildVenueItemStatusSelectOptions } from '@/components/utils/editable-table/venue-item-status-options';
 import {
     getAssignedUsersForVenueItem,
+    type OrdersVenueLineCatalog,
     venueItemsMediaTableRow,
     venueItemsStaticTableRow,
 } from '@/components/utils/venue-items';
+import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
 import { useChat } from '@/hooks/use-chat';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
@@ -77,7 +79,25 @@ function GeneralMediaView({
     onOpenAttachModal,
 }: GeneralMediaViewProps) {
     const { auth } = usePage<SharedData>().props;
+    const catalog = useOrdersCatalog();
     const usersWithFallback = useUsersWithFallback();
+
+    const venueLineCatalog = useMemo((): OrdersVenueLineCatalog => {
+        return {
+            venue_items: catalog.venue_items,
+            venue_item_assigned: catalog.venue_item_assigned,
+            venue_item_status: catalog.venue_item_status,
+        };
+    }, [
+        catalog.venue_items,
+        catalog.venue_item_assigned,
+        catalog.venue_item_status,
+    ]);
+
+    const venueItemStatusSelectOptions = useMemo(
+        () => buildVenueItemStatusSelectOptions(catalog.venue_item_status),
+        [catalog.venue_item_status],
+    );
     const chatChannelId = venueItem
         ? `tour-venue-${venueItem.orderVenue.id}`
         : 'general';
@@ -96,7 +116,7 @@ function GeneralMediaView({
 
     const venueMediaWithCallbacks = useMemo(() => {
         if (!venueItem) return [];
-        return venueItemsData
+        return catalog.venue_items
             .filter(
                 (r): r is VenueItemsMediaRow =>
                     r.type === 'media' &&
@@ -105,17 +125,22 @@ function GeneralMediaView({
             .map((row) => {
                 const mediaRow = venueItemsMediaTableRow(
                     row,
-                    getAssignedUsersForVenueItem(row.id),
+                    getAssignedUsersForVenueItem(
+                        row.id,
+                        venueLineCatalog,
+                        usersWithFallback,
+                    ),
+                    catalog.venue_item_status,
                 );
                 return {
                     ...mediaRow,
                     previewIcons:
+                        Array.isArray(row.previewIcons) &&
                         row.previewIcons.length > 0
                             ? row.previewIcons
                             : defaultPreviewIcons,
-                    deliverables: row.deliverables
+                    deliverables: row.has_deliverable_actions
                         ? {
-                              ...row.deliverables,
                               onReject: () => {
                                   setRevisionRequestRow(mediaRow);
                                   setRevisionModalOpen(true);
@@ -124,11 +149,17 @@ function GeneralMediaView({
                         : undefined,
                 };
             });
-    }, [venueItem]);
+    }, [
+        venueItem,
+        catalog.venue_items,
+        catalog.venue_item_status,
+        venueLineCatalog,
+        usersWithFallback,
+    ]);
 
     const venueStaticAssetsWithCallbacks = useMemo(() => {
         if (!venueItem) return [];
-        return venueItemsData
+        return catalog.venue_items
             .filter(
                 (r): r is VenueItemsStaticRow =>
                     r.type === 'static' &&
@@ -137,13 +168,17 @@ function GeneralMediaView({
             .map((row) => {
                 const staticRow = venueItemsStaticTableRow(
                     row,
-                    getAssignedUsersForVenueItem(row.id),
+                    getAssignedUsersForVenueItem(
+                        row.id,
+                        venueLineCatalog,
+                        usersWithFallback,
+                    ),
+                    catalog.venue_item_status,
                 );
                 return {
                     ...staticRow,
-                    deliverables: row.deliverables
+                    deliverables: row.has_deliverable_actions
                         ? {
-                              ...row.deliverables,
                               onReject: () => {
                                   setRevisionModalOpen(true);
                               },
@@ -151,7 +186,13 @@ function GeneralMediaView({
                         : undefined,
                 };
             });
-    }, [venueItem]);
+    }, [
+        venueItem,
+        catalog.venue_items,
+        catalog.venue_item_status,
+        venueLineCatalog,
+        usersWithFallback,
+    ]);
 
     const {
         localData: localMediaRows,
@@ -195,20 +236,20 @@ function GeneralMediaView({
 
     const billingInvoices = useMemo((): Invoice[] => {
         if (!order || !venueItem || venueItem.venue == null) return [];
-        return invoicesData.filter(
+        return catalog.invoices.filter(
             (inv) =>
                 !inv.isDeleted &&
                 inv.tour === order.name &&
                 inv.venue_id === venueItem.venue!.id,
         );
-    }, [order, venueItem]);
+    }, [order, venueItem, catalog.invoices]);
 
     const venueOrders = useMemo(() => {
         if (!venueItem) return [];
-        return orderData.filter(
+        return catalog.orders.filter(
             (o) => o.tour_venue_id === venueItem.orderVenue.id,
         );
-    }, [venueItem]);
+    }, [venueItem, catalog.orders]);
 
     const orders = venueItem ? venueOrders : [];
 
@@ -268,8 +309,9 @@ function GeneralMediaView({
                 orders,
                 statusFilter,
                 sortDirection,
+                catalog.orders,
             ),
-        [localMediaRows, orders, statusFilter, sortDirection],
+        [localMediaRows, orders, statusFilter, sortDirection, catalog.orders],
     );
 
     const filteredStaticAssetsData = useMemo(
@@ -279,8 +321,9 @@ function GeneralMediaView({
                 orders,
                 statusFilter,
                 sortDirection,
+                catalog.orders,
             ),
-        [localStaticRows, orders, statusFilter, sortDirection],
+        [localStaticRows, orders, statusFilter, sortDirection, catalog.orders],
     );
 
     return (
@@ -298,6 +341,7 @@ function GeneralMediaView({
                     data={filteredMediaData}
                     cellEditing={sharedMediaCellEditing}
                     editScope="broadcast"
+                    venueItemStatusSelectOptions={venueItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
@@ -319,6 +363,7 @@ function GeneralMediaView({
                     data={filteredMediaData}
                     cellEditing={sharedMediaCellEditing}
                     editScope="social"
+                    venueItemStatusSelectOptions={venueItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
@@ -340,6 +385,7 @@ function GeneralMediaView({
                     data={filteredMediaData}
                     cellEditing={sharedMediaCellEditing}
                     editScope="audio"
+                    venueItemStatusSelectOptions={venueItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
@@ -360,6 +406,7 @@ function GeneralMediaView({
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
                     data={filteredStaticAssetsData}
+                    venueItemStatusSelectOptions={venueItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}

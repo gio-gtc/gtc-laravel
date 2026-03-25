@@ -55,6 +55,8 @@ export interface SharedData {
     quote: { message: string; author: string };
     auth: Auth;
     users?: User[];
+    /** Demo catalog users from config (merged with DB users in useUsersWithFallback). */
+    demoUsers?: User[];
     sidebarOpen: boolean;
     [key: string]: unknown;
 }
@@ -173,7 +175,7 @@ export interface TourVenue {
     status: number[] | null;
 }
 
-/** Row shape for `tourVenueStatusData` (id for logic, label for display). */
+/** Row shape for tour venue status options (id for logic, label for display). */
 export interface TourVenueStatusRow {
     id: number;
     label:
@@ -262,6 +264,7 @@ export interface MediaTableProps {
     onRowSelectToggle?: (rowId: string | number) => void;
     onBulkEditDueDateDoubleClick?: (rowId: string | number) => void;
     onBulkEditAssignedDoubleClick?: (rowId: string | number) => void;
+    venueItemStatusSelectOptions: { value: string; label: string }[];
 }
 
 export interface StaticAssetsTableRow {
@@ -292,6 +295,7 @@ export interface StaticAssetsMediaTableProps {
     onRowSelectToggle?: (rowId: string | number) => void;
     onBulkEditDueDateDoubleClick?: (rowId: string | number) => void;
     onBulkEditAssignedDoubleClick?: (rowId: string | number) => void;
+    venueItemStatusSelectOptions: { value: string; label: string }[];
 }
 
 export interface LocalizedArtNote {
@@ -314,9 +318,12 @@ export interface VenueItemsMediaRow extends VenueItemsRowBase {
     isci: string;
     duration: string;
     status_id: number;
-    previewIcons: React.ReactNode[];
+    /** Omitted when loaded from server JSON; UI supplies defaults. */
+    previewIcons?: React.ReactNode[];
     previewVideoUrl?: string | null;
     deliverables?: MediaTableRow['deliverables'];
+    /** Set from server JSON when row supports deliverable actions (replaces inline mock callbacks). */
+    has_deliverable_actions?: boolean;
     order_id?: number;
 }
 
@@ -326,6 +333,7 @@ export interface VenueItemsStaticRow extends VenueItemsRowBase {
     height: number;
     status_id: number;
     deliverables?: StaticAssetsTableRow['deliverables'];
+    has_deliverable_actions?: boolean;
     order_id?: number;
 }
 

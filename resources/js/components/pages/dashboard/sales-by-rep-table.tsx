@@ -1,5 +1,4 @@
 import Heading from '@/components/heading';
-import { salesByRepData } from '@/components/mockdata';
 import {
     Table,
     TableBody,
@@ -10,22 +9,33 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { formatCurrency } from '@/components/utils/functions';
+import { type SharedData } from '@/types';
+import { type DashboardPageProps } from '@/types/inertia-pages';
+import { usePage } from '@inertiajs/react';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useMemo } from 'react';
 
 function SalesByRepTable() {
+    const { sales_by_rep: salesByRepData } = usePage<
+        SharedData & DashboardPageProps
+    >().props;
+
     const totals = useMemo(
-        () => ({
-            currentMonth: 1561000,
-            ytd: 13125000,
-            total: 14686000,
-        }),
-        [],
+        () =>
+            salesByRepData.reduce(
+                (acc, rep) => ({
+                    currentMonth: acc.currentMonth + rep.currentMonth,
+                    ytd: acc.ytd + rep.ytd,
+                    total: acc.total + rep.total,
+                }),
+                { currentMonth: 0, ytd: 0, total: 0 },
+            ),
+        [salesByRepData],
     );
 
     function renderValueWithChange(
         value: number,
-        change: { direction: 'up' | 'down'; percentage: number },
+        change: { direction: string; percentage: number },
     ) {
         const isUp = change.direction === 'up';
         const arrowColor = isUp ? 'text-green-600' : 'text-red-600';

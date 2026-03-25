@@ -1,5 +1,5 @@
 import { getDaysRemaining } from '@/components/utils/functions';
-import { type Invoice } from '@/types';
+import { type Invoice, type Venue } from '@/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getReleasedInvoiceDayBadge } from './pieces/day-badge';
 import { InvoiceTableBase } from './pieces/table-base';
@@ -7,11 +7,13 @@ import { createInvoiceColumns } from './pieces/table-columns';
 
 interface PaymentReminderTableProps {
     data: Invoice[];
+    venues: Venue[];
     onSelectionChange: (selectedIds: number[]) => void;
 }
 
 function PaymentReminderTable({
     data,
+    venues,
     onSelectionChange,
 }: PaymentReminderTableProps) {
     const [selectedInvoiceIds, setSelectedInvoiceIds] = useState<Set<number>>(
@@ -35,8 +37,9 @@ function PaymentReminderTable({
                 getDayBadge: getReleasedInvoiceDayBadge,
                 daysAccessorFn: (row) =>
                     getDaysRemaining(row.release_date, row.id),
+                venues,
             }),
-        [],
+        [venues],
     );
 
     const handleRowClick = (

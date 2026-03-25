@@ -136,12 +136,12 @@ export const MP4Icon = (props: SVGProps<SVGSVGElement>) => {
                 d="M7.5 0.75H13.4395L18.75 6.06055V16C18.75 17.7949 17.2949 19.25 15.5 19.25H7.5C5.70507 19.25 4.25 17.7949 4.25 16V4C4.25 2.20507 5.70507 0.75 7.5 0.75Z"
                 fill="white"
                 stroke="#A4A7AE"
-                stroke-width="1.5"
+                strokeWidth="1.5"
             />
             <path
                 d="M13.5 0.25V2C13.5 4.20914 15.2909 6 17.5 6H19.25"
                 stroke="#A4A7AE"
-                stroke-width="1.5"
+                strokeWidth="1.5"
             />
             <rect
                 x="1.25"
@@ -166,12 +166,12 @@ export const MPEG2Icon = (props: SVGProps<SVGSVGElement>) => {
                 d="M9.25 0.75H15.1895L20.5 6.06055V16C20.5 17.7949 19.0449 19.25 17.25 19.25H9.25C7.45507 19.25 6 17.7949 6 16V4C6 2.20507 7.45507 0.75 9.25 0.75Z"
                 fill="white"
                 stroke="#A4A7AE"
-                stroke-width="1.5"
+                strokeWidth="1.5"
             />
             <path
                 d="M15.25 0.25V2C15.25 4.20914 17.0409 6 19.25 6H21"
                 stroke="#A4A7AE"
-                stroke-width="1.5"
+                strokeWidth="1.5"
             />
             <rect y="8.5" width="19" height="9" rx="2" fill="#A4A7AE" />
             <path

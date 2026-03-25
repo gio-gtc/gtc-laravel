@@ -1,4 +1,3 @@
-import { tourVenueStatusData } from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -7,6 +6,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import Divider from '@/components/utils/divider';
 import FilterUserGroupSection from '@/components/utils/filter-user-group-section';
+import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
 import {
     type OrdersFilterState,
     DEFAULT_FILTERS,
@@ -26,6 +26,7 @@ export default function OrdersAdvancedFilters({
     filter,
     onFilterChange,
 }: OrdersAdvancedFiltersProps) {
+    const { tour_venue_status: tourVenueStatusRows } = useOrdersCatalog();
     const usersWithFallback = useUsersWithFallback();
 
     const selectedClients = useMemo(
@@ -130,7 +131,7 @@ export default function OrdersAdvancedFilters({
                     <div className="space-y-2">
                         <p className="text-sm font-medium">Status</p>
                         <div className="flex flex-wrap gap-2">
-                            {tourVenueStatusData.map((opt) => (
+                            {tourVenueStatusRows.map((opt) => (
                                 <Button
                                     key={opt.id}
                                     variant={

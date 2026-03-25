@@ -1,5 +1,4 @@
 import Heading from '@/components/heading';
-import { tourRevenueData } from '@/components/mockdata';
 import {
     Table,
     TableBody,
@@ -10,9 +9,16 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { formatCurrency } from '@/components/utils/functions';
+import { type SharedData } from '@/types';
+import { type DashboardPageProps } from '@/types/inertia-pages';
+import { usePage } from '@inertiajs/react';
 import { useMemo } from 'react';
 
 function RevenueTable() {
+    const { tour_revenue: tourRevenueData } = usePage<
+        SharedData & DashboardPageProps
+    >().props;
+
     // Calculate totals for each column
     const totals = useMemo(() => {
         return tourRevenueData.reduce(
@@ -23,7 +29,7 @@ function RevenueTable() {
             }),
             { currentMonth: 0, ytd: 0, total: 0 },
         );
-    }, []);
+    }, [tourRevenueData]);
 
     return (
         <div className="space-y-4 px-4 py-2">

@@ -1,5 +1,5 @@
-import { mockUsers } from '@/components/mockdata';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
 import { type Tour, type TourVenue, type Venue } from '@/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -26,6 +26,8 @@ export default function VenueDetailSlideout({
     isOpen,
     onClose,
 }: VenueDetailSlideoutProps) {
+    const usersWithFallback = useUsersWithFallback();
+
     // Format event dates for header (e.g., "Friday, July 12 2026 & Saturday, July 13, 2026")
     const formatEventDates = useMemo(() => {
         if (!venueItem) return undefined;
@@ -58,8 +60,8 @@ export default function VenueDetailSlideout({
         return `${startFormatted} & ${endFormattedShort}`;
     }, [venueItem]);
 
-    const client = mockUsers.find(
-        (client) => client.id === venueItem?.orderVenue.client,
+    const client = usersWithFallback.find(
+        (u) => u.id === venueItem?.orderVenue.client,
     );
 
     // Generate mock data for ticket sale, website, and presale

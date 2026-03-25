@@ -7,7 +7,7 @@ export default function Heading({
     description?: string;
     type?: 'page' | 'section' | 'small';
 }) {
-    let styles = {
+    const styles = {
         container: '',
         title: '',
         description: '',

@@ -1,10 +1,3 @@
-import {
-    tourData,
-    tourDemoVenueData,
-    tourVenueData,
-    tourVenueStopData,
-    venuesData,
-} from '@/components/mockdata';
 import { FilledArrow } from '@/components/ui/icons';
 import {
     Table,
@@ -14,7 +7,11 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { getUniqueAssignedUsersForTourVenue } from '@/components/utils/venue-items';
+import {
+    getUniqueAssignedUsersForTourVenue,
+    type OrdersVenueLineCatalog,
+} from '@/components/utils/venue-items';
+import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
 import { useOrdersFilters } from '@/hooks/use-orders-filters';
 import { useRecentOrders } from '@/hooks/use-recent-orders';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
@@ -27,6 +24,7 @@ import {
     type User,
     type Venue,
 } from '@/types';
+import { type OrdersPageProps } from '@/types/inertia-pages';
 import { router, usePage } from '@inertiajs/react';
 import {
     Fragment,
@@ -49,9 +47,14 @@ import {
 import OrdersTableVenueRow from './orders-table-venue-row';
 
 function OrdersTable() {
-    const page = usePage<SharedData>();
+    const page = usePage<SharedData & OrdersPageProps>();
     const { auth } = page.props;
-    const [filters, setFilters] = useOrdersFilters();
+    const catalog = useOrdersCatalog();
+    const tourVenueStatusIds = useMemo(
+        () => catalog.tour_venue_status.map((r) => r.id),
+        [catalog.tour_venue_status],
+    );
+    const [filters, setFilters] = useOrdersFilters(tourVenueStatusIds);
     const { addRecentOrder } = useRecentOrders();
     const [expandedOrders, setExpandedOrders] = useState<Set<number>>(
         new Set(),
@@ -68,19 +71,31 @@ function OrdersTable() {
     } | null>(null);
     const usersWithFallback = useUsersWithFallback();
 
+    const venueLineCatalog = useMemo((): OrdersVenueLineCatalog => {
+        return {
+            venue_items: catalog.venue_items,
+            venue_item_assigned: catalog.venue_item_assigned,
+            venue_item_status: catalog.venue_item_status,
+        };
+    }, [
+        catalog.venue_items,
+        catalog.venue_item_assigned,
+        catalog.venue_item_status,
+    ]);
+
     // Transform data: merge venue stops + optional tour demo (same per-tour order as flat tourVenueData).
     const groupedData = useMemo<GroupedOrderData[]>(() => {
-        return tourData
+        return catalog.tours
             .map((order) => {
-                const stopItems = tourVenueStopData
+                const stopItems = catalog.tour_venue_stops
                     .filter((ov) => ov.tour_id === order.id)
                     .map((ov) => ({
                         orderVenue: ov,
-                        venue: venuesData.find(
+                        venue: catalog.venues.find(
                             (v) => v.id === ov.venue_id,
                         ) as Venue | null,
                     }));
-                const demo = tourDemoVenueData.find(
+                const demo = catalog.tour_demo_venues.find(
                     (d) => d.tour_id === order.id,
                 );
                 const demoItem = demo
@@ -96,12 +111,21 @@ function OrdersTable() {
                 const bTime = new Date(b.order.created_at).getTime();
                 return bTime - aTime; // descending (newest first)
             });
-    }, []);
+    }, [
+        catalog.tours,
+        catalog.tour_venue_stops,
+        catalog.tour_demo_venues,
+        catalog.venues,
+    ]);
 
     const getTourVenueAssignees = useMemo(() => {
         return (tourVenueId: number): User[] =>
-            getUniqueAssignedUsersForTourVenue(tourVenueId, usersWithFallback);
-    }, [usersWithFallback]);
+            getUniqueAssignedUsersForTourVenue(
+                tourVenueId,
+                usersWithFallback,
+                venueLineCatalog,
+            );
+    }, [usersWithFallback, venueLineCatalog]);
 
     // Helper function to get client user by ID
     const getClientUser = useMemo(() => {
@@ -380,7 +404,7 @@ function OrdersTable() {
                 newSet.delete(orderId);
                 setSelectedVenueIds((prevSelected) => {
                     // Get all venue IDs for this order
-                    const venueIdsForOrder = tourVenueData
+                    const venueIdsForOrder = catalog.tour_venues
                         .filter((ov) => ov.tour_id === orderId)
                         .map((ov) => ov.id);
                     // Remove any selected venues that belong to this order
@@ -411,14 +435,15 @@ function OrdersTable() {
     // Get selected order from first selected venue
     const selectedOrder = useMemo(() => {
         if (selectedVenueIds.length === 0) return null;
-        const firstSelectedVenue = tourVenueData.find(
+        const firstSelectedVenue = catalog.tour_venues.find(
             (ov) => ov.id === selectedVenueIds[0],
         );
         if (!firstSelectedVenue) return null;
         return (
-            tourData.find((o) => o.id === firstSelectedVenue.tour_id) || null
+            catalog.tours.find((o) => o.id === firstSelectedVenue.tour_id) ||
+            null
         );
-    }, [selectedVenueIds]);
+    }, [selectedVenueIds, catalog.tour_venues, catalog.tours]);
 
     return (
         <div className="table-content-max-width space-y-4">

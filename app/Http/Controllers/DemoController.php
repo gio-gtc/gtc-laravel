@@ -9,7 +9,7 @@ class DemoController extends Controller
 {
     public function show(string $uuid): Response
     {
-        $items = config('demos.items', []);
+        $items = config('mockdata.demos.items', []);
 
         if (! isset($items[$uuid])) {
             abort(404);

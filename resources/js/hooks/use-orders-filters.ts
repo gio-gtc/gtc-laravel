@@ -1,14 +1,16 @@
-import { TOUR_VENUE_STATUS_IDS } from '@/lib/tour-venue-status';
 import { type TourVenueStatusValue } from '@/types';
 import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'gtc-orders-filters';
 
-function normalizeStoredStatuses(raw: unknown): TourVenueStatusValue[] {
+function normalizeStoredStatuses(
+    raw: unknown,
+    validTourVenueStatusIds: number[],
+): TourVenueStatusValue[] {
     if (!Array.isArray(raw)) return [];
     return raw.filter(
         (s): s is TourVenueStatusValue =>
-            typeof s === 'number' && TOUR_VENUE_STATUS_IDS.includes(s),
+            typeof s === 'number' && validTourVenueStatusIds.includes(s),
     );
 }
 
@@ -30,7 +32,7 @@ export const DEFAULT_FILTERS: OrdersFilterState = {
     country: { us: true, international: true },
 };
 
-function loadFilters(): OrdersFilterState {
+function loadFilters(validTourVenueStatusIds: number[]): OrdersFilterState {
     if (typeof window === 'undefined') return DEFAULT_FILTERS;
     try {
         const stored = localStorage.getItem(STORAGE_KEY);
@@ -51,7 +53,10 @@ function loadFilters(): OrdersFilterState {
                 typeof parsed.myCollaborators === 'boolean'
                     ? parsed.myCollaborators
                     : DEFAULT_FILTERS.myCollaborators,
-            statuses: normalizeStoredStatuses(parsed.statuses),
+            statuses: normalizeStoredStatuses(
+                parsed.statuses,
+                validTourVenueStatusIds,
+            ),
             country:
                 parsed.country &&
                 typeof parsed.country.us === 'boolean' &&
@@ -73,8 +78,10 @@ function saveFilters(state: OrdersFilterState): void {
     }
 }
 
-export function useOrdersFilters() {
-    const [filters, setFilters] = useState<OrdersFilterState>(loadFilters);
+export function useOrdersFilters(validTourVenueStatusIds: number[]) {
+    const [filters, setFilters] = useState<OrdersFilterState>(() =>
+        loadFilters(validTourVenueStatusIds),
+    );
 
     useEffect(() => {
         saveFilters(filters);

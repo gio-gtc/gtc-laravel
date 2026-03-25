@@ -1,4 +1,3 @@
-import { venuesData } from '@/components/mockdata';
 import {
     Tooltip,
     TooltipContent,
@@ -10,7 +9,7 @@ import {
 } from '@/components/utils/functions';
 import { SortableHeader } from '@/components/utils/sortable-header';
 import { cn } from '@/lib/utils';
-import { type Invoice } from '@/types';
+import { type Invoice, type Venue } from '@/types';
 import { type ColumnDef } from '@tanstack/react-table';
 import { HelpCircle } from 'lucide-react';
 
@@ -25,11 +24,13 @@ function parseInvoiceDate(dateStr: string): number {
 interface CreateInvoiceColumnsOptions {
     getDayBadge: (invoice: Invoice) => React.ReactNode;
     daysAccessorFn: (row: Invoice) => number;
+    venues: Venue[];
 }
 
 export function createInvoiceColumns({
     getDayBadge,
     daysAccessorFn,
+    venues,
 }: CreateInvoiceColumnsOptions): ColumnDef<Invoice>[] {
     return [
         {
@@ -138,7 +139,7 @@ export function createInvoiceColumns({
             },
         },
         {
-            accessorFn: (row) => getInvoiceVenueName(row, venuesData),
+            accessorFn: (row) => getInvoiceVenueName(row, venues),
             id: 'venue',
             header: ({ column, table }) => (
                 <SortableHeader
@@ -151,7 +152,7 @@ export function createInvoiceColumns({
             ),
             enableSorting: true,
             cell: ({ row }) => {
-                const value = getInvoiceVenueName(row.original, venuesData);
+                const value = getInvoiceVenueName(row.original, venues);
                 return (
                     <div
                         className={cn(

@@ -1,4 +1,3 @@
-import { countriesData } from '@/components/mockdata';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -12,6 +11,7 @@ import {
     ColumnedRowsChild,
     ColumnedRowsParent,
 } from '@/components/utils/column-row-layouts';
+import { type Country } from '@/types';
 
 interface AddressFormData {
     name: string;
@@ -25,11 +25,13 @@ interface AddressFormData {
 interface InvoiceAddressFormProps {
     formData: AddressFormData;
     onChange: (field: keyof AddressFormData, value: string) => void;
+    countries: Country[];
 }
 
 export default function InvoiceAddressForm({
     formData,
     onChange,
+    countries,
 }: InvoiceAddressFormProps) {
     return (
         <ColumnedRowsParent>
@@ -117,7 +119,7 @@ export default function InvoiceAddressForm({
                         <SelectValue placeholder="Select country" />
                     </SelectTrigger>
                     <SelectContent>
-                        {countriesData.map((country) => (
+                        {countries.map((country) => (
                             <SelectItem
                                 key={country.id}
                                 value={country.id.toString()}

@@ -1,5 +1,5 @@
 import { getDaysRemaining } from '@/components/utils/functions';
-import { type Invoice } from '@/types';
+import { type Invoice, type Venue } from '@/types';
 import { useMemo } from 'react';
 import { getInvoiceDayBadge } from './pieces/day-badge';
 import { InvoiceTableBase } from './pieces/table-base';
@@ -7,12 +7,14 @@ import { createInvoiceColumns } from './pieces/table-columns';
 
 interface InvoiceDetailTableProps {
     data: Invoice[];
+    venues: Venue[];
     onInvoiceSelect: (invoice: Invoice | null) => void;
     selectedInvoice: Invoice | null;
 }
 
 function InvoiceDetailTable({
     data,
+    venues,
     onInvoiceSelect,
     selectedInvoice,
 }: InvoiceDetailTableProps) {
@@ -24,8 +26,9 @@ function InvoiceDetailTable({
                     row.held === 1
                         ? getDaysRemaining(row.showDate)
                         : getDaysRemaining(row.release_date, row.id),
+                venues,
             }),
-        [],
+        [venues],
     );
 
     return (

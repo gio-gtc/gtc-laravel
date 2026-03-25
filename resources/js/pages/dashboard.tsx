@@ -1,9 +1,4 @@
 import Heading from '@/components/heading';
-import {
-    salesChartData,
-    yoyChartData,
-    ytdChartData,
-} from '@/components/mockdata.js';
 import CardLink from '@/components/pages/dashboard/card-link';
 import DesignerStatsTable from '@/components/pages/dashboard/designer-stats-table';
 import KPICard from '@/components/pages/dashboard/KPI-Card';
@@ -15,6 +10,7 @@ import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem, type SharedData } from '@/types';
+import { type DashboardPageProps } from '@/types/inertia-pages';
 import { Head, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -68,11 +64,14 @@ function todaysDateDisplay() {
 }
 
 export default function Dashboard() {
-    const page = usePage<SharedData>();
+    const page = usePage<SharedData & DashboardPageProps>();
     const {
         auth: {
             user: { name },
         },
+        sales_chart: salesChartData,
+        ytd_chart: ytdChartData,
+        yoy_chart: yoyChartData,
     } = page.props;
 
     const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('custom');

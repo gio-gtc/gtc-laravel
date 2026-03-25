@@ -222,7 +222,7 @@ export default function AddSocialVideoModal({
                         <p className="hidden pt-2 sm:block"> </p>
                         <div className="flex flex-col gap-2">
                             {DURATION_OPTIONS.map((d, i) => {
-                                let isDisabled =
+                                const isDisabled =
                                     d == ':10' && type != 'Generic';
 
                                 return (

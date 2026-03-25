@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\ChannelMessageController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DemoController;
+use App\Http\Controllers\InvoicesController;
+use App\Http\Controllers\OrdersController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -17,17 +20,11 @@ Route::get('/demo/{uuid}', [DemoController::class, 'show'])
     ->name('demo.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 
-    Route::get('orders', function () {
-        return Inertia::render('orders');
-    })->name('orders');
+    Route::get('orders', OrdersController::class)->name('orders');
 
-    Route::get('invoices', function () {
-        return Inertia::render('invoices');
-    })->name('invoices');
+    Route::get('invoices', InvoicesController::class)->name('invoices');
 
     Route::prefix('api')->group(function () {
         Route::patch('channels/{channelId}/messages/{id}', [ChannelMessageController::class, 'update']);

@@ -1,8 +1,3 @@
-import {
-    companiesData,
-    invoiceItemsData,
-    venuesData,
-} from '@/components/mockdata';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import {
     getInvoiceAddress,
@@ -11,7 +6,13 @@ import {
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
-import { type Invoice, type InvoiceItem } from '@/types';
+import {
+    type Company,
+    type Country,
+    type Invoice,
+    type InvoiceItem,
+    type Venue,
+} from '@/types';
 import { useEffect, useMemo, useState } from 'react';
 import InvoiceActionButtons from './slideout/action-buttons';
 import InvoiceAddressForm from './slideout/address-form';
@@ -25,18 +26,26 @@ interface InvoiceDetailSlideoutProps {
     invoice: Invoice | null;
     isOpen: boolean;
     onClose: () => void;
+    companies: Company[];
+    countries: Country[];
+    venues: Venue[];
+    invoiceItems: InvoiceItem[];
 }
 
 export default function InvoiceDetailSlideout({
     invoice,
     isOpen,
     onClose,
+    companies,
+    countries,
+    venues,
+    invoiceItems: invoiceItemsCatalog,
 }: InvoiceDetailSlideoutProps) {
     const usersWithFallback = useUsersWithFallback();
 
-    // Look up company data from companiesData (before hooks to avoid hook order issues)
+    // Look up company data (before hooks to avoid hook order issues)
     const company = invoice
-        ? companiesData.find((c) => c.id === invoice.company_id)
+        ? companies.find((c) => c.id === invoice.company_id)
         : null;
 
     // Get address data: use invoice address if filled, otherwise use company address
@@ -76,7 +85,7 @@ export default function InvoiceDetailSlideout({
     useEffect(() => {
         if (!invoice) return;
 
-        const currentCompany = companiesData.find(
+        const currentCompany = companies.find(
             (c) => c.id === invoice.company_id,
         );
 
@@ -101,15 +110,15 @@ export default function InvoiceDetailSlideout({
             accountPayableEmail: currentCompany.pay_email || '',
             additionalEmails: [''],
         });
-    }, [invoice]);
+    }, [invoice, companies]);
 
     // Get filtered invoice items for the current invoice
     const invoiceItems = useMemo(() => {
         if (!invoice) return [];
-        return invoiceItemsData.filter(
+        return invoiceItemsCatalog.filter(
             (item) => item.invoice_id === invoice.id,
         );
-    }, [invoice]);
+    }, [invoice, invoiceItemsCatalog]);
 
     // Use editable table hook
     const {
@@ -219,7 +228,7 @@ export default function InvoiceDetailSlideout({
             >
                 <InvoiceSlideoutHeader
                     tour={invoice.tour}
-                    venue={getInvoiceVenueName(invoice, venuesData)}
+                    venue={getInvoiceVenueName(invoice, venues)}
                     market={invoice.market}
                     onSend={() => console.log(`Send invoice: ${invoice}`)}
                     onMaximize={() => setIsMaximized((m) => !m)}
@@ -233,6 +242,7 @@ export default function InvoiceDetailSlideout({
                     <div className="space-y-4">
                         <div className="flex flex-col gap-4 md:flex-row">
                             <InvoiceAddressForm
+                                countries={countries}
                                 formData={{
                                     name: formData.name,
                                     billing_address: formData.billing_address,

@@ -1,29 +1,31 @@
-import {
-    mockUsers,
-    venueItemAssigned,
-    venueItemStatus,
-    venueItemsData,
-} from '@/components/mockdata';
 import type {
     LocalizedArtTableRow,
     MediaTableRow,
     StaticAssetsTableRow,
     User,
+    VenueItemAssigned,
+    VenueItemStatus,
     VenueItemsLocalizedRow,
     VenueItemsMediaRow,
+    VenueItemsRow,
     VenueItemsStaticRow,
 } from '@/types';
+
+export type OrdersVenueLineCatalog = {
+    venue_items: VenueItemsRow[];
+    venue_item_assigned: VenueItemAssigned[];
+    venue_item_status: VenueItemStatus[];
+};
 
 type VenueLineItemStatusLabel = MediaTableRow['status'];
 
 function venueItemStatusIdToLabel(
     statusId: number,
+    venueItemStatus: VenueItemStatus[],
 ): VenueLineItemStatusLabel {
     const found = venueItemStatus.find((s) => s.id === statusId);
     return (found?.type ?? 'Still in Cart') as VenueLineItemStatusLabel;
 }
-
-const userById = new Map(mockUsers.map((u) => [u.id, u] as const));
 
 function tourVenueIdMatchesRow(
     tourVenueId: number,
@@ -40,21 +42,22 @@ function tourVenueIdMatchesRow(
 export function getUniqueAssignedUsersForTourVenue(
     tourVenueId: number,
     users: User[],
+    catalog: OrdersVenueLineCatalog,
 ): User[] {
+    const { venue_items, venue_item_assigned } = catalog;
     const userByResolvedId = new Map(users.map((u) => [u.id, u] as const));
     const itemIds = new Set<number>();
-    for (const row of venueItemsData) {
+    for (const row of venue_items) {
         if (!tourVenueIdMatchesRow(tourVenueId, row.tour_venue_id)) continue;
         const rawId = row.id;
-        const id =
-            typeof rawId === 'number' ? rawId : Number(rawId);
+        const id = typeof rawId === 'number' ? rawId : Number(rawId);
         if (!Number.isNaN(id)) {
             itemIds.add(id);
         }
     }
     const seenUserIds = new Set<number>();
     const result: User[] = [];
-    for (const assign of venueItemAssigned) {
+    for (const assign of venue_item_assigned) {
         if (!itemIds.has(assign.venue_item_id)) continue;
         if (seenUserIds.has(assign.mockUser_id)) continue;
         seenUserIds.add(assign.mockUser_id);
@@ -66,15 +69,16 @@ export function getUniqueAssignedUsersForTourVenue(
 
 export function getAssignedUsersForVenueItem(
     venueItemId: string | number,
+    catalog: OrdersVenueLineCatalog,
+    users: User[],
 ): User[] {
+    const userById = new Map(users.map((u) => [u.id, u] as const));
     const id =
-        typeof venueItemId === 'number'
-            ? venueItemId
-            : Number(venueItemId);
+        typeof venueItemId === 'number' ? venueItemId : Number(venueItemId);
     if (Number.isNaN(id)) {
         return [];
     }
-    return venueItemAssigned
+    return catalog.venue_item_assigned
         .filter((a) => a.venue_item_id === id)
         .map((a) => userById.get(a.mockUser_id))
         .filter((u): u is User => u != null);
@@ -83,26 +87,42 @@ export function getAssignedUsersForVenueItem(
 export function venueItemsMediaTableRow(
     row: VenueItemsMediaRow,
     assigned: User[],
+    venueItemStatus: VenueItemStatus[],
 ): MediaTableRow {
-    const { label, status_id, ...rest } = row;
+    const {
+        label,
+        status_id,
+        has_deliverable_actions: _h,
+        deliverables: _d,
+        previewIcons,
+        ...rest
+    } = row;
     return {
         ...rest,
         cutName: label,
         assigned,
-        status: venueItemStatusIdToLabel(status_id),
+        status: venueItemStatusIdToLabel(status_id, venueItemStatus),
+        previewIcons: previewIcons ?? [],
     };
 }
 
 export function venueItemsStaticTableRow(
     row: VenueItemsStaticRow,
     assigned: User[],
+    venueItemStatus: VenueItemStatus[],
 ): StaticAssetsTableRow {
-    const { label, status_id, ...rest } = row;
+    const {
+        label,
+        status_id,
+        has_deliverable_actions: _h,
+        deliverables: _d,
+        ...rest
+    } = row;
     return {
         ...rest,
         cutName: label,
         assigned,
-        status: venueItemStatusIdToLabel(status_id),
+        status: venueItemStatusIdToLabel(status_id, venueItemStatus),
     };
 }
 

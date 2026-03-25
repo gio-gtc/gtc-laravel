@@ -22,7 +22,6 @@ import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
 import { EditableCellSelect } from '@/components/utils/editable-table/editable-cell-select';
 import { MEDIA_DURATION_OPTIONS } from '@/components/utils/editable-table/media-duration-options';
-import { VENUE_ITEM_STATUS_SELECT_OPTIONS } from '@/components/utils/editable-table/venue-item-status-options';
 import { VenueItemStatusBadge } from '@/components/utils/venue-item-status-badge';
 import { toggleRowSelectionOnRowClick } from '@/lib/row-select-toggle';
 import { cn } from '@/lib/utils';
@@ -50,6 +49,7 @@ export default function MediaTable({
     onRowSelectToggle,
     onBulkEditDueDateDoubleClick,
     onBulkEditAssignedDoubleClick,
+    venueItemStatusSelectOptions,
 }: MediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -350,7 +350,7 @@ export default function MediaTable({
                                                             itemId={row.id}
                                                             field="status"
                                                             options={
-                                                                VENUE_ITEM_STATUS_SELECT_OPTIONS
+                                                                venueItemStatusSelectOptions
                                                             }
                                                             renderDisplay={(
                                                                 v,

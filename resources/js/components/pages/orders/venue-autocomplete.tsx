@@ -1,4 +1,4 @@
-import { venuesData } from '@/components/mockdata';
+import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
 import { Input } from '@/components/ui/input';
 import { type Venue } from '@/types';
 import { useMemo, useState } from 'react';
@@ -14,6 +14,7 @@ export default function VenueAutocomplete({
     onChange,
     required = false,
 }: VenueAutocompleteProps) {
+    const { venues: venuesData } = useOrdersCatalog();
     const [searchQuery, setSearchQuery] = useState('');
     const [isOpen, setIsOpen] = useState(false);
 
@@ -26,7 +27,7 @@ export default function VenueAutocomplete({
         return venuesData.filter((venue) =>
             venue.name.toLowerCase().includes(query),
         );
-    }, [searchQuery]);
+    }, [searchQuery, venuesData]);
 
     // Update search query when value changes
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

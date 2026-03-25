@@ -1,4 +1,3 @@
-import { orderData } from '@/components/mockdata';
 import { Button } from '@/components/ui/button';
 import {
     Popover,
@@ -132,6 +131,7 @@ export function filterAndSortRows<T extends RowWithStatus>(
     venueOrders: { id: number }[],
     statusFilter: MediaStatusFilter,
     sortDirection: SortDirection,
+    orderCatalog: { id: number; date: string }[],
 ): T[] {
     let result = rows.map((row, i) => ({
         ...row,
@@ -143,7 +143,9 @@ export function filterAndSortRows<T extends RowWithStatus>(
     }
 
     if (sortDirection === 'asc' || sortDirection === 'desc') {
-        const orderMap = new Map(orderData.map((o) => [o.id, o.date] as const));
+        const orderMap = new Map(
+            orderCatalog.map((o) => [o.id, o.date] as const),
+        );
         result = [...result].sort((a, b) => {
             const dateA =
                 (a.order_id != null ? orderMap.get(a.order_id) : undefined) ??

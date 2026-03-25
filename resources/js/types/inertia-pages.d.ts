@@ -1,0 +1,65 @@
+import type {
+    Company,
+    Country,
+    Invoice,
+    InvoiceItem,
+    Order,
+    Tour,
+    TourVenue,
+    TourVenueStatusRow,
+    User,
+    Venue,
+    VenueItemAssigned,
+    VenueItemStatus,
+    VenueItemsRow,
+} from './index';
+
+export type SalesChartPoint = { name: string; value: number };
+
+export type TourRevenueRow = {
+    tour: string;
+    currentMonth: number;
+    ytd: number;
+    total: number;
+};
+
+export type SalesByRepRow = {
+    rep: string;
+    currentMonth: number;
+    currentMonthChange: { direction: string; percentage: number };
+    ytd: number;
+    ytdChange: { direction: string; percentage: number };
+    total: number;
+};
+
+export interface DashboardPageProps {
+    sales_chart: SalesChartPoint[];
+    ytd_chart: SalesChartPoint[];
+    yoy_chart: SalesChartPoint[];
+    tour_revenue: TourRevenueRow[];
+    sales_by_rep: SalesByRepRow[];
+}
+
+export interface OrdersPageProps {
+    tours: Tour[];
+    tour_venue_status: TourVenueStatusRow[];
+    tour_venue_stops: TourVenue[];
+    tour_demo_venues: TourVenue[];
+    tour_venues: TourVenue[];
+    venues: Venue[];
+    orders: Order[];
+    venue_items: VenueItemsRow[];
+    venue_item_assigned: VenueItemAssigned[];
+    venue_item_status: VenueItemStatus[];
+    invoices: Invoice[];
+}
+
+export interface InvoicesPageProps {
+    invoices: Invoice[];
+    companies: Company[];
+    countries: Country[];
+    venues: Venue[];
+    invoice_items: InvoiceItem[];
+}
+
+export type DemoUser = User;
