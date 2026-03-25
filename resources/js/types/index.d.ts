@@ -176,7 +176,14 @@ export interface TourVenue {
 /** Row shape for `tourVenueStatusData` (id for logic, label for display). */
 export interface TourVenueStatusRow {
     id: number;
-    label: string;
+    label:
+        | 'New Order'
+        | 'In Progress'
+        | 'Voice Over'
+        | 'Audio'
+        | 'Art'
+        | 'Paused'
+        | 'Completed';
 }
 
 export type TourVenueStatusValue = Exclude<TourVenue['status'], null>[number];

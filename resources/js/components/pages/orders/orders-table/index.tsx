@@ -308,7 +308,7 @@ function OrdersTable() {
             if (hasStatusFilter) {
                 if (
                     !filters.statuses.some((s) =>
-                        venueItem.orderVenue.status.includes(s),
+                        venueItem.orderVenue.status?.includes(s),
                     )
                 )
                     return false;
