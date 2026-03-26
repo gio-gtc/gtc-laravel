@@ -82,7 +82,7 @@ const PLACEHOLDER_IMAGE =
 const PLACEHOLDER_VIDEO_SRC = '/videos/auth-login.mp4';
 
 /** Poster image for audio (mp3) sources. Replace with a local image path when available. */
-const AUDIO_POSTER_URL = 'https://picsum.photos/200/300';
+const AUDIO_POSTER_URL = '/GTC-audio.jpg';
 
 /** Audio source when previewing from the Audio table (placeholder tune). */
 const AUDIO_PLACEHOLDER_SRC = 'https://placeholder.guru/api/audio?type=tune';

@@ -188,7 +188,7 @@
     }
 
     .demo-chrome-header {
-        @apply text-[40px];
+        @apply text-3xl md:text-[40px];
     }
 
     .demo-chrome-header,
