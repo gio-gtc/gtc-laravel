@@ -1,11 +1,34 @@
 import { type DemoAsset } from '@/types/demo';
 import { Pause, Play } from 'lucide-react';
-import { useEffect, useRef, useState, type MouseEvent } from 'react';
+import {
+    useEffect,
+    useRef,
+    useState,
+    type MouseEvent,
+    type RefObject,
+} from 'react';
 
 const DEMO_AUDIO_POSTER = '/GTC-audio.jpg';
 
+function useMediaPlayRejectionGuard(
+    mediaRef: RefObject<HTMLMediaElement | null>,
+    id: string,
+    mediaUrl: string,
+) {
+    useEffect(() => {
+        const el = mediaRef.current;
+        if (!el) return;
+        const nativePlay = el.play.bind(el);
+        el.play = () => nativePlay().catch(() => undefined);
+        return () => {
+            el.play = nativePlay;
+        };
+    }, [id, mediaUrl, mediaRef]);
+}
+
 function DemoAudioStage({ id, mediaUrl }: { id: string; mediaUrl: string }) {
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    useMediaPlayRejectionGuard(audioRef, id, mediaUrl);
     const [playing, setPlaying] = useState(false);
 
     useEffect(() => {
@@ -26,7 +49,7 @@ function DemoAudioStage({ id, mediaUrl }: { id: string; mediaUrl: string }) {
     const togglePlayback = () => {
         const el = audioRef.current;
         if (!el) return;
-        if (el.paused) void el.play().catch(() => {});
+        if (el.paused) void el.play();
         else el.pause();
     };
 
@@ -88,6 +111,24 @@ function DemoAudioStage({ id, mediaUrl }: { id: string; mediaUrl: string }) {
     );
 }
 
+function DemoVideoStage({ id, mediaUrl }: { id: string; mediaUrl: string }) {
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    useMediaPlayRejectionGuard(videoRef, id, mediaUrl);
+
+    return (
+        <div className="relative size-full overflow-hidden bg-black">
+            <video
+                ref={videoRef}
+                className="absolute inset-0 h-full w-full object-contain"
+                controls
+                playsInline
+                preload="metadata"
+                src={mediaUrl}
+            />
+        </div>
+    );
+}
+
 export default function DemoMediaStage({ asset }: { asset: DemoAsset | null }) {
     if (!asset) {
         return (
@@ -119,13 +160,10 @@ export default function DemoMediaStage({ asset }: { asset: DemoAsset | null }) {
     }
 
     return (
-        <video
+        <DemoVideoStage
             key={asset.id}
-            className="absolute inset-0 h-full w-full object-contain"
-            controls
-            playsInline
-            preload="metadata"
-            src={asset.mediaUrl}
+            id={asset.id}
+            mediaUrl={asset.mediaUrl}
         />
     );
 }
