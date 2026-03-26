@@ -2,12 +2,11 @@ import { useCoarseOrNoHoverPointer } from '@/hooks/use-coarse-or-no-hover-pointe
 import { cn } from '@/lib/utils';
 import { type DemoAsset, type DemoTab } from '@/types/demo';
 import {
-    ChevronLeft,
     Frame,
+    Menu,
     Radio,
     RadioTower,
     Share2,
-    X,
     type LucideIcon,
 } from 'lucide-react';
 import { useCallback, useState } from 'react';
@@ -49,20 +48,13 @@ export default function DemoSidebar({
                     {!touchOpen ? (
                         <button
                             type="button"
-                            className="fixed top-1/2 right-0 z-[11] flex -translate-y-1/2 items-center gap-0.5 rounded-l-lg border border-r-0 border-white/10 bg-zinc-900/90 py-6 pr-0.5 pl-1 text-[0.6rem] font-semibold tracking-wide text-white uppercase shadow-lg"
+                            className="fixed top-1 right-1 z-[11] flex size-10 items-center justify-center text-white shadow-lg"
                             onClick={openTouch}
+                            aria-expanded={touchOpen}
+                            aria-controls="demo-assets-panel"
                         >
                             <span className="sr-only">Open assets panel</span>
-                            <ChevronLeft
-                                className="size-4 shrink-0"
-                                aria-hidden
-                            />
-                            <span
-                                className="max-h-[5rem] max-w-[1rem] overflow-hidden text-center text-[0.55rem] leading-tight sm:max-w-none sm:text-[0.6rem]"
-                                aria-hidden
-                            >
-                                Assets
-                            </span>
+                            <Menu className="size-5 shrink-0" aria-hidden />
                         </button>
                     ) : null}
                     {touchOpen ? (
@@ -86,11 +78,12 @@ export default function DemoSidebar({
                 )}
             >
                 <aside
+                    id="demo-assets-panel"
                     className={cn(
                         'demo-sidebar-panel absolute top-0 right-0 bottom-0 flex min-h-0 w-full flex-col bg-zinc-900/10 backdrop-blur-md',
                     )}
                 >
-                    {isCoarse ? (
+                    {/* {isCoarse ? (
                         <button
                             type="button"
                             onClick={closeTouch}
@@ -99,7 +92,7 @@ export default function DemoSidebar({
                         >
                             <X className="size-4" aria-hidden />
                         </button>
-                    ) : null}
+                    ) : null} */}
                     <div className="flex shrink-0">
                         {TABS.map(({ id, label, icon: Icon }) => {
                             const active = activeTab === id;
