@@ -7,7 +7,7 @@ export default function DemoHeaderTitle({
 }) {
     return (
         <header className="demo-chrome-header absolute top-0 left-0 z-20 px-6 py-5">
-            <h2 className="text-right font-medium tracking-wide text-white uppercase">
+            <h2 className="font-medium tracking-wide text-white uppercase">
                 {tourName}
                 <span className="text-gray-400">
                     <span className=""> | </span>

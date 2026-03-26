@@ -81,7 +81,7 @@ export default function DemoSidebar({
                     bottomClass,
                     isCoarse && !touchOpen && 'w-0',
                     (!isCoarse || touchOpen) &&
-                        'w-[min(22rem,90vw)] sm:w-[min(26rem,28vw)]',
+                        'w-[min(22rem,90vw)] md:w-[min(26rem,45vw)]',
                     isCoarse && touchOpen && 'demo-sidebar-rail--open z-[25]',
                 )}
             >

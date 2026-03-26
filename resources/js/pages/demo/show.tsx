@@ -58,7 +58,7 @@ export default function DemoShow({
 
     return (
         <DemoLayout title={pageTitle}>
-            <div className="relative size-full">
+            <div className="relative size-full overflow-hidden bg-black">
                 <div className="absolute inset-0">
                     <DemoMediaStage asset={selectedAsset} />
                 </div>

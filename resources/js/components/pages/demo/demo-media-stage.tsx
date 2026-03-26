@@ -47,17 +47,16 @@ function DemoAudioStage({ id, mediaUrl }: { id: string; mediaUrl: string }) {
             onClick={handleAudioStageClick}
         >
             <div
-                className="absolute inset-0 z-0 bg-contain bg-center bg-no-repeat lg:bg-cover"
+                className="absolute inset-0 z-0 bg-contain bg-center bg-no-repeat object-contain lg:bg-cover"
                 style={{
                     backgroundImage: `url('${DEMO_AUDIO_POSTER}')`,
                 }}
                 aria-hidden
             />
             <div className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center">
-                {/* Chrome matches Video.js `.vjs-big-play-button` + white icons like `.video-js` / `.vjs-play-control` (video-js.css). */}
                 <button
                     type="button"
-                    className="box-border flex h-[1.63332em] w-[3em] cursor-pointer items-center justify-center rounded-[0.3em] border-[0.06666em] border-solid border-white bg-[rgba(43,51,63,0.7)] text-[30px] text-white transition-all duration-[400ms] hover:border-white hover:bg-[rgba(115,133,159,0.5)] hover:transition-none focus-visible:bg-[rgba(115,133,159,0.5)] focus-visible:outline-none focus-visible:transition-none"
+                    className="box-border flex h-[1.63332em] w-[3em] cursor-pointer items-center justify-center rounded-[0.3em] border-[0.06666em] border-solid border-white bg-[rgba(43,51,63,0.7)] text-[30px] text-white transition-all duration-[400ms] hover:border-white hover:bg-[rgba(115,133,159,0.5)] hover:transition-none focus-visible:bg-[rgba(115,133,159,0.5)] focus-visible:transition-none focus-visible:outline-none"
                     aria-label={playing ? 'Pause' : 'Play'}
                     onClick={handleOverlayButtonClick}
                 >
@@ -104,7 +103,7 @@ export default function DemoMediaStage({ asset }: { asset: DemoAsset | null }) {
                 key={asset.id}
                 src={asset.mediaUrl}
                 alt=""
-                className="size-full object-cover"
+                className="absolute inset-0 h-full w-full object-contain"
             />
         );
     }
@@ -122,7 +121,7 @@ export default function DemoMediaStage({ asset }: { asset: DemoAsset | null }) {
     return (
         <video
             key={asset.id}
-            className="size-full object-cover"
+            className="absolute inset-0 h-full w-full object-contain"
             controls
             playsInline
             preload="metadata"
