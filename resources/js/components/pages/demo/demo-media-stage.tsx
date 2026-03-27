@@ -69,14 +69,7 @@ function DemoAudioStage({ id, mediaUrl }: { id: string; mediaUrl: string }) {
             className="relative size-full cursor-pointer overflow-hidden"
             onClick={handleAudioStageClick}
         >
-            <div
-                className="absolute inset-0 z-0 bg-contain bg-center bg-no-repeat object-contain lg:bg-cover"
-                style={{
-                    backgroundImage: `url('${DEMO_AUDIO_POSTER}')`,
-                }}
-                aria-hidden
-            />
-            <div className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center opacity-100 transition-opacity duration-300 ease-in-out hover:opacity-40">
+            <div className="absolute inset-0 z-[5] flex items-center justify-center opacity-100 transition-opacity duration-300 ease-in-out hover:opacity-70">
                 <button
                     type="button"
                     className="box-border flex size-30 cursor-pointer items-center justify-center rounded-full bg-gray-900/70 text-[30px] text-white"
@@ -100,6 +93,13 @@ function DemoAudioStage({ id, mediaUrl }: { id: string; mediaUrl: string }) {
                     )}
                 </button>
             </div>
+            <div
+                className="absolute inset-0 z-0 bg-contain bg-center bg-no-repeat object-contain lg:bg-cover"
+                style={{
+                    backgroundImage: `url('${DEMO_AUDIO_POSTER}')`,
+                }}
+                aria-hidden
+            />
             <audio
                 ref={audioRef}
                 className="absolute inset-x-0 bottom-0 z-10 w-full cursor-default"
