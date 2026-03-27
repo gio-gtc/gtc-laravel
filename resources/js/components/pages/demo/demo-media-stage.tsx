@@ -72,20 +72,20 @@ function DemoAudioStage({ id, mediaUrl }: { id: string; mediaUrl: string }) {
             <div className="absolute inset-0 z-[5] flex items-center justify-center opacity-100 transition-opacity duration-300 ease-in-out hover:opacity-70">
                 <button
                     type="button"
-                    className="box-border flex size-[length:var(--media-play-button-size)] cursor-pointer items-center justify-center rounded-full border-none bg-[color:var(--media-play-overlay-bg)] text-[30px] text-white"
+                    className="box-border flex size-[7.5rem] cursor-pointer items-center justify-center rounded-full border-none bg-[color:var(--media-play-overlay-bg)] text-[30px] text-white"
                     aria-label={playing ? 'Pause' : 'Play'}
                     onClick={handleOverlayButtonClick}
                 >
                     {playing ? (
                         <Pause
-                            className="size-12 shrink-0 fill-current text-white"
+                            className="size-11 shrink-0 fill-current text-white"
                             stroke="currentColor"
                             strokeWidth={1.5}
                             aria-hidden
                         />
                     ) : (
                         <Play
-                            className="size-12 shrink-0 fill-current text-white"
+                            className="size-11 shrink-0 fill-current text-white"
                             stroke="currentColor"
                             strokeWidth={1.5}
                             aria-hidden

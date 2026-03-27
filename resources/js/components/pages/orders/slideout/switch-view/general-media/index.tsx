@@ -109,8 +109,6 @@ function GeneralMediaView({
     } = useChat(chatChannelId, auth.user.id);
 
     const [revisionModalOpen, setRevisionModalOpen] = useState(false);
-    const [revisionRequestRow, setRevisionRequestRow] =
-        useState<MediaTableRow | null>(null);
     const [statusFilter, setStatusFilter] = useState<MediaStatusFilter>([]);
     const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
@@ -142,7 +140,6 @@ function GeneralMediaView({
                     deliverables: row.has_deliverable_actions
                         ? {
                               onReject: () => {
-                                  setRevisionRequestRow(mediaRow);
                                   setRevisionModalOpen(true);
                               },
                           }
@@ -496,7 +493,6 @@ function GeneralMediaView({
                 isOpen={revisionModalOpen}
                 onClose={() => {
                     setRevisionModalOpen(false);
-                    setRevisionRequestRow(null);
                 }}
                 onSubmit={() => {}}
             />

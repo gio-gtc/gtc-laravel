@@ -85,7 +85,7 @@
     /* Media play overlay (Video.js big play + demo audio stage) */
     --media-play-overlay-bg: rgba(24, 29, 39, 0.7);
     --media-play-overlay-bg-hover: rgba(115, 133, 160, 0.5);
-    --media-play-button-size: 7.5rem;
+    --media-play-button-size: 4rem;
 }
 
 :root {
