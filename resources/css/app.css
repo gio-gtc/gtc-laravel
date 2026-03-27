@@ -2,6 +2,8 @@
 
 @import 'tw-animate-css';
 
+@import './components/gtc-video-js.css';
+
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
@@ -79,6 +81,11 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+    /* Media play overlay (Video.js big play + demo audio stage) */
+    --media-play-overlay-bg: rgba(24, 29, 39, 0.7);
+    --media-play-overlay-bg-hover: rgba(115, 133, 160, 0.5);
+    --media-play-button-size: 7.5rem;
 }
 
 :root {

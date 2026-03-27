@@ -1,0 +1,17 @@
+/* Scoped Video.js theme: add class `gtc-video-js` on the player element. */
+.video-js.gtc-video-js .vjs-big-play-button {
+    width: var(--media-play-button-size);
+    height: var(--media-play-button-size);
+    margin-left: calc(var(--media-play-button-size) * -0.5);
+    margin-top: calc(var(--media-play-button-size) * -0.5);
+    border: none;
+    border-radius: 50%;
+    line-height: var(--media-play-button-size);
+    background-color: var(--media-play-overlay-bg);
+}
+
+.video-js.gtc-video-js:hover .vjs-big-play-button,
+.video-js.gtc-video-js .vjs-big-play-button:focus {
+    border: none;
+    background-color: var(--media-play-overlay-bg-hover);
+}

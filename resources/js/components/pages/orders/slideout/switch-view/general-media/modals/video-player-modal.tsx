@@ -204,7 +204,7 @@ export default function VideoPlayerModal({
 
         const container = videoJsContainerRef.current;
         const videoEl = document.createElement('video-js');
-        videoEl.classList.add('vjs-big-play-centered');
+        videoEl.classList.add('gtc-video-js', 'vjs-big-play-centered');
         container.appendChild(videoEl);
 
         const posterUrl = isAudio
