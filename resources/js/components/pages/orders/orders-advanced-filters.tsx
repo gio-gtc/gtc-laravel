@@ -14,6 +14,7 @@ import {
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
 import { type TourVenueStatusValue } from '@/types';
+import { usePage } from '@inertiajs/react';
 import { Filter, X } from 'lucide-react';
 import { useMemo } from 'react';
 
@@ -26,6 +27,10 @@ export default function OrdersAdvancedFilters({
     filter,
     onFilterChange,
 }: OrdersAdvancedFiltersProps) {
+    const { url } = usePage();
+    const searchParams = new URL(url, window.location.origin).searchParams;
+    const isMyTasksFilterActive = searchParams.get('filter') === 'my-tasks';
+
     const { tour_venue_status: tourVenueStatusRows } = useOrdersCatalog();
     const usersWithFallback = useUsersWithFallback();
 
@@ -106,26 +111,28 @@ export default function OrdersAdvancedFilters({
                         )}
                     />
 
-                    <FilterUserGroupSection
-                        title="Collaborators"
-                        myChecked={filter.myCollaborators}
-                        onMyChange={(checked) =>
-                            onFilterChange({
-                                ...filter,
-                                myCollaborators: checked,
-                            })
-                        }
-                        selectedUsers={selectedCollaborators}
-                        onUsersChange={(users) =>
-                            onFilterChange({
-                                ...filter,
-                                collaboratorIds: users.map((u) => u.id),
-                            })
-                        }
-                        availableUsers={usersWithFallback.filter(
-                            (u) => !filter.collaboratorIds.includes(u.id),
-                        )}
-                    />
+                    {!isMyTasksFilterActive && (
+                        <FilterUserGroupSection
+                            title="Collaborators"
+                            myChecked={filter.myCollaborators}
+                            onMyChange={(checked) =>
+                                onFilterChange({
+                                    ...filter,
+                                    myCollaborators: checked,
+                                })
+                            }
+                            selectedUsers={selectedCollaborators}
+                            onUsersChange={(users) =>
+                                onFilterChange({
+                                    ...filter,
+                                    collaboratorIds: users.map((u) => u.id),
+                                })
+                            }
+                            availableUsers={usersWithFallback.filter(
+                                (u) => !filter.collaboratorIds.includes(u.id),
+                            )}
+                        />
+                    )}
 
                     {/* Status Section */}
                     <div className="space-y-2">
