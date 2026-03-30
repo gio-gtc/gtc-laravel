@@ -61,16 +61,16 @@ export interface ApprovalButtonsProps {
 
 export function ApprovalButtons({ onReject, onApprove }: ApprovalButtonsProps) {
     return (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-3">
             <Button
                 variant="ghost"
                 size="icon"
                 className={cn(
-                    'red-400-hover size-4 cursor-pointer rounded-full border',
+                    'red-400-hover size-4 cursor-pointer rounded-full border-2',
                 )}
                 onClick={onReject}
             >
-                <X className="size-3" />
+                <X className="size-3" strokeWidth={3} />
             </Button>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -78,10 +78,10 @@ export function ApprovalButtons({ onReject, onApprove }: ApprovalButtonsProps) {
                         variant="ghost"
                         size="icon"
                         className={cn(
-                            'green-400-hover size-4 cursor-pointer rounded-full border',
+                            'green-400-hover size-4 cursor-pointer rounded-full border-2',
                         )}
                     >
-                        <Check className="size-3" />
+                        <Check className="size-3" strokeWidth={3} />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-[7rem]">

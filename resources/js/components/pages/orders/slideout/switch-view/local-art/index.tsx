@@ -4,8 +4,8 @@ import {
     venueItemsLocalizedTableRow,
 } from '@/components/utils/venue-items';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
-import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { useEditableTable } from '@/hooks/use-editable-table';
+import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import {
     type LocalizedArtTableRow,
     type TourVenue,
@@ -15,13 +15,13 @@ import {
 } from '@/types';
 import { format, isValid, parse, parseISO } from 'date-fns';
 import { useCallback, useMemo, useState } from 'react';
-import AttachmentsSection from '../reuse/attachments-section';
-import BulkEditAssignedModal from '../reuse/bulk-edit-assigned-modal';
-import BulkEditDueDateModal from '../reuse/bulk-edit-due-date-modal';
 import ChatBox from '../reuse/chat';
-import LocalizedArtTable from '../reuse/localised-media-table';
-import NotesModal from '../reuse/notes-modal';
+import BulkEditAssignedModal from '../reuse/modals/bulk-edit-assigned-modal';
+import BulkEditDueDateModal from '../reuse/modals/bulk-edit-due-date-modal';
+import NotesModal from '../reuse/modals/notes-modal';
 import SectionContainers from '../reuse/section-containers';
+import AttachmentsSection from '../reuse/tables/attachments-section-table';
+import LocalizedArtTable from '../reuse/tables/localised-media-table';
 
 function tableDueDateDisplayToIso(display: string): string | undefined {
     const trimmed = display.trim();

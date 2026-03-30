@@ -9,7 +9,7 @@ import {
 import { Input } from '@/components/ui/input';
 import Divider from '@/components/utils/divider';
 import type { LocalizedArtNote } from '@/types';
-import { orderModalStyles } from '../general-media/modals/shared';
+import { orderModalStyles } from '../../general-media/modals/shared';
 
 interface NotesModalProps {
     isOpen: boolean;

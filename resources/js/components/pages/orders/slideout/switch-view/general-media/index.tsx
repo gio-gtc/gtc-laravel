@@ -27,13 +27,13 @@ import { usePage } from '@inertiajs/react';
 import { format, isValid, parse, parseISO } from 'date-fns';
 import { Link, PlayIcon } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
-import AttachmentsSection from '../reuse/attachments-section';
-import BulkEditAssignedModal from '../reuse/bulk-edit-assigned-modal';
-import BulkEditDueDateModal from '../reuse/bulk-edit-due-date-modal';
 import { ChatThread } from '../reuse/chat';
-import MediaTable from '../reuse/dynamic-media-table';
+import BulkEditAssignedModal from '../reuse/modals/bulk-edit-assigned-modal';
+import BulkEditDueDateModal from '../reuse/modals/bulk-edit-due-date-modal';
 import SectionContainers from '../reuse/section-containers';
-import StaticAssetsMediaTable from '../reuse/static-assets-media-table';
+import AttachmentsSection from '../reuse/tables/attachments-section-table';
+import MediaTable from '../reuse/tables/dynamic-media-table';
+import StaticAssetsMediaTable from '../reuse/tables/static-assets-media-table';
 import BillingSection from './billing-section';
 import Filters, {
     filterAndSortRows,

@@ -1,9 +1,4 @@
-import { Button } from '@/components/ui/button';
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import {
     Table,
     TableBody,
@@ -22,9 +17,9 @@ import type {
     StaticAssetsMediaTableProps,
     StaticAssetsTableRow,
 } from '@/types';
-import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import { useState } from 'react';
-import { DeliverablesCell } from './deliverables-buttons';
+import { DeliverablesCell } from '../deliverables-buttons';
+import { CollapsibleTableSectionHeader } from './collapsible-table-section-header';
 
 export default function StaticAssetsMediaTable({
     title,
@@ -43,29 +38,11 @@ export default function StaticAssetsMediaTable({
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
             <div className="space-y-2">
-                {/* Collapsible Header */}
-                <div className="flex items-center gap-2">
-                    <CollapsibleTrigger asChild>
-                        <button className="flex items-center gap-2 text-left hover:opacity-80">
-                            {isOpen ? (
-                                <ChevronDown className="h-4 w-4 text-gray-600" />
-                            ) : (
-                                <ChevronRight className="h-4 w-4 text-gray-600" />
-                            )}
-                            <span className="md-gray-700-weight-600">
-                                {title}
-                            </span>
-                        </button>
-                    </CollapsibleTrigger>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-4.5 cursor-pointer rounded-full border-1 border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-white"
-                        onClick={onAdd ?? undefined}
-                    >
-                        <Plus className="size-3" />
-                    </Button>
-                </div>
+                <CollapsibleTableSectionHeader
+                    title={title}
+                    isOpen={isOpen}
+                    onAdd={onAdd}
+                />
 
                 {/* Table */}
                 <CollapsibleContent>
