@@ -18,8 +18,8 @@ import type {
     StaticAssetsTableRow,
 } from '@/types';
 import { useState } from 'react';
-import { DeliverablesCell } from '../deliverables-buttons';
 import { CollapsibleTableSectionHeader } from './collapsible-table-section-header';
+import { DeliverablesCell } from './sections/deliverables-buttons';
 
 export default function StaticAssetsMediaTable({
     title,

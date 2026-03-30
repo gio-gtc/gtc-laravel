@@ -22,10 +22,10 @@ import { VenueItemStatusBadge } from '@/components/utils/venue-item-status-badge
 import { toggleRowSelectionOnRowClick } from '@/lib/row-select-toggle';
 import { cn } from '@/lib/utils';
 import { MediaTableProps, MediaTableRow } from '@/types';
-import { AudioLines } from 'lucide-react';
 import { useState } from 'react';
-import { DeliverablesCell } from '../deliverables-buttons';
 import { CollapsibleTableSectionHeader } from './collapsible-table-section-header';
+import { DeliverablesCell } from './sections/deliverables-buttons';
+import { MediaPreviewCell } from './sections/media-preview-cell';
 
 const DURATION_SELECT_OPTIONS = MEDIA_DURATION_OPTIONS.map((v) => ({
     value: v,
@@ -37,7 +37,7 @@ export default function MediaTable({
     data,
     defaultOpen = true,
     onAdd,
-    previewVariant = 'default',
+    previewKind = 'video',
     onUploadRow,
     onPreviewClick,
     cellEditing,
@@ -385,47 +385,18 @@ export default function MediaTable({
                                                 </TableCell>
 
                                                 <TableCell>
-                                                    {isDisabledRow ? (
-                                                        <span className="text-muted-foreground"></span>
-                                                    ) : previewVariant ===
-                                                      'audio' ? (
-                                                        <div className="flex items-center justify-center gap-2">
-                                                            <button
-                                                                type="button"
-                                                                className="cursor-pointer text-gray-600 hover:text-gray-900"
-                                                                onClick={() =>
-                                                                    onPreviewClick?.(
-                                                                        row,
-                                                                        0,
-                                                                    )
-                                                                }
-                                                            >
-                                                                <AudioLines className="h-4 w-4" />
-                                                            </button>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex items-center justify-center gap-2">
-                                                            {row.previewIcons.map(
-                                                                (
-                                                                    icon,
-                                                                    index,
-                                                                ) => (
-                                                                    <button
-                                                                        key={`${row.id}-preview-${index}`}
-                                                                        className="cursor-pointer text-gray-400 hover:text-gray-900"
-                                                                        onClick={() =>
-                                                                            onPreviewClick?.(
-                                                                                row,
-                                                                                index,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        {icon}
-                                                                    </button>
-                                                                ),
-                                                            )}
-                                                        </div>
-                                                    )}
+                                                    <MediaPreviewCell
+                                                        kind={previewKind}
+                                                        disabled={isDisabledRow}
+                                                        onPreviewClick={(
+                                                            iconIndex,
+                                                        ) =>
+                                                            onPreviewClick?.(
+                                                                row,
+                                                                iconIndex,
+                                                            )
+                                                        }
+                                                    />
                                                 </TableCell>
                                                 <TableCell className="flex h-[30px] items-center justify-center gap-2 py-0">
                                                     <DeliverablesCell

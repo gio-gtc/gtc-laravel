@@ -233,8 +233,7 @@ export interface MediaTableRow {
     dueDate: string;
     assigned: User[];
     status: VenueItemStatus['type'];
-    previewIcons: React.ReactNode[]; // Array of icon components
-    /** Optional video URL for the preview (eye) modal. When absent, a default placeholder video is used. */
+    /** Optional video URL for the preview modal. When absent, a default placeholder video is used. */
     previewVideoUrl?: string | null;
     deliverables?: {
         onReject?: () => void;
@@ -250,11 +249,11 @@ export interface MediaTableProps {
     data: MediaTableRow[];
     defaultOpen?: boolean; // Default: true
     onAdd?: () => void; // Optional callback for add button
-    /** When 'audio', preview column shows a single sound icon instead of row.previewIcons */
-    previewVariant?: 'default' | 'audio';
+    /** Preview column: video (play + link) vs audio (waveform). */
+    previewKind?: 'video' | 'audio';
     /** Called when user chooses "Upload" from the ISCI column dropdown */
     onUploadRow?: (row: MediaTableRow) => void;
-    /** Called when a preview icon is clicked (row, iconIndex). Index 0 is typically the eye/preview icon. */
+    /** Called when a preview icon is clicked (row, iconIndex). Video: 0 = play, 1 = link; audio: 0 only. */
     onPreviewClick?: (row: MediaTableRow, iconIndex: number) => void;
     /** When set, Cut Name uses EditableCellInput (parent should own useEditableTable) */
     cellEditing?: VenueTableCellEditing;
@@ -318,8 +317,6 @@ export interface VenueItemsMediaRow extends VenueItemsRowBase {
     isci: string;
     duration: string;
     status_id: number;
-    /** Omitted when loaded from server JSON; UI supplies defaults. */
-    previewIcons?: React.ReactNode[];
     previewVideoUrl?: string | null;
     deliverables?: MediaTableRow['deliverables'];
     /** Set from server JSON when row supports deliverable actions (replaces inline mock callbacks). */

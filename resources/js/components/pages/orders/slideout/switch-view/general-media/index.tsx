@@ -25,14 +25,13 @@ import {
 } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { format, isValid, parse, parseISO } from 'date-fns';
-import { Link, PlayIcon } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { ChatThread } from '../reuse/chat';
 import BulkEditAssignedModal from '../reuse/modals/bulk-edit-assigned-modal';
 import BulkEditDueDateModal from '../reuse/modals/bulk-edit-due-date-modal';
 import SectionContainers from '../reuse/section-containers';
-import AttachmentsSection from '../reuse/tables/attachments-section-table';
 import MediaTable from '../reuse/tables/dynamic-media-table';
+import AttachmentsSection from '../reuse/tables/sections/attachments-section-table';
 import StaticAssetsMediaTable from '../reuse/tables/static-assets-media-table';
 import BillingSection from './billing-section';
 import Filters, {
@@ -57,11 +56,6 @@ interface GeneralMediaViewProps {
         isci: string;
     }) => void;
 }
-
-const defaultPreviewIcons = [
-    <PlayIcon key="p1" className="h-4 w-4" />,
-    <Link key="p2" className="h-4 w-4" />,
-];
 
 function tableDueDateDisplayToIso(display: string): string | undefined {
     const trimmed = display.trim();
@@ -132,11 +126,6 @@ function GeneralMediaView({
                 );
                 return {
                     ...mediaRow,
-                    previewIcons:
-                        Array.isArray(row.previewIcons) &&
-                        row.previewIcons.length > 0
-                            ? row.previewIcons
-                            : defaultPreviewIcons,
                     deliverables: row.has_deliverable_actions
                         ? {
                               onReject: () => {
@@ -230,6 +219,28 @@ function GeneralMediaView({
     const [videoPreviewRow, setVideoPreviewRow] =
         useState<MediaTableRow | null>(null);
     const [audioPlaceholderMode, setAudioPlaceholderMode] = useState(false);
+
+    const handleVideoSectionPreviewClick = useCallback(
+        (row: MediaTableRow, iconIndex: number) => {
+            if (iconIndex === 0) {
+                setVideoPreviewRow(row);
+                setAudioPlaceholderMode(false);
+                setVideoPlayerModalOpen(true);
+            }
+        },
+        [],
+    );
+
+    const handleAudioSectionPreviewClick = useCallback(
+        (row: MediaTableRow, iconIndex: number) => {
+            if (iconIndex === 0) {
+                setVideoPreviewRow(row);
+                setAudioPlaceholderMode(true);
+                setVideoPlayerModalOpen(true);
+            }
+        },
+        [],
+    );
 
     const billingInvoices = useMemo((): Invoice[] => {
         if (!order || !venueItem || venueItem.venue == null) return [];
@@ -354,13 +365,7 @@ function GeneralMediaView({
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
-                    onPreviewClick={(row, iconIndex) => {
-                        if (iconIndex === 0) {
-                            setVideoPreviewRow(row);
-                            setAudioPlaceholderMode(false);
-                            setVideoPlayerModalOpen(true);
-                        }
-                    }}
+                    onPreviewClick={handleVideoSectionPreviewClick}
                 />
                 <MediaTable
                     title="Social Video"
@@ -376,13 +381,7 @@ function GeneralMediaView({
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
-                    onPreviewClick={(row, iconIndex) => {
-                        if (iconIndex === 0) {
-                            setVideoPreviewRow(row);
-                            setAudioPlaceholderMode(false);
-                            setVideoPlayerModalOpen(true);
-                        }
-                    }}
+                    onPreviewClick={handleVideoSectionPreviewClick}
                 />
                 <MediaTable
                     title="Audio"
@@ -395,17 +394,11 @@ function GeneralMediaView({
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
                     onAdd={() => setAudioModalOpen(true)}
-                    previewVariant="audio"
+                    previewKind="audio"
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
-                    onPreviewClick={(row, iconIndex) => {
-                        if (iconIndex === 0) {
-                            setVideoPreviewRow(row);
-                            setAudioPlaceholderMode(true);
-                            setVideoPlayerModalOpen(true);
-                        }
-                    }}
+                    onPreviewClick={handleAudioSectionPreviewClick}
                 />
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"

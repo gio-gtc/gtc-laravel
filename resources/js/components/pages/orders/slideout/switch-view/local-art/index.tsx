@@ -20,8 +20,8 @@ import BulkEditAssignedModal from '../reuse/modals/bulk-edit-assigned-modal';
 import BulkEditDueDateModal from '../reuse/modals/bulk-edit-due-date-modal';
 import NotesModal from '../reuse/modals/notes-modal';
 import SectionContainers from '../reuse/section-containers';
-import AttachmentsSection from '../reuse/tables/attachments-section-table';
 import LocalizedArtTable from '../reuse/tables/localised-media-table';
+import AttachmentsSection from '../reuse/tables/sections/attachments-section-table';
 
 function tableDueDateDisplayToIso(display: string): string | undefined {
     const trimmed = display.trim();

@@ -94,7 +94,6 @@ export function venueItemsMediaTableRow(
         status_id,
         has_deliverable_actions: _h,
         deliverables: _d,
-        previewIcons,
         ...rest
     } = row;
     return {
@@ -102,7 +101,6 @@ export function venueItemsMediaTableRow(
         cutName: label,
         assigned,
         status: venueItemStatusIdToLabel(status_id, venueItemStatus),
-        previewIcons: previewIcons ?? [],
     };
 }
 

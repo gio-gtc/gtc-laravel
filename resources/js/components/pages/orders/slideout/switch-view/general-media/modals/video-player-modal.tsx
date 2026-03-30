@@ -1,6 +1,6 @@
 'use client';
 
-import { ApprovalButtons } from '@/components/pages/orders/slideout/switch-view/reuse/deliverables-buttons';
+import { ApprovalButtons } from '@/components/pages/orders/slideout/switch-view/reuse/tables/sections/deliverables-buttons';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
