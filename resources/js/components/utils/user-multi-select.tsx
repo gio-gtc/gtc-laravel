@@ -1,12 +1,11 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { useInitials } from '@/hooks/use-initials';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
 import { type User } from '@/types';
-import { Search, X } from 'lucide-react';
+import { CheckIcon, Search, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { UserAvatar } from '../ui/user-avatar';
 
@@ -92,7 +91,11 @@ function UserMultiSelect({
 
             {/* User List */}
             <div className="space-y-2">
-                <div className="max-h-48 space-y-1 overflow-y-auto">
+                <div
+                    className="max-h-48 space-y-1 overflow-y-auto"
+                    role="listbox"
+                    aria-multiselectable
+                >
                     {filteredUsers.length === 0 ? (
                         <div className="py-4 text-center text-sm text-muted-foreground">
                             No users found
@@ -105,16 +108,19 @@ function UserMultiSelect({
                             return (
                                 <div
                                     key={user.id}
+                                    role="option"
+                                    aria-selected={isSelected}
                                     className={cn(
-                                        'flex cursor-pointer items-center gap-3 rounded-md p-2 hover:bg-muted',
+                                        'relative flex cursor-pointer items-center gap-3 rounded-md p-2 pr-8 hover:bg-muted',
                                         isSelected && 'bg-muted',
                                     )}
                                     onClick={() => toggleUser(user)}
                                 >
-                                    <Checkbox
-                                        checked={isSelected}
-                                        onCheckedChange={() => toggleUser(user)}
-                                    />
+                                    {isSelected && (
+                                        <span className="absolute right-2 flex size-3.5 items-center justify-center">
+                                            <CheckIcon className="size-4" />
+                                        </span>
+                                    )}
                                     <Avatar className="h-8 w-8">
                                         <AvatarImage
                                             src={user.avatar || ''}

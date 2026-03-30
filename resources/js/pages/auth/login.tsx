@@ -1,7 +1,6 @@
 import InputError from '@/components/input-error';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
@@ -10,6 +9,7 @@ import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
+import { CheckIcon } from 'lucide-react';
 
 interface LoginProps {
     status?: string;
@@ -85,15 +85,22 @@ export default function Login({
                                 <InputError message={errors.password} />
                             </div>
 
-                            <div className="flex items-center space-x-3">
-                                <Checkbox
+                            <label
+                                htmlFor="remember"
+                                className="relative flex w-full cursor-pointer items-center pr-8 text-sm text-white"
+                            >
+                                <input
                                     id="remember"
+                                    type="checkbox"
                                     name="remember"
                                     tabIndex={3}
-                                    className="border-white/35 data-[state=checked]:border-white data-[state=checked]:bg-white data-[state=checked]:text-black"
+                                    className="peer sr-only"
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
-                            </div>
+                                <span className="flex-1">Remember me</span>
+                                <span className="pointer-events-none absolute right-2 flex size-3.5 items-center justify-center text-white peer-checked:text-brand-gtc-red">
+                                    <CheckIcon className="size-4" />
+                                </span>
+                            </label>
 
                             <Button
                                 type="submit"

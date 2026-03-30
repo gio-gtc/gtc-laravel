@@ -1,5 +1,6 @@
-import { Checkbox } from '@/components/ui/checkbox';
+import { cn } from '@/lib/utils';
 import { type User } from '@/types';
+import { CheckIcon } from 'lucide-react';
 import UserMultiSelect from './user-multi-select';
 
 export interface FilterUserGroupSectionProps {
@@ -26,13 +27,21 @@ export default function FilterUserGroupSection({
             <div className="flex items-center justify-between">
                 <p className="text-sm font-medium">{title}</p>
                 {myChecked !== null && onMyChange && (
-                    <label className="flex cursor-pointer items-center gap-2 text-sm">
-                        <Checkbox
-                            checked={myChecked}
-                            onCheckedChange={(checked) => onMyChange(!!checked)}
-                        />
-                        {myLabel}
-                    </label>
+                    <button
+                        type="button"
+                        className="relative flex cursor-pointer items-center pr-8 text-sm"
+                        onClick={() => onMyChange(!myChecked)}
+                    >
+                        <span>{myLabel}</span>
+                        <span
+                            className={cn(
+                                'absolute right-2 flex size-3.5 items-center justify-center',
+                                myChecked && 'text-brand-gtc-red',
+                            )}
+                        >
+                            <CheckIcon className="size-4" />
+                        </span>
+                    </button>
                 )}
             </div>
             <UserMultiSelect

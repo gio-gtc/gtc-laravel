@@ -1,7 +1,6 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
     Popover,
     PopoverContent,
@@ -16,7 +15,7 @@ import {
     CommandItem,
     CommandList,
 } from 'cmdk';
-import { ChevronDown, X } from 'lucide-react';
+import { CheckIcon, ChevronDown, X } from 'lucide-react';
 import * as React from 'react';
 
 export interface MultiSelectComboboxProps {
@@ -129,19 +128,29 @@ export function MultiSelectCombobox({
                         <CommandList>
                             <CommandEmpty>{emptyMessage}</CommandEmpty>
                             <CommandGroup>
-                                {filteredOptions.map((option) => (
-                                    <CommandItem
-                                        key={option}
-                                        value={option}
-                                        onSelect={() => toggleOption(option)}
-                                        className="flex items-center gap-1 pb-1"
-                                    >
-                                        <Checkbox
-                                            checked={value.includes(option)}
-                                        />
-                                        {option}
-                                    </CommandItem>
-                                ))}
+                                {filteredOptions.map((option) => {
+                                    const isSelected = value.includes(option);
+                                    return (
+                                        <CommandItem
+                                            key={option}
+                                            value={option}
+                                            onSelect={() =>
+                                                toggleOption(option)
+                                            }
+                                            className="relative flex items-center pb-1 pr-8"
+                                            aria-selected={isSelected}
+                                        >
+                                            {isSelected && (
+                                                <span className="absolute right-2 flex size-3.5 items-center justify-center">
+                                                    <CheckIcon className="size-4" />
+                                                </span>
+                                            )}
+                                            <span className="min-w-0 flex-1 truncate">
+                                                {option}
+                                            </span>
+                                        </CommandItem>
+                                    );
+                                })}
                             </CommandGroup>
                         </CommandList>
                     </Command>
