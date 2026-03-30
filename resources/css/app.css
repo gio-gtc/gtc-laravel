@@ -212,6 +212,10 @@
         @apply p-3;
     }
 
+    .lg-gray-700-weight-600 {
+        @apply text-lg font-semibold text-gray-700;
+    }
+
     .md-black-weight-600 {
         @apply text-base font-semibold text-black;
     }

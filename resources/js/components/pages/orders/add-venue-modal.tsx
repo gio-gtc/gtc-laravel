@@ -119,8 +119,10 @@ export default function AddVenueModal({
             <DialogContent className="sm:max-w-[890px]">
                 <DialogHeader>
                     <DialogTitle>
-                        {!isEditMode && (
-                            <span className="block text-gray-700">test</span>
+                        {order && (
+                            <span className="lg-gray-700-weight-600 block pb-1">
+                                {order.name}
+                            </span>
                         )}
 
                         {isEditMode ? 'Edit Venue Info' : 'Add Venue'}
