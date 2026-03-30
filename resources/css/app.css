@@ -2,6 +2,7 @@
 
 @import 'tw-animate-css';
 
+@import './components/demo.css';
 @import './components/gtc-video-js.css';
 
 @source '../views';
@@ -185,74 +186,6 @@
     input[type='number'] {
         -moz-appearance: textfield;
         appearance: textfield;
-    }
-
-    /* DEMO PAGE STYLES */
-    .demo-root {
-        font-family: 'Bebas Neue', sans-serif;
-        font-weight: 400;
-        font-style: normal;
-    }
-
-    .demo-chrome-header {
-        @apply text-3xl md:text-[40px];
-    }
-
-    .demo-chrome-header,
-    .demo-chrome-brand {
-        transition: opacity 0.28s ease;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-        .demo-root:not(:hover) .demo-chrome-header {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .demo-root:not(:hover) .demo-chrome-brand {
-            opacity: 0.2;
-            pointer-events: none;
-        }
-
-        .demo-root:hover .demo-chrome-header,
-        .demo-root:hover .demo-chrome-brand {
-            opacity: 1;
-            pointer-events: auto;
-        }
-    }
-
-    .demo-sidebar-panel {
-        transition:
-            transform 0.28s ease,
-            opacity 0.28s ease;
-    }
-
-    @media (hover: none), (pointer: coarse) {
-        .demo-sidebar-rail:not(.demo-sidebar-rail--open) .demo-sidebar-panel {
-            transform: translateX(100%);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .demo-sidebar-rail--open .demo-sidebar-panel {
-            transform: translateX(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-        .demo-sidebar-rail .demo-sidebar-panel {
-            transform: translateX(100%);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .demo-sidebar-rail:hover .demo-sidebar-panel {
-            transform: translateX(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
     }
 }
 
