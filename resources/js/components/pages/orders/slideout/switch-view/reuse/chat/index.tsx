@@ -2,14 +2,17 @@ import { useChat } from '@/hooks/use-chat';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import type { User } from '@/types';
 import { SharedData } from '@/types';
-import type { Message } from '@/types/chat';
+import type { Message, SendMessageOptions } from '@/types/chat';
 import { usePage } from '@inertiajs/react';
 import ChatInput from './input';
 import MessageList from './message-list';
 
 export interface ChatThreadProps {
     messages: Message[];
-    sendMessage: (content: unknown) => void | Promise<void>;
+    sendMessage: (
+        content: unknown,
+        options?: SendMessageOptions,
+    ) => void | Promise<void>;
     editMessage: (id: string, content: unknown) => void | Promise<void>;
     deleteMessage: (id: string) => void | Promise<void>;
     currentUserId: number;

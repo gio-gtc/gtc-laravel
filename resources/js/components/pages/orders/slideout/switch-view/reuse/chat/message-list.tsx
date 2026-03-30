@@ -23,7 +23,7 @@ import {
 import { formatMessageTimestamp, groupMessagesByDate } from '@/lib/chat-utils';
 import { cn } from '@/lib/utils';
 import { User } from '@/types';
-import { Message } from '@/types/chat';
+import { Message, RevisionRequestMetadata } from '@/types/chat';
 import { EditorContent, useEditor } from '@tiptap/react';
 import { Check, Pencil, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -31,6 +31,13 @@ import { Virtuoso } from 'react-virtuoso';
 import { MessageContentRender } from './message-content-render';
 
 const DROPDOWN_OFFSET_WHEN_EDITED = -20;
+
+function revisionRequestHeaderText(item: Message): string {
+    const m = item.metadata as RevisionRequestMetadata | undefined;
+    const tableName = m?.tableName ?? '';
+    const isci = m?.isci ?? '';
+    return `🚨 Revision Request: ${tableName} - ${isci} 🚨`;
+}
 
 interface Props {
     messages: Message[];
@@ -210,7 +217,28 @@ export default function MessageList({
                         );
                     }
 
-                    const bubbleDiv = (
+                    const isRevisionRequest =
+                        item.message_type === 'revision_request';
+
+                    const bubbleDiv = isRevisionRequest ? (
+                        <div
+                            className={cn(
+                                'rounded-xl border border-red-500 bg-neutral-50 p-4 text-gray-900 shadow-sm',
+                                isMe
+                                    ? 'rounded-br-none bg-white'
+                                    : 'rounded-tl-none bg-gray-50',
+                                item.status === 'sending' && 'opacity-70',
+                                canEditDelete && 'cursor-pointer',
+                            )}
+                        >
+                            <div className="md-gray-900-weight-700 mb-2">
+                                {revisionRequestHeaderText(item)}
+                            </div>
+                            <div className="text-gray-900">
+                                <MessageContentRender content={item.content} />
+                            </div>
+                        </div>
+                    ) : (
                         <div
                             className={cn(
                                 'rounded-2xl p-2 text-gray-900 shadow-sm',

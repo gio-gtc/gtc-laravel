@@ -220,6 +220,10 @@
         @apply text-base font-semibold text-black;
     }
 
+    .md-gray-900-weight-700 {
+        @apply text-base font-bold text-gray-900;
+    }
+
     .md-gray-500-weight-400 {
         @apply text-base font-normal text-gray-500;
     }

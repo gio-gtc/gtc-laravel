@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { Message } from '@/types/chat';
+import { Message, SendMessageOptions } from '@/types/chat';
 import { useCallback, useEffect, useState } from 'react';
 
 function getCsrfHeaders(): Record<string, string> {
@@ -91,8 +91,10 @@ export function useChat(channelId: string, currentUserId: number) {
 
     // 3. Send Message (The "Store" method with Optimistic UI)
     const sendMessage = useCallback(
-        async (content: any) => {
+        async (content: any, options?: SendMessageOptions) => {
             const tempId = crypto.randomUUID();
+            const messageType = options?.message_type ?? 'text';
+            const metadata = options?.metadata ?? {};
 
             // A. Optimistic Update (Immediate Feedback)
             const optimisticMessage: Message = {
@@ -101,7 +103,11 @@ export function useChat(channelId: string, currentUserId: number) {
                 sender_id: currentUserId,
                 created_at: new Date().toISOString(),
                 status: 'sending',
-                type: 'text',
+                message_type: messageType,
+                metadata:
+                    messageType === 'revision_request'
+                        ? { ...metadata }
+                        : undefined,
             };
 
             setMessages((prev) => [...prev, optimisticMessage]);
@@ -111,6 +117,8 @@ export function useChat(channelId: string, currentUserId: number) {
                 content,
                 sender_id: currentUserId,
                 channel_id: channelId,
+                message_type: messageType,
+                metadata,
             });
 
             // C. Reconcile State

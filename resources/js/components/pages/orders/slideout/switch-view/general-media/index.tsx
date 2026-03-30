@@ -218,6 +218,7 @@ function GeneralMediaView({
     const [videoPlayerModalOpen, setVideoPlayerModalOpen] = useState(false);
     const [videoPreviewRow, setVideoPreviewRow] =
         useState<MediaTableRow | null>(null);
+    const [videoPreviewTableTitle, setVideoPreviewTableTitle] = useState('');
     const [audioPlaceholderMode, setAudioPlaceholderMode] = useState(false);
 
     const handleVideoSectionPreviewClick = useCallback(
@@ -240,6 +241,30 @@ function GeneralMediaView({
             }
         },
         [],
+    );
+
+    const openBroadcastVideoPreview = useCallback(
+        (row: MediaTableRow, iconIndex: number) => {
+            setVideoPreviewTableTitle('Broadcast & Streaming Video');
+            handleVideoSectionPreviewClick(row, iconIndex);
+        },
+        [handleVideoSectionPreviewClick],
+    );
+
+    const openSocialVideoPreview = useCallback(
+        (row: MediaTableRow, iconIndex: number) => {
+            setVideoPreviewTableTitle('Social Video');
+            handleVideoSectionPreviewClick(row, iconIndex);
+        },
+        [handleVideoSectionPreviewClick],
+    );
+
+    const openAudioVideoPreview = useCallback(
+        (row: MediaTableRow, iconIndex: number) => {
+            setVideoPreviewTableTitle('Audio');
+            handleAudioSectionPreviewClick(row, iconIndex);
+        },
+        [handleAudioSectionPreviewClick],
     );
 
     const billingInvoices = useMemo((): Invoice[] => {
@@ -365,7 +390,7 @@ function GeneralMediaView({
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
-                    onPreviewClick={handleVideoSectionPreviewClick}
+                    onPreviewClick={openBroadcastVideoPreview}
                 />
                 <MediaTable
                     title="Social Video"
@@ -381,7 +406,7 @@ function GeneralMediaView({
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
-                    onPreviewClick={handleVideoSectionPreviewClick}
+                    onPreviewClick={openSocialVideoPreview}
                 />
                 <MediaTable
                     title="Audio"
@@ -398,7 +423,7 @@ function GeneralMediaView({
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
-                    onPreviewClick={handleAudioSectionPreviewClick}
+                    onPreviewClick={openAudioVideoPreview}
                 />
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
@@ -494,6 +519,7 @@ function GeneralMediaView({
                 onClose={() => {
                     setVideoPlayerModalOpen(false);
                     setVideoPreviewRow(null);
+                    setVideoPreviewTableTitle('');
                     setAudioPlaceholderMode(false);
                 }}
                 videoSrc={videoPreviewRow?.previewVideoUrl ?? undefined}
@@ -508,9 +534,16 @@ function GeneralMediaView({
                 }
                 onClientReviewReject={videoPreviewRow?.deliverables?.onReject}
                 onClientReviewApprove={videoPreviewRow?.deliverables?.onApprove}
-                onClientReviewCommentSubmit={(text) =>
-                    sendChatMessage(plainTextToChatDoc(text))
-                }
+                onClientReviewCommentSubmit={(text) => {
+                    if (!videoPreviewRow) return;
+                    sendChatMessage(plainTextToChatDoc(text), {
+                        message_type: 'revision_request',
+                        metadata: {
+                            tableName: videoPreviewTableTitle,
+                            isci: videoPreviewRow.isci,
+                        },
+                    });
+                }}
             />
         </>
     );
