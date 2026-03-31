@@ -4,32 +4,15 @@
     font-style: normal;
 }
 
-.demo-chrome-header {
-    @apply text-3xl md:text-[40px];
+.demo-chrome-header--title,
+.demo-chrome-brand--content {
+    transition: opacity 0.3s ease;
 }
 
-.demo-chrome-header,
-.demo-chrome-brand {
-    transition: opacity 0.28s ease;
+.demo-chrome-header--title {
+    @apply text-xl font-medium tracking-wide text-white uppercase md:text-[40px];
 }
 
-@media (hover: hover) and (pointer: fine) {
-    .demo-root:not(:hover) .demo-chrome-header {
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    .demo-root:not(:hover) .demo-chrome-brand {
-        opacity: 0.2;
-        pointer-events: none;
-    }
-
-    .demo-root:hover .demo-chrome-header,
-    .demo-root:hover .demo-chrome-brand {
-        opacity: 1;
-        pointer-events: auto;
-    }
-}
 /* Sidebar Panel Transitions */
 .demo-sidebar-panel {
     transition:
@@ -37,7 +20,41 @@
         opacity 0.3s ease;
 }
 
-@media (hover: none), (pointer: coarse) {
+/* Header */
+.demo-chrome-header {
+    @apply absolute top-0 left-0 z-10 flex h-[145px] w-full items-center bg-black px-3 py-3 pr-14 sm:px-6 sm:py-5;
+}
+
+/* Brand Badge */
+.demo-chrome-brand {
+    @apply absolute bottom-0 left-0 z-0 flex h-[145px] w-full items-center bg-black p-5;
+}
+
+.demo-chrome-brand--content {
+    @apply w-15 rounded-sm md:w-22;
+}
+
+/* Mobile */
+@media (hover: none), (pointer: coarse) && (max-width: 715px) {
+    /* header */
+    .demo-chrome-header {
+        @apply h-10 px-3 py-3 pr-14;
+    }
+
+    .demo-chrome-header--title {
+        @apply text-xl;
+    }
+
+    /* Brand Badge */
+    .demo-chrome-brand {
+        @apply h-10 items-start p-0 pl-3;
+    }
+
+    .demo-chrome-brand--content {
+        @apply w-8;
+    }
+
+    /* Sidebar */
     .demo-sidebar-rail:not(.demo-sidebar-rail--open) .demo-sidebar-panel {
         transform: translateX(100%);
         opacity: 0;
@@ -52,6 +69,22 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+    .demo-root:not(:hover) .demo-chrome-header--title {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .demo-root:not(:hover) .demo-chrome-brand--content {
+        opacity: 0.2;
+        pointer-events: none;
+    }
+
+    .demo-root:hover .demo-chrome-header--title,
+    .demo-root:hover .demo-chrome-brand--content {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
     .demo-sidebar-rail .demo-sidebar-panel {
         transform: translateX(100%);
         opacity: 0;
@@ -66,6 +99,9 @@
 }
 
 /* Video.js on demo media stage: keep audio poster visible as background artwork */
+.vjs-big-play-button {
+    z-index: 10;
+}
 .demo-media-stage--audio .vjs-poster {
     display: block !important;
 }

@@ -50,7 +50,7 @@ export default function DemoSidebar({
                     {!touchOpen ? (
                         <button
                             type="button"
-                            className="fixed top-1 right-1 z-[11] flex size-10 items-center justify-center text-white shadow-lg"
+                            className="fixed top-1 right-1 z-[10] flex size-8 items-center justify-center text-white shadow-lg"
                             onClick={openTouch}
                             aria-expanded={touchOpen}
                             aria-controls="demo-assets-panel"
@@ -130,7 +130,9 @@ export default function DemoSidebar({
                                             width={120}
                                             height={64}
                                             objectFit="cover"
-                                            transformer={unpicPassthroughTransform}
+                                            transformer={
+                                                unpicPassthroughTransform
+                                            }
                                             className="h-16 w-30 shrink-0 rounded object-cover"
                                         />
                                         <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">

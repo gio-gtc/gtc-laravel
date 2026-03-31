@@ -1,4 +1,5 @@
 import { unpicPassthroughTransform } from '@/lib/unpic-passthrough-transform';
+import { cn } from '@/lib/utils';
 import { type DemoAsset } from '@/types/demo';
 import { Image } from '@unpic/react/base';
 import { useEffect, useRef } from 'react';
@@ -52,9 +53,10 @@ function DemoVideoJsStage({
 
     return (
         <div
-            className={`demo-media-stage relative size-full overflow-hidden bg-black ${
-                kind === 'audio' ? 'demo-media-stage--audio' : ''
-            }`}
+            className={cn(
+                'demo-media-stage bg-black) relative size-full overflow-hidden',
+                kind === 'audio' ? 'demo-media-stage--audio' : '',
+            )}
         >
             <span className="sr-only">{title}</span>
             <div
