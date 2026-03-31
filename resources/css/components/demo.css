@@ -64,3 +64,13 @@
         pointer-events: auto;
     }
 }
+
+/* Video.js on demo media stage: keep audio poster visible as background artwork */
+.demo-media-stage--audio .vjs-poster {
+    display: block !important;
+}
+
+.vjs-has-started .vjs-control-bar,
+.vjs-audio-only-mode .vjs-control-bar {
+    z-index: 2;
+}

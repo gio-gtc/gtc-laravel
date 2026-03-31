@@ -1,131 +1,64 @@
 import { type DemoAsset } from '@/types/demo';
-import { Pause, Play } from 'lucide-react';
-import {
-    useEffect,
-    useRef,
-    useState,
-    type MouseEvent,
-    type RefObject,
-} from 'react';
-
-// TODO: Switch this to videojs
+import { useEffect, useRef } from 'react';
+import videojs from 'video.js';
+import 'video.js/dist/video-js.css';
 
 const DEMO_AUDIO_POSTER = '/GTC-audio.jpg';
 
-function useMediaPlayRejectionGuard(
-    mediaRef: RefObject<HTMLMediaElement | null>,
-    id: string,
-    mediaUrl: string,
-) {
-    useEffect(() => {
-        const el = mediaRef.current;
-        if (!el) return;
-        const nativePlay = el.play.bind(el);
-        el.play = () => nativePlay().catch(() => undefined);
-        return () => {
-            el.play = nativePlay;
-        };
-    }, [id, mediaUrl, mediaRef]);
-}
-
-function DemoAudioStage({ id, mediaUrl }: { id: string; mediaUrl: string }) {
-    const audioRef = useRef<HTMLAudioElement | null>(null);
-    useMediaPlayRejectionGuard(audioRef, id, mediaUrl);
-    const [playing, setPlaying] = useState(false);
+function DemoVideoJsStage({
+    id,
+    mediaUrl,
+    kind,
+    title,
+}: {
+    id: string;
+    mediaUrl: string;
+    kind: 'audio' | 'video';
+    title: string;
+}) {
+    const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const el = audioRef.current;
-        if (!el) return;
-        const sync = () => setPlaying(!el.paused);
-        sync();
-        el.addEventListener('play', sync);
-        el.addEventListener('pause', sync);
-        el.addEventListener('ended', sync);
+        const container = containerRef.current;
+        if (!container) return;
+
+        const videoEl = document.createElement('video-js');
+        videoEl.classList.add('gtc-video-js', 'vjs-big-play-centered');
+        container.appendChild(videoEl);
+
+        const isAudio = kind === 'audio';
+        const sourceType = isAudio ? 'audio/mpeg' : 'video/mp4';
+
+        const player = videojs(videoEl, {
+            fill: true,
+            controls: true,
+            responsive: true,
+            preload: 'metadata',
+            sources: [{ src: mediaUrl, type: sourceType }],
+            poster: isAudio ? DEMO_AUDIO_POSTER : undefined,
+            inactivityTimeout: isAudio ? 0 : 2000,
+            playbackRates: [0.5, 1, 1.5, 2],
+        });
+
         return () => {
-            el.removeEventListener('play', sync);
-            el.removeEventListener('pause', sync);
-            el.removeEventListener('ended', sync);
+            if (!player.isDisposed()) {
+                player.dispose();
+            }
+            container.innerHTML = '';
         };
-    }, [id, mediaUrl]);
-
-    const togglePlayback = () => {
-        const el = audioRef.current;
-        if (!el) return;
-        if (el.paused) void el.play();
-        else el.pause();
-    };
-
-    const handleAudioStageClick = (e: MouseEvent<HTMLDivElement>) => {
-        const t = e.target;
-        if (!(t instanceof Element) || t.closest('audio')) return;
-        togglePlayback();
-    };
-
-    const handleOverlayButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
-        e.stopPropagation();
-        togglePlayback();
-    };
+    }, [id, mediaUrl, kind]);
 
     return (
         <div
-            className="relative size-full cursor-pointer overflow-hidden"
-            onClick={handleAudioStageClick}
+            className={`demo-media-stage relative size-full overflow-hidden bg-black ${
+                kind === 'audio' ? 'demo-media-stage--audio' : ''
+            }`}
         >
-            <div className="absolute inset-0 z-[5] flex items-center justify-center opacity-100 transition-opacity duration-300 ease-in-out hover:opacity-70">
-                <button
-                    type="button"
-                    className="box-border flex size-[7.5rem] cursor-pointer items-center justify-center rounded-full border-none bg-[color:var(--media-play-overlay-bg)] text-[30px] text-white"
-                    aria-label={playing ? 'Pause' : 'Play'}
-                    onClick={handleOverlayButtonClick}
-                >
-                    {playing ? (
-                        <Pause
-                            className="size-11 shrink-0 fill-current text-white"
-                            stroke="currentColor"
-                            strokeWidth={1.5}
-                            aria-hidden
-                        />
-                    ) : (
-                        <Play
-                            className="size-11 shrink-0 fill-current text-white"
-                            stroke="currentColor"
-                            strokeWidth={1.5}
-                            aria-hidden
-                        />
-                    )}
-                </button>
-            </div>
+            <span className="sr-only">{title}</span>
             <div
-                className="absolute inset-0 z-0 bg-contain bg-center bg-no-repeat object-contain lg:bg-cover"
-                style={{
-                    backgroundImage: `url('${DEMO_AUDIO_POSTER}')`,
-                }}
-                aria-hidden
-            />
-            <audio
-                ref={audioRef}
-                className="absolute inset-x-0 bottom-0 z-10 w-full cursor-default"
-                controls
-                preload="metadata"
-                src={mediaUrl}
-            />
-        </div>
-    );
-}
-
-function DemoVideoStage({ id, mediaUrl }: { id: string; mediaUrl: string }) {
-    const videoRef = useRef<HTMLVideoElement | null>(null);
-    useMediaPlayRejectionGuard(videoRef, id, mediaUrl);
-
-    return (
-        <div className="relative size-full overflow-hidden bg-black">
-            <video
-                ref={videoRef}
-                className="absolute inset-0 h-full w-full object-contain"
-                controls
-                playsInline
-                preload="metadata"
-                src={mediaUrl}
+                ref={containerRef}
+                className="video-js-container h-full w-full"
+                data-vjs-player
             />
         </div>
     );
@@ -151,21 +84,13 @@ export default function DemoMediaStage({ asset }: { asset: DemoAsset | null }) {
         );
     }
 
-    if (asset.kind === 'audio') {
-        return (
-            <DemoAudioStage
-                key={asset.id}
-                id={asset.id}
-                mediaUrl={asset.mediaUrl}
-            />
-        );
-    }
-
     return (
-        <DemoVideoStage
+        <DemoVideoJsStage
             key={asset.id}
             id={asset.id}
             mediaUrl={asset.mediaUrl}
+            kind={asset.kind === 'audio' ? 'audio' : 'video'}
+            title={asset.title}
         />
     );
 }
