@@ -1,4 +1,6 @@
+import { unpicPassthroughTransform } from '@/lib/unpic-passthrough-transform';
 import { type DemoAsset } from '@/types/demo';
+import { Image } from '@unpic/react/base';
 import { useEffect, useRef } from 'react';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
@@ -75,10 +77,15 @@ export default function DemoMediaStage({ asset }: { asset: DemoAsset | null }) {
 
     if (asset.kind === 'image') {
         return (
-            <img
+            <Image
                 key={asset.id}
                 src={asset.mediaUrl}
-                alt=""
+                alt={asset.title}
+                layout="constrained"
+                width={1920}
+                height={1080}
+                objectFit="contain"
+                transformer={unpicPassthroughTransform}
                 className="absolute inset-0 h-full w-full object-contain"
             />
         );

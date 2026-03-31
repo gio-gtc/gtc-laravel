@@ -1,6 +1,8 @@
 import { useCoarseOrNoHoverPointer } from '@/hooks/use-coarse-or-no-hover-pointer';
+import { unpicPassthroughTransform } from '@/lib/unpic-passthrough-transform';
 import { cn } from '@/lib/utils';
 import { type DemoAsset, type DemoTab } from '@/types/demo';
+import { Image } from '@unpic/react/base';
 import {
     Frame,
     Menu,
@@ -121,9 +123,14 @@ export default function DemoSidebar({
                                                 : 'hover:bg-white/5'
                                         }`}
                                     >
-                                        <img
+                                        <Image
                                             src={asset.thumbnailUrl}
-                                            alt=""
+                                            alt={asset.title}
+                                            layout="fixed"
+                                            width={120}
+                                            height={64}
+                                            objectFit="cover"
+                                            transformer={unpicPassthroughTransform}
                                             className="h-16 w-30 shrink-0 rounded object-cover"
                                         />
                                         <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">

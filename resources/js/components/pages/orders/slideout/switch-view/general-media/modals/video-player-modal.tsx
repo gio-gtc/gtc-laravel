@@ -4,6 +4,8 @@ import { ApprovalButtons } from '@/components/pages/orders/slideout/switch-view/
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { unpicPassthroughTransform } from '@/lib/unpic-passthrough-transform';
+import { Image } from '@unpic/react/base';
 import {
     useCallback,
     useEffect,
@@ -340,9 +342,14 @@ export default function VideoPlayerModal({
                         </>
                     ) : (
                         <div className="absolute inset-0 flex items-center justify-center bg-neutral-200">
-                            <img
+                            <Image
                                 src={PLACEHOLDER_IMAGE}
                                 alt="Video placeholder"
+                                layout="fixed"
+                                width={640}
+                                height={360}
+                                objectFit="contain"
+                                transformer={unpicPassthroughTransform}
                                 className="h-full w-full object-contain"
                             />
                         </div>
