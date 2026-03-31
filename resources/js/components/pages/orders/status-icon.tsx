@@ -1,8 +1,8 @@
+import { ClipBoardPlusIcon } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
 import { type TourVenueStatusValue } from '@/types';
 import {
     CircleCheck,
-    ClipboardPlus,
     Image,
     type LucideIcon,
     MessageCircleQuestion,
@@ -20,8 +20,8 @@ const ICON_MAP: Record<
         containerClass: 'bg-green-500',
     },
     1: {
-        icon: ClipboardPlus,
-        containerClass: 'bg-green-500',
+        icon: ClipBoardPlusIcon,
+        containerClass: 'bg-green-600',
     },
     3: {
         icon: Mic,

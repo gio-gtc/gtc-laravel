@@ -414,9 +414,7 @@ export default function MediaTable({
                                         <TableCell
                                             colSpan={8}
                                             className="h-24 text-center"
-                                        >
-                                            No data available.
-                                        </TableCell>
+                                        ></TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>

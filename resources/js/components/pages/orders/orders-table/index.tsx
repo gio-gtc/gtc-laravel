@@ -584,9 +584,7 @@ function OrdersTable() {
                                 <TableCell
                                     colSpan={6}
                                     className="h-24 text-center"
-                                >
-                                    No results.
-                                </TableCell>
+                                ></TableCell>
                             </TableRow>
                         )}
                     </TableBody>

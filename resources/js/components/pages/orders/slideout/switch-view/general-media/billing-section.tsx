@@ -65,9 +65,7 @@ function BillingSection({ billingInvoices }: { billingInvoices: Invoice[] }) {
                         <TableCell
                             colSpan={5}
                             className="h-16 text-center text-muted-foreground"
-                        >
-                            No invoices yet
-                        </TableCell>
+                        ></TableCell>
                     </TableRow>
                 ) : (
                     billingInvoices.map((inv) => (

@@ -297,9 +297,7 @@ export default function LocalizedArtTable({
                                         <TableCell
                                             colSpan={8}
                                             className="h-24 text-center"
-                                        >
-                                            No data available.
-                                        </TableCell>
+                                        ></TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
