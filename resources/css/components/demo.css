@@ -1,16 +1,22 @@
 .demo-root {
+    --theater-mode-spacing: 130px;
+    --theater-mode-spacing-mobile: 52px;
+    --theater-mode-spacing-mobile-footer: 54px;
+
     font-family: 'Bebas Neue', sans-serif;
     font-weight: 400;
     font-style: normal;
 }
 
-.demo-chrome-header--title,
-.demo-chrome-brand--content {
-    transition: opacity 0.3s ease;
-}
-
 .demo-chrome-header--title {
     @apply text-xl font-medium tracking-wide text-white uppercase md:text-[40px];
+}
+
+.demo-theater-mode {
+    position: absolute;
+    inset-inline: 0;
+    top: var(--theater-mode-spacing);
+    bottom: var(--theater-mode-spacing);
 }
 
 /* Sidebar Panel Transitions */
@@ -22,23 +28,42 @@
 
 /* Header */
 .demo-chrome-header {
-    @apply absolute top-0 left-0 z-10 flex h-[145px] w-full items-center bg-black px-3 py-3 pr-14 sm:px-6 sm:py-5;
+    @apply absolute top-0 left-0 z-10 flex h-[var(--theater-mode-spacing)] w-full items-center bg-black px-3 py-3 pr-14 sm:px-6 sm:py-5;
 }
 
 /* Brand Badge */
 .demo-chrome-brand {
-    @apply absolute bottom-0 left-0 z-0 flex h-[145px] w-full items-center bg-black p-5;
+    @apply absolute bottom-0 left-0 flex h-[var(--theater-mode-spacing)] w-full items-center bg-black p-5;
 }
 
 .demo-chrome-brand--content {
     @apply w-15 rounded-sm md:w-22;
 }
 
+/* Video.js on demo media stage */
+.demo-theater-mode {
+    top: var(--theater-mode-spacing-mobile);
+    bottom: var(--theater-mode-spacing-mobile-footer);
+}
+.vjs-big-play-button {
+    z-index: 10;
+}
+.demo-media-stage--audio .vjs-poster {
+    display: block !important;
+}
+
+.video-js.vjs-has-started .vjs-control-bar {
+    position: fixed;
+    bottom: 0;
+    padding-bottom: 0px;
+    z-index: 10;
+}
+
 /* Mobile */
 @media (hover: none), (pointer: coarse) && (max-width: 715px) {
     /* header */
     .demo-chrome-header {
-        @apply h-10 px-3 py-3 pr-14;
+        @apply h-[var(--theater-mode-spacing-mobile)] px-3 py-3 pr-14;
     }
 
     .demo-chrome-header--title {
@@ -47,7 +72,7 @@
 
     /* Brand Badge */
     .demo-chrome-brand {
-        @apply h-10 items-start p-0 pl-3;
+        @apply h-[var(--theater-mode-spacing-mobile-footer)] items-start p-0 pl-3;
     }
 
     .demo-chrome-brand--content {
@@ -69,22 +94,6 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-    .demo-root:not(:hover) .demo-chrome-header--title {
-        opacity: 0;
-        pointer-events: none;
-    }
-
-    .demo-root:not(:hover) .demo-chrome-brand--content {
-        opacity: 0.2;
-        pointer-events: none;
-    }
-
-    .demo-root:hover .demo-chrome-header--title,
-    .demo-root:hover .demo-chrome-brand--content {
-        opacity: 1;
-        pointer-events: auto;
-    }
-
     .demo-sidebar-rail .demo-sidebar-panel {
         transform: translateX(100%);
         opacity: 0;
@@ -96,17 +105,4 @@
         opacity: 1;
         pointer-events: auto;
     }
-}
-
-/* Video.js on demo media stage: keep audio poster visible as background artwork */
-.vjs-big-play-button {
-    z-index: 10;
-}
-.demo-media-stage--audio .vjs-poster {
-    display: block !important;
-}
-
-.vjs-has-started .vjs-control-bar,
-.vjs-audio-only-mode .vjs-control-bar {
-    z-index: 2;
 }

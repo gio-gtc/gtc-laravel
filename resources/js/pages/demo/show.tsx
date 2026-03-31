@@ -69,7 +69,7 @@ export default function DemoShow({
                     onSelectAsset={setSelectedId}
                     reserveBottomForMedia={reserveBottomForMedia}
                 />
-                <div className="absolute inset-0">
+                <div className="demo-theater-mode">
                     <DemoMediaStage asset={selectedAsset} />
                 </div>
 

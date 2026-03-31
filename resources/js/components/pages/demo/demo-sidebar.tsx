@@ -85,7 +85,7 @@ export default function DemoSidebar({
                         'demo-sidebar-panel absolute top-0 right-0 bottom-0 flex min-h-0 w-full flex-col bg-zinc-900/20',
                     )}
                 >
-                    <div className="flex shrink-0 md:h-[145px]">
+                    <div className="flex shrink-0 md:h-[var(--theater-mode-spacing)]">
                         {TABS.map(({ id, label, icon: Icon }) => {
                             const active = activeTab === id;
                             return (
@@ -119,7 +119,7 @@ export default function DemoSidebar({
                                         onClick={() => onSelectAsset(asset.id)}
                                         className={`flex w-full gap-3 rounded-lg p-2 text-left transition-colors ${
                                             selected
-                                                ? 'border bg-white/10'
+                                                ? 'border bg-white/20'
                                                 : 'hover:bg-white/5'
                                         }`}
                                     >

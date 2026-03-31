@@ -54,7 +54,7 @@ function DemoVideoJsStage({
     return (
         <div
             className={cn(
-                'demo-media-stage bg-black) relative size-full overflow-hidden',
+                'demo-media-stage relative size-full overflow-hidden bg-black',
                 kind === 'audio' ? 'demo-media-stage--audio' : '',
             )}
         >
