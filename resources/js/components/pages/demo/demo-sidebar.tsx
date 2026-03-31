@@ -41,8 +41,6 @@ export default function DemoSidebar({
     const closeTouch = useCallback(() => setTouchOpen(false), []);
     const openTouch = useCallback(() => setTouchOpen(true), []);
 
-    const bottomClass = reserveBottomForMedia ? 'bottom-[40px]' : 'bottom-0';
-
     return (
         <>
             {isCoarse ? (
@@ -71,8 +69,7 @@ export default function DemoSidebar({
             ) : null}
             <div
                 className={cn(
-                    'demo-sidebar-rail absolute top-0 right-0 z-10 flex justify-end overflow-visible',
-                    bottomClass,
+                    'demo-sidebar-rail absolute top-0 right-0 bottom-0 z-10 flex justify-end overflow-visible',
                     isCoarse && !touchOpen && 'w-0',
                     (!isCoarse || touchOpen) &&
                         'w-[min(22rem,90vw)] md:w-[min(26rem,45vw)]',
