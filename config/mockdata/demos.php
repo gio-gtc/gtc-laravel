@@ -16,7 +16,7 @@ return [
                     'title' => 'Video international',
                     'durationLabel' => '00:30',
                     'thumbnailUrl' => 'https://picsum.photos/seed/gtc-b1/320/180',
-                    'mediaUrl' => 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+                    'mediaUrl' => 'https://static.vecteezy.com/system/resources/previews/005/287/289/mp4/programming-or-software-development-loopable-concept-isometric-laptop-with-programming-code-programming-concept-free-video.mp4',
                     'kind' => 'video',
                 ],
                 [
@@ -25,7 +25,7 @@ return [
                     'title' => 'Video international superless v2',
                     'durationLabel' => '01:12',
                     'thumbnailUrl' => 'https://picsum.photos/seed/gtc-b2/320/180',
-                    'mediaUrl' => 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+                    'mediaUrl' => 'https://static.vecteezy.com/system/resources/previews/001/804/008/mp4/raining-on-a-plant-and-a-bee-free-video.mp4',
                     'kind' => 'video',
                 ],
                 [
@@ -34,7 +34,7 @@ return [
                     'title' => 'Instagram story loop',
                     'durationLabel' => '00:15',
                     'thumbnailUrl' => 'https://picsum.photos/seed/gtc-s1/320/180',
-                    'mediaUrl' => 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+                    'mediaUrl' => 'https://static.vecteezy.com/system/resources/previews/003/535/355/mp4/happy-new-year-2024-green-screen-background-with-colored-lines-and-happy-new-year-in-the-center-mask-style-free-for-commercial-use-free-video.mp4',
                     'kind' => 'video',
                 ],
                 [

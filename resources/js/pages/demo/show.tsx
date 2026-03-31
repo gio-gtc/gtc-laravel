@@ -59,10 +59,8 @@ export default function DemoShow({
     return (
         <DemoLayout title={pageTitle}>
             <div className="relative size-full overflow-hidden bg-black">
-                <div className="absolute inset-0">
-                    <DemoMediaStage asset={selectedAsset} />
-                </div>
                 <DemoHeaderTitle tourName={tourName} venueName={venueName} />
+
                 <DemoSidebar
                     activeTab={activeTab}
                     onTabChange={handleTabChange}
@@ -71,6 +69,10 @@ export default function DemoShow({
                     onSelectAsset={setSelectedId}
                     reserveBottomForMedia={reserveBottomForMedia}
                 />
+                <div className="absolute inset-0">
+                    <DemoMediaStage asset={selectedAsset} />
+                </div>
+
                 <DemoBrandBadge />
             </div>
         </DemoLayout>

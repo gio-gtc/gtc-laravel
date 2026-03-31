@@ -80,20 +80,10 @@ export default function DemoSidebar({
                 <aside
                     id="demo-assets-panel"
                     className={cn(
-                        'demo-sidebar-panel absolute top-0 right-0 bottom-0 flex min-h-0 w-full flex-col bg-zinc-900/10 backdrop-blur-md',
+                        'demo-sidebar-panel absolute top-0 right-0 bottom-0 flex min-h-0 w-full flex-col bg-zinc-900/20',
                     )}
                 >
-                    {/* {isCoarse ? (
-                        <button
-                            type="button"
-                            onClick={closeTouch}
-                            className="absolute top-[4.25rem] right-2 z-20 rounded-md bg-white/10 p-2 text-white hover:bg-white/20"
-                            aria-label="Close assets panel"
-                        >
-                            <X className="size-4" aria-hidden />
-                        </button>
-                    ) : null} */}
-                    <div className="flex shrink-0">
+                    <div className="flex shrink-0 md:h-[145px]">
                         {TABS.map(({ id, label, icon: Icon }) => {
                             const active = activeTab === id;
                             return (
@@ -101,7 +91,7 @@ export default function DemoSidebar({
                                     key={id}
                                     type="button"
                                     onClick={() => onTabChange(id)}
-                                    className={`flex min-w-0 flex-1 flex-col items-center gap-2 px-2 py-4 text-white uppercase transition-colors ${
+                                    className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-2 px-2 py-4 text-white uppercase transition-colors ${
                                         active
                                             ? 'bg-white/15 text-white'
                                             : 'text-white/70 hover:bg-white/10 hover:text-white'

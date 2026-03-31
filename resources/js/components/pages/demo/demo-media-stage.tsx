@@ -8,6 +8,8 @@ import {
     type RefObject,
 } from 'react';
 
+// TODO: Switch this to videojs
+
 const DEMO_AUDIO_POSTER = '/GTC-audio.jpg';
 
 function useMediaPlayRejectionGuard(

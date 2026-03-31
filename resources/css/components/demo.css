@@ -30,11 +30,11 @@
         pointer-events: auto;
     }
 }
-
+/* Sidebar Panel Transitions */
 .demo-sidebar-panel {
     transition:
-        transform 0.28s ease,
-        opacity 0.28s ease;
+        transform 0.3s ease,
+        opacity 0.3s ease;
 }
 
 @media (hover: none), (pointer: coarse) {
