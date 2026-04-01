@@ -117,11 +117,11 @@ export default function AttachmentsSection() {
                         <TableCell className="xs-gray-500-weight-500 max-w-[12%] text-center">
                             <button
                                 type="button"
-                                className="items-centertext-sm inline-flex cursor-pointer font-medium text-muted-foreground hover:text-sky-600"
+                                className="items-centertext-sm group inline-flex cursor-pointer font-medium hover:text-sky-600"
                                 onClick={() => handleDownload(file)}
                             >
                                 Download
-                                <Download className="ml-[10px] size-[16px]" />
+                                <Download className="ml-[10px] size-[16px] text-gray-400 transition-colors group-hover:text-sky-600" />
                             </button>
                         </TableCell>
                         <TableCell className="xs-gray-500-weight-400 max-w-[28%] px-2">
