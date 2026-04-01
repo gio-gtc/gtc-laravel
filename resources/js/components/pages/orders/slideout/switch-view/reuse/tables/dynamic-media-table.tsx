@@ -65,28 +65,28 @@ export default function MediaTable({
                         <Table compactRows>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="w-[13%]">
+                                    <TableHead className="w-[13%] text-center">
                                         ISCI
                                     </TableHead>
-                                    <TableHead className="w-[24%]">
+                                    <TableHead className="w-[24%] text-center">
                                         Cut Name
                                     </TableHead>
-                                    <TableHead className="w-[8%]">
+                                    <TableHead className="w-[8%] text-center">
                                         Duration
                                     </TableHead>
-                                    <TableHead className="w-[9%]">
+                                    <TableHead className="w-[9%] text-center">
                                         Due Date
                                     </TableHead>
-                                    <TableHead className="w-[9%]">
+                                    <TableHead className="w-[9%] text-center">
                                         Assigned
                                     </TableHead>
-                                    <TableHead className="w-[18%]">
+                                    <TableHead className="w-[18%] text-center">
                                         Status
                                     </TableHead>
-                                    <TableHead className="w-[8%]">
+                                    <TableHead className="w-[8%] text-center">
                                         Preview
                                     </TableHead>
-                                    <TableHead className="w-[11%]">
+                                    <TableHead className="w-[11%] text-center">
                                         Deliverables
                                     </TableHead>
                                 </TableRow>

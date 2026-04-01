@@ -115,6 +115,7 @@ export default function VenueSlideoutHeader({
                     {presaleInfo && <p>{presaleInfo}</p>}
                 </div>
             </div>
+            <Divider />
         </SheetHeader>
     );
 }

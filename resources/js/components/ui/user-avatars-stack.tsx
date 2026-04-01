@@ -25,7 +25,7 @@ export function UserAvatarsStack({
                     <UserAvatar
                         key={user.id}
                         user={user}
-                        className={cn('-ml-3 first:ml-0', avatarClassName)}
+                        className={cn('-ml-2.5 first:ml-0', avatarClassName)}
                     />
                 ))}
             </div>
