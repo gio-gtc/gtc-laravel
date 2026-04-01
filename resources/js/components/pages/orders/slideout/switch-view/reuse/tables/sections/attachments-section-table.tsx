@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { DOCIcon, MP4Icon, PDFIcon } from '@/components/ui/icons';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { Download, Trash2 } from 'lucide-react';
+import { CloudDownloadIcon, Trash2 } from 'lucide-react';
 
 type AttachmentFileType = 'video' | 'pdf' | 'doc' | 'other';
 
@@ -121,7 +121,7 @@ export default function AttachmentsSection() {
                                 onClick={() => handleDownload(file)}
                             >
                                 Download
-                                <Download className="ml-[10px] size-[16px] text-gray-400 transition-colors group-hover:text-sky-600" />
+                                <CloudDownloadIcon className="ml-[10px] size-[16px] text-gray-400 transition-colors group-hover:text-sky-600" />
                             </button>
                         </TableCell>
                         <TableCell className="xs-gray-500-weight-400 max-w-[28%] px-2">
