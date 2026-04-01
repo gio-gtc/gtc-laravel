@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button';
+import { DOCIcon, MP4Icon, PDFIcon } from '@/components/ui/icons';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import { Download, FileText, FileVideo, Trash2 } from 'lucide-react';
+import { Download, Trash2 } from 'lucide-react';
 
 type AttachmentFileType = 'video' | 'pdf' | 'doc' | 'other';
 
@@ -55,13 +56,28 @@ function getFileIcon(type: AttachmentFileType) {
     const baseClasses = 'size-[20px] mr-[20px]';
     switch (type) {
         case 'video':
-            return <FileVideo className={cn('text-sky-500', baseClasses)} />;
+            return (
+                <MP4Icon
+                    className={cn('text-blue-600', baseClasses)}
+                    tagStyles="text-blue-600"
+                />
+            );
         case 'pdf':
-            return <FileText className={cn('text-red-500', baseClasses)} />;
+            return (
+                <PDFIcon
+                    className={cn('text-red-500', baseClasses)}
+                    tagStyles="text-red-500"
+                />
+            );
         case 'doc':
-            return <FileText className={cn('text-blue-500', baseClasses)} />;
+            return (
+                <DOCIcon
+                    className={cn('text-blue-600', baseClasses)}
+                    tagStyles="text-blue-600"
+                />
+            );
         default:
-            return <FileText className={cn('text-gray-500', baseClasses)} />;
+            return <DOCIcon className={cn('text-gray-500', baseClasses)} />;
     }
 }
 
@@ -90,7 +106,7 @@ export default function AttachmentsSection() {
                 {mockAttachments.map((file) => (
                     <TableRow key={file.id}>
                         <TableCell className="xs-gray-700-weight-500 flex items-center">
-                            {getFileIcon(file.type)}{' '}
+                            {getFileIcon(file.type)}
                             <span className="max-w-[90%] truncate">
                                 {file.name}
                             </span>

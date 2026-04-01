@@ -14,7 +14,13 @@ import {
     NetflixIcon,
 } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
-import { Check, Download, RefreshCw, X } from 'lucide-react';
+import {
+    Check,
+    CloudDownloadIcon,
+    Download,
+    RotateCwIcon,
+    X,
+} from 'lucide-react';
 
 const DOWNLOAD_OPTIONS = [
     {
@@ -124,7 +130,7 @@ export function DownloadButtons({
                         size="icon"
                         className="red-400-hover size-5.5 cursor-pointer rounded-full"
                     >
-                        <RefreshCw className="size-[24px]" />
+                        <RotateCwIcon className="size-[24px]" />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-[7rem]">
@@ -139,7 +145,7 @@ export function DownloadButtons({
                         size="icon"
                         className="green-400-hover size-5.5 cursor-pointer rounded-full"
                     >
-                        <Download className="size-[24px]" />
+                        <CloudDownloadIcon className="size-[24px]" />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-[10rem] p-1">

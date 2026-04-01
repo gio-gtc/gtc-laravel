@@ -22,30 +22,30 @@ export function MediaPreviewCell({
             <div className="flex items-center justify-center gap-2">
                 <button
                     type="button"
-                    className="cursor-pointer text-gray-600 hover:text-gray-900"
+                    className="cursor-pointer text-gray-400 hover:text-gray-900"
                     onClick={() => onPreviewClick?.(0)}
                 >
-                    <AudioLines className="h-4 w-4" />
+                    <AudioLines className="size-3.5" />
                 </button>
             </div>
         );
     }
 
     return (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2 text-gray-400">
             <button
                 type="button"
-                className="cursor-pointer text-gray-400 hover:text-gray-900"
+                className="cursor-pointer hover:text-gray-900"
                 onClick={() => onPreviewClick?.(0)}
             >
-                <PlayIcon className="h-4 w-4" />
+                <PlayIcon className="size-3.5" />
             </button>
             <button
                 type="button"
-                className="cursor-pointer text-gray-400 hover:text-gray-900"
+                className="cursor-pointer hover:text-gray-900"
                 onClick={() => onPreviewClick?.(1)}
             >
-                <Link className="h-4 w-4" />
+                <Link className="size-3.5 rotate-45" />
             </button>
         </div>
     );

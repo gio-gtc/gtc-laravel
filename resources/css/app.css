@@ -36,6 +36,7 @@
     --color-green-400: #47cd89;
     --color-green-600: #079455;
     --color-green-700: #067647;
+    --color-blue-600: #155eef;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
