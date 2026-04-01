@@ -35,10 +35,10 @@ export function CollapsibleTableSectionHeader({
             <Button
                 variant="ghost"
                 size="icon"
-                className="size-4.5 cursor-pointer rounded-full border-2 border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-white"
+                className="size-4 cursor-pointer rounded-full border-2 border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-white"
                 onClick={onAdd ?? undefined}
             >
-                <Plus className="size-3" strokeWidth={3} />
+                <Plus className="size-2.5" strokeWidth={3} />
             </Button>
         </div>
     );
