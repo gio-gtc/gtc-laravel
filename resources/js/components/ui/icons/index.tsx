@@ -18,10 +18,59 @@ export const ClipboardClock = createLucideIcon('ClipboardClock', [
 
 export const DropBox = createLucideIcon('DropBox', [
     [
+        'circle',
+        {
+            cx: '12',
+            cy: '12',
+            r: '10',
+            key: 'badge-circle',
+            fill: '#A4A7AE',
+            stroke: 'none',
+        },
+    ],
+    [
         'path',
         {
-            d: 'M6 1.807L0 5.629l6 3.822 6.001-3.822L6 1.807zM18 1.807l-6 3.822 6 3.822 6-3.822-6-3.822zM0 13.274l6 3.822 6.001-3.822L6 9.452l-6 3.822zM18 9.452l-6 3.822 6 3.822 6-3.822-6-3.822zM6 18.371l6.001 3.822 6-3.822-6-3.822L6 18.371z',
-            key: 'fullIcon',
+            d: 'M12 8.25 8.25 6 4.5 8.25 8.25 10.5 12 8.25',
+            key: 'db-tl',
+            fill: 'white',
+            stroke: 'none',
+        },
+    ],
+    [
+        'path',
+        {
+            d: 'M12 8.25 15.75 6 19.5 8.25 15.75 10.5 12 8.25',
+            key: 'db-tr',
+            fill: 'white',
+            stroke: 'none',
+        },
+    ],
+    [
+        'path',
+        {
+            d: 'M4.5 12.75 8.25 15 12 12.75 8.25 10.5 4.5 12.75',
+            key: 'db-ml',
+            fill: 'white',
+            stroke: 'none',
+        },
+    ],
+    [
+        'path',
+        {
+            d: 'M19.5 12.75 15.75 15 12 12.75 15.75 10.5 19.5 12.75',
+            key: 'db-mr',
+            fill: 'white',
+            stroke: 'none',
+        },
+    ],
+    [
+        'path',
+        {
+            d: 'M8.25 16.5 12 14.25 15.75 16.5 12 18.75 8.25 16.5',
+            key: 'db-bottom',
+            fill: 'white',
+            stroke: 'none',
         },
     ],
 ]);

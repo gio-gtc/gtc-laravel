@@ -82,15 +82,15 @@ export default function AttachFileOrDropboxModal({
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
-                    className={`flex flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed py-8 transition-colors ${
+                    className={`flex flex-col items-center justify-center gap-1 rounded-lg border-2 py-8 transition-colors ${
                         isDragging
                             ? 'border-brand-gtc-red bg-brand-gtc-red/5'
-                            : 'border-gray-300 bg-gray-50/50 hover:border-gray-400 hover:bg-gray-50'
+                            : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                     }`}
                 >
-                    <CloudUpload className="h-10 w-10 text-gray-400" />
+                    <CloudUpload className="size-10 rounded-md border-2 p-2 text-gray-600" />
                     <span>
-                        <span className="font-medium text-brand-gtc-red">
+                        <span className="font-semibold text-red-700">
                             Click to upload
                         </span>
                         <span className="text-gray-600"> or drag and drop</span>
@@ -102,15 +102,15 @@ export default function AttachFileOrDropboxModal({
 
                 {/* Dropbox link input */}
                 <div className="relative">
-                    <div className="pointer-events-none absolute top-1/2 left-3 flex h-4 w-4 -translate-y-1/2 items-center justify-center text-gray-500">
-                        <DropBox className="h-4 w-4" />
+                    <div className="pointer-events-none absolute top-1/2 flex size-[44px] -translate-y-1/2 items-center justify-center border-r border-input text-gray-400">
+                        <DropBox className="size-5" />
                     </div>
                     <Input
                         type="url"
                         placeholder="https://www.dropbox.com/"
                         value={dropboxUrl}
                         onChange={(e) => setDropboxUrl(e.target.value)}
-                        className="pl-9 text-xs"
+                        className="pl-9"
                     />
                 </div>
             </div>
