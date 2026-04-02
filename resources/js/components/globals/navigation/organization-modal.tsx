@@ -203,12 +203,13 @@ export default function OrganizationModal({
                             childrenContainerClasses="modal-child-container"
                             required
                         >
-                            <Select name="preferred_currency" required>
+                            <Select
+                                name="preferred_currency"
+                                required
+                                defaultValue="usd"
+                            >
                                 <SelectTrigger>
-                                    <SelectValue
-                                        placeholder="Select Currency (default USD)"
-                                        defaultValue="usd"
-                                    />
+                                    <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="usd">USD</SelectItem>
