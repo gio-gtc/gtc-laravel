@@ -247,7 +247,7 @@ export default function OrganizationModal({
                             childrenContainerClasses="modal-child-container"
                         >
                             <div className="relative">
-                                <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                                 <Input
                                     id="ap_contact"
                                     name="ap_contact"

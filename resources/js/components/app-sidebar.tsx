@@ -3,24 +3,24 @@ import { Sidebar, SidebarContent } from '@/components/ui/sidebar';
 import { resolveUrl } from '@/lib/utils';
 import { dashboard, invoices, orders } from '@/routes';
 import { type NavItem } from '@/types';
-import { ClipboardCheck, House, Receipt } from 'lucide-react';
-import { ClipboardClock } from './ui/icons';
+import { Receipt } from 'lucide-react';
+import { ClipboardTimeIcon, HomeIcon, ListCheckIcon } from './ui/icons';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Home',
         href: dashboard(),
-        icon: House,
+        icon: HomeIcon,
     },
     {
         title: 'Orders',
         href: orders(),
-        icon: ClipboardClock,
+        icon: ClipboardTimeIcon,
     },
     {
         title: 'My Tasks',
         href: `${resolveUrl(orders())}?filter=my-tasks`,
-        icon: ClipboardCheck,
+        icon: ListCheckIcon,
         filterParam: 'my-tasks',
     },
     // TODO: only seen by managers and Russ/James/David
