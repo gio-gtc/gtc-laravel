@@ -59,6 +59,10 @@
     z-index: 10;
 }
 
+.video-player-modal .video-js.vjs-has-started .vjs-control-bar {
+    @apply absolute;
+}
+
 /* Mobile */
 @media (hover: none), (pointer: coarse) && (max-width: 715px) {
     /* header */
