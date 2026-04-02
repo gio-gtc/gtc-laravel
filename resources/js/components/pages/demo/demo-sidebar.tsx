@@ -4,11 +4,11 @@ import { cn } from '@/lib/utils';
 import { type DemoAsset, type DemoTab } from '@/types/demo';
 import { Image } from '@unpic/react/base';
 import {
-    Frame,
+    BoomBoxIcon,
     Menu,
-    Radio,
     RadioTower,
     Share2,
+    WallpaperIcon,
     type LucideIcon,
 } from 'lucide-react';
 import { useCallback, useState } from 'react';
@@ -16,8 +16,8 @@ import { useCallback, useState } from 'react';
 const TABS: { id: DemoTab; label: string; icon: LucideIcon }[] = [
     { id: 'broadcast', label: 'Broadcast', icon: RadioTower },
     { id: 'social', label: 'Social', icon: Share2 },
-    { id: 'radio', label: 'Radio', icon: Radio },
-    { id: 'art', label: 'Art', icon: Frame },
+    { id: 'radio', label: 'Radio', icon: BoomBoxIcon },
+    { id: 'art', label: 'Art', icon: WallpaperIcon },
 ];
 
 export default function DemoSidebar({
@@ -26,14 +26,12 @@ export default function DemoSidebar({
     assets,
     selectedId,
     onSelectAsset,
-    reserveBottomForMedia,
 }: {
     activeTab: DemoTab;
     onTabChange: (tab: DemoTab) => void;
     assets: DemoAsset[];
     selectedId: string;
     onSelectAsset: (id: string) => void;
-    reserveBottomForMedia: boolean;
 }) {
     const isCoarse = useCoarseOrNoHoverPointer();
     const [touchOpen, setTouchOpen] = useState(false);
