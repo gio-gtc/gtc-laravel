@@ -7,6 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 import { useEffect, useMemo, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
@@ -194,14 +195,14 @@ export default function AddSocialVideoModal({
 
                 <div className="flex flex-row justify-between gap-2 text-xs sm:justify-center">
                     <div className="flex flex-col gap-2">
-                        <Label className={orderModalStyles.label}>
+                        <Label className={cn('pb-4', orderModalStyles.label)}>
                             Card Holder
                         </Label>
-                        <p className="hidden pt-2 sm:block"> </p>
                         <div className="flex flex-col gap-2">
                             {CARD_HOLDER_OPTIONS.map((option) => (
                                 <PillButton
                                     key={option}
+                                    className="w-full"
                                     selected={cardHolder.includes(option)}
                                     onClick={() =>
                                         setCardHolder((prev) =>
@@ -216,10 +217,9 @@ export default function AddSocialVideoModal({
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <Label className={orderModalStyles.label}>
+                        <Label className={cn('pb-4', orderModalStyles.label)}>
                             Duration
                         </Label>
-                        <p className="hidden pt-2 sm:block"> </p>
                         <div className="flex flex-col gap-2">
                             {DURATION_OPTIONS.map((d, i) => {
                                 const isDisabled =
@@ -228,6 +228,7 @@ export default function AddSocialVideoModal({
                                 return (
                                     <PillButton
                                         key={d}
+                                        className="w-full"
                                         selected={duration.includes(d)}
                                         disabled={isDisabled}
                                         onClick={() =>
@@ -245,14 +246,14 @@ export default function AddSocialVideoModal({
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <Label className={orderModalStyles.label}>
+                        <Label className={cn('pb-4', orderModalStyles.label)}>
                             Language
                         </Label>
-                        <p className="hidden pt-2 sm:block"> </p>
                         <div className="flex flex-col gap-2">
                             {LANGUAGE_OPTIONS.map((lang) => (
                                 <PillButton
                                     key={lang}
+                                    className="w-full"
                                     selected={language.includes(lang)}
                                     onClick={() =>
                                         setLanguage((prev) =>
