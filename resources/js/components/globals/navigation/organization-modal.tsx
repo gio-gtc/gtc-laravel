@@ -235,6 +235,7 @@ export default function OrganizationModal({
                             <InputAdditions
                                 inputList={apEmails}
                                 setInputList={setApEmails}
+                                inputClassName="md-gray-900-weight-400"
                             />
                             <InputError message={undefined} />
                         </ColumnedRowsChild>

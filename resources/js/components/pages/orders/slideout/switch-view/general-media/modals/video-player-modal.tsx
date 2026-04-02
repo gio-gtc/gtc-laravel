@@ -364,7 +364,7 @@ export default function VideoPlayerModal({
                             />
                         </div>
                         <form
-                            className="mt-3 flex gap-2 border-neutral-200 pt-3"
+                            className="flex items-center gap-2 border-neutral-200 pt-3"
                             onSubmit={handleClientReviewCommentSubmit}
                         >
                             <Input

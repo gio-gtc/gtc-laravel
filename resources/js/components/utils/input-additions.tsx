@@ -1,12 +1,15 @@
+import { cn } from '@/lib/utils';
 import { Mail, PlusCircle, XCircle } from 'lucide-react';
 import { Input } from '../ui/input';
 
 function InputAdditions({
     inputList,
     setInputList,
+    inputClassName = 'xs-gray-700-weight-600',
 }: {
     inputList: string[];
     setInputList: (input: string[]) => void;
+    inputClassName?: string;
 }) {
     const addInput = () => {
         setInputList([...inputList, '']);
@@ -27,7 +30,7 @@ function InputAdditions({
                 type="email"
                 placeholder="email@company.com"
                 required={index === 0}
-                className="xs-gray-700-weight-600 pr-9 pl-9"
+                className={cn('pr-9 pl-9', inputClassName)}
                 value={email}
                 onChange={(e) => {
                     const newList = [...inputList];
