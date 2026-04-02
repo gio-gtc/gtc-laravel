@@ -103,7 +103,7 @@ export default function AttachFileOrDropboxModal({
                 {/* Dropbox link input */}
                 <div className="relative">
                     <div className="pointer-events-none absolute top-1/2 flex size-[44px] -translate-y-1/2 items-center justify-center border-r border-input text-gray-400">
-                        <DropBox className="size-5" />
+                        <DropBox className="size-4.5" />
                     </div>
                     <Input
                         type="url"

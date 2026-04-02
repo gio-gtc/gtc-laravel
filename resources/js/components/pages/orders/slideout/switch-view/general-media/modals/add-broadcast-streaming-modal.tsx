@@ -103,14 +103,14 @@ export default function AddBroadcastStreamingModal({
                         Type
                     </Label>
                     <p className={orderModalStyles.helper}>
-                        Select the type of TV Spot
+                        Select the type of Spot
                     </p>
                     <Select value={type} onValueChange={setType}>
                         <SelectTrigger
                             id="type"
                             className={orderModalStyles.selectTrigger}
                         >
-                            <SelectValue placeholder="Select the type of TV Spot" />
+                            <SelectValue placeholder="Select the type of Spot" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="Generic">Generic</SelectItem>
