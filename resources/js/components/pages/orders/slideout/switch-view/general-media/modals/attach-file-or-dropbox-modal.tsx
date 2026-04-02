@@ -110,7 +110,7 @@ export default function AttachFileOrDropboxModal({
                         placeholder="https://www.dropbox.com/"
                         value={dropboxUrl}
                         onChange={(e) => setDropboxUrl(e.target.value)}
-                        className="pl-9"
+                        className="pl-10"
                     />
                 </div>
             </div>
