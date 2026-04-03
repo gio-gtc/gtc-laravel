@@ -23,6 +23,7 @@ const SOCIAL_CUT_OPTIONS = [
 ] as const;
 const DURATION_OPTIONS = [':10', ':15', ':30'] as const;
 const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French'] as const;
+// TODO: encoding = "H264 MP4"
 
 export interface AddSocialVideoFormValues {
     type: string[];

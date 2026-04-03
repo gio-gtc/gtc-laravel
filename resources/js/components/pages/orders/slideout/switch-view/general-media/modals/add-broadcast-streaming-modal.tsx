@@ -29,12 +29,6 @@ const CUTS_OPTIONS = [
     'Sample',
 ] as const;
 const VENUE_CUT_OPTIONS = ['Pre Sale', 'Now Through'] as const;
-const SOCIAL_CUT_OPTIONS = [
-    'Pre Sale',
-    'On Sale Now',
-    'Evergreen',
-    'Sign Up Now',
-] as const;
 const DURATION_OPTIONS = [':10', ':15', ':30'] as const;
 const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French'] as const;
 
@@ -47,16 +41,7 @@ const OPTIONS_BY_TYPE: Record<string, { cuts: readonly string[] }> = {
         cuts: VENUE_CUT_OPTIONS,
     },
     Citi: { cuts: VENUE_CUT_OPTIONS },
-    International: { cuts: CUTS_OPTIONS },
-    'Social-16-9': {
-        cuts: SOCIAL_CUT_OPTIONS,
-    },
-    FBIGStory: { cuts: SOCIAL_CUT_OPTIONS },
-    TikTok: {
-        cuts: SOCIAL_CUT_OPTIONS,
-    },
-    SocialSquare: { cuts: CUTS_OPTIONS },
-    'Social-4-5': { cuts: CUTS_OPTIONS },
+    International: { cuts: ['International TV Package'] },
 };
 
 export interface AddBroadcastStreamingFormValues {
@@ -129,15 +114,6 @@ export default function AddBroadcastStreamingModal({
         onClose();
     };
 
-    const togglePill = (pill: 'later' | 'all') => {
-        if (pill === 'later') {
-            setEncodeLater(!encodeLater);
-        } else if (pill === 'all') {
-            setEncodeAll(!encodeAll);
-        }
-        return;
-    };
-
     const handleAddToOrder = () => {
         onAdd?.({
             type,
@@ -162,72 +138,51 @@ export default function AddBroadcastStreamingModal({
             modalClasses="sm:max-w-[585px]"
         >
             <div className="flex flex-col gap-2 text-xs sm:flex-row">
-                <div className="flex flex-col gap-2">
-                    <div className="flex flex-3 flex-col gap-1.5">
-                        <Label
-                            htmlFor="type"
-                            className={orderModalStyles.label}
+                <div className="flex flex-3 flex-col gap-1.5">
+                    <Label htmlFor="type" className={orderModalStyles.label}>
+                        Type
+                    </Label>
+                    <p className={orderModalStyles.helper}>
+                        Select the type of Spot
+                    </p>
+                    <Select value={type} onValueChange={handleTypeChange}>
+                        <SelectTrigger
+                            id="type"
+                            className={orderModalStyles.selectTrigger}
                         >
-                            Type
-                        </Label>
-                        <p className={orderModalStyles.helper}>
-                            Select the type of Spot
-                        </p>
-                        <Select value={type} onValueChange={handleTypeChange}>
-                            <SelectTrigger
-                                id="type"
-                                className={orderModalStyles.selectTrigger}
-                            >
-                                <SelectValue placeholder="Select the type of Spot" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Generic">Generic</SelectItem>
-                                <SelectItem value="AmEx">AmEx</SelectItem>
-                                <SelectItem value="Verizon">Verizon</SelectItem>
-                                <SelectItem value="Citi">Citi</SelectItem>
-                                <SelectItem value="International">
-                                    International
-                                </SelectItem>
-                                <SelectItem value="Social-16-9">
-                                    Social - 16:9
-                                </SelectItem>
-                                <SelectItem value="FBIGStory">
-                                    FB/IG Story
-                                </SelectItem>
-                                <SelectItem value="TikTok">TikTok</SelectItem>
-                                <SelectItem value="SocialSquare">
-                                    Social Square
-                                </SelectItem>
-                                <SelectItem value="Social-4-5">
-                                    Social - 4:5
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="flex flex-3 flex-col gap-1.5">
-                        <Label
-                            htmlFor="cuts"
-                            className={orderModalStyles.label}
-                        >
-                            Cuts
-                        </Label>
-                        <p className={orderModalStyles.helper}>
-                            Select the type of Cuts
-                        </p>
-                        <MultiSelectCombobox
-                            id="cuts"
-                            options={availableCuts}
-                            value={cuts}
-                            onValueChange={setCuts}
-                            placeholder="Select Cuts"
-                            emptyMessage="No cuts found."
-                            triggerClassName={orderModalStyles.selectTrigger}
-                        />
-                    </div>
+                            <SelectValue placeholder="Select the type of Spot" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Generic">Generic</SelectItem>
+                            <SelectItem value="AmEx">AmEx</SelectItem>
+                            <SelectItem value="Verizon">Verizon</SelectItem>
+                            <SelectItem value="Citi">Citi</SelectItem>
+                            <SelectItem value="International">
+                                International
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
                 </div>
 
-                <div className="flex flex-row justify-between gap-2 text-xs sm:justify-center">
+                <div className="flex flex-3 flex-col gap-1.5">
+                    <Label htmlFor="cuts" className={orderModalStyles.label}>
+                        Cuts
+                    </Label>
+                    <p className={orderModalStyles.helper}>
+                        Select the type of Cuts
+                    </p>
+                    <MultiSelectCombobox
+                        id="cuts"
+                        options={availableCuts}
+                        value={cuts}
+                        onValueChange={setCuts}
+                        placeholder="Select Cuts"
+                        emptyMessage="No cuts found."
+                        triggerClassName={orderModalStyles.selectTrigger}
+                    />
+                </div>
+
+                <div className="flex flex-row justify-around gap-2 text-xs sm:justify-center">
                     <div className="flex flex-col gap-2">
                         <Label className={cn('pb-4', orderModalStyles.label)}>
                             Duration
@@ -235,7 +190,8 @@ export default function AddBroadcastStreamingModal({
                         <div className="flex flex-col gap-2">
                             {DURATION_OPTIONS.map((d) => {
                                 const isDisabled =
-                                    d == ':10' && type != 'Generic';
+                                    (d == ':10' && type != 'Generic') ||
+                                    cuts.includes('International TV Package');
 
                                 return (
                                     <PillButton
@@ -262,20 +218,27 @@ export default function AddBroadcastStreamingModal({
                             Language
                         </Label>
                         <div className="flex flex-col gap-2">
-                            {LANGUAGE_OPTIONS.map((lang) => (
-                                <PillButton
-                                    key={lang}
-                                    className="w-full"
-                                    selected={language.includes(lang)}
-                                    onClick={() =>
-                                        setLanguage((prev) =>
-                                            toggleInArray(prev, lang),
-                                        )
-                                    }
-                                >
-                                    {lang}
-                                </PillButton>
-                            ))}
+                            {LANGUAGE_OPTIONS.map((lang) => {
+                                const isDisabled = cuts.includes(
+                                    'International TV Package',
+                                );
+                                return (
+                                    <PillButton
+                                        key={lang}
+                                        className="w-full"
+                                        selected={language.includes(lang)}
+                                        disabled={isDisabled}
+                                        onClick={() =>
+                                            !isDisabled &&
+                                            setLanguage((prev) =>
+                                                toggleInArray(prev, lang),
+                                            )
+                                        }
+                                    >
+                                        {lang}
+                                    </PillButton>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
@@ -293,57 +256,15 @@ export default function AddBroadcastStreamingModal({
                 <ColumnedRowsParent>
                     <ColumnedRowsChild
                         labelFor="presale"
-                        labelContent="Presale"
+                        labelContent={`{Cut name} :{Duration} {Language}`}
                         childrenContainerClasses="flex gap-1"
                     >
-                        <>
-                            <Select
-                                value={presaleEncoding}
-                                onValueChange={setPresaleEncoding}
-                            >
-                                <SelectTrigger
-                                    id="presale"
-                                    className={orderModalStyles.selectTrigger}
-                                >
-                                    <SelectValue placeholder="Encoding Types" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Encoding Types">
-                                        Encoding Types
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-
-                            <PillButton
-                                selected={encodeLater}
-                                onClick={() => togglePill('later')}
-                                baseClassName={orderModalStyles.pillBase}
-                                className="justify-start px-2 hover:text-white"
-                            >
-                                Encode Later
-                            </PillButton>
-
-                            <PillButton
-                                selected={encodeAll}
-                                onClick={() => togglePill('all')}
-                                baseClassName={orderModalStyles.pillBase}
-                                className="justify-start px-2 hover:text-white"
-                            >
-                                Encode All
-                            </PillButton>
-                        </>
-                    </ColumnedRowsChild>
-
-                    <ColumnedRowsChild
-                        labelFor="on-sale-now"
-                        labelContent="On Sale Now"
-                    >
                         <Select
-                            value={onSaleNowEncoding}
-                            onValueChange={setOnSaleNowEncoding}
+                            value={presaleEncoding}
+                            onValueChange={setPresaleEncoding}
                         >
                             <SelectTrigger
-                                id="on-sale-now"
+                                id="presale"
                                 className={cn(
                                     'max-w-[167px]',
                                     orderModalStyles.selectTrigger,
