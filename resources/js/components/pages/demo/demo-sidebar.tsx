@@ -77,7 +77,7 @@ export default function DemoSidebar({
                 <aside
                     id="demo-assets-panel"
                     className={cn(
-                        'demo-sidebar-panel absolute top-0 right-0 bottom-0 flex min-h-0 w-full flex-col bg-zinc-900/20',
+                        'demo-sidebar-panel absolute top-0 right-0 bottom-0 flex min-h-0 w-full flex-col bg-black/40',
                     )}
                 >
                     <div className="flex shrink-0 md:h-[var(--theater-mode-spacing)]">
@@ -88,7 +88,7 @@ export default function DemoSidebar({
                                     key={id}
                                     type="button"
                                     onClick={() => onTabChange(id)}
-                                    className={`flex min-w-0 flex-1 flex-col items-center justify-center gap-2 px-2 py-4 text-white uppercase transition-colors ${
+                                    className={`flex min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-2 px-2 py-4 text-white uppercase transition-colors ${
                                         active
                                             ? 'bg-white/15 text-white'
                                             : 'text-white/70 hover:bg-white/10 hover:text-white'
@@ -112,10 +112,10 @@ export default function DemoSidebar({
                                     <button
                                         type="button"
                                         onClick={() => onSelectAsset(asset.id)}
-                                        className={`flex w-full gap-3 rounded-lg p-2 text-left transition-colors ${
+                                        className={`flex w-full cursor-pointer gap-3 rounded-lg p-2 text-left transition-colors ${
                                             selected
                                                 ? 'border bg-white/20'
-                                                : 'hover:bg-white/5'
+                                                : 'hover:bg-white/10'
                                         }`}
                                     >
                                         <Image

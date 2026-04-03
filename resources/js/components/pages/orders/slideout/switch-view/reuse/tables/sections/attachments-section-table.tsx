@@ -132,11 +132,11 @@ export default function AttachmentsSection() {
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-4 w-4 hover:text-red-600 has-[>svg]:px-0"
+                                    className="h-4 w-4 text-gray-400 hover:text-red-600 has-[>svg]:px-0"
                                     aria-label={`Delete ${file.name}`}
                                     onClick={() => handleDelete(file)}
                                 >
-                                    <Trash2 className="size-[12px]" />
+                                    <Trash2 className="size-[16px]" />
                                 </Button>
                             </div>
                         </TableCell>
