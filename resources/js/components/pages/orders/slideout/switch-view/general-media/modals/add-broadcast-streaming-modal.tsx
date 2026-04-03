@@ -44,15 +44,73 @@ const OPTIONS_BY_TYPE: Record<string, { cuts: readonly string[] }> = {
     International: { cuts: ['International TV Package'] },
 };
 
+const INTERNATIONAL_TV_PACKAGE = 'International TV Package';
+
+/** Placeholder value until real encoding options are provided */
+const ENCODING_UNSET = '__none__';
+
+export interface BroadcastEncodingRow {
+    cut: string;
+    duration: string;
+    language: string;
+    encoding: string;
+    label: string;
+}
+
 export interface AddBroadcastStreamingFormValues {
     type: string;
     cuts: string[];
     duration: string[];
     language: string[];
-    presaleEncoding: string;
-    encodeLater: boolean;
-    encodeAll: boolean;
-    onSaleNowEncoding: string;
+    encodings: BroadcastEncodingRow[];
+}
+
+function rowKey(cut: string, duration: string, language: string) {
+    return `${cut} ${duration} ${language}`;
+}
+
+function buildEncodingRows(
+    cuts: string[],
+    duration: string[],
+    language: string[],
+): Array<{
+    key: string;
+    cut: string;
+    duration: string;
+    language: string;
+    label: string;
+}> {
+    const rows: Array<{
+        key: string;
+        cut: string;
+        duration: string;
+        language: string;
+        label: string;
+    }> = [];
+
+    for (const cut of cuts) {
+        const durs =
+            cut === INTERNATIONAL_TV_PACKAGE ? ([':30'] as const) : duration;
+        const langs =
+            cut === INTERNATIONAL_TV_PACKAGE
+                ? (['English'] as const)
+                : language;
+        if (durs.length === 0 || langs.length === 0) continue;
+
+        for (const d of durs) {
+            for (const lang of langs) {
+                const label = `${cut} ${d} ${lang}`;
+                rows.push({
+                    key: rowKey(cut, d, lang),
+                    cut,
+                    duration: d,
+                    language: lang,
+                    label,
+                });
+            }
+        }
+    }
+    return rows;
 }
 
 interface AddBroadcastStreamingModalProps {
@@ -70,11 +128,9 @@ export default function AddBroadcastStreamingModal({
     const [cuts, setCuts] = useState<string[]>([]);
     const [duration, setDuration] = useState<string[]>([]);
     const [language, setLanguage] = useState<string[]>(['English']);
-    const [presaleEncoding, setPresaleEncoding] = useState('Encoding Types');
-    const [encodeLater, setEncodeLater] = useState(false);
-    const [encodeAll, setEncodeAll] = useState(false);
-    const [onSaleNowEncoding, setOnSaleNowEncoding] =
-        useState('Encoding Types');
+    const [encodingSelections, setEncodingSelections] = useState<
+        Record<string, string>
+    >({});
 
     const { availableCuts } = useMemo(() => {
         const config = type ? OPTIONS_BY_TYPE[type] : null;
@@ -83,6 +139,28 @@ export default function AddBroadcastStreamingModal({
         };
     }, [type]);
 
+    const encodingRows = useMemo(
+        () => buildEncodingRows(cuts, duration, language),
+        [cuts, duration, language],
+    );
+
+    const encodingByRowKey = useMemo(() => {
+        const next: Record<string, string> = {};
+        for (const row of encodingRows) {
+            next[row.key] = encodingSelections[row.key] ?? ENCODING_UNSET;
+        }
+        return next;
+    }, [encodingRows, encodingSelections]);
+
+    const canSubmit = useMemo(() => {
+        if (encodingRows.length === 0) return false;
+        return encodingRows.every(
+            (row) =>
+                encodingByRowKey[row.key] &&
+                encodingByRowKey[row.key] !== ENCODING_UNSET,
+        );
+    }, [encodingRows, encodingByRowKey]);
+
     const resetForm = () => {
         setCuts([]);
         setDuration([]);
@@ -90,10 +168,7 @@ export default function AddBroadcastStreamingModal({
     };
 
     const resetEncodingFields = () => {
-        setPresaleEncoding('Encoding Types');
-        setEncodeLater(false);
-        setEncodeAll(false);
-        setOnSaleNowEncoding('Encoding Types');
+        setEncodingSelections({});
     };
 
     const handleTypeChange = (newType: string) => {
@@ -115,15 +190,22 @@ export default function AddBroadcastStreamingModal({
     };
 
     const handleAddToOrder = () => {
+        if (!canSubmit) return;
+
+        const encodings: BroadcastEncodingRow[] = encodingRows.map((row) => ({
+            cut: row.cut,
+            duration: row.duration,
+            language: row.language,
+            encoding: encodingByRowKey[row.key]!,
+            label: row.label,
+        }));
+
         onAdd?.({
             type,
             cuts,
             duration,
             language,
-            presaleEncoding,
-            encodeLater,
-            encodeAll,
-            onSaleNowEncoding,
+            encodings,
         });
         handleClose();
     };
@@ -135,6 +217,7 @@ export default function AddBroadcastStreamingModal({
             title="Add Broadcast & Streaming Video"
             primaryLabel="Add to Order"
             onPrimaryClick={handleAddToOrder}
+            primaryDisabled={!canSubmit}
             modalClasses="sm:max-w-[585px]"
         >
             <div className="flex flex-col gap-2 text-xs sm:flex-row">
@@ -191,7 +274,7 @@ export default function AddBroadcastStreamingModal({
                             {DURATION_OPTIONS.map((d) => {
                                 const isDisabled =
                                     (d == ':10' && type != 'Generic') ||
-                                    cuts.includes('International TV Package');
+                                    cuts.includes(INTERNATIONAL_TV_PACKAGE);
 
                                 return (
                                     <PillButton
@@ -220,7 +303,7 @@ export default function AddBroadcastStreamingModal({
                         <div className="flex flex-col gap-2">
                             {LANGUAGE_OPTIONS.map((lang) => {
                                 const isDisabled = cuts.includes(
-                                    'International TV Package',
+                                    INTERNATIONAL_TV_PACKAGE,
                                 );
                                 return (
                                     <PillButton
@@ -253,32 +336,45 @@ export default function AddBroadcastStreamingModal({
                         Select the types of encoding for each Spot
                     </p>
                 </div>
-                <ColumnedRowsParent>
-                    <ColumnedRowsChild
-                        labelFor="presale"
-                        labelContent={`{Cut name} :{Duration} {Language}`}
-                        childrenContainerClasses="flex gap-1"
-                    >
-                        <Select
-                            value={presaleEncoding}
-                            onValueChange={setPresaleEncoding}
+                <ColumnedRowsParent className="max-h-[215px] overflow-auto">
+                    {encodingRows.map((row) => (
+                        <ColumnedRowsChild
+                            key={row.key}
+                            labelFor={`encoding-${row.key}`}
+                            labelContent={row.label}
+                            required
+                            childrenContainerClasses="flex gap-1"
+                            labelClassName="sm:flex-none max-w-[192px] w-full"
                         >
-                            <SelectTrigger
-                                id="presale"
-                                className={cn(
-                                    'max-w-[167px]',
-                                    orderModalStyles.selectTrigger,
-                                )}
+                            <Select
+                                value={
+                                    encodingByRowKey[row.key] ?? ENCODING_UNSET
+                                }
+                                onValueChange={(v) =>
+                                    setEncodingSelections((prev) => ({
+                                        ...prev,
+                                        [row.key]: v,
+                                    }))
+                                }
                             >
-                                <SelectValue placeholder="Encoding Types" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Encoding Types">
-                                    Encoding Types
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </ColumnedRowsChild>
+                                <SelectTrigger
+                                    id={`encoding-${row.key}`}
+                                    className={cn(
+                                        'max-w-[191px]',
+                                        orderModalStyles.selectTrigger,
+                                    )}
+                                >
+                                    <SelectValue placeholder="Select encoding" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value={ENCODING_UNSET}>
+                                        Select encoding
+                                    </SelectItem>
+                                    <SelectItem value="tbd">TBD</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </ColumnedRowsChild>
+                    ))}
                 </ColumnedRowsParent>
             </div>
         </OrderModalLayout>
