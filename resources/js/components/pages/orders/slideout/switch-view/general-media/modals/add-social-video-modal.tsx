@@ -1,30 +1,20 @@
 import { MultiSelectCombobox } from '@/components/ui/combobox';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
 
-const CARD_HOLDER_OPTIONS = ['Amex', 'Citi'] as const;
-const CUTS_OPTIONS = [
-    'Sign Up Now',
-    'Pre Sale',
-    'On Sale Now',
-    'Week of',
-    'Day Prior',
-    'Day of',
-    'Superless',
-    'Sample',
+const TYPE_OPTIONS = [
+    'Social - 16:9',
+    'FB/IG Story',
+    'TikTok',
+    'Social Square',
+    'Social - 4:5',
 ] as const;
-const VENUE_CUT_OPTIONS = ['Pre Sale', 'Now Through'] as const;
+
+const CARD_HOLDER_OPTIONS = ['Amex', 'Citi'] as const;
 const SOCIAL_CUT_OPTIONS = [
     'Pre Sale',
     'On Sale Now',
@@ -34,29 +24,8 @@ const SOCIAL_CUT_OPTIONS = [
 const DURATION_OPTIONS = [':10', ':15', ':30'] as const;
 const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French'] as const;
 
-const OPTIONS_BY_TYPE: Record<string, { cuts: readonly string[] }> = {
-    Generic: { cuts: CUTS_OPTIONS },
-    AmEx: {
-        cuts: VENUE_CUT_OPTIONS,
-    },
-    Verizon: {
-        cuts: VENUE_CUT_OPTIONS,
-    },
-    Citi: { cuts: VENUE_CUT_OPTIONS },
-    International: { cuts: CUTS_OPTIONS },
-    'Social-16-9': {
-        cuts: SOCIAL_CUT_OPTIONS,
-    },
-    FBIGStory: { cuts: SOCIAL_CUT_OPTIONS },
-    TikTok: {
-        cuts: SOCIAL_CUT_OPTIONS,
-    },
-    SocialSquare: { cuts: CUTS_OPTIONS },
-    'Social-4-5': { cuts: CUTS_OPTIONS },
-};
-
 export interface AddSocialVideoFormValues {
-    type: string;
+    type: string[];
     cuts: string[];
     cardHolder: string[];
     duration: string[];
@@ -74,36 +43,17 @@ export default function AddSocialVideoModal({
     onClose,
     onAdd,
 }: AddSocialVideoModalProps) {
-    const [type, setType] = useState('Generic');
+    const [type, setType] = useState<string[]>([]);
     const [cuts, setCuts] = useState<string[]>([]);
     const [cardHolder, setCardHolder] = useState<string[]>([]);
     const [duration, setDuration] = useState<string[]>([]);
     const [language, setLanguage] = useState<string[]>(['English']);
-
-    const { availableCuts } = useMemo(() => {
-        const config = type ? OPTIONS_BY_TYPE[type] : null;
-        return {
-            availableCuts: config?.cuts ?? [],
-        };
-    }, [type]);
 
     const resetForm = () => {
         setCuts([]);
         setCardHolder([]);
         setDuration([]);
         setLanguage(['English']);
-    };
-
-    const handleTypeChange = (newType: string) => {
-        resetForm();
-        setType(newType);
-        const config = OPTIONS_BY_TYPE[newType];
-        if (config) {
-            setCuts((prev) => prev.filter((c) => config.cuts.includes(c)));
-        } else {
-            setCuts([]);
-            setDuration([]);
-        }
     };
 
     useEffect(() => {
@@ -139,36 +89,15 @@ export default function AddSocialVideoModal({
                         <p className={orderModalStyles.helper}>
                             Select the type of Social Video
                         </p>
-                        <Select value={type} onValueChange={handleTypeChange}>
-                            <SelectTrigger
-                                id="type"
-                                className={orderModalStyles.selectTrigger}
-                            >
-                                <SelectValue placeholder="Select Type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="Generic">Generic</SelectItem>
-                                <SelectItem value="AmEx">AmEx</SelectItem>
-                                <SelectItem value="Verizon">Verizon</SelectItem>
-                                <SelectItem value="Citi">Citi</SelectItem>
-                                <SelectItem value="International">
-                                    International
-                                </SelectItem>
-                                <SelectItem value="Social-16-9">
-                                    Social - 16:9
-                                </SelectItem>
-                                <SelectItem value="FBIGStory">
-                                    FB/IG Story
-                                </SelectItem>
-                                <SelectItem value="TikTok">TikTok</SelectItem>
-                                <SelectItem value="SocialSquare">
-                                    Social Square
-                                </SelectItem>
-                                <SelectItem value="Social-4-5">
-                                    Social - 4:5
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <MultiSelectCombobox
+                            id="type"
+                            options={TYPE_OPTIONS}
+                            value={type}
+                            onValueChange={setType}
+                            placeholder="Select Type"
+                            emptyMessage="No cuts found."
+                            triggerClassName={orderModalStyles.selectTrigger}
+                        />
                     </div>
 
                     <div className="flex flex-3 flex-col gap-1.5">
@@ -183,7 +112,7 @@ export default function AddSocialVideoModal({
                         </p>
                         <MultiSelectCombobox
                             id="cuts"
-                            options={availableCuts}
+                            options={SOCIAL_CUT_OPTIONS}
                             value={cuts}
                             onValueChange={setCuts}
                             placeholder="Select Cuts"
@@ -221,9 +150,8 @@ export default function AddSocialVideoModal({
                             Duration
                         </Label>
                         <div className="flex flex-col gap-2">
-                            {DURATION_OPTIONS.map((d, i) => {
-                                const isDisabled =
-                                    d == ':10' && type != 'Generic';
+                            {DURATION_OPTIONS.map((d) => {
+                                const isDisabled = d == ':10';
 
                                 return (
                                     <PillButton

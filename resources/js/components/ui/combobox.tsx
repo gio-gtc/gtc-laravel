@@ -137,15 +137,15 @@ export function MultiSelectCombobox({
                                             onSelect={() =>
                                                 toggleOption(option)
                                             }
-                                            className="relative flex items-center pb-1 pr-8"
+                                            className="relative flex cursor-pointer items-center rounded-md p-1.5 py-0.5 pr-8 hover:bg-gray-200 [&:not(:last-child)]:mb-2"
                                             aria-selected={isSelected}
                                         >
                                             {isSelected && (
-                                                <span className="absolute right-2 flex size-3.5 items-center justify-center">
+                                                <span className="absolute right-1 flex">
                                                     <CheckIcon className="size-4" />
                                                 </span>
                                             )}
-                                            <span className="min-w-0 flex-1 truncate">
+                                            <span className="w-[500px]">
                                                 {option}
                                             </span>
                                         </CommandItem>
