@@ -15,8 +15,9 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('/demo/{uuid}', [DemoController::class, 'show'])
+Route::get('/demo/{uuid}/{assetId?}', [DemoController::class, 'show'])
     ->whereUuid('uuid')
+    ->where('assetId', '[a-zA-Z0-9_-]+')
     ->name('demo.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {

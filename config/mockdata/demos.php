@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Mock demo payloads keyed by UUID for the public /demo/{uuid} viewer.
- * Replace with database-backed data when ready.
+ * Mock demo payloads keyed by UUID for the public /demo/{uuid} and
+ * /demo/{uuid}/{assetId} viewer. Replace with database-backed data when ready.
  */
 return [
     'items' => [
