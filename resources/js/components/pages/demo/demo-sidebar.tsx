@@ -80,6 +80,7 @@ export default function DemoSidebar({
                         'demo-sidebar-panel absolute top-0 right-0 bottom-0 flex min-h-0 w-full flex-col bg-black/40',
                     )}
                 >
+                    {/* Sidebar Navigation */}
                     <div className="flex shrink-0 md:h-[var(--theater-mode-spacing)]">
                         {TABS.map(({ id, label, icon: Icon }) => {
                             const active = activeTab === id;
@@ -88,9 +89,9 @@ export default function DemoSidebar({
                                     key={id}
                                     type="button"
                                     onClick={() => onTabChange(id)}
-                                    className={`flex min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-2 px-2 py-4 text-white uppercase transition-colors ${
+                                    className={`flex min-w-0 flex-1 grow cursor-pointer flex-col items-center justify-center gap-2 px-2 py-4 text-white uppercase transition-all duration-300 ${
                                         active
-                                            ? 'bg-white/15 text-white'
+                                            ? 'grow-2 bg-white/15 text-white'
                                             : 'text-white/70 hover:bg-white/10 hover:text-white'
                                     }`}
                                 >
@@ -104,6 +105,7 @@ export default function DemoSidebar({
                             );
                         })}
                     </div>
+                    {/* Sidebar Items */}
                     <ul className="min-h-0 flex-1 space-y-1 overflow-y-auto px-2 py-3">
                         {assets.map((asset) => {
                             const selected = asset.id === selectedId;
