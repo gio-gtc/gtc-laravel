@@ -75,9 +75,22 @@ export default function DateRangePicker({
     const formattedStartDate = formatDateLabel(startDate);
     const formattedEndDate = formatDateLabel(endDate);
 
+    const commitTempRangeIfComplete = () => {
+        if (tempRange?.from && tempRange?.to) {
+            onDateRangeChange({
+                startDate: toISOString(tempRange.from),
+                endDate: toISOString(tempRange.to),
+            });
+            return true;
+        }
+        return false;
+    };
+
     const handleOpenChange = (isOpen: boolean) => {
         if (isOpen) {
             setTempRange(toDateRange(startDate, endDate));
+        } else {
+            commitTempRangeIfComplete();
         }
         setOpen(isOpen);
     };
@@ -87,11 +100,7 @@ export default function DateRangePicker({
     };
 
     const handleSaveRange = () => {
-        if (tempRange?.from && tempRange?.to) {
-            onDateRangeChange({
-                startDate: toISOString(tempRange.from),
-                endDate: toISOString(tempRange.to),
-            });
+        if (commitTempRangeIfComplete()) {
             setOpen(false);
         }
     };

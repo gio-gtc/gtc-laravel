@@ -101,6 +101,13 @@ export default function DatePickerInput({
         setInputValue(value ? isoToMasked(value) : '');
     }, [value]);
 
+    const commitTempDate = (date: Date | undefined) => {
+        if (!date) return;
+        const iso = toISOString(date);
+        onChange(iso);
+        setInputValue(isoToMasked(iso));
+    };
+
     const handleOpenChange = (isOpen: boolean) => {
         if (disabled && isOpen) return;
         if (isOpen) {
@@ -108,6 +115,8 @@ export default function DatePickerInput({
                 ? parseISO(value)
                 : parseMaskedValue(inputValue);
             setTempDate(parsed ?? undefined);
+        } else {
+            commitTempDate(tempDate);
         }
         setOpen(isOpen);
     };
@@ -118,9 +127,7 @@ export default function DatePickerInput({
 
     const handleSave = () => {
         if (tempDate) {
-            const iso = toISOString(tempDate);
-            onChange(iso);
-            setInputValue(isoToMasked(iso));
+            commitTempDate(tempDate);
             setOpen(false);
         }
     };
