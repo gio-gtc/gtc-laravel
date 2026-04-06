@@ -9,6 +9,17 @@ interface VenueAutocompleteProps {
     required?: boolean;
 }
 
+function venueMatchesSearch(venue: Venue, query: string): boolean {
+    const q = query.trim().toLowerCase();
+    if (!q) {
+        return true;
+    }
+    const fields = [venue.name, venue.city, venue.state].map((s) =>
+        (s ?? '').toLowerCase(),
+    );
+    return fields.some((field) => field.includes(q));
+}
+
 export default function VenueAutocomplete({
     value,
     onChange,
@@ -18,14 +29,9 @@ export default function VenueAutocomplete({
     const [searchQuery, setSearchQuery] = useState('');
     const [isOpen, setIsOpen] = useState(false);
 
-    // Filter venues based on search query
     const filteredVenues = useMemo(() => {
-        if (!searchQuery.trim()) {
-            return venuesData;
-        }
-        const query = searchQuery.toLowerCase();
         return venuesData.filter((venue) =>
-            venue.name.toLowerCase().includes(query),
+            venueMatchesSearch(venue, searchQuery),
         );
     }, [searchQuery, venuesData]);
 
@@ -34,11 +40,7 @@ export default function VenueAutocomplete({
         const newQuery = e.target.value;
         setSearchQuery(newQuery);
         setIsOpen(true);
-        // Clear selection if input doesn't match selected venue
-        if (
-            value &&
-            !value.name.toLowerCase().includes(newQuery.toLowerCase())
-        ) {
+        if (value && !venueMatchesSearch(value, newQuery)) {
             onChange(null);
         }
     };
