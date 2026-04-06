@@ -74,7 +74,7 @@ export default function VenueSlideoutHeader({
     return (
         <SheetHeader className="relative gap-0 p-0">
             {/* Top row: Status icon on left, action buttons on right */}
-            <div className="slide-out-container flex items-center justify-between">
+            <div className="slide-out-container flex items-center justify-between shadow-md">
                 <div className="flex gap-0.5">
                     <StatusIconGroup status={status} />
                 </div>
