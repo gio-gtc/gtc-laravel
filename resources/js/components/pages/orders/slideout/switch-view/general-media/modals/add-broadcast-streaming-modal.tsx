@@ -360,7 +360,7 @@ export default function AddBroadcastStreamingModal({
                                 <SelectTrigger
                                     id={`encoding-${row.key}`}
                                     className={cn(
-                                        'max-w-[191px]',
+                                        'max-w-[191px] text-left',
                                         orderModalStyles.selectTrigger,
                                     )}
                                 >
@@ -370,7 +370,25 @@ export default function AddBroadcastStreamingModal({
                                     <SelectItem value={ENCODING_UNSET}>
                                         Select encoding
                                     </SelectItem>
-                                    <SelectItem value="tbd">TBD</SelectItem>
+                                    <SelectItem
+                                        value="H264-MP4"
+                                        className="text-left"
+                                    >
+                                        H264-MP4 (Online or Venue)
+                                    </SelectItem>
+                                    <SelectItem value="station-mp4">
+                                        Station MP4 (Broadcast)
+                                    </SelectItem>
+                                    <SelectItem value="hulu">Hulu</SelectItem>
+                                    <SelectItem value="amazon">
+                                        Amazon
+                                    </SelectItem>
+                                    <SelectItem value="netflix">
+                                        Netflix
+                                    </SelectItem>
+                                    <SelectItem value="connect-tv">
+                                        Connect TV
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </ColumnedRowsChild>
