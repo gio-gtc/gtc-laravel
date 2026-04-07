@@ -39,6 +39,7 @@ export default function MediaTable({
     onAdd,
     previewKind = 'video',
     onUploadRow,
+    onEditIsciRow,
     onPreviewClick,
     cellEditing,
     editScope,
@@ -147,7 +148,16 @@ export default function MediaTable({
                                                             <DropdownMenuItem>
                                                                 Edit Order
                                                             </DropdownMenuItem>
-                                                            <DropdownMenuItem>
+                                                            <DropdownMenuItem
+                                                                disabled={
+                                                                    isDisabledRow
+                                                                }
+                                                                onClick={() =>
+                                                                    onEditIsciRow?.(
+                                                                        row,
+                                                                    )
+                                                                }
+                                                            >
                                                                 Edit ISCI
                                                             </DropdownMenuItem>
                                                             <DropdownMenuItem

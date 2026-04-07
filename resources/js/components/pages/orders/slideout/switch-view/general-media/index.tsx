@@ -29,6 +29,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { ChatThread } from '../reuse/chat';
 import BulkEditAssignedModal from '../reuse/modals/bulk-edit-assigned-modal';
 import BulkEditDueDateModal from '../reuse/modals/bulk-edit-due-date-modal';
+import EditIsciModal from '../reuse/modals/edit-isci-modal';
 import SectionContainers from '../reuse/section-containers';
 import MediaTable from '../reuse/tables/dynamic-media-table';
 import AttachmentsSection from '../reuse/tables/sections/attachments-section-table';
@@ -218,6 +219,7 @@ function GeneralMediaView({
     const [videoPlayerModalOpen, setVideoPlayerModalOpen] = useState(false);
     const [videoPreviewRow, setVideoPreviewRow] =
         useState<MediaTableRow | null>(null);
+    const [editIsciRow, setEditIsciRow] = useState<MediaTableRow | null>(null);
     const [videoPreviewTableTitle, setVideoPreviewTableTitle] = useState('');
     const [audioPlaceholderMode, setAudioPlaceholderMode] = useState(false);
 
@@ -390,6 +392,7 @@ function GeneralMediaView({
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
+                    onEditIsciRow={(row) => setEditIsciRow(row)}
                     onPreviewClick={openBroadcastVideoPreview}
                 />
                 <MediaTable
@@ -406,6 +409,7 @@ function GeneralMediaView({
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
+                    onEditIsciRow={(row) => setEditIsciRow(row)}
                     onPreviewClick={openSocialVideoPreview}
                 />
                 <MediaTable
@@ -423,6 +427,7 @@ function GeneralMediaView({
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
+                    onEditIsciRow={(row) => setEditIsciRow(row)}
                     onPreviewClick={openAudioVideoPreview}
                 />
                 <StaticAssetsMediaTable
@@ -487,6 +492,19 @@ function GeneralMediaView({
                 onClose={() => setAssignedModalOpen(false)}
                 initialAssigned={assignedSeed}
                 onSave={handleAssignedBulkSave}
+            />
+            <EditIsciModal
+                key={editIsciRow?.id ?? 'closed'}
+                isOpen={editIsciRow !== null}
+                onClose={() => setEditIsciRow(null)}
+                initialIsci={editIsciRow?.isci ?? ''}
+                onSave={({ isci }) => {
+                    if (editIsciRow) {
+                        bulkPatchMediaRows(new Set([editIsciRow.id]), {
+                            isci,
+                        });
+                    }
+                }}
             />
             <AddBroadcastStreamingModal
                 isOpen={broadcastModalOpen}
