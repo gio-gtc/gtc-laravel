@@ -102,7 +102,8 @@ interface VideoPlayerModalProps {
     useAudioPlaceholder?: boolean;
     /** Show X / approve controls (same as table deliverables) when row is in client review. */
     clientReviewActions?: boolean;
-    onClientReviewReject?: () => void;
+    /** Current comment field value is passed when the user taps reject (X). */
+    onClientReviewReject?: (message: string) => void;
     onClientReviewApprove?: () => void;
     onClientReviewCommentSubmit?: (text: string) => void | Promise<void>;
 }
@@ -274,6 +275,10 @@ export default function VideoPlayerModal({
         }
     }, [isOpen]);
 
+    const handleClientReviewReject = useCallback(() => {
+        onClientReviewReject?.(clientReviewComment.trim());
+    }, [clientReviewComment, onClientReviewReject]);
+
     const handleClientReviewCommentSubmit = useCallback(
         async (e: FormEvent) => {
             e.preventDefault();
@@ -359,7 +364,7 @@ export default function VideoPlayerModal({
                     <div className="rounded-b-xl px-4 py-3 shadow-2xl">
                         <div className="flex justify-center">
                             <ApprovalButtons
-                                onReject={onClientReviewReject}
+                                onReject={handleClientReviewReject}
                                 onApprove={onClientReviewApprove}
                             />
                         </div>

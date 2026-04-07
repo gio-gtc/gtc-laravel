@@ -3,6 +3,7 @@ import { buildVenueItemStatusSelectOptions } from '@/components/utils/editable-t
 import {
     getAssignedUsersForVenueItem,
     type OrdersVenueLineCatalog,
+    venueItemStatusIdToLabel,
     venueItemsMediaTableRow,
     venueItemsStaticTableRow,
 } from '@/components/utils/venue-items';
@@ -125,9 +126,16 @@ function GeneralMediaView({
                     ),
                     catalog.venue_item_status,
                 );
+                const resolvedStatus = venueItemStatusIdToLabel(
+                    row.status_id,
+                    catalog.venue_item_status,
+                );
+                const showDeliverables =
+                    row.has_deliverable_actions ??
+                    resolvedStatus === 'Client Review';
                 return {
                     ...mediaRow,
-                    deliverables: row.has_deliverable_actions
+                    deliverables: showDeliverables
                         ? {
                               onReject: () => {
                                   setRevisionModalOpen(true);
@@ -162,9 +170,16 @@ function GeneralMediaView({
                     ),
                     catalog.venue_item_status,
                 );
+                const resolvedStatus = venueItemStatusIdToLabel(
+                    row.status_id,
+                    catalog.venue_item_status,
+                );
+                const showDeliverables =
+                    row.has_deliverable_actions ??
+                    resolvedStatus === 'Client Review';
                 return {
                     ...staticRow,
-                    deliverables: row.has_deliverable_actions
+                    deliverables: showDeliverables
                         ? {
                               onReject: () => {
                                   setRevisionModalOpen(true);
@@ -550,8 +565,19 @@ function GeneralMediaView({
                 clientReviewActions={
                     videoPreviewRow?.status === 'Client Review'
                 }
-                onClientReviewReject={videoPreviewRow?.deliverables?.onReject}
-                onClientReviewApprove={videoPreviewRow?.deliverables?.onApprove}
+                onClientReviewApprove={() => {
+                    if (videoPreviewRow) {
+                        console.log(`approve: ${videoPreviewRow.isci}`);
+                    }
+                }}
+                onClientReviewReject={(message) => {
+                    if (videoPreviewRow) {
+                        console.log(
+                            `reject message ${videoPreviewRow.isci}: ${message}`,
+                        );
+                    }
+                    setRevisionModalOpen(true);
+                }}
                 onClientReviewCommentSubmit={(text) => {
                     if (!videoPreviewRow) return;
                     sendChatMessage(plainTextToChatDoc(text), {

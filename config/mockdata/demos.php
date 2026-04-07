@@ -59,7 +59,7 @@ return [
                     'id' => 'asset-art-1',
                     'tab' => 'art',
                     'title' => 'Key art horizontal',
-                    'durationLabel' => '—',
+                    'durationLabel' => '',
                     'thumbnailUrl' => 'https://picsum.photos/seed/gtc-a1/320/180',
                     'mediaUrl' => 'https://picsum.photos/seed/gtc-a1-full/1920/1080',
                     'kind' => 'image',

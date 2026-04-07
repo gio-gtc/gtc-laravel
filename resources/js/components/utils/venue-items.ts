@@ -19,7 +19,7 @@ export type OrdersVenueLineCatalog = {
 
 type VenueLineItemStatusLabel = MediaTableRow['status'];
 
-function venueItemStatusIdToLabel(
+export function venueItemStatusIdToLabel(
     statusId: number,
     venueItemStatus: VenueItemStatus[],
 ): VenueLineItemStatusLabel {

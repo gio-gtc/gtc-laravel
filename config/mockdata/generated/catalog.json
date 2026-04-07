@@ -2871,9 +2871,7 @@
       "isci": "GTC1818843",
       "duration": ":45",
       "dueDate": "1/15/25",
-      "status_id": 1,
-      "has_deliverable_actions": true
-    },
+      "status_id": 1    },
     {
       "id": 2,
       "tour_venue_id": 1,
@@ -2882,9 +2880,7 @@
       "isci": "GTC1818847",
       "duration": ":30",
       "dueDate": "1/15/25",
-      "status_id": 2,
-      "has_deliverable_actions": true
-    },
+      "status_id": 2    },
     {
       "id": 3,
       "tour_venue_id": 1,
@@ -2893,9 +2889,7 @@
       "isci": "GTC1818848",
       "duration": ":15",
       "dueDate": "1/18/25",
-      "status_id": 3,
-      "has_deliverable_actions": true
-    },
+      "status_id": 3    },
     {
       "id": 4,
       "tour_venue_id": 1,
@@ -2904,9 +2898,7 @@
       "isci": "GTC1818849",
       "duration": ":60",
       "dueDate": "1/20/25",
-      "status_id": 4,
-      "has_deliverable_actions": true
-    },
+      "status_id": 4    },
     {
       "id": 5,
       "tour_venue_id": 1,
@@ -2915,9 +2907,7 @@
       "isci": "GTC1818850",
       "duration": ":30",
       "dueDate": "1/22/25",
-      "status_id": 5,
-      "has_deliverable_actions": false
-    },
+      "status_id": 5    },
     {
       "id": 6,
       "tour_venue_id": 1,
@@ -2926,9 +2916,7 @@
       "isci": "GTC1818851",
       "duration": ":45",
       "dueDate": "1/25/25",
-      "status_id": 6,
-      "has_deliverable_actions": true
-    },
+      "status_id": 6    },
     {
       "id": 7,
       "tour_venue_id": 1,
@@ -2937,9 +2925,7 @@
       "isci": "GTC1818852",
       "duration": ":20",
       "dueDate": "1/28/25",
-      "status_id": 7,
-      "has_deliverable_actions": false
-    },
+      "status_id": 7    },
     {
       "id": 8,
       "tour_venue_id": 1,
@@ -2948,9 +2934,7 @@
       "width": 1400,
       "height": 400,
       "dueDate": "1/15/25",
-      "status_id": 1,
-      "has_deliverable_actions": false
-    },
+      "status_id": 1    },
     {
       "id": 9,
       "tour_venue_id": 1,
@@ -2959,9 +2943,7 @@
       "width": 1400,
       "height": 400,
       "dueDate": "1/15/25",
-      "status_id": 2,
-      "has_deliverable_actions": true
-    },
+      "status_id": 2    },
     {
       "id": 10,
       "tour_venue_id": 1,
@@ -2970,9 +2952,7 @@
       "width": 1400,
       "height": 400,
       "dueDate": "1/18/25",
-      "status_id": 3,
-      "has_deliverable_actions": false
-    },
+      "status_id": 3    },
     {
       "id": 11,
       "tour_venue_id": 1,
@@ -2981,9 +2961,7 @@
       "width": 1400,
       "height": 400,
       "dueDate": "1/20/25",
-      "status_id": 4,
-      "has_deliverable_actions": true
-    },
+      "status_id": 4    },
     {
       "id": 12,
       "tour_venue_id": 1,
@@ -2992,9 +2970,7 @@
       "width": 1400,
       "height": 400,
       "dueDate": "1/22/25",
-      "status_id": 5,
-      "has_deliverable_actions": false
-    },
+      "status_id": 5    },
     {
       "id": 13,
       "tour_venue_id": 1,
@@ -3003,9 +2979,7 @@
       "width": 1400,
       "height": 400,
       "dueDate": "1/25/25",
-      "status_id": 6,
-      "has_deliverable_actions": false
-    },
+      "status_id": 6    },
     {
       "id": 14,
       "tour_venue_id": 1,
@@ -3014,9 +2988,7 @@
       "width": 1400,
       "height": 400,
       "dueDate": "1/28/25",
-      "status_id": 7,
-      "has_deliverable_actions": false
-    },
+      "status_id": 7    },
     {
       "id": 15,
       "tour_venue_id": 1,
@@ -3035,9 +3007,7 @@
           "text": "Change the background color to deeper blue to match logo.",
           "savedAt": "9/17/2024 @ 4:30PM"
         }
-      ],
-      "has_deliverable_actions": false
-    },
+      ]    },
     {
       "id": 16,
       "tour_venue_id": 1,
@@ -3046,9 +3016,7 @@
       "width": 1400,
       "height": 400,
       "cta": "Last Chance",
-      "dueDate": "1/15/25",
-      "has_deliverable_actions": false
-    },
+      "dueDate": "1/15/25"    },
     {
       "id": 17,
       "tour_venue_id": 1,
@@ -3057,9 +3025,7 @@
       "width": 1400,
       "height": 400,
       "cta": "Black Friday Sale",
-      "dueDate": "1/15/25",
-      "has_deliverable_actions": false
-    }
+      "dueDate": "1/15/25"    }
   ],
   "sales_chart": [
     {
