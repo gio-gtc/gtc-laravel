@@ -1,7 +1,7 @@
 import { MultiSelectCombobox } from '@/components/ui/combobox';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
@@ -51,28 +51,28 @@ export default function AddSocialVideoModal({
     const [language, setLanguage] = useState<string[]>(['English']);
 
     const resetForm = () => {
+        setType([]);
         setCuts([]);
         setCardHolder([]);
         setDuration([]);
         setLanguage(['English']);
     };
 
-    useEffect(() => {
-        if (!isOpen) {
-            resetForm();
-        }
-    }, [isOpen]);
+    const handleOnClose = () => {
+        resetForm();
+        onClose();
+    };
 
     const handleAddToOrder = () => {
         console.log({ type, cuts, cardHolder, duration, language });
         onAdd?.({ type, cuts, cardHolder, duration, language });
-        onClose();
+        handleOnClose();
     };
 
     return (
         <OrderModalLayout
             isOpen={isOpen}
-            onClose={onClose}
+            onClose={handleOnClose}
             title="Add Social Video"
             primaryLabel="Add to Order"
             onPrimaryClick={handleAddToOrder}

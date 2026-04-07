@@ -18,7 +18,6 @@ interface OrderModalLayoutProps {
     primaryDisabled?: boolean;
     modalClasses?: string;
     children: React.ReactNode;
-    dividerBeforeFooter?: boolean;
 }
 
 export default function OrderModalLayout({
@@ -30,7 +29,6 @@ export default function OrderModalLayout({
     primaryDisabled = false,
     modalClasses = '',
     children,
-    dividerBeforeFooter = true,
 }: OrderModalLayoutProps) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -45,7 +43,7 @@ export default function OrderModalLayout({
 
                 {children}
 
-                {dividerBeforeFooter && <Divider />}
+                <Divider />
 
                 <DialogFooter className="gap-2 sm:justify-end">
                     <Button
