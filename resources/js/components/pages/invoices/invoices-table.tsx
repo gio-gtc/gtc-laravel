@@ -4,6 +4,7 @@ import InvoiceStatusFilters from '@/components/pages/invoices/status-filters';
 import InvoiceDetailTable from '@/components/pages/invoices/tables/invoice-detail-table';
 import PaymentReminderTable from '@/components/pages/invoices/tables/payment-reminder-table';
 import { Button } from '@/components/ui/button';
+import { useSidebar } from '@/components/ui/sidebar';
 import {
     getDaysRemaining,
     getInvoiceAddress,
@@ -14,9 +15,9 @@ import {
     type Country,
     type Invoice,
     type SharedData,
-    type Venue,
 } from '@/types';
 import { type InvoicesPageProps } from '@/types/inertia-pages';
+import { cn } from '@/lib/utils';
 import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -67,6 +68,14 @@ function InvoicesTable() {
     const [selectedReleasedInvoiceIds, setSelectedReleasedInvoiceIds] =
         useState<number[]>([]);
     const isReminder = filter === 'reminder';
+    const { isMobile, state: sidebarState } = useSidebar();
+
+    /** Shift left by half the sidebar gutter so flex-centered content aligns with viewport (50vw) center. */
+    const topReminderScreenCenterClass = isMobile
+        ? ''
+        : sidebarState === 'expanded'
+          ? '-translate-x-[calc(var(--sidebar-width)/2)]'
+          : '-translate-x-[calc(var(--sidebar-width-icon)/2)]';
 
     const handleFilterChange = (newFilter: typeof filter) => {
         setFilter(newFilter);
@@ -219,14 +228,33 @@ function InvoicesTable() {
     }
 
     return (
-        <div className="table-content-max-width space-y-4">
-            {/* Header Actions */}
-            <div className="flex justify-between gap-1 overflow-auto">
-                <InvoiceStatusFilters
-                    filter={filter}
-                    onFilterChange={handleFilterChange}
-                />
-                {isReminder && (
+        <>
+            <div className="table-content-max-width mb-2">
+                {/* Header Actions */}
+                <div className="flex justify-between gap-1 overflow-auto">
+                    <InvoiceStatusFilters
+                        filter={filter}
+                        onFilterChange={handleFilterChange}
+                    />
+
+                    <InvoiceAdvancedFilters
+                        countryFilter={countryFilter}
+                        onCountryFilterChange={setCountryFilter}
+                        dateFilter={dateFilter}
+                        onDateFilterChange={setDateFilter}
+                        dateRangeFilter={dateRangeFilter}
+                        onDateRangeFilterChange={setDateRangeFilter}
+                        onSearchChange={setSearchQuery}
+                    />
+                </div>
+            </div>
+            {isReminder && (
+                <div
+                    className={cn(
+                        'mb-2 flex w-full justify-center',
+                        topReminderScreenCenterClass,
+                    )}
+                >
                     <Button
                         size={'md'}
                         variant="outline"
@@ -238,63 +266,56 @@ function InvoicesTable() {
                     >
                         Send Payment Reminder
                     </Button>
-                )}
-                <InvoiceAdvancedFilters
-                    countryFilter={countryFilter}
-                    onCountryFilterChange={setCountryFilter}
-                    dateFilter={dateFilter}
-                    onDateFilterChange={setDateFilter}
-                    dateRangeFilter={dateRangeFilter}
-                    onDateRangeFilterChange={setDateRangeFilter}
-                    onSearchChange={setSearchQuery}
-                />
-            </div>
-
-            {/* Table */}
-            {filter === 'reminder' ? (
-                <>
-                    <PaymentReminderTable
-                        data={filteredData}
-                        venues={venuesData}
-                        onSelectionChange={setSelectedReleasedInvoiceIds}
-                    />
-
-                    <div className="flex justify-end">
-                        <Button
-                            size={'md'}
-                            variant="outline"
-                            onClick={
-                                isReminder ? handleSendReminder : undefined
-                            }
-                            disabled={
-                                isReminder &&
-                                selectedReleasedInvoiceIds.length === 0
-                            }
-                        >
-                            Send Payment Reminder
-                        </Button>
-                    </div>
-                </>
-            ) : (
-                <InvoiceDetailTable
-                    data={filteredData}
-                    venues={venuesData}
-                    onInvoiceSelect={setSelectedInvoice}
-                    selectedInvoice={selectedInvoice}
-                />
+                </div>
             )}
 
-            {/* Invoice Detail Slide-out */}
-            <InvoiceDetailSlideout
-                invoice={selectedInvoice}
-                isOpen={selectedInvoice !== null}
-                onClose={() => setSelectedInvoice(null)}
-                companies={companiesData}
-                countries={countriesData}
-                venues={venuesData}
-                invoiceItems={invoiceItemsData}
-            />
-        </div>
+            <div className="table-content-max-width space-y-2">
+                {/* Table */}
+                {isReminder ? (
+                    <>
+                        <PaymentReminderTable
+                            data={filteredData}
+                            venues={venuesData}
+                            onSelectionChange={setSelectedReleasedInvoiceIds}
+                        />
+
+                        <div className="flex justify-end">
+                            <Button
+                                size={'md'}
+                                variant="outline"
+                                onClick={
+                                    isReminder ? handleSendReminder : undefined
+                                }
+                                disabled={
+                                    isReminder &&
+                                    selectedReleasedInvoiceIds.length === 0
+                                }
+                            >
+                                Send Payment Reminder
+                            </Button>
+                        </div>
+                    </>
+                ) : (
+                    <InvoiceDetailTable
+                        data={filteredData}
+                        venues={venuesData}
+                        onInvoiceSelect={setSelectedInvoice}
+                        selectedInvoice={selectedInvoice}
+                    />
+                )}
+
+                {/* Invoice Detail Slide-out */}
+                <InvoiceDetailSlideout
+                    invoice={selectedInvoice}
+                    isOpen={selectedInvoice !== null}
+                    onClose={() => setSelectedInvoice(null)}
+                    companies={companiesData}
+                    countries={countriesData}
+                    venues={venuesData}
+                    invoiceItems={invoiceItemsData}
+                />
+            </div>
+        </>
     );
 }
 
