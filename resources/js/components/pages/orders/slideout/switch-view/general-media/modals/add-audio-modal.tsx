@@ -1,3 +1,4 @@
+import { MultiSelectCombobox } from '@/components/ui/combobox';
 import { Label } from '@/components/ui/label';
 import {
     Select,
@@ -6,17 +7,20 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
+import { useMemo, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
+import { OPTIONS_BY_TYPE_AUDIO } from './spot-type-cuts-options';
 
 const DURATION_OPTIONS = [':15', ':30', ':60'] as const;
 const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French'] as const;
 
+/** Same multi-select semantics as Add Broadcast & Streaming (type drives cuts; duration/language are toggles). */
 export interface AddAudioFormValues {
     type: string;
-    cuts: string;
+    cuts: string[];
     duration: string[];
     language: string[];
 }
@@ -33,28 +37,54 @@ export default function AddAudioModal({
     onAdd,
 }: AddAudioModalProps) {
     const [type, setType] = useState('Generic');
-    const [cuts, setCuts] = useState('Cuts');
+    const [cuts, setCuts] = useState<string[]>([]);
     const [duration, setDuration] = useState<string[]>([]);
-    const [language, setLanguage] = useState<string[]>([]);
+    const [language, setLanguage] = useState<string[]>(['English']);
 
-    useEffect(() => {
-        if (!isOpen) {
-            setType('Generic');
-            setCuts('Cuts');
+    const { availableCuts } = useMemo(() => {
+        const config = type ? OPTIONS_BY_TYPE_AUDIO[type] : null;
+        return {
+            availableCuts: config?.cuts ?? [],
+        };
+    }, [type]);
+
+    const resetForm = () => {
+        setCuts([]);
+        setDuration([]);
+        setLanguage(['English']);
+    };
+
+    const resetAllFields = () => {
+        setType('Generic');
+        resetForm();
+    };
+
+    const handleTypeChange = (newType: string) => {
+        resetForm();
+        setType(newType);
+        const config = OPTIONS_BY_TYPE_AUDIO[newType];
+        if (config) {
+            setCuts((prev) => prev.filter((c) => config.cuts.includes(c)));
+        } else {
+            setCuts([]);
             setDuration([]);
-            setLanguage([]);
         }
-    }, [isOpen]);
+    };
+
+    const handleClose = () => {
+        resetAllFields();
+        onClose();
+    };
 
     const handleAddToOrder = () => {
         onAdd?.({ type, cuts, duration, language });
-        onClose();
+        handleClose();
     };
 
     return (
         <OrderModalLayout
             isOpen={isOpen}
-            onClose={onClose}
+            onClose={handleClose}
             title="Add Audio"
             primaryLabel="Add to Order"
             onPrimaryClick={handleAddToOrder}
@@ -68,7 +98,7 @@ export default function AddAudioModal({
                     <p className={orderModalStyles.helper}>
                         Select the type of Spot
                     </p>
-                    <Select value={type} onValueChange={setType}>
+                    <Select value={type} onValueChange={handleTypeChange}>
                         <SelectTrigger
                             id="type"
                             className={orderModalStyles.selectTrigger}
@@ -77,6 +107,12 @@ export default function AddAudioModal({
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="Generic">Generic</SelectItem>
+                            <SelectItem value="AmEx">AmEx</SelectItem>
+                            <SelectItem value="Verizon">Verizon</SelectItem>
+                            <SelectItem value="Citi">Citi</SelectItem>
+                            <SelectItem value="International">
+                                International
+                            </SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -88,61 +124,72 @@ export default function AddAudioModal({
                     <p className={orderModalStyles.helper}>
                         Select the type of Cuts
                     </p>
-                    <Select value={cuts} onValueChange={setCuts}>
-                        <SelectTrigger
-                            id="cuts"
-                            className={orderModalStyles.selectTrigger}
-                        >
-                            <SelectValue placeholder="Select the type of Cuts" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Cuts">Cuts</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <MultiSelectCombobox
+                        id="cuts"
+                        options={availableCuts}
+                        value={cuts}
+                        onValueChange={setCuts}
+                        placeholder="Select Cuts"
+                        emptyMessage="No cuts found."
+                        triggerClassName={orderModalStyles.selectTrigger}
+                    />
                 </div>
 
-                <div className="flex flex-2 flex-col gap-2 sm:flex-row">
+                <div className="flex flex-row justify-around gap-2 text-xs sm:justify-center">
                     <div className="flex flex-col gap-2">
-                        <Label className={orderModalStyles.label}>
+                        <Label className={cn('pb-4', orderModalStyles.label)}>
                             Duration
                         </Label>
-                        <p className="hidden pt-2 sm:block"> </p>
                         <div className="flex flex-col gap-2">
-                            {DURATION_OPTIONS.map((d) => (
-                                <PillButton
-                                    key={d}
-                                    selected={duration.includes(d)}
-                                    onClick={() =>
-                                        setDuration((prev) =>
-                                            toggleInArray(prev, d),
-                                        )
-                                    }
-                                >
-                                    {d}
-                                </PillButton>
-                            ))}
+                            {DURATION_OPTIONS.map((d) => {
+                                const isDisabled =
+                                    (d == ':15' && type != 'Generic') ||
+                                    type === 'International';
+
+                                return (
+                                    <PillButton
+                                        key={d}
+                                        className="w-full"
+                                        selected={duration.includes(d)}
+                                        disabled={isDisabled}
+                                        onClick={() =>
+                                            !isDisabled &&
+                                            setDuration((prev) =>
+                                                toggleInArray(prev, d),
+                                            )
+                                        }
+                                    >
+                                        {d}
+                                    </PillButton>
+                                );
+                            })}
                         </div>
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <Label className={orderModalStyles.label}>
+                        <Label className={cn('pb-4', orderModalStyles.label)}>
                             Language
                         </Label>
-                        <p className="hidden pt-2 sm:block"> </p>
                         <div className="flex flex-col gap-2">
-                            {LANGUAGE_OPTIONS.map((lang) => (
-                                <PillButton
-                                    key={lang}
-                                    selected={language.includes(lang)}
-                                    onClick={() =>
-                                        setLanguage((prev) =>
-                                            toggleInArray(prev, lang),
-                                        )
-                                    }
-                                >
-                                    {lang}
-                                </PillButton>
-                            ))}
+                            {LANGUAGE_OPTIONS.map((lang) => {
+                                const isDisabled = type === 'International';
+                                return (
+                                    <PillButton
+                                        key={lang}
+                                        className="w-full"
+                                        selected={language.includes(lang)}
+                                        disabled={isDisabled}
+                                        onClick={() =>
+                                            !isDisabled &&
+                                            setLanguage((prev) =>
+                                                toggleInArray(prev, lang),
+                                            )
+                                        }
+                                    >
+                                        {lang}
+                                    </PillButton>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>

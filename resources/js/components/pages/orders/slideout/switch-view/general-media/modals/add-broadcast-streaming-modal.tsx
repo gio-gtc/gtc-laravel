@@ -17,34 +17,13 @@ import { useMemo, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
+import {
+    INTERNATIONAL_TV_PACKAGE,
+    OPTIONS_BY_TYPE,
+} from './spot-type-cuts-options';
 
-const CUTS_OPTIONS = [
-    'Sign Up Now',
-    'Pre Sale',
-    'On Sale Now',
-    'Week of',
-    'Day Prior',
-    'Day of',
-    'Superless',
-    'Sample',
-] as const;
-const VENUE_CUT_OPTIONS = ['Pre Sale', 'Now Through'] as const;
 const DURATION_OPTIONS = [':10', ':15', ':30'] as const;
 const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French'] as const;
-
-const OPTIONS_BY_TYPE: Record<string, { cuts: readonly string[] }> = {
-    Generic: { cuts: CUTS_OPTIONS },
-    AmEx: {
-        cuts: VENUE_CUT_OPTIONS,
-    },
-    Verizon: {
-        cuts: VENUE_CUT_OPTIONS,
-    },
-    Citi: { cuts: VENUE_CUT_OPTIONS },
-    International: { cuts: ['International TV Package'] },
-};
-
-const INTERNATIONAL_TV_PACKAGE = 'International TV Package';
 
 /** Placeholder value until real encoding options are provided */
 const ENCODING_UNSET = '__none__';
@@ -274,7 +253,7 @@ export default function AddBroadcastStreamingModal({
                             {DURATION_OPTIONS.map((d) => {
                                 const isDisabled =
                                     (d == ':10' && type != 'Generic') ||
-                                    cuts.includes(INTERNATIONAL_TV_PACKAGE);
+                                    type === 'International';
 
                                 return (
                                     <PillButton
@@ -302,9 +281,7 @@ export default function AddBroadcastStreamingModal({
                         </Label>
                         <div className="flex flex-col gap-2">
                             {LANGUAGE_OPTIONS.map((lang) => {
-                                const isDisabled = cuts.includes(
-                                    INTERNATIONAL_TV_PACKAGE,
-                                );
+                                const isDisabled = type === 'International';
                                 return (
                                     <PillButton
                                         key={lang}
