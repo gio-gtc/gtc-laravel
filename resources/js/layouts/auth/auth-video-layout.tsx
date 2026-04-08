@@ -41,7 +41,7 @@ export default function AuthVideoLayout({
             </div>
 
             <div className="relative z-10 flex min-h-svh items-center justify-center p-6 md:p-10">
-                <div className="w-full max-w-md">
+                <div className="flex w-full max-w-md flex-col items-center justify-center">
                     <Link
                         href={home()}
                         className="mx-auto flex w-fit items-center gap-2 font-medium text-white"

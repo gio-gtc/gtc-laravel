@@ -54,7 +54,7 @@ export default function Login({
                                     tabIndex={1}
                                     autoComplete="email"
                                     placeholder="email@example.com"
-                                    className="border-white/25 text-white placeholder:text-white/60 focus-visible:border-white/40 focus-visible:ring-white/20"
+                                    className="border-white/25 !text-white focus-visible:border-white/40 focus-visible:ring-white/20"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -80,7 +80,7 @@ export default function Login({
                                     tabIndex={2}
                                     autoComplete="current-password"
                                     placeholder="Password"
-                                    className="border-white/25 text-white placeholder:text-white/60 focus-visible:border-white/40 focus-visible:ring-white/20"
+                                    className="border-white/25 !text-white focus-visible:border-white/40 focus-visible:ring-white/20"
                                 />
                                 <InputError message={errors.password} />
                             </div>
