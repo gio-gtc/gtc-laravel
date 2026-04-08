@@ -1,101 +1,4 @@
 {
-    "venue_item_assigned": [
-        {
-            "id": 1,
-            "venue_item_id": 2,
-            "mockUser_id": 3
-        },
-        {
-            "id": 2,
-            "venue_item_id": 2,
-            "mockUser_id": 6
-        },
-        {
-            "id": 3,
-            "venue_item_id": 3,
-            "mockUser_id": 3
-        },
-        {
-            "id": 4,
-            "venue_item_id": 3,
-            "mockUser_id": 6
-        },
-        {
-            "id": 5,
-            "venue_item_id": 4,
-            "mockUser_id": 3
-        },
-        {
-            "id": 6,
-            "venue_item_id": 6,
-            "mockUser_id": 3
-        },
-        {
-            "id": 7,
-            "venue_item_id": 9,
-            "mockUser_id": 3
-        },
-        {
-            "id": 8,
-            "venue_item_id": 10,
-            "mockUser_id": 3
-        },
-        {
-            "id": 9,
-            "venue_item_id": 11,
-            "mockUser_id": 3
-        },
-        {
-            "id": 10,
-            "venue_item_id": 13,
-            "mockUser_id": 3
-        },
-        {
-            "id": 11,
-            "venue_item_id": 15,
-            "mockUser_id": 3
-        },
-        {
-            "id": 12,
-            "venue_item_id": 16,
-            "mockUser_id": 3
-        },
-        {
-            "id": 13,
-            "venue_item_id": 17,
-            "mockUser_id": 3
-        }
-    ],
-    "venue_item_status": [
-        {
-            "id": 1,
-            "type": "Still in Cart"
-        },
-        {
-            "id": 2,
-            "type": "Client Review"
-        },
-        {
-            "id": 3,
-            "type": "In Production"
-        },
-        {
-            "id": 4,
-            "type": "Out for Delivery"
-        },
-        {
-            "id": 5,
-            "type": "Cancelled"
-        },
-        {
-            "id": 6,
-            "type": "Revision Requested"
-        },
-        {
-            "id": 7,
-            "type": "Unassigned"
-        }
-    ],
     "venue_items": [
         {
             "id": 1,
@@ -276,6 +179,103 @@
             "height": 400,
             "cta": "Black Friday Sale",
             "dueDate": "1/15/25"
+        }
+    ],
+    "venue_item_assigned": [
+        {
+            "id": 1,
+            "venue_item_id": 2,
+            "mockUser_id": 3
+        },
+        {
+            "id": 2,
+            "venue_item_id": 2,
+            "mockUser_id": 6
+        },
+        {
+            "id": 3,
+            "venue_item_id": 3,
+            "mockUser_id": 3
+        },
+        {
+            "id": 4,
+            "venue_item_id": 3,
+            "mockUser_id": 6
+        },
+        {
+            "id": 5,
+            "venue_item_id": 4,
+            "mockUser_id": 3
+        },
+        {
+            "id": 6,
+            "venue_item_id": 6,
+            "mockUser_id": 3
+        },
+        {
+            "id": 7,
+            "venue_item_id": 9,
+            "mockUser_id": 3
+        },
+        {
+            "id": 8,
+            "venue_item_id": 10,
+            "mockUser_id": 3
+        },
+        {
+            "id": 9,
+            "venue_item_id": 11,
+            "mockUser_id": 3
+        },
+        {
+            "id": 10,
+            "venue_item_id": 13,
+            "mockUser_id": 3
+        },
+        {
+            "id": 11,
+            "venue_item_id": 15,
+            "mockUser_id": 3
+        },
+        {
+            "id": 12,
+            "venue_item_id": 16,
+            "mockUser_id": 3
+        },
+        {
+            "id": 13,
+            "venue_item_id": 17,
+            "mockUser_id": 3
+        }
+    ],
+    "venue_item_status": [
+        {
+            "id": 1,
+            "type": "Still in Cart"
+        },
+        {
+            "id": 2,
+            "type": "Client Review"
+        },
+        {
+            "id": 3,
+            "type": "In Production"
+        },
+        {
+            "id": 4,
+            "type": "Out for Delivery"
+        },
+        {
+            "id": 5,
+            "type": "Cancelled"
+        },
+        {
+            "id": 6,
+            "type": "Revision Requested"
+        },
+        {
+            "id": 7,
+            "type": "Unassigned"
         }
     ]
 }
