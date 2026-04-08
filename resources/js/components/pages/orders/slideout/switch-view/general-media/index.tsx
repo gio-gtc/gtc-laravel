@@ -2,10 +2,10 @@ import { Button } from '@/components/ui/button';
 import { buildVenueItemStatusSelectOptions } from '@/components/utils/editable-table/venue-item-status-options';
 import {
     getAssignedUsersForVenueItem,
-    type OrdersVenueLineCatalog,
     venueItemStatusIdToLabel,
     venueItemsMediaTableRow,
     venueItemsStaticTableRow,
+    type OrdersVenueLineCatalog,
 } from '@/components/utils/venue-items';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
 import { useChat } from '@/hooks/use-chat';
@@ -545,7 +545,10 @@ function GeneralMediaView({
                 onClose={() => {
                     setRevisionModalOpen(false);
                 }}
-                onSubmit={() => {}}
+                onSubmit={(revisionMessage) => {
+                    const message = revisionMessage.trim();
+                    console.log(message);
+                }}
             />
             <VideoPlayerModal
                 isOpen={videoPlayerModalOpen}
@@ -570,14 +573,7 @@ function GeneralMediaView({
                         console.log(`approve: ${videoPreviewRow.isci}`);
                     }
                 }}
-                onClientReviewReject={(message) => {
-                    if (videoPreviewRow) {
-                        console.log(
-                            `reject message ${videoPreviewRow.isci}: ${message}`,
-                        );
-                    }
-                    setRevisionModalOpen(true);
-                }}
+                onClientReviewReject={() => setRevisionModalOpen(true)}
                 onClientReviewCommentSubmit={(text) => {
                     if (!videoPreviewRow) return;
                     sendChatMessage(plainTextToChatDoc(text), {
