@@ -114,10 +114,10 @@ export default function DemoSidebar({
                                     <button
                                         type="button"
                                         onClick={() => onSelectAsset(asset.id)}
-                                        className={`flex w-full cursor-pointer gap-3 rounded-lg p-2 text-left transition-colors ${
+                                        className={`flex w-full cursor-pointer gap-3 rounded-lg p-2 text-left transition-all duration-300 ${
                                             selected
-                                                ? 'border bg-white/20'
-                                                : 'hover:bg-white/10'
+                                                ? 'border border-white/10 bg-gradient-to-br from-white/30 via-transparent to-transparent shadow-lg backdrop-blur-lg'
+                                                : 'hover:bg-gradient-to-br hover:from-white/10 hover:via-transparent hover:to-transparent hover:shadow-xs hover:backdrop-blur-xs'
                                         }`}
                                     >
                                         <Image
