@@ -1,0 +1,479 @@
+{
+    "users": [
+        {
+            "id": 26,
+            "name": "Sarah Johnson",
+            "email": "sarah.johnson@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Sarah",
+            "last_name": "Johnson",
+            "company_id": 1,
+            "assetsAssigned": 45,
+            "assetsUploaded": 38,
+            "rolling30DayAccuracy": 87,
+            "trend": {
+                "direction": "up",
+                "percentage": 5
+            }
+        },
+        {
+            "id": 27,
+            "name": "Michael Chen",
+            "email": "michael.chen@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Michael",
+            "last_name": "Chen",
+            "company_id": 2,
+            "assetsAssigned": 52,
+            "assetsUploaded": 44,
+            "rolling30DayAccuracy": 92,
+            "trend": {
+                "direction": "up",
+                "percentage": 8
+            }
+        },
+        {
+            "id": 3,
+            "name": "Emily Rodriguez",
+            "email": "emily.rodriguez@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Emily",
+            "last_name": "Rodriguez",
+            "company_id": 11,
+            "assetsAssigned": 38,
+            "assetsUploaded": 32,
+            "rolling30DayAccuracy": 79,
+            "trend": {
+                "direction": "down",
+                "percentage": 3
+            }
+        },
+        {
+            "id": 4,
+            "name": "David Williams",
+            "email": "david.williams@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "David",
+            "last_name": "Williams",
+            "company_id": 3,
+            "assetsAssigned": 61,
+            "assetsUploaded": 55,
+            "rolling30DayAccuracy": 95,
+            "trend": {
+                "direction": "up",
+                "percentage": 12
+            }
+        },
+        {
+            "id": 5,
+            "name": "Jessica Martinez",
+            "email": "jessica.martinez@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Jessica",
+            "last_name": "Martinez",
+            "company_id": 4,
+            "assetsAssigned": 41,
+            "assetsUploaded": 36,
+            "rolling30DayAccuracy": 83,
+            "trend": {
+                "direction": "up",
+                "percentage": 6
+            }
+        },
+        {
+            "id": 6,
+            "name": "Robert Taylor",
+            "email": "robert.taylor@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Robert",
+            "last_name": "Taylor",
+            "company_id": 5,
+            "assetsAssigned": 48,
+            "assetsUploaded": 42,
+            "rolling30DayAccuracy": 88,
+            "trend": {
+                "direction": "up",
+                "percentage": 4
+            }
+        },
+        {
+            "id": 7,
+            "name": "Amanda Brown",
+            "email": "amanda.brown@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Amanda",
+            "last_name": "Brown",
+            "company_id": 6,
+            "assetsAssigned": 35,
+            "assetsUploaded": 30,
+            "rolling30DayAccuracy": 76,
+            "trend": {
+                "direction": "down",
+                "percentage": 2
+            }
+        },
+        {
+            "id": 8,
+            "name": "James Wilson",
+            "email": "james.wilson@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "James",
+            "last_name": "Wilson",
+            "company_id": 7,
+            "assetsAssigned": 55,
+            "assetsUploaded": 50,
+            "rolling30DayAccuracy": 91,
+            "trend": {
+                "direction": "up",
+                "percentage": 7
+            }
+        },
+        {
+            "id": 9,
+            "name": "Lisa Anderson",
+            "email": "lisa.anderson@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Lisa",
+            "last_name": "Anderson",
+            "company_id": 8,
+            "assetsAssigned": 42,
+            "assetsUploaded": 37,
+            "rolling30DayAccuracy": 85,
+            "trend": {
+                "direction": "up",
+                "percentage": 3
+            }
+        },
+        {
+            "id": 10,
+            "name": "Christopher Lee",
+            "email": "christopher.lee@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Christopher",
+            "last_name": "Lee",
+            "company_id": 9,
+            "assetsAssigned": 58,
+            "assetsUploaded": 52,
+            "rolling30DayAccuracy": 90,
+            "trend": {
+                "direction": "up",
+                "percentage": 9
+            }
+        },
+        {
+            "id": 11,
+            "name": "Jennifer White",
+            "email": "jennifer.white@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Jennifer",
+            "last_name": "White",
+            "company_id": 10,
+            "assetsAssigned": 39,
+            "assetsUploaded": 34,
+            "rolling30DayAccuracy": 81,
+            "trend": {
+                "direction": "down",
+                "percentage": 1
+            }
+        },
+        {
+            "id": 12,
+            "name": "Daniel Garcia",
+            "email": "daniel.garcia@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Daniel",
+            "last_name": "Garcia",
+            "company_id": 12,
+            "assetsAssigned": 50,
+            "assetsUploaded": 45,
+            "rolling30DayAccuracy": 89,
+            "trend": {
+                "direction": "up",
+                "percentage": 6
+            }
+        },
+        {
+            "id": 13,
+            "name": "Michelle Davis",
+            "email": "michelle.davis@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Michelle",
+            "last_name": "Davis",
+            "company_id": 13,
+            "assetsAssigned": 44,
+            "assetsUploaded": 39,
+            "rolling30DayAccuracy": 86,
+            "trend": {
+                "direction": "up",
+                "percentage": 5
+            }
+        },
+        {
+            "id": 14,
+            "name": "Kevin Miller",
+            "email": "kevin.miller@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Kevin",
+            "last_name": "Miller",
+            "company_id": 14,
+            "assetsAssigned": 47,
+            "assetsUploaded": 41,
+            "rolling30DayAccuracy": 84,
+            "trend": {
+                "direction": "up",
+                "percentage": 4
+            }
+        },
+        {
+            "id": 15,
+            "name": "Nicole Thompson",
+            "email": "nicole.thompson@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Nicole",
+            "last_name": "Thompson",
+            "company_id": 15,
+            "assetsAssigned": 36,
+            "assetsUploaded": 31,
+            "rolling30DayAccuracy": 78,
+            "trend": {
+                "direction": "down",
+                "percentage": 2
+            }
+        },
+        {
+            "id": 16,
+            "name": "Ryan Moore",
+            "email": "ryan.moore@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Ryan",
+            "last_name": "Moore",
+            "company_id": 1,
+            "assetsAssigned": 53,
+            "assetsUploaded": 48,
+            "rolling30DayAccuracy": 91,
+            "trend": {
+                "direction": "up",
+                "percentage": 8
+            }
+        },
+        {
+            "id": 17,
+            "name": "Stephanie Jackson",
+            "email": "stephanie.jackson@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Stephanie",
+            "last_name": "Jackson",
+            "company_id": 2,
+            "assetsAssigned": 40,
+            "assetsUploaded": 35,
+            "rolling30DayAccuracy": 82,
+            "trend": {
+                "direction": "up",
+                "percentage": 3
+            }
+        },
+        {
+            "id": 18,
+            "name": "Andrew Harris",
+            "email": "andrew.harris@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Andrew",
+            "last_name": "Harris",
+            "company_id": 3,
+            "assetsAssigned": 49,
+            "assetsUploaded": 43,
+            "rolling30DayAccuracy": 87,
+            "trend": {
+                "direction": "up",
+                "percentage": 5
+            }
+        },
+        {
+            "id": 19,
+            "name": "Lauren Clark",
+            "email": "lauren.clark@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Lauren",
+            "last_name": "Clark",
+            "company_id": 4,
+            "assetsAssigned": 37,
+            "assetsUploaded": 33,
+            "rolling30DayAccuracy": 80,
+            "trend": {
+                "direction": "down",
+                "percentage": 1
+            }
+        },
+        {
+            "id": 20,
+            "name": "Brandon Lewis",
+            "email": "brandon.lewis@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Brandon",
+            "last_name": "Lewis",
+            "company_id": 5,
+            "assetsAssigned": 51,
+            "assetsUploaded": 46,
+            "rolling30DayAccuracy": 88,
+            "trend": {
+                "direction": "up",
+                "percentage": 7
+            }
+        },
+        {
+            "id": 21,
+            "name": "Rachel Walker",
+            "email": "rachel.walker@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Rachel",
+            "last_name": "Walker",
+            "company_id": 6,
+            "assetsAssigned": 43,
+            "assetsUploaded": 38,
+            "rolling30DayAccuracy": 84,
+            "trend": {
+                "direction": "up",
+                "percentage": 4
+            }
+        },
+        {
+            "id": 22,
+            "name": "Justin Hall",
+            "email": "justin.hall@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Justin",
+            "last_name": "Hall",
+            "company_id": 7,
+            "assetsAssigned": 46,
+            "assetsUploaded": 40,
+            "rolling30DayAccuracy": 85,
+            "trend": {
+                "direction": "up",
+                "percentage": 6
+            }
+        },
+        {
+            "id": 23,
+            "name": "Megan Young",
+            "email": "megan.young@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Megan",
+            "last_name": "Young",
+            "company_id": 8,
+            "assetsAssigned": 34,
+            "assetsUploaded": 29,
+            "rolling30DayAccuracy": 77,
+            "trend": {
+                "direction": "down",
+                "percentage": 3
+            }
+        },
+        {
+            "id": 24,
+            "name": "Tyler King",
+            "email": "tyler.king@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Tyler",
+            "last_name": "King",
+            "company_id": 9,
+            "assetsAssigned": 54,
+            "assetsUploaded": 49,
+            "rolling30DayAccuracy": 90,
+            "trend": {
+                "direction": "up",
+                "percentage": 10
+            }
+        },
+        {
+            "id": 25,
+            "name": "Samantha Wright",
+            "email": "samantha.wright@example.com",
+            "avatar": null,
+            "email_verified_at": "2026-03-25T20:18:21.536Z",
+            "created_at": "2026-03-25T20:18:21.536Z",
+            "updated_at": "2026-03-25T20:18:21.536Z",
+            "first_name": "Samantha",
+            "last_name": "Wright",
+            "company_id": 10,
+            "assetsAssigned": 41,
+            "assetsUploaded": 36,
+            "rolling30DayAccuracy": 83,
+            "trend": {
+                "direction": "up",
+                "percentage": 5
+            }
+        }
+    ]
+}

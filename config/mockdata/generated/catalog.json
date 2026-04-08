@@ -1,3304 +1,1405 @@
 {
-  "users": [
-    {
-      "id": 26,
-      "name": "Sarah Johnson",
-      "email": "sarah.johnson@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Sarah",
-      "last_name": "Johnson",
-      "company_id": 1,
-      "assetsAssigned": 45,
-      "assetsUploaded": 38,
-      "rolling30DayAccuracy": 87,
-      "trend": {
-        "direction": "up",
-        "percentage": 5
-      }
-    },
-    {
-      "id": 27,
-      "name": "Michael Chen",
-      "email": "michael.chen@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Michael",
-      "last_name": "Chen",
-      "company_id": 2,
-      "assetsAssigned": 52,
-      "assetsUploaded": 44,
-      "rolling30DayAccuracy": 92,
-      "trend": {
-        "direction": "up",
-        "percentage": 8
-      }
-    },
-    {
-      "id": 3,
-      "name": "Emily Rodriguez",
-      "email": "emily.rodriguez@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Emily",
-      "last_name": "Rodriguez",
-      "company_id": 11,
-      "assetsAssigned": 38,
-      "assetsUploaded": 32,
-      "rolling30DayAccuracy": 79,
-      "trend": {
-        "direction": "down",
-        "percentage": 3
-      }
-    },
-    {
-      "id": 4,
-      "name": "David Williams",
-      "email": "david.williams@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "David",
-      "last_name": "Williams",
-      "company_id": 3,
-      "assetsAssigned": 61,
-      "assetsUploaded": 55,
-      "rolling30DayAccuracy": 95,
-      "trend": {
-        "direction": "up",
-        "percentage": 12
-      }
-    },
-    {
-      "id": 5,
-      "name": "Jessica Martinez",
-      "email": "jessica.martinez@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Jessica",
-      "last_name": "Martinez",
-      "company_id": 4,
-      "assetsAssigned": 41,
-      "assetsUploaded": 36,
-      "rolling30DayAccuracy": 83,
-      "trend": {
-        "direction": "up",
-        "percentage": 6
-      }
-    },
-    {
-      "id": 6,
-      "name": "Robert Taylor",
-      "email": "robert.taylor@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Robert",
-      "last_name": "Taylor",
-      "company_id": 5,
-      "assetsAssigned": 48,
-      "assetsUploaded": 42,
-      "rolling30DayAccuracy": 88,
-      "trend": {
-        "direction": "up",
-        "percentage": 4
-      }
-    },
-    {
-      "id": 7,
-      "name": "Amanda Brown",
-      "email": "amanda.brown@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Amanda",
-      "last_name": "Brown",
-      "company_id": 6,
-      "assetsAssigned": 35,
-      "assetsUploaded": 30,
-      "rolling30DayAccuracy": 76,
-      "trend": {
-        "direction": "down",
-        "percentage": 2
-      }
-    },
-    {
-      "id": 8,
-      "name": "James Wilson",
-      "email": "james.wilson@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "James",
-      "last_name": "Wilson",
-      "company_id": 7,
-      "assetsAssigned": 55,
-      "assetsUploaded": 50,
-      "rolling30DayAccuracy": 91,
-      "trend": {
-        "direction": "up",
-        "percentage": 7
-      }
-    },
-    {
-      "id": 9,
-      "name": "Lisa Anderson",
-      "email": "lisa.anderson@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Lisa",
-      "last_name": "Anderson",
-      "company_id": 8,
-      "assetsAssigned": 42,
-      "assetsUploaded": 37,
-      "rolling30DayAccuracy": 85,
-      "trend": {
-        "direction": "up",
-        "percentage": 3
-      }
-    },
-    {
-      "id": 10,
-      "name": "Christopher Lee",
-      "email": "christopher.lee@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Christopher",
-      "last_name": "Lee",
-      "company_id": 9,
-      "assetsAssigned": 58,
-      "assetsUploaded": 52,
-      "rolling30DayAccuracy": 90,
-      "trend": {
-        "direction": "up",
-        "percentage": 9
-      }
-    },
-    {
-      "id": 11,
-      "name": "Jennifer White",
-      "email": "jennifer.white@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Jennifer",
-      "last_name": "White",
-      "company_id": 10,
-      "assetsAssigned": 39,
-      "assetsUploaded": 34,
-      "rolling30DayAccuracy": 81,
-      "trend": {
-        "direction": "down",
-        "percentage": 1
-      }
-    },
-    {
-      "id": 12,
-      "name": "Daniel Garcia",
-      "email": "daniel.garcia@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Daniel",
-      "last_name": "Garcia",
-      "company_id": 12,
-      "assetsAssigned": 50,
-      "assetsUploaded": 45,
-      "rolling30DayAccuracy": 89,
-      "trend": {
-        "direction": "up",
-        "percentage": 6
-      }
-    },
-    {
-      "id": 13,
-      "name": "Michelle Davis",
-      "email": "michelle.davis@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Michelle",
-      "last_name": "Davis",
-      "company_id": 13,
-      "assetsAssigned": 44,
-      "assetsUploaded": 39,
-      "rolling30DayAccuracy": 86,
-      "trend": {
-        "direction": "up",
-        "percentage": 5
-      }
-    },
-    {
-      "id": 14,
-      "name": "Kevin Miller",
-      "email": "kevin.miller@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Kevin",
-      "last_name": "Miller",
-      "company_id": 14,
-      "assetsAssigned": 47,
-      "assetsUploaded": 41,
-      "rolling30DayAccuracy": 84,
-      "trend": {
-        "direction": "up",
-        "percentage": 4
-      }
-    },
-    {
-      "id": 15,
-      "name": "Nicole Thompson",
-      "email": "nicole.thompson@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Nicole",
-      "last_name": "Thompson",
-      "company_id": 15,
-      "assetsAssigned": 36,
-      "assetsUploaded": 31,
-      "rolling30DayAccuracy": 78,
-      "trend": {
-        "direction": "down",
-        "percentage": 2
-      }
-    },
-    {
-      "id": 16,
-      "name": "Ryan Moore",
-      "email": "ryan.moore@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Ryan",
-      "last_name": "Moore",
-      "company_id": 1,
-      "assetsAssigned": 53,
-      "assetsUploaded": 48,
-      "rolling30DayAccuracy": 91,
-      "trend": {
-        "direction": "up",
-        "percentage": 8
-      }
-    },
-    {
-      "id": 17,
-      "name": "Stephanie Jackson",
-      "email": "stephanie.jackson@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Stephanie",
-      "last_name": "Jackson",
-      "company_id": 2,
-      "assetsAssigned": 40,
-      "assetsUploaded": 35,
-      "rolling30DayAccuracy": 82,
-      "trend": {
-        "direction": "up",
-        "percentage": 3
-      }
-    },
-    {
-      "id": 18,
-      "name": "Andrew Harris",
-      "email": "andrew.harris@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Andrew",
-      "last_name": "Harris",
-      "company_id": 3,
-      "assetsAssigned": 49,
-      "assetsUploaded": 43,
-      "rolling30DayAccuracy": 87,
-      "trend": {
-        "direction": "up",
-        "percentage": 5
-      }
-    },
-    {
-      "id": 19,
-      "name": "Lauren Clark",
-      "email": "lauren.clark@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Lauren",
-      "last_name": "Clark",
-      "company_id": 4,
-      "assetsAssigned": 37,
-      "assetsUploaded": 33,
-      "rolling30DayAccuracy": 80,
-      "trend": {
-        "direction": "down",
-        "percentage": 1
-      }
-    },
-    {
-      "id": 20,
-      "name": "Brandon Lewis",
-      "email": "brandon.lewis@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Brandon",
-      "last_name": "Lewis",
-      "company_id": 5,
-      "assetsAssigned": 51,
-      "assetsUploaded": 46,
-      "rolling30DayAccuracy": 88,
-      "trend": {
-        "direction": "up",
-        "percentage": 7
-      }
-    },
-    {
-      "id": 21,
-      "name": "Rachel Walker",
-      "email": "rachel.walker@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Rachel",
-      "last_name": "Walker",
-      "company_id": 6,
-      "assetsAssigned": 43,
-      "assetsUploaded": 38,
-      "rolling30DayAccuracy": 84,
-      "trend": {
-        "direction": "up",
-        "percentage": 4
-      }
-    },
-    {
-      "id": 22,
-      "name": "Justin Hall",
-      "email": "justin.hall@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Justin",
-      "last_name": "Hall",
-      "company_id": 7,
-      "assetsAssigned": 46,
-      "assetsUploaded": 40,
-      "rolling30DayAccuracy": 85,
-      "trend": {
-        "direction": "up",
-        "percentage": 6
-      }
-    },
-    {
-      "id": 23,
-      "name": "Megan Young",
-      "email": "megan.young@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Megan",
-      "last_name": "Young",
-      "company_id": 8,
-      "assetsAssigned": 34,
-      "assetsUploaded": 29,
-      "rolling30DayAccuracy": 77,
-      "trend": {
-        "direction": "down",
-        "percentage": 3
-      }
-    },
-    {
-      "id": 24,
-      "name": "Tyler King",
-      "email": "tyler.king@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Tyler",
-      "last_name": "King",
-      "company_id": 9,
-      "assetsAssigned": 54,
-      "assetsUploaded": 49,
-      "rolling30DayAccuracy": 90,
-      "trend": {
-        "direction": "up",
-        "percentage": 10
-      }
-    },
-    {
-      "id": 25,
-      "name": "Samantha Wright",
-      "email": "samantha.wright@example.com",
-      "avatar": null,
-      "email_verified_at": "2026-03-25T20:18:21.536Z",
-      "created_at": "2026-03-25T20:18:21.536Z",
-      "updated_at": "2026-03-25T20:18:21.536Z",
-      "first_name": "Samantha",
-      "last_name": "Wright",
-      "company_id": 10,
-      "assetsAssigned": 41,
-      "assetsUploaded": 36,
-      "rolling30DayAccuracy": 83,
-      "trend": {
-        "direction": "up",
-        "percentage": 5
-      }
-    }
-  ],
-  "tours": [
-    {
-      "id": 1,
-      "name": "Matt Rife 2026",
-      "performer": "Matt Rife",
-      "owner_contact_id": 6,
-      "date_started": "2024-10-01T00:00:00Z",
-      "created_at": "2026-10-26T10:27:15Z",
-      "live": 1,
-      "require_owner_approval": 1,
-      "special_instructions": "All designs must be approved by tour manager before production. High priority on venue-specific branding.",
-      "gtc_rep_contact_id": 12,
-      "high_def_only": 1,
-      "due_date": "2024-12-15T00:00:00Z"
-    },
-    {
-      "id": 2,
-      "name": "Eagles Tour 2024",
-      "performer": "Eagles",
-      "owner_contact_id": 15,
-      "date_started": "2024-11-01T00:00:00Z",
-      "created_at": "2025-10-20T18:52:25Z",
-      "live": 1,
-      "require_owner_approval": 0,
-      "special_instructions": "Classic rock aesthetic required. Coordinate with venue for load-in schedules.",
-      "gtc_rep_contact_id": 8,
-      "high_def_only": 0,
-      "due_date": "2024-12-20T00:00:00Z"
-    },
-    {
-      "id": 3,
-      "name": "Cirque du Soleil Echo",
-      "performer": "Cirque du Soleil",
-      "owner_contact_id": 20,
-      "date_started": "2024-09-15T00:00:00Z",
-      "created_at": "2025-01-03T12:43:30Z",
-      "live": 1,
-      "require_owner_approval": 1,
-      "special_instructions": "Multilingual signage required. Coordinate with international venues.",
-      "gtc_rep_contact_id": 14,
-      "high_def_only": 1,
-      "due_date": "2024-12-10T00:00:00Z"
-    },
-    {
-      "id": 4,
-      "name": "Live Nation Concerts",
-      "performer": "Various Artists",
-      "owner_contact_id": 9,
-      "date_started": "2024-08-01T00:00:00Z",
-      "created_at": "2024-12-17T04:59:52Z",
-      "live": 1,
-      "require_owner_approval": 0,
-      "special_instructions": null,
-      "gtc_rep_contact_id": 18,
-      "high_def_only": 0,
-      "due_date": "2024-12-25T00:00:00Z"
-    },
-    {
-      "id": 5,
-      "name": "Bon Jovi 2024",
-      "performer": "Bon Jovi",
-      "owner_contact_id": 22,
-      "date_started": "2024-12-01T00:00:00Z",
-      "created_at": "2025-03-14T13:00:20Z",
-      "live": 1,
-      "require_owner_approval": 1,
-      "special_instructions": "VIP experience materials require special handling.",
-      "gtc_rep_contact_id": 7,
-      "high_def_only": 1,
-      "due_date": "2025-01-05T00:00:00Z"
-    },
-    {
-      "id": 6,
-      "name": "Demi Lovato Tour",
-      "performer": "Demi Lovato",
-      "owner_contact_id": 11,
-      "date_started": "2024-11-15T00:00:00Z",
-      "created_at": "2025-02-12T03:43:56Z",
-      "live": 1,
-      "require_owner_approval": 0,
-      "special_instructions": "Social media integration required for all materials.",
-      "gtc_rep_contact_id": 19,
-      "high_def_only": 0,
-      "due_date": "2024-12-18T00:00:00Z"
-    },
-    {
-      "id": 7,
-      "name": "Renee Rapp - Snow Tour",
-      "performer": "Renee Rapp",
-      "owner_contact_id": 16,
-      "date_started": "2024-10-20T00:00:00Z",
-      "created_at": "2025-03-16T03:15:59Z",
-      "live": 1,
-      "require_owner_approval": 1,
-      "special_instructions": "Winter-themed branding throughout. Ensure materials are weather-resistant.",
-      "gtc_rep_contact_id": 10,
-      "high_def_only": 1,
-      "due_date": "2024-12-22T00:00:00Z"
-    },
-    {
-      "id": 8,
-      "name": "Cirque du Soleil Portfolio",
-      "performer": "Cirque du Soleil",
-      "owner_contact_id": 24,
-      "date_started": "2024-07-01T00:00:00Z",
-      "created_at": "2024-09-27T19:44:42Z",
-      "live": 0,
-      "require_owner_approval": 0,
-      "special_instructions": "Portfolio showcase materials. Archive quality required.",
-      "gtc_rep_contact_id": 13,
-      "high_def_only": 1,
-      "due_date": "2024-12-30T00:00:00Z"
-    }
-  ],
-  "tour_venue_status": [
-    {
-      "id": 1,
-      "label": "New Order"
-    },
-    {
-      "id": 2,
-      "label": "In Progress"
-    },
-    {
-      "id": 3,
-      "label": "Voice Over"
-    },
-    {
-      "id": 4,
-      "label": "Audio"
-    },
-    {
-      "id": 5,
-      "label": "Art"
-    },
-    {
-      "id": 6,
-      "label": "Paused"
-    },
-    {
-      "id": 7,
-      "label": "Completed"
-    }
-  ],
-  "tour_venue_stops": [
-    {
-      "id": 1,
-      "tour_id": 1,
-      "venue_id": 1,
-      "start_date": "2024-11-08T19:00:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 7,
-      "status": [
-        1
-      ],
-      "created_at": "2026-02-22T03:56:51Z"
-    },
-    {
-      "id": 2,
-      "tour_id": 1,
-      "venue_id": 2,
-      "start_date": "2024-11-08T18:00:00Z",
-      "end_date": "2024-11-08T22:30:00Z",
-      "client": 9,
-      "status": [
-        2
-      ],
-      "created_at": "2024-10-27T19:34:45Z"
-    },
-    {
-      "id": 3,
-      "tour_id": 1,
-      "venue_id": 3,
-      "start_date": "2024-11-08T19:30:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 10,
-      "status": [
-        5
-      ],
-      "created_at": "2024-12-04T05:39:38Z"
-    },
-    {
-      "id": 4,
-      "tour_id": 2,
-      "venue_id": 4,
-      "start_date": "2024-11-08T18:30:00Z",
-      "end_date": "2024-11-08T22:00:00Z",
-      "client": 11,
-      "status": [
-        6
-      ],
-      "created_at": "2025-02-02T16:09:29Z"
-    },
-    {
-      "id": 5,
-      "tour_id": 2,
-      "venue_id": 5,
-      "start_date": "2024-11-15T19:00:00Z",
-      "end_date": "2024-11-15T23:30:00Z",
-      "client": 12,
-      "status": [
-        1,
-        5,
-        3,
-        4
-      ],
-      "created_at": "2024-10-25T00:41:56Z"
-    },
-    {
-      "id": 6,
-      "tour_id": 3,
-      "venue_id": 1,
-      "start_date": "2024-11-08T19:00:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 7,
-      "status": [
-        1
-      ],
-      "created_at": "2025-01-23T21:46:07Z"
-    },
-    {
-      "id": 7,
-      "tour_id": 3,
-      "venue_id": 5,
-      "start_date": "2024-11-15T19:00:00Z",
-      "end_date": "2024-11-15T23:30:00Z",
-      "client": 12,
-      "status": [
-        7
-      ],
-      "created_at": "2024-12-17T01:58:45Z"
-    },
-    {
-      "id": 8,
-      "tour_id": 3,
-      "venue_id": 6,
-      "start_date": "2024-11-16T19:30:00Z",
-      "end_date": "2024-11-16T23:00:00Z",
-      "client": 15,
-      "status": [
-        3,
-        4
-      ],
-      "created_at": "2024-10-04T21:06:34Z"
-    },
-    {
-      "id": 9,
-      "tour_id": 4,
-      "venue_id": 2,
-      "start_date": "2024-11-08T18:00:00Z",
-      "end_date": "2024-11-08T22:30:00Z",
-      "client": 9,
-      "status": [
-        2
-      ],
-      "created_at": "2025-03-14T14:58:34Z"
-    },
-    {
-      "id": 10,
-      "tour_id": 4,
-      "venue_id": 3,
-      "start_date": "2024-11-08T19:30:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 10,
-      "status": [
-        7
-      ],
-      "created_at": "2025-02-25T00:55:21Z"
-    },
-    {
-      "id": 11,
-      "tour_id": 4,
-      "venue_id": 4,
-      "start_date": "2024-11-08T18:30:00Z",
-      "end_date": "2024-11-08T22:00:00Z",
-      "client": 11,
-      "status": [
-        6
-      ],
-      "created_at": "2024-10-26T09:09:27Z"
-    },
-    {
-      "id": 12,
-      "tour_id": 4,
-      "venue_id": 5,
-      "start_date": "2024-11-15T19:00:00Z",
-      "end_date": "2024-11-15T23:30:00Z",
-      "client": 12,
-      "status": [
-        2
-      ],
-      "created_at": "2024-11-14T23:06:57Z"
-    },
-    {
-      "id": 13,
-      "tour_id": 5,
-      "venue_id": 1,
-      "start_date": "2024-11-08T19:00:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 7,
-      "status": [
-        1
-      ],
-      "created_at": "2024-12-15T00:43:25Z"
-    },
-    {
-      "id": 14,
-      "tour_id": 5,
-      "venue_id": 6,
-      "start_date": "2024-11-16T19:30:00Z",
-      "end_date": "2024-11-16T23:00:00Z",
-      "client": 15,
-      "status": [
-        3,
-        4
-      ],
-      "created_at": "2025-02-01T04:13:12Z"
-    },
-    {
-      "id": 15,
-      "tour_id": 6,
-      "venue_id": 3,
-      "start_date": "2024-11-08T19:30:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 10,
-      "status": [
-        2
-      ],
-      "created_at": "2025-01-19T19:57:02Z"
-    },
-    {
-      "id": 16,
-      "tour_id": 6,
-      "venue_id": 4,
-      "start_date": "2024-11-08T18:30:00Z",
-      "end_date": "2024-11-08T22:00:00Z",
-      "client": 11,
-      "status": [
-        6
-      ],
-      "created_at": "2024-12-17T13:28:40Z"
-    },
-    {
-      "id": 17,
-      "tour_id": 7,
-      "venue_id": 2,
-      "start_date": "2024-11-08T18:00:00Z",
-      "end_date": "2024-11-08T22:30:00Z",
-      "client": 9,
-      "status": [
-        5
-      ],
-      "created_at": "2025-01-29T17:51:05Z"
-    },
-    {
-      "id": 18,
-      "tour_id": 7,
-      "venue_id": 5,
-      "start_date": "2024-11-15T19:00:00Z",
-      "end_date": "2024-11-15T23:30:00Z",
-      "client": 12,
-      "status": [
-        7
-      ],
-      "created_at": "2024-11-29T07:28:29Z"
-    },
-    {
-      "id": 19,
-      "tour_id": 7,
-      "venue_id": 6,
-      "start_date": "2024-11-16T19:30:00Z",
-      "end_date": "2024-11-16T23:00:00Z",
-      "client": 15,
-      "status": [
-        3,
-        4
-      ],
-      "created_at": "2025-02-28T13:57:20Z"
-    },
-    {
-      "id": 20,
-      "tour_id": 8,
-      "venue_id": 1,
-      "start_date": "2024-11-08T19:00:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 7,
-      "status": [
-        1
-      ],
-      "created_at": "2024-10-10T04:00:16Z"
-    },
-    {
-      "id": 21,
-      "tour_id": 8,
-      "venue_id": 6,
-      "start_date": "2024-11-16T19:30:00Z",
-      "end_date": "2024-11-16T23:00:00Z",
-      "client": 15,
-      "status": [
-        3,
-        4
-      ],
-      "created_at": "2024-09-20T08:14:47Z"
-    }
-  ],
-  "tour_demo_venues": [
-    {
-      "id": 22,
-      "tour_id": 1,
-      "venue_id": null,
-      "start_date": "2024-10-01T00:00:00Z",
-      "end_date": "2024-12-15T00:00:00Z",
-      "client": 6,
-      "status": null,
-      "created_at": "2025-03-09T09:52:49Z"
-    },
-    {
-      "id": 23,
-      "tour_id": 2,
-      "venue_id": null,
-      "start_date": "2024-11-01T00:00:00Z",
-      "end_date": "2024-12-20T00:00:00Z",
-      "client": 15,
-      "status": null,
-      "created_at": "2024-10-28T23:33:09Z"
-    },
-    {
-      "id": 24,
-      "tour_id": 3,
-      "venue_id": null,
-      "start_date": "2024-09-15T00:00:00Z",
-      "end_date": "2024-12-10T00:00:00Z",
-      "client": 20,
-      "status": null,
-      "created_at": "2024-11-14T00:55:21Z"
-    },
-    {
-      "id": 25,
-      "tour_id": 4,
-      "venue_id": null,
-      "start_date": "2024-08-01T00:00:00Z",
-      "end_date": "2024-12-25T00:00:00Z",
-      "client": 9,
-      "status": null,
-      "created_at": "2024-11-21T21:29:12Z"
-    },
-    {
-      "id": 26,
-      "tour_id": 5,
-      "venue_id": null,
-      "start_date": "2024-12-01T00:00:00Z",
-      "end_date": "2025-01-05T00:00:00Z",
-      "client": 22,
-      "status": null,
-      "created_at": "2024-09-28T21:03:09Z"
-    },
-    {
-      "id": 27,
-      "tour_id": 6,
-      "venue_id": null,
-      "start_date": "2024-11-15T00:00:00Z",
-      "end_date": "2024-12-18T00:00:00Z",
-      "client": 11,
-      "status": null,
-      "created_at": "2025-02-26T16:35:29Z"
-    },
-    {
-      "id": 28,
-      "tour_id": 7,
-      "venue_id": null,
-      "start_date": "2024-10-20T00:00:00Z",
-      "end_date": "2024-12-22T00:00:00Z",
-      "client": 16,
-      "status": null,
-      "created_at": "2024-10-18T00:31:28Z"
-    },
-    {
-      "id": 29,
-      "tour_id": 8,
-      "venue_id": null,
-      "start_date": "2024-07-01T00:00:00Z",
-      "end_date": "2024-12-30T00:00:00Z",
-      "client": 24,
-      "status": null,
-      "created_at": "2025-01-20T02:44:35Z"
-    }
-  ],
-  "tour_venues": [
-    {
-      "id": 1,
-      "tour_id": 1,
-      "venue_id": 1,
-      "start_date": "2024-11-08T19:00:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 7,
-      "status": [
-        1
-      ],
-      "created_at": "2026-02-22T03:56:51Z"
-    },
-    {
-      "id": 2,
-      "tour_id": 1,
-      "venue_id": 2,
-      "start_date": "2024-11-08T18:00:00Z",
-      "end_date": "2024-11-08T22:30:00Z",
-      "client": 9,
-      "status": [
-        2
-      ],
-      "created_at": "2024-10-27T19:34:45Z"
-    },
-    {
-      "id": 3,
-      "tour_id": 1,
-      "venue_id": 3,
-      "start_date": "2024-11-08T19:30:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 10,
-      "status": [
-        5
-      ],
-      "created_at": "2024-12-04T05:39:38Z"
-    },
-    {
-      "id": 4,
-      "tour_id": 2,
-      "venue_id": 4,
-      "start_date": "2024-11-08T18:30:00Z",
-      "end_date": "2024-11-08T22:00:00Z",
-      "client": 11,
-      "status": [
-        6
-      ],
-      "created_at": "2025-02-02T16:09:29Z"
-    },
-    {
-      "id": 5,
-      "tour_id": 2,
-      "venue_id": 5,
-      "start_date": "2024-11-15T19:00:00Z",
-      "end_date": "2024-11-15T23:30:00Z",
-      "client": 12,
-      "status": [
-        1,
-        5,
-        3,
-        4
-      ],
-      "created_at": "2024-10-25T00:41:56Z"
-    },
-    {
-      "id": 6,
-      "tour_id": 3,
-      "venue_id": 1,
-      "start_date": "2024-11-08T19:00:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 7,
-      "status": [
-        1
-      ],
-      "created_at": "2025-01-23T21:46:07Z"
-    },
-    {
-      "id": 7,
-      "tour_id": 3,
-      "venue_id": 5,
-      "start_date": "2024-11-15T19:00:00Z",
-      "end_date": "2024-11-15T23:30:00Z",
-      "client": 12,
-      "status": [
-        7
-      ],
-      "created_at": "2024-12-17T01:58:45Z"
-    },
-    {
-      "id": 8,
-      "tour_id": 3,
-      "venue_id": 6,
-      "start_date": "2024-11-16T19:30:00Z",
-      "end_date": "2024-11-16T23:00:00Z",
-      "client": 15,
-      "status": [
-        3,
-        4
-      ],
-      "created_at": "2024-10-04T21:06:34Z"
-    },
-    {
-      "id": 9,
-      "tour_id": 4,
-      "venue_id": 2,
-      "start_date": "2024-11-08T18:00:00Z",
-      "end_date": "2024-11-08T22:30:00Z",
-      "client": 9,
-      "status": [
-        2
-      ],
-      "created_at": "2025-03-14T14:58:34Z"
-    },
-    {
-      "id": 10,
-      "tour_id": 4,
-      "venue_id": 3,
-      "start_date": "2024-11-08T19:30:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 10,
-      "status": [
-        7
-      ],
-      "created_at": "2025-02-25T00:55:21Z"
-    },
-    {
-      "id": 11,
-      "tour_id": 4,
-      "venue_id": 4,
-      "start_date": "2024-11-08T18:30:00Z",
-      "end_date": "2024-11-08T22:00:00Z",
-      "client": 11,
-      "status": [
-        6
-      ],
-      "created_at": "2024-10-26T09:09:27Z"
-    },
-    {
-      "id": 12,
-      "tour_id": 4,
-      "venue_id": 5,
-      "start_date": "2024-11-15T19:00:00Z",
-      "end_date": "2024-11-15T23:30:00Z",
-      "client": 12,
-      "status": [
-        2
-      ],
-      "created_at": "2024-11-14T23:06:57Z"
-    },
-    {
-      "id": 13,
-      "tour_id": 5,
-      "venue_id": 1,
-      "start_date": "2024-11-08T19:00:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 7,
-      "status": [
-        1
-      ],
-      "created_at": "2024-12-15T00:43:25Z"
-    },
-    {
-      "id": 14,
-      "tour_id": 5,
-      "venue_id": 6,
-      "start_date": "2024-11-16T19:30:00Z",
-      "end_date": "2024-11-16T23:00:00Z",
-      "client": 15,
-      "status": [
-        3,
-        4
-      ],
-      "created_at": "2025-02-01T04:13:12Z"
-    },
-    {
-      "id": 15,
-      "tour_id": 6,
-      "venue_id": 3,
-      "start_date": "2024-11-08T19:30:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 10,
-      "status": [
-        2
-      ],
-      "created_at": "2025-01-19T19:57:02Z"
-    },
-    {
-      "id": 16,
-      "tour_id": 6,
-      "venue_id": 4,
-      "start_date": "2024-11-08T18:30:00Z",
-      "end_date": "2024-11-08T22:00:00Z",
-      "client": 11,
-      "status": [
-        6
-      ],
-      "created_at": "2024-12-17T13:28:40Z"
-    },
-    {
-      "id": 17,
-      "tour_id": 7,
-      "venue_id": 2,
-      "start_date": "2024-11-08T18:00:00Z",
-      "end_date": "2024-11-08T22:30:00Z",
-      "client": 9,
-      "status": [
-        5
-      ],
-      "created_at": "2025-01-29T17:51:05Z"
-    },
-    {
-      "id": 18,
-      "tour_id": 7,
-      "venue_id": 5,
-      "start_date": "2024-11-15T19:00:00Z",
-      "end_date": "2024-11-15T23:30:00Z",
-      "client": 12,
-      "status": [
-        7
-      ],
-      "created_at": "2024-11-29T07:28:29Z"
-    },
-    {
-      "id": 19,
-      "tour_id": 7,
-      "venue_id": 6,
-      "start_date": "2024-11-16T19:30:00Z",
-      "end_date": "2024-11-16T23:00:00Z",
-      "client": 15,
-      "status": [
-        3,
-        4
-      ],
-      "created_at": "2025-02-28T13:57:20Z"
-    },
-    {
-      "id": 20,
-      "tour_id": 8,
-      "venue_id": 1,
-      "start_date": "2024-11-08T19:00:00Z",
-      "end_date": "2024-11-08T23:00:00Z",
-      "client": 7,
-      "status": [
-        1
-      ],
-      "created_at": "2024-10-10T04:00:16Z"
-    },
-    {
-      "id": 21,
-      "tour_id": 8,
-      "venue_id": 6,
-      "start_date": "2024-11-16T19:30:00Z",
-      "end_date": "2024-11-16T23:00:00Z",
-      "client": 15,
-      "status": [
-        3,
-        4
-      ],
-      "created_at": "2024-09-20T08:14:47Z"
-    },
-    {
-      "id": 22,
-      "tour_id": 1,
-      "venue_id": null,
-      "start_date": "2024-10-01T00:00:00Z",
-      "end_date": "2024-12-15T00:00:00Z",
-      "client": 6,
-      "status": null,
-      "created_at": "2025-03-09T09:52:49Z"
-    },
-    {
-      "id": 23,
-      "tour_id": 2,
-      "venue_id": null,
-      "start_date": "2024-11-01T00:00:00Z",
-      "end_date": "2024-12-20T00:00:00Z",
-      "client": 15,
-      "status": null,
-      "created_at": "2024-10-28T23:33:09Z"
-    },
-    {
-      "id": 24,
-      "tour_id": 3,
-      "venue_id": null,
-      "start_date": "2024-09-15T00:00:00Z",
-      "end_date": "2024-12-10T00:00:00Z",
-      "client": 20,
-      "status": null,
-      "created_at": "2024-11-14T00:55:21Z"
-    },
-    {
-      "id": 25,
-      "tour_id": 4,
-      "venue_id": null,
-      "start_date": "2024-08-01T00:00:00Z",
-      "end_date": "2024-12-25T00:00:00Z",
-      "client": 9,
-      "status": null,
-      "created_at": "2024-11-21T21:29:12Z"
-    },
-    {
-      "id": 26,
-      "tour_id": 5,
-      "venue_id": null,
-      "start_date": "2024-12-01T00:00:00Z",
-      "end_date": "2025-01-05T00:00:00Z",
-      "client": 22,
-      "status": null,
-      "created_at": "2024-09-28T21:03:09Z"
-    },
-    {
-      "id": 27,
-      "tour_id": 6,
-      "venue_id": null,
-      "start_date": "2024-11-15T00:00:00Z",
-      "end_date": "2024-12-18T00:00:00Z",
-      "client": 11,
-      "status": null,
-      "created_at": "2025-02-26T16:35:29Z"
-    },
-    {
-      "id": 28,
-      "tour_id": 7,
-      "venue_id": null,
-      "start_date": "2024-10-20T00:00:00Z",
-      "end_date": "2024-12-22T00:00:00Z",
-      "client": 16,
-      "status": null,
-      "created_at": "2024-10-18T00:31:28Z"
-    },
-    {
-      "id": 29,
-      "tour_id": 8,
-      "venue_id": null,
-      "start_date": "2024-07-01T00:00:00Z",
-      "end_date": "2024-12-30T00:00:00Z",
-      "client": 24,
-      "status": null,
-      "created_at": "2025-01-20T02:44:35Z"
-    }
-  ],
-  "venues": [
-    {
-      "id": 1,
-      "name": "Maddison Square Garden",
-      "address": "4 Pennsylvania Plaza",
-      "city": "New York",
-      "state": "NY",
-      "country_id": 1
-    },
-    {
-      "id": 2,
-      "name": "Sunset Amphitheater at McKinney, Texas",
-      "address": "2343 N Central Expy",
-      "city": "McKinney",
-      "state": "TX",
-      "country_id": 1
-    },
-    {
-      "id": 3,
-      "name": "Alys Robinson Stephens Performing Arts Center",
-      "address": "1200 10th Ave S",
-      "city": "Birmingham",
-      "state": "AL",
-      "country_id": 1
-    },
-    {
-      "id": 4,
-      "name": "The Coca Cola Charlotte Harbor Event and Conference Center",
-      "address": "75 Taylor St",
-      "city": "Punta Gorda",
-      "state": "FL",
-      "country_id": 1
-    },
-    {
-      "id": 5,
-      "name": "Hollywood Bowl",
-      "address": "2301 N Highland Ave",
-      "city": "Los Angeles",
-      "state": "CA",
-      "country_id": 1
-    },
-    {
-      "id": 6,
-      "name": "Chase Center",
-      "address": "1 Warriors Way",
-      "city": "San Francisco",
-      "state": "CA",
-      "country_id": 1
-    },
-    {
-      "id": 7,
-      "name": "N/A",
-      "address": "",
-      "city": "",
-      "state": "",
-      "country_id": 1
-    }
-  ],
-  "countries": [
-    {
-      "id": 1,
-      "name": "United States",
-      "code": "US"
-    },
-    {
-      "id": 2,
-      "name": "Canada",
-      "code": "CA"
-    },
-    {
-      "id": 3,
-      "name": "United Kingdom",
-      "code": "UK"
-    },
-    {
-      "id": 4,
-      "name": "Mexico",
-      "code": "MX"
-    },
-    {
-      "id": 5,
-      "name": "Australia",
-      "code": "AU"
-    }
-  ],
-  "companies": [
-    {
-      "id": 1,
-      "name": "CIRQUE DU SOLEIL AMERICA NEWCO, INC.",
-      "billing_address": "1151 Grier Drive, Suite C",
-      "city": "Las Vegas",
-      "state": "NV",
-      "zip": "964075",
-      "country_id": 1,
-      "discount_rate": 5,
-      "credit_limit": 100000,
-      "pay_email": "payments@cirque.com",
-      "rec_email": "receivables@cirque.com",
-      "telephone": "+1-702-555-0100",
-      "copy_email": "copy@cirque.com",
-      "fax_number": "+1-702-555-0101",
-      "bank_account_number": "1234567890",
-      "routing_number": "021000021",
-      "rec_name": "Accounts Receivable",
-      "rec_tel": "+1-702-555-0102"
-    },
-    {
-      "id": 2,
-      "name": "Live Nation Entertainment, Inc.",
-      "billing_address": "9348 Civic Center Drive",
-      "city": "Beverly Hills",
-      "state": "CA",
-      "zip": "90210",
-      "country_id": 1,
-      "discount_rate": 8.5,
-      "credit_limit": 500000,
-      "pay_email": "payments@livenation.com",
-      "rec_email": "ar@livenation.com",
-      "telephone": "+1-310-555-0200",
-      "copy_email": "billing@livenation.com",
-      "fax_number": "+1-310-555-0201",
-      "bank_account_number": "2345678901",
-      "routing_number": "121000248",
-      "rec_name": "Finance Department",
-      "rec_tel": "+1-310-555-0202"
-    },
-    {
-      "id": 3,
-      "name": "Matt Rife Productions",
-      "billing_address": "123 Entertainment Blvd",
-      "city": "Los Angeles",
-      "state": "CA",
-      "zip": "90028",
-      "country_id": 1,
-      "discount_rate": 3,
-      "credit_limit": 50000,
-      "pay_email": "pay@mattrife.com",
-      "rec_email": "receivables@mattrife.com",
-      "telephone": "+1-323-555-0300",
-      "copy_email": "admin@mattrife.com",
-      "fax_number": "+1-323-555-0301",
-      "bank_account_number": "3456789012",
-      "routing_number": "122105278",
-      "rec_name": "Production Office",
-      "rec_tel": "+1-323-555-0302"
-    },
-    {
-      "id": 4,
-      "name": "Bon Jovi Touring, LLC",
-      "billing_address": "456 Music Avenue",
-      "city": "New York",
-      "state": "NY",
-      "zip": "10001",
-      "country_id": 1,
-      "discount_rate": 7,
-      "credit_limit": 250000,
-      "pay_email": "payments@bonjovi.com",
-      "rec_email": "ar@bonjovi.com",
-      "telephone": "+1-212-555-0400",
-      "copy_email": "billing@bonjovi.com",
-      "fax_number": "+1-212-555-0401",
-      "bank_account_number": "4567890123",
-      "routing_number": "026009593",
-      "rec_name": "Touring Accounts",
-      "rec_tel": "+1-212-555-0402"
-    },
-    {
-      "id": 5,
-      "name": "Demi Lovato Entertainment",
-      "billing_address": "789 Star Street",
-      "city": "Los Angeles",
-      "state": "CA",
-      "zip": "90069",
-      "country_id": 1,
-      "discount_rate": 4.5,
-      "credit_limit": 150000,
-      "pay_email": "pay@demilovato.com",
-      "rec_email": "receivables@demilovato.com",
-      "telephone": "+1-310-555-0500",
-      "copy_email": "finance@demilovato.com",
-      "fax_number": "+1-310-555-0501",
-      "bank_account_number": "5678901234",
-      "routing_number": "122105278",
-      "rec_name": "Entertainment Finance",
-      "rec_tel": "+1-310-555-0502"
-    },
-    {
-      "id": 6,
-      "name": "Renee Rapp Touring",
-      "billing_address": "321 Performance Lane",
-      "city": "Nashville",
-      "state": "TN",
-      "zip": "37203",
-      "country_id": 1,
-      "discount_rate": 2.5,
-      "credit_limit": 75000,
-      "pay_email": "payments@reneerapp.com",
-      "rec_email": "ar@reneerapp.com",
-      "telephone": "+1-615-555-0600",
-      "copy_email": "billing@reneerapp.com",
-      "fax_number": "+1-615-555-0601",
-      "bank_account_number": "6789012345",
-      "routing_number": "064000017",
-      "rec_name": "Tour Management",
-      "rec_tel": "+1-615-555-0602"
-    },
-    {
-      "id": 7,
-      "name": "Maple Leaf Entertainment Group",
-      "billing_address": "200 Bay Street, Suite 1500",
-      "city": "Toronto",
-      "state": "ON",
-      "zip": "M5J 2J4",
-      "country_id": 2,
-      "discount_rate": 6,
-      "credit_limit": 200000,
-      "pay_email": "payments@mapleleafent.com",
-      "rec_email": "receivables@mapleleafent.com",
-      "telephone": "+1-416-555-0700",
-      "copy_email": "billing@mapleleafent.com",
-      "fax_number": "+1-416-555-0701",
-      "bank_account_number": "7890123456",
-      "routing_number": "000200001",
-      "rec_name": "Accounts Department",
-      "rec_tel": "+1-416-555-0702"
-    },
-    {
-      "id": 8,
-      "name": "Royal Albert Hall Productions",
-      "billing_address": "Kensington Gore",
-      "city": "London",
-      "state": "Greater London",
-      "zip": "SW7 2AP",
-      "country_id": 3,
-      "discount_rate": 10,
-      "credit_limit": 300000,
-      "pay_email": "payments@royalalberthall.co.uk",
-      "rec_email": "finance@royalalberthall.co.uk",
-      "telephone": "+44-20-7589-3203",
-      "copy_email": "billing@royalalberthall.co.uk",
-      "fax_number": "+44-20-7589-3204",
-      "bank_account_number": "12345678",
-      "routing_number": "20-00-00",
-      "rec_name": "Finance Office",
-      "rec_tel": "+44-20-7589-3205"
-    },
-    {
-      "id": 9,
-      "name": "Estadio Azteca Events",
-      "billing_address": "Calzada de Tlalpan 3465",
-      "city": "Mexico City",
-      "state": "CDMX",
-      "zip": "04650",
-      "country_id": 4,
-      "discount_rate": 5.5,
-      "credit_limit": 180000,
-      "pay_email": "pagos@estadioazteca.mx",
-      "rec_email": "cobranza@estadioazteca.mx",
-      "telephone": "+52-55-5555-0900",
-      "copy_email": "facturacion@estadioazteca.mx",
-      "fax_number": "+52-55-5555-0901",
-      "bank_account_number": "012345678901234567",
-      "routing_number": "014",
-      "rec_name": "Departamento de Finanzas",
-      "rec_tel": "+52-55-5555-0902"
-    },
-    {
-      "id": 10,
-      "name": "Sydney Opera House Management",
-      "billing_address": "Bennelong Point",
-      "city": "Sydney",
-      "state": "NSW",
-      "zip": "2000",
-      "country_id": 5,
-      "discount_rate": 12,
-      "credit_limit": 400000,
-      "pay_email": "payments@sydneyoperahouse.com.au",
-      "rec_email": "accounts@sydneyoperahouse.com.au",
-      "telephone": "+61-2-9250-7111",
-      "copy_email": "billing@sydneyoperahouse.com.au",
-      "fax_number": "+61-2-9250-7112",
-      "bank_account_number": "123456789",
-      "routing_number": "062-000",
-      "rec_name": "Finance Team",
-      "rec_tel": "+61-2-9250-7113"
-    },
-    {
-      "id": 11,
-      "name": "Coachella Valley Music Festival",
-      "billing_address": "81-800 Avenue 51",
-      "city": "Indio",
-      "state": "CA",
-      "zip": "92201",
-      "country_id": 1,
-      "discount_rate": 15,
-      "credit_limit": 500000,
-      "pay_email": "payments@coachella.com",
-      "rec_email": "ar@coachella.com",
-      "telephone": "+1-760-555-1100",
-      "copy_email": "finance@coachella.com",
-      "fax_number": "+1-760-555-1101",
-      "bank_account_number": "8901234567",
-      "routing_number": "122105278",
-      "rec_name": "Festival Finance",
-      "rec_tel": "+1-760-555-1102"
-    },
-    {
-      "id": 12,
-      "name": "Vancouver Symphony Orchestra",
-      "billing_address": "601 Smithe Street",
-      "city": "Vancouver",
-      "state": "BC",
-      "zip": "V6B 3L4",
-      "country_id": 2,
-      "discount_rate": 8,
-      "credit_limit": 120000,
-      "pay_email": "payments@vancouversymphony.ca",
-      "rec_email": "receivables@vancouversymphony.ca",
-      "telephone": "+1-604-555-1200",
-      "copy_email": "billing@vancouversymphony.ca",
-      "fax_number": "+1-604-555-1201",
-      "bank_account_number": "9012345678",
-      "routing_number": "000100001",
-      "rec_name": "Orchestra Administration",
-      "rec_tel": "+1-604-555-1202"
-    },
-    {
-      "id": 13,
-      "name": "Glastonbury Festival Ltd",
-      "billing_address": "Worthy Farm",
-      "city": "Pilton",
-      "state": "Somerset",
-      "zip": "BA4 4BY",
-      "country_id": 3,
-      "discount_rate": 9.5,
-      "credit_limit": 350000,
-      "pay_email": "payments@glastonburyfestivals.co.uk",
-      "rec_email": "accounts@glastonburyfestivals.co.uk",
-      "telephone": "+44-1458-834-596",
-      "copy_email": "finance@glastonburyfestivals.co.uk",
-      "fax_number": "+44-1458-834-597",
-      "bank_account_number": "23456789",
-      "routing_number": "40-02-26",
-      "rec_name": "Festival Accounts",
-      "rec_tel": "+44-1458-834-598"
-    },
-    {
-      "id": 14,
-      "name": "Palacio de los Deportes",
-      "billing_address": "Avenida Río Churubusco 800",
-      "city": "Mexico City",
-      "state": "CDMX",
-      "zip": "08010",
-      "country_id": 4,
-      "discount_rate": 7.5,
-      "credit_limit": 220000,
-      "pay_email": "pagos@palaciodedeportes.mx",
-      "rec_email": "cobranza@palaciodedeportes.mx",
-      "telephone": "+52-55-5555-1400",
-      "copy_email": "facturacion@palaciodedeportes.mx",
-      "fax_number": "+52-55-5555-1401",
-      "bank_account_number": "234567890123456789",
-      "routing_number": "014",
-      "rec_name": "Oficina de Finanzas",
-      "rec_tel": "+52-55-5555-1402"
-    },
-    {
-      "id": 15,
-      "name": "Melbourne Arts Centre",
-      "billing_address": "100 St Kilda Road",
-      "city": "Melbourne",
-      "state": "VIC",
-      "zip": "3004",
-      "country_id": 5,
-      "discount_rate": 11,
-      "credit_limit": 280000,
-      "pay_email": "payments@artscentremelbourne.com.au",
-      "rec_email": "accounts@artscentremelbourne.com.au",
-      "telephone": "+61-3-9281-8000",
-      "copy_email": "billing@artscentremelbourne.com.au",
-      "fax_number": "+61-3-9281-8001",
-      "bank_account_number": "234567890",
-      "routing_number": "062-000",
-      "rec_name": "Finance Department",
-      "rec_tel": "+61-3-9281-8002"
-    }
-  ],
-  "invoices": [
-    {
-      "id": 1,
-      "invoiceNumber": "974658",
-      "date": "11/06/24",
-      "tour": "Cirque du Soleil Portfolio",
-      "market": "Portfolio Sizzle",
-      "venue_id": 7,
-      "amount": 8750,
-      "showDate": "2025-12-20",
-      "isDeleted": false,
-      "user_id": 17,
-      "company_id": 1,
-      "held": 1,
-      "release_date": null,
-      "payment_due": "2025-11-27",
-      "clientReference": "Generic Pre Sale",
-      "address": null,
-      "city": null,
-      "state": null,
-      "zip": null,
-      "country_id": null,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 2,
-      "invoiceNumber": "980043",
-      "date": "9/30/25",
-      "tour": "Cirque du Soleil Echo",
-      "market": "San Francisco, CA",
-      "venue_id": 6,
-      "amount": 7692.44,
-      "showDate": "2026-01-15",
-      "isDeleted": false,
-      "user_id": 21,
-      "company_id": 1,
-      "held": 0,
-      "release_date": "2025-12-20",
-      "payment_due": "2025-10-28",
-      "clientReference": "Amex Pre Sale",
-      "address": "2450 Mission Street, Suite 200",
-      "city": "San Francisco",
-      "state": "CA",
-      "zip": "94110",
-      "country_id": 1,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 3,
-      "invoiceNumber": "984958",
-      "date": "11/06/24",
-      "tour": "Cirque du Soleil Echo",
-      "market": "Dallas, TX",
-      "venue_id": 1,
-      "amount": 9571.78,
-      "showDate": "2026-02-15",
-      "isDeleted": false,
-      "user_id": 23,
-      "company_id": 1,
-      "held": 1,
-      "release_date": null,
-      "payment_due": "2025-01-10",
-      "clientReference": "Generic Spots",
-      "address": null,
-      "city": null,
-      "state": null,
-      "zip": null,
-      "country_id": null,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 4,
-      "invoiceNumber": "981873",
-      "date": "9/30/25",
-      "tour": "Cirque du Soleil Echo",
-      "market": "Seattle, WA",
-      "venue_id": 5,
-      "amount": 9205.24,
-      "showDate": "2025-03-25",
-      "isDeleted": false,
-      "user_id": 25,
-      "company_id": 1,
-      "held": 0,
-      "release_date": "2025-11-25",
-      "payment_due": "2025-02-15",
-      "clientReference": "Generic Pre sale",
-      "address": null,
-      "city": null,
-      "state": null,
-      "zip": null,
-      "country_id": null,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 5,
-      "invoiceNumber": "981873",
-      "date": "9/30/25",
-      "tour": "Cirque du Soleil Echo",
-      "market": "Seattle, WA",
-      "venue_id": 5,
-      "amount": 3205.24,
-      "showDate": "2025-12-05",
-      "isDeleted": true,
-      "user_id": 7,
-      "company_id": 1,
-      "held": 1,
-      "release_date": null,
-      "payment_due": "2025-02-15",
-      "clientReference": "Generic Pre sale",
-      "address": null,
-      "city": null,
-      "state": null,
-      "zip": null,
-      "country_id": null,
-      "delete_date": "2025-10-15T14:30:00Z",
-      "deleted_by": 7,
-      "deleted_reason": "Duplicate invoice - cancelled by client request"
-    },
-    {
-      "id": 6,
-      "invoiceNumber": "985234",
-      "date": "10/15/24",
-      "tour": "Live Nation Concerts",
-      "market": "Los Angeles, CA",
-      "venue_id": 5,
-      "amount": 9230.5,
-      "showDate": "2026-04-18",
-      "isDeleted": false,
-      "user_id": 9,
-      "company_id": 2,
-      "held": 0,
-      "release_date": "2025-12-15",
-      "payment_due": "2025-01-15",
-      "clientReference": "VIP Pre Sale",
-      "address": "6801 Hollywood Boulevard, Suite 300",
-      "city": "Los Angeles",
-      "state": "CA",
-      "zip": "90028",
-      "country_id": 1,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 7,
-      "invoiceNumber": "986789",
-      "date": "10/22/24",
-      "tour": "Matt Rife 2024",
-      "market": "Chicago, IL",
-      "venue_id": 1,
-      "amount": 8150,
-      "showDate": "2026-05-30",
-      "isDeleted": false,
-      "user_id": 11,
-      "company_id": 3,
-      "held": 1,
-      "release_date": null,
-      "payment_due": "2025-01-22",
-      "clientReference": "Early Bird Sale",
-      "address": null,
-      "city": null,
-      "state": null,
-      "zip": null,
-      "country_id": null,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 8,
-      "invoiceNumber": "987456",
-      "date": "11/01/24",
-      "tour": "Bon Jovi 2024",
-      "market": "New York, NY",
-      "venue_id": 1,
-      "amount": 9890.25,
-      "showDate": "2026-06-12",
-      "isDeleted": false,
-      "user_id": 13,
-      "company_id": 4,
-      "held": 0,
-      "release_date": "2026-01-19",
-      "payment_due": "2025-02-01",
-      "clientReference": "Fan Club Pre Sale",
-      "address": null,
-      "city": null,
-      "state": null,
-      "zip": null,
-      "country_id": null,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 9,
-      "invoiceNumber": "988123",
-      "date": "11/10/24",
-      "tour": "Demi Lovato Tour",
-      "market": "Miami, FL",
-      "venue_id": 3,
-      "amount": 8457,
-      "showDate": "2026-07-08",
-      "isDeleted": false,
-      "user_id": 15,
-      "company_id": 5,
-      "held": 1,
-      "release_date": null,
-      "payment_due": "2025-02-10",
-      "clientReference": "General Sale",
-      "address": "1200 Biscayne Boulevard, Floor 15",
-      "city": "Miami",
-      "state": "FL",
-      "zip": "33132",
-      "country_id": 1,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 10,
-      "invoiceNumber": "989567",
-      "date": "11/18/24",
-      "tour": "Renee Rapp - Snow Tour",
-      "market": "Boston, MA",
-      "venue_id": 2,
-      "amount": 6945.33,
-      "showDate": "2025-07-22",
-      "isDeleted": false,
-      "user_id": 19,
-      "company_id": 6,
-      "held": 0,
-      "release_date": "2025-01-18",
-      "payment_due": "2025-02-18",
-      "clientReference": "Presale Code",
-      "address": null,
-      "city": null,
-      "state": null,
-      "zip": null,
-      "country_id": null,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 11,
-      "invoiceNumber": "990234",
-      "date": "12/01/24",
-      "tour": "Eagles Tour 2024",
-      "market": "Phoenix, AZ",
-      "venue_id": 4,
-      "amount": 11250.75,
-      "showDate": "2026-08-15",
-      "isDeleted": false,
-      "user_id": 2,
-      "company_id": 7,
-      "held": 0,
-      "release_date": "2025-12-20",
-      "payment_due": "2025-03-01",
-      "clientReference": "Fan Club Exclusive",
-      "address": "201 E Jefferson Street, Suite 400",
-      "city": "Phoenix",
-      "state": "AZ",
-      "zip": "85004",
-      "country_id": 1,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 12,
-      "invoiceNumber": "991456",
-      "date": "12/05/24",
-      "tour": "Live Nation Concerts",
-      "market": "Denver, CO",
-      "venue_id": 2,
-      "amount": 10890.5,
-      "showDate": "2026-09-20",
-      "isDeleted": false,
-      "user_id": 4,
-      "company_id": 2,
-      "held": 1,
-      "release_date": null,
-      "payment_due": "2025-03-05",
-      "clientReference": "Early Access",
-      "address": null,
-      "city": null,
-      "state": null,
-      "zip": null,
-      "country_id": null,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 13,
-      "invoiceNumber": "992678",
-      "date": "12/10/24",
-      "tour": "Matt Rife 2024",
-      "market": "Atlanta, GA",
-      "venue_id": 7,
-      "amount": 7650.25,
-      "showDate": "2026-10-05",
-      "isDeleted": true,
-      "user_id": 6,
-      "company_id": 3,
-      "held": 0,
-      "release_date": "2025-12-25",
-      "payment_due": "2025-03-10",
-      "clientReference": "Group Discount",
-      "address": "1 State Farm Drive, Suite 200",
-      "city": "Atlanta",
-      "state": "GA",
-      "zip": "30303",
-      "country_id": 1,
-      "delete_date": "2025-11-20T10:15:00Z",
-      "deleted_by": 3,
-      "deleted_reason": "Event cancelled by venue"
-    },
-    {
-      "id": 14,
-      "invoiceNumber": "993789",
-      "date": "12/15/24",
-      "tour": "Bon Jovi 2024",
-      "market": "Las Vegas, NV",
-      "venue_id": 6,
-      "amount": 12450,
-      "showDate": "2026-11-12",
-      "isDeleted": false,
-      "user_id": 8,
-      "company_id": 4,
-      "held": 0,
-      "release_date": "2026-01-10",
-      "payment_due": "2025-03-15",
-      "clientReference": "VIP Package",
-      "address": "3780 Las Vegas Boulevard South",
-      "city": "Las Vegas",
-      "state": "NV",
-      "zip": "89109",
-      "country_id": 1,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 15,
-      "invoiceNumber": "994123",
-      "date": "12/20/24",
-      "tour": "Demi Lovato Tour",
-      "market": "Portland, OR",
-      "venue_id": 4,
-      "amount": 8950.33,
-      "showDate": "2026-12-08",
-      "isDeleted": false,
-      "user_id": 10,
-      "company_id": 5,
-      "held": 1,
-      "release_date": null,
-      "payment_due": "2025-03-20",
-      "clientReference": "Student Discount",
-      "address": null,
-      "city": null,
-      "state": null,
-      "zip": null,
-      "country_id": null,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 16,
-      "invoiceNumber": "995567",
-      "date": "12/25/24",
-      "tour": "Renee Rapp - Snow Tour",
-      "market": "Minneapolis, MN",
-      "venue_id": 5,
-      "amount": 7234.67,
-      "showDate": "2027-01-15",
-      "isDeleted": false,
-      "user_id": 12,
-      "company_id": 6,
-      "held": 0,
-      "release_date": "2026-01-20",
-      "payment_due": "2025-03-25",
-      "clientReference": "Holiday Special",
-      "address": "600 First Avenue North, Floor 3",
-      "city": "Minneapolis",
-      "state": "MN",
-      "zip": "55403",
-      "country_id": 1,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 17,
-      "invoiceNumber": "996234",
-      "date": "12/30/24",
-      "tour": "Cirque du Soleil Echo",
-      "market": "Toronto, ON",
-      "venue_id": 6,
-      "amount": 9876.5,
-      "showDate": "2027-02-20",
-      "isDeleted": false,
-      "user_id": 14,
-      "company_id": 1,
-      "held": 1,
-      "release_date": null,
-      "payment_due": "2025-03-30",
-      "clientReference": "Corporate Event",
-      "address": "40 Bay Street, Suite 500",
-      "city": "Toronto",
-      "state": "ON",
-      "zip": "M5J 2X2",
-      "country_id": 2,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 18,
-      "invoiceNumber": "997890",
-      "date": "1/05/25",
-      "tour": "Live Nation Concerts",
-      "market": "Nashville, TN",
-      "venue_id": 3,
-      "amount": 8567.25,
-      "showDate": "2027-03-10",
-      "isDeleted": true,
-      "user_id": 16,
-      "company_id": 2,
-      "held": 0,
-      "release_date": "2026-02-05",
-      "payment_due": "2025-04-05",
-      "clientReference": "Music City Special",
-      "address": "501 Broadway, Suite 300",
-      "city": "Nashville",
-      "state": "TN",
-      "zip": "37203",
-      "country_id": 1,
-      "delete_date": "2025-12-28T16:45:00Z",
-      "deleted_by": 5,
-      "deleted_reason": "Client requested cancellation due to scheduling conflict"
-    },
-    {
-      "id": 19,
-      "invoiceNumber": "998456",
-      "date": "1/10/25",
-      "tour": "Eagles Tour 2024",
-      "market": "Austin, TX",
-      "venue_id": 5,
-      "amount": 10234,
-      "showDate": "2027-04-18",
-      "isDeleted": false,
-      "user_id": 18,
-      "company_id": 7,
-      "held": 0,
-      "release_date": "2026-02-10",
-      "payment_due": "2025-04-10",
-      "clientReference": "Texas Exclusive",
-      "address": "2001 Robert Dedman Drive",
-      "city": "Austin",
-      "state": "TX",
-      "zip": "78712",
-      "country_id": 1,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    },
-    {
-      "id": 20,
-      "invoiceNumber": "999123",
-      "date": "1/15/25",
-      "tour": "Cirque du Soleil Portfolio",
-      "market": "Portfolio Showcase",
-      "venue_id": 1,
-      "amount": 6543.75,
-      "showDate": "2027-05-22",
-      "isDeleted": false,
-      "user_id": 20,
-      "company_id": 1,
-      "held": 1,
-      "release_date": null,
-      "payment_due": "2025-04-15",
-      "clientReference": "Portfolio Update",
-      "address": null,
-      "city": null,
-      "state": null,
-      "zip": null,
-      "country_id": null,
-      "delete_date": null,
-      "deleted_by": null,
-      "deleted_reason": null
-    }
-  ],
-  "invoice_items": [
-    {
-      "id": 1,
-      "order_id": 21,
-      "invoice_id": 1,
-      "code": "Big Top",
-      "description": "Large format tent structure rental",
-      "quantity": 1,
-      "price": 8750
-    },
-    {
-      "id": 2,
-      "order_id": 7,
-      "invoice_id": 2,
-      "code": "TV",
-      "description": "LED display screen rental - 65 inch",
-      "quantity": 2,
-      "price": 2500
-    },
-    {
-      "id": 3,
-      "order_id": 7,
-      "invoice_id": 2,
-      "code": "Print",
-      "description": "Printed promotional materials and banners",
-      "quantity": 12,
-      "price": 224.37
-    },
-    {
-      "id": 4,
-      "order_id": 7,
-      "invoice_id": 3,
-      "code": "Banner",
-      "description": "Large format vinyl banner - 10ft x 20ft",
-      "quantity": 2,
-      "price": 450
-    },
-    {
-      "id": 5,
-      "order_id": 7,
-      "invoice_id": 3,
-      "code": "Signage",
-      "description": "Directional signage set",
-      "quantity": 8,
-      "price": 125.5
-    },
-    {
-      "id": 6,
-      "order_id": 7,
-      "invoice_id": 3,
-      "code": "Digital Display",
-      "description": "Digital display board rental",
-      "quantity": 1,
-      "price": 3500
-    },
-    {
-      "id": 7,
-      "order_id": 7,
-      "invoice_id": 3,
-      "code": "Poster",
-      "description": "Event posters - 24x36 inch",
-      "quantity": 50,
-      "price": 12.5
-    },
-    {
-      "id": 8,
-      "order_id": 7,
-      "invoice_id": 3,
-      "code": "Flyer",
-      "description": "Promotional flyers - 8.5x11 inch",
-      "quantity": 500,
-      "price": 0.35
-    },
-    {
-      "id": 9,
-      "order_id": 7,
-      "invoice_id": 3,
-      "code": "Backdrop",
-      "description": "Stage backdrop - custom printed",
-      "quantity": 1,
-      "price": 3367.78
-    },
-    {
-      "id": 10,
-      "order_id": 8,
-      "invoice_id": 4,
-      "code": "LED Screen",
-      "description": "LED video wall rental - 10x15ft",
-      "quantity": 1,
-      "price": 1500
-    },
-    {
-      "id": 11,
-      "order_id": 8,
-      "invoice_id": 4,
-      "code": "TV",
-      "description": "TV monitor rental - 55 inch",
-      "quantity": 2,
-      "price": 800
-    },
-    {
-      "id": 12,
-      "order_id": 8,
-      "invoice_id": 4,
-      "code": "Banner",
-      "description": "Vinyl banner - 8ft x 16ft",
-      "quantity": 3,
-      "price": 320
-    },
-    {
-      "id": 13,
-      "order_id": 8,
-      "invoice_id": 4,
-      "code": "Signage",
-      "description": "Wayfinding signage package",
-      "quantity": 15,
-      "price": 95
-    },
-    {
-      "id": 14,
-      "order_id": 8,
-      "invoice_id": 4,
-      "code": "Poster",
-      "description": "Event posters - 18x24 inch",
-      "quantity": 30,
-      "price": 8.75
-    },
-    {
-      "id": 15,
-      "order_id": 8,
-      "invoice_id": 4,
-      "code": "Stage Set",
-      "description": "Stage set pieces and props",
-      "quantity": 1,
-      "price": 1994.74
-    },
-    {
-      "id": 16,
-      "order_id": 8,
-      "invoice_id": 4,
-      "code": "Backdrop",
-      "description": "Custom printed backdrop - 20x30ft",
-      "quantity": 1,
-      "price": 1205
-    },
-    {
-      "id": 17,
-      "order_id": 8,
-      "invoice_id": 4,
-      "code": "Print",
-      "description": "Printed marketing materials",
-      "quantity": 20,
-      "price": 12.9
-    },
-    {
-      "id": 18,
-      "order_id": 9,
-      "invoice_id": 5,
-      "code": "Billboard",
-      "description": "Outdoor billboard advertising",
-      "quantity": 1,
-      "price": 3205.24
-    },
-    {
-      "id": 19,
-      "order_id": 13,
-      "invoice_id": 6,
-      "code": "Big Top",
-      "description": "Large tent structure with setup",
-      "quantity": 1,
-      "price": 1500
-    },
-    {
-      "id": 20,
-      "order_id": 13,
-      "invoice_id": 6,
-      "code": "LED Screen",
-      "description": "LED video display - 12x20ft",
-      "quantity": 1,
-      "price": 1200
-    },
-    {
-      "id": 21,
-      "order_id": 13,
-      "invoice_id": 6,
-      "code": "TV",
-      "description": "TV monitor rental - 75 inch",
-      "quantity": 2,
-      "price": 800
-    },
-    {
-      "id": 22,
-      "order_id": 13,
-      "invoice_id": 6,
-      "code": "Banner",
-      "description": "Custom vinyl banners - various sizes",
-      "quantity": 5,
-      "price": 380
-    },
-    {
-      "id": 23,
-      "order_id": 13,
-      "invoice_id": 6,
-      "code": "Signage",
-      "description": "Event signage package",
-      "quantity": 12,
-      "price": 110
-    },
-    {
-      "id": 24,
-      "order_id": 13,
-      "invoice_id": 6,
-      "code": "Poster",
-      "description": "Event posters - 24x36 inch",
-      "quantity": 40,
-      "price": 11.25
-    },
-    {
-      "id": 25,
-      "order_id": 13,
-      "invoice_id": 6,
-      "code": "Stage Set",
-      "description": "Stage set design and installation",
-      "quantity": 1,
-      "price": 1260.5
-    },
-    {
-      "id": 26,
-      "order_id": 3,
-      "invoice_id": 7,
-      "code": "Digital Display",
-      "description": "Digital signage system rental",
-      "quantity": 2,
-      "price": 1200
-    },
-    {
-      "id": 27,
-      "order_id": 3,
-      "invoice_id": 7,
-      "code": "TV",
-      "description": "TV monitor rental - 65 inch",
-      "quantity": 3,
-      "price": 600
-    },
-    {
-      "id": 28,
-      "order_id": 3,
-      "invoice_id": 7,
-      "code": "Banner",
-      "description": "Vinyl banner - 12ft x 24ft",
-      "quantity": 2,
-      "price": 550
-    },
-    {
-      "id": 29,
-      "order_id": 3,
-      "invoice_id": 7,
-      "code": "Print",
-      "description": "Printed promotional materials",
-      "quantity": 25,
-      "price": 15
-    },
-    {
-      "id": 30,
-      "order_id": 3,
-      "invoice_id": 7,
-      "code": "Backdrop",
-      "description": "Custom stage backdrop - 15x25ft",
-      "quantity": 1,
-      "price": 2475
-    },
-    {
-      "id": 31,
-      "order_id": 14,
-      "invoice_id": 8,
-      "code": "Big Top",
-      "description": "Premium tent structure rental",
-      "quantity": 1,
-      "price": 1500
-    },
-    {
-      "id": 32,
-      "order_id": 14,
-      "invoice_id": 8,
-      "code": "LED Screen",
-      "description": "LED video wall - 15x25ft",
-      "quantity": 1,
-      "price": 1100
-    },
-    {
-      "id": 33,
-      "order_id": 14,
-      "invoice_id": 8,
-      "code": "TV",
-      "description": "TV monitor rental - 85 inch",
-      "quantity": 2,
-      "price": 650
-    },
-    {
-      "id": 34,
-      "order_id": 14,
-      "invoice_id": 8,
-      "code": "Banner",
-      "description": "Custom banners - various sizes",
-      "quantity": 4,
-      "price": 240
-    },
-    {
-      "id": 35,
-      "order_id": 14,
-      "invoice_id": 8,
-      "code": "Signage",
-      "description": "Comprehensive signage package",
-      "quantity": 15,
-      "price": 85
-    },
-    {
-      "id": 36,
-      "order_id": 14,
-      "invoice_id": 8,
-      "code": "Poster",
-      "description": "Event posters - 24x36 inch",
-      "quantity": 50,
-      "price": 10
-    },
-    {
-      "id": 37,
-      "order_id": 14,
-      "invoice_id": 8,
-      "code": "Flyer",
-      "description": "Promotional flyers - 8.5x11 inch",
-      "quantity": 800,
-      "price": 0.35
-    },
-    {
-      "id": 38,
-      "order_id": 14,
-      "invoice_id": 8,
-      "code": "Stage Set",
-      "description": "Premium stage set design",
-      "quantity": 1,
-      "price": 1500
-    },
-    {
-      "id": 39,
-      "order_id": 14,
-      "invoice_id": 8,
-      "code": "Backdrop",
-      "description": "Custom printed backdrop - 25x40ft",
-      "quantity": 1,
-      "price": 1515.25
-    },
-    {
-      "id": 40,
-      "order_id": 16,
-      "invoice_id": 9,
-      "code": "Digital Display",
-      "description": "Digital display board rental",
-      "quantity": 1,
-      "price": 3000
-    },
-    {
-      "id": 41,
-      "order_id": 16,
-      "invoice_id": 9,
-      "code": "TV",
-      "description": "TV monitor rental - 55 inch",
-      "quantity": 4,
-      "price": 1200
-    },
-    {
-      "id": 42,
-      "order_id": 16,
-      "invoice_id": 9,
-      "code": "Print",
-      "description": "Printed marketing materials package",
-      "quantity": 30,
-      "price": 21.9
-    },
-    {
-      "id": 43,
-      "order_id": 18,
-      "invoice_id": 10,
-      "code": "Banner",
-      "description": "Vinyl banner - 10ft x 20ft",
-      "quantity": 3,
-      "price": 420
-    },
-    {
-      "id": 44,
-      "order_id": 18,
-      "invoice_id": 10,
-      "code": "Signage",
-      "description": "Event signage set",
-      "quantity": 10,
-      "price": 105
-    },
-    {
-      "id": 45,
-      "order_id": 18,
-      "invoice_id": 10,
-      "code": "Poster",
-      "description": "Event posters - 18x24 inch",
-      "quantity": 35,
-      "price": 9.5
-    },
-    {
-      "id": 46,
-      "order_id": 18,
-      "invoice_id": 10,
-      "code": "Backdrop",
-      "description": "Stage backdrop - 12x20ft",
-      "quantity": 1,
-      "price": 4302.83
-    }
-  ],
-  "orders": [
-    {
-      "id": 1,
-      "tour_venue_id": 1,
-      "date": "2024-11-08T19:00:00Z",
-      "hold_invoices": 1,
-      "hash": "mattmsg001"
-    },
-    {
-      "id": 2,
-      "tour_venue_id": 22,
-      "date": "2024-11-08T20:00:00Z",
-      "hold_invoices": 0,
-      "hash": "mattmsg002"
-    },
-    {
-      "id": 3,
-      "tour_venue_id": 2,
-      "date": "2024-11-08T18:00:00Z",
-      "hold_invoices": 0,
-      "hash": "mattsun001"
-    },
-    {
-      "id": 4,
-      "tour_venue_id": 3,
-      "date": "2024-11-08T19:30:00Z",
-      "hold_invoices": 1,
-      "hash": "mattalys001"
-    },
-    {
-      "id": 5,
-      "tour_venue_id": 4,
-      "date": "2024-11-08T18:30:00Z",
-      "hold_invoices": 0,
-      "hash": "eaglecoca001"
-    },
-    {
-      "id": 6,
-      "tour_venue_id": 5,
-      "date": "2024-11-15T19:00:00Z",
-      "hold_invoices": 1,
-      "hash": "eagleholly001"
-    },
-    {
-      "id": 7,
-      "tour_venue_id": 6,
-      "date": "2024-11-08T19:00:00Z",
-      "hold_invoices": 0,
-      "hash": "cirquemsg001"
-    },
-    {
-      "id": 8,
-      "tour_venue_id": 7,
-      "date": "2024-11-15T19:00:00Z",
-      "hold_invoices": 1,
-      "hash": "cirqueholly001"
-    },
-    {
-      "id": 9,
-      "tour_venue_id": 8,
-      "date": "2024-11-16T19:30:00Z",
-      "hold_invoices": 0,
-      "hash": "cirquechase001"
-    },
-    {
-      "id": 10,
-      "tour_venue_id": 9,
-      "date": "2024-11-08T18:00:00Z",
-      "hold_invoices": 0,
-      "hash": "livesun001"
-    },
-    {
-      "id": 11,
-      "tour_venue_id": 10,
-      "date": "2024-11-08T19:30:00Z",
-      "hold_invoices": 1,
-      "hash": "livealys001"
-    },
-    {
-      "id": 12,
-      "tour_venue_id": 11,
-      "date": "2024-11-08T18:30:00Z",
-      "hold_invoices": 0,
-      "hash": "livecoca001"
-    },
-    {
-      "id": 13,
-      "tour_venue_id": 12,
-      "date": "2024-11-15T19:00:00Z",
-      "hold_invoices": 0,
-      "hash": "liveholly001"
-    },
-    {
-      "id": 14,
-      "tour_venue_id": 13,
-      "date": "2024-11-08T19:00:00Z",
-      "hold_invoices": 1,
-      "hash": "bonjovimsg001"
-    },
-    {
-      "id": 15,
-      "tour_venue_id": 14,
-      "date": "2024-11-16T19:30:00Z",
-      "hold_invoices": 0,
-      "hash": "bonjovichase001"
-    },
-    {
-      "id": 16,
-      "tour_venue_id": 15,
-      "date": "2024-11-08T19:30:00Z",
-      "hold_invoices": 1,
-      "hash": "demialys001"
-    },
-    {
-      "id": 17,
-      "tour_venue_id": 16,
-      "date": "2024-11-08T18:30:00Z",
-      "hold_invoices": 0,
-      "hash": "demicoca001"
-    },
-    {
-      "id": 18,
-      "tour_venue_id": 17,
-      "date": "2024-11-08T18:00:00Z",
-      "hold_invoices": 0,
-      "hash": "reneesun001"
-    },
-    {
-      "id": 19,
-      "tour_venue_id": 18,
-      "date": "2024-11-15T19:00:00Z",
-      "hold_invoices": 1,
-      "hash": "reneeholly001"
-    },
-    {
-      "id": 20,
-      "tour_venue_id": 19,
-      "date": "2024-11-16T19:30:00Z",
-      "hold_invoices": 0,
-      "hash": "reneechase001"
-    },
-    {
-      "id": 21,
-      "tour_venue_id": 29,
-      "date": "2024-11-08T19:00:00Z",
-      "hold_invoices": 0,
-      "hash": "portfoliomsg001"
-    },
-    {
-      "id": 22,
-      "tour_venue_id": 21,
-      "date": "2024-11-16T19:30:00Z",
-      "hold_invoices": 0,
-      "hash": "portfoliochase001"
-    }
-  ],
-  "venue_item_assigned": [
-    {
-      "id": 1,
-      "venue_item_id": 2,
-      "mockUser_id": 3
-    },
-    {
-      "id": 2,
-      "venue_item_id": 2,
-      "mockUser_id": 6
-    },
-    {
-      "id": 3,
-      "venue_item_id": 3,
-      "mockUser_id": 3
-    },
-    {
-      "id": 4,
-      "venue_item_id": 3,
-      "mockUser_id": 6
-    },
-    {
-      "id": 5,
-      "venue_item_id": 4,
-      "mockUser_id": 3
-    },
-    {
-      "id": 6,
-      "venue_item_id": 6,
-      "mockUser_id": 3
-    },
-    {
-      "id": 7,
-      "venue_item_id": 9,
-      "mockUser_id": 3
-    },
-    {
-      "id": 8,
-      "venue_item_id": 10,
-      "mockUser_id": 3
-    },
-    {
-      "id": 9,
-      "venue_item_id": 11,
-      "mockUser_id": 3
-    },
-    {
-      "id": 10,
-      "venue_item_id": 13,
-      "mockUser_id": 3
-    },
-    {
-      "id": 11,
-      "venue_item_id": 15,
-      "mockUser_id": 3
-    },
-    {
-      "id": 12,
-      "venue_item_id": 16,
-      "mockUser_id": 3
-    },
-    {
-      "id": 13,
-      "venue_item_id": 17,
-      "mockUser_id": 3
-    }
-  ],
-  "venue_item_status": [
-    {
-      "id": 1,
-      "type": "Still in Cart"
-    },
-    {
-      "id": 2,
-      "type": "Client Review"
-    },
-    {
-      "id": 3,
-      "type": "In Production"
-    },
-    {
-      "id": 4,
-      "type": "Out for Delivery"
-    },
-    {
-      "id": 5,
-      "type": "Cancelled"
-    },
-    {
-      "id": 6,
-      "type": "Revision Requested"
-    },
-    {
-      "id": 7,
-      "type": "Unassigned"
-    }
-  ],
-  "venue_items": [
-    {
-      "id": 1,
-      "tour_venue_id": 1,
-      "type": "media",
-      "label": "Generic Presale",
-      "isci": "GTC1818843",
-      "duration": ":45",
-      "dueDate": "1/15/25",
-      "status_id": 1    },
-    {
-      "id": 2,
-      "tour_venue_id": 1,
-      "type": "media",
-      "label": "Generic Coming soon",
-      "isci": "GTC1818847",
-      "duration": ":30",
-      "dueDate": "1/15/25",
-      "status_id": 2    },
-    {
-      "id": 3,
-      "tour_venue_id": 1,
-      "type": "media",
-      "label": "Generic Teaser",
-      "isci": "GTC1818848",
-      "duration": ":15",
-      "dueDate": "1/18/25",
-      "status_id": 3    },
-    {
-      "id": 4,
-      "tour_venue_id": 1,
-      "type": "media",
-      "label": "Generic Final",
-      "isci": "GTC1818849",
-      "duration": ":60",
-      "dueDate": "1/20/25",
-      "status_id": 4    },
-    {
-      "id": 5,
-      "tour_venue_id": 1,
-      "type": "media",
-      "label": "Generic Dropped",
-      "isci": "GTC1818850",
-      "duration": ":30",
-      "dueDate": "1/22/25",
-      "status_id": 5    },
-    {
-      "id": 6,
-      "tour_venue_id": 1,
-      "type": "media",
-      "label": "Generic Revise",
-      "isci": "GTC1818851",
-      "duration": ":45",
-      "dueDate": "1/25/25",
-      "status_id": 6    },
-    {
-      "id": 7,
-      "tour_venue_id": 1,
-      "type": "media",
-      "label": "Generic Unassigned",
-      "isci": "GTC1818852",
-      "duration": ":20",
-      "dueDate": "1/28/25",
-      "status_id": 7    },
-    {
-      "id": 8,
-      "tour_venue_id": 1,
-      "type": "static",
-      "label": "Key Art – Still in Cart",
-      "width": 1400,
-      "height": 400,
-      "dueDate": "1/15/25",
-      "status_id": 1    },
-    {
-      "id": 9,
-      "tour_venue_id": 1,
-      "type": "static",
-      "label": "Key Art – Client Review",
-      "width": 1400,
-      "height": 400,
-      "dueDate": "1/15/25",
-      "status_id": 2    },
-    {
-      "id": 10,
-      "tour_venue_id": 1,
-      "type": "static",
-      "label": "Key Art – In Production",
-      "width": 1400,
-      "height": 400,
-      "dueDate": "1/18/25",
-      "status_id": 3    },
-    {
-      "id": 11,
-      "tour_venue_id": 1,
-      "type": "static",
-      "label": "Key Art – Out for Delivery",
-      "width": 1400,
-      "height": 400,
-      "dueDate": "1/20/25",
-      "status_id": 4    },
-    {
-      "id": 12,
-      "tour_venue_id": 1,
-      "type": "static",
-      "label": "Key Art – Cancelled",
-      "width": 1400,
-      "height": 400,
-      "dueDate": "1/22/25",
-      "status_id": 5    },
-    {
-      "id": 13,
-      "tour_venue_id": 1,
-      "type": "static",
-      "label": "Key Art – Revision Requested",
-      "width": 1400,
-      "height": 400,
-      "dueDate": "1/25/25",
-      "status_id": 6    },
-    {
-      "id": 14,
-      "tour_venue_id": 1,
-      "type": "static",
-      "label": "Socials & Web Banners – Unassigned",
-      "width": 1400,
-      "height": 400,
-      "dueDate": "1/28/25",
-      "status_id": 7    },
-    {
-      "id": 15,
-      "tour_venue_id": 1,
-      "type": "localized",
-      "label": "Advert for FFFFFFFF",
-      "width": 1400,
-      "height": 400,
-      "cta": "Save the Date",
-      "dueDate": "1/15/25",
-      "notes": [
+    "countries": [
         {
-          "text": "Do not put city/state on artwork even though the admat has it.",
-          "savedAt": "9/15/2024 @ 3:15PM"
+            "id": 1,
+            "name": "United States",
+            "code": "US"
         },
         {
-          "text": "Change the background color to deeper blue to match logo.",
-          "savedAt": "9/17/2024 @ 4:30PM"
+            "id": 2,
+            "name": "Canada",
+            "code": "CA"
+        },
+        {
+            "id": 3,
+            "name": "United Kingdom",
+            "code": "UK"
+        },
+        {
+            "id": 4,
+            "name": "Mexico",
+            "code": "MX"
+        },
+        {
+            "id": 5,
+            "name": "Australia",
+            "code": "AU"
         }
-      ]    },
-    {
-      "id": 16,
-      "tour_venue_id": 1,
-      "type": "localized",
-      "label": "Advert for FFFFFFFF",
-      "width": 1400,
-      "height": 400,
-      "cta": "Last Chance",
-      "dueDate": "1/15/25"    },
-    {
-      "id": 17,
-      "tour_venue_id": 1,
-      "type": "localized",
-      "label": "Advert for FFFFFFFF",
-      "width": 1400,
-      "height": 400,
-      "cta": "Black Friday Sale",
-      "dueDate": "1/15/25"    }
-  ],
-  "sales_chart": [
-    {
-      "name": "Day 1",
-      "value": 45
-    },
-    {
-      "name": "Day 2",
-      "value": 52
-    },
-    {
-      "name": "Day 3",
-      "value": 58
-    },
-    {
-      "name": "Day 4",
-      "value": 65
-    },
-    {
-      "name": "Day 5",
-      "value": 72
-    },
-    {
-      "name": "Day 6",
-      "value": 78
-    },
-    {
-      "name": "Day 7",
-      "value": 85
-    }
-  ],
-  "ytd_chart": [
-    {
-      "name": "Day 1",
-      "value": 48
-    },
-    {
-      "name": "Day 2",
-      "value": 55
-    },
-    {
-      "name": "Day 3",
-      "value": 62
-    },
-    {
-      "name": "Day 4",
-      "value": 68
-    },
-    {
-      "name": "Day 5",
-      "value": 75
-    },
-    {
-      "name": "Day 6",
-      "value": 82
-    },
-    {
-      "name": "Day 7",
-      "value": 90
-    }
-  ],
-  "yoy_chart": [
-    {
-      "name": "Day 1",
-      "value": 50
-    },
-    {
-      "name": "Day 2",
-      "value": 57
-    },
-    {
-      "name": "Day 3",
-      "value": 64
-    },
-    {
-      "name": "Day 4",
-      "value": 71
-    },
-    {
-      "name": "Day 5",
-      "value": 78
-    },
-    {
-      "name": "Day 6",
-      "value": 85
-    },
-    {
-      "name": "Day 7",
-      "value": 92
-    }
-  ],
-  "tour_revenue": [
-    {
-      "tour": "Live Nation Concerts",
-      "currentMonth": 125000,
-      "ytd": 980000,
-      "total": 1105000
-    },
-    {
-      "tour": "Live Nation Chicago",
-      "currentMonth": 98000,
-      "ytd": 820000,
-      "total": 918000
-    },
-    {
-      "tour": "Red Housing",
-      "currentMonth": 87000,
-      "ytd": 720000,
-      "total": 807000
-    },
-    {
-      "tour": "The Boys From The County Hell",
-      "currentMonth": 76000,
-      "ytd": 650000,
-      "total": 726000
-    },
-    {
-      "tour": "Housemath",
-      "currentMonth": 68000,
-      "ytd": 590000,
-      "total": 658000
-    },
-    {
-      "tour": "Westlife 2024",
-      "currentMonth": 62000,
-      "ytd": 540000,
-      "total": 602000
-    },
-    {
-      "tour": "A Doll's 2024",
-      "currentMonth": 58000,
-      "ytd": 495000,
-      "total": 553000
-    },
-    {
-      "tour": "Descendants",
-      "currentMonth": 54000,
-      "ytd": 460000,
-      "total": 514000
-    },
-    {
-      "tour": "Opzn 2024",
-      "currentMonth": 51000,
-      "ytd": 430000,
-      "total": 481000
-    },
-    {
-      "tour": "Bon Jovi 2024",
-      "currentMonth": 48000,
-      "ytd": 410000,
-      "total": 458000
-    },
-    {
-      "tour": "Demi Lovato Tour",
-      "currentMonth": 45000,
-      "ytd": 385000,
-      "total": 430000
-    },
-    {
-      "tour": "Diesel Ltd",
-      "currentMonth": 43000,
-      "ytd": 365000,
-      "total": 408000
-    },
-    {
-      "tour": "Matt Rife 2024",
-      "currentMonth": 41000,
-      "ytd": 350000,
-      "total": 391000
-    },
-    {
-      "tour": "Luke Life Girl",
-      "currentMonth": 39000,
-      "ytd": 330000,
-      "total": 369000
-    },
-    {
-      "tour": "Renee Rapp - Snow Tour",
-      "currentMonth": 37000,
-      "ytd": 315000,
-      "total": 352000
-    },
-    {
-      "tour": "Lady Gaga: chromatica ball",
-      "currentMonth": 35000,
-      "ytd": 295000,
-      "total": 330000
-    },
-    {
-      "tour": "Christina Aguilera",
-      "currentMonth": 34000,
-      "ytd": 285000,
-      "total": 319000
-    },
-    {
-      "tour": "The Streets 2024",
-      "currentMonth": 32000,
-      "ytd": 270000,
-      "total": 302000
-    },
-    {
-      "tour": "Rock In The Park",
-      "currentMonth": 31000,
-      "ytd": 260000,
-      "total": 291000
-    },
-    {
-      "tour": "Playboi Carti Tour",
-      "currentMonth": 29000,
-      "ytd": 245000,
-      "total": 274000
-    },
-    {
-      "tour": "Rüfüs 2025",
-      "currentMonth": 28000,
-      "ytd": 235000,
-      "total": 263000
-    },
-    {
-      "tour": "Earth, Wind & Fire",
-      "currentMonth": 27000,
-      "ytd": 225000,
-      "total": 252000
-    },
-    {
-      "tour": "Cosmic Girl",
-      "currentMonth": 26000,
-      "ytd": 215000,
-      "total": 241000
-    }
-  ],
-  "sales_by_rep": [
-    {
-      "rep": "Russel",
-      "currentMonth": 125000,
-      "currentMonthChange": {
-        "direction": "up",
-        "percentage": 12
-      },
-      "ytd": 980000,
-      "ytdChange": {
-        "direction": "up",
-        "percentage": 8
-      },
-      "total": 1105000
-    },
-    {
-      "rep": "James",
-      "currentMonth": 98000,
-      "currentMonthChange": {
-        "direction": "up",
-        "percentage": 15
-      },
-      "ytd": 820000,
-      "ytdChange": {
-        "direction": "up",
-        "percentage": 10
-      },
-      "total": 918000
-    },
-    {
-      "rep": "Jordan",
-      "currentMonth": -74000,
-      "currentMonthChange": {
-        "direction": "down",
-        "percentage": 5
-      },
-      "ytd": -74000,
-      "ytdChange": {
-        "direction": "up",
-        "percentage": 6
-      },
-      "total": -74000
-    }
-  ]
+    ],
+    "companies": [
+        {
+            "id": 1,
+            "name": "CIRQUE DU SOLEIL AMERICA NEWCO, INC.",
+            "billing_address": "1151 Grier Drive, Suite C",
+            "city": "Las Vegas",
+            "state": "NV",
+            "zip": "964075",
+            "country_id": 1,
+            "discount_rate": 5,
+            "credit_limit": 100000,
+            "pay_email": "payments@cirque.com",
+            "rec_email": "receivables@cirque.com",
+            "telephone": "+1-702-555-0100",
+            "copy_email": "copy@cirque.com",
+            "fax_number": "+1-702-555-0101",
+            "bank_account_number": "1234567890",
+            "routing_number": "021000021",
+            "rec_name": "Accounts Receivable",
+            "rec_tel": "+1-702-555-0102"
+        },
+        {
+            "id": 2,
+            "name": "Live Nation Entertainment, Inc.",
+            "billing_address": "9348 Civic Center Drive",
+            "city": "Beverly Hills",
+            "state": "CA",
+            "zip": "90210",
+            "country_id": 1,
+            "discount_rate": 8.5,
+            "credit_limit": 500000,
+            "pay_email": "payments@livenation.com",
+            "rec_email": "ar@livenation.com",
+            "telephone": "+1-310-555-0200",
+            "copy_email": "billing@livenation.com",
+            "fax_number": "+1-310-555-0201",
+            "bank_account_number": "2345678901",
+            "routing_number": "121000248",
+            "rec_name": "Finance Department",
+            "rec_tel": "+1-310-555-0202"
+        },
+        {
+            "id": 3,
+            "name": "Matt Rife Productions",
+            "billing_address": "123 Entertainment Blvd",
+            "city": "Los Angeles",
+            "state": "CA",
+            "zip": "90028",
+            "country_id": 1,
+            "discount_rate": 3,
+            "credit_limit": 50000,
+            "pay_email": "pay@mattrife.com",
+            "rec_email": "receivables@mattrife.com",
+            "telephone": "+1-323-555-0300",
+            "copy_email": "admin@mattrife.com",
+            "fax_number": "+1-323-555-0301",
+            "bank_account_number": "3456789012",
+            "routing_number": "122105278",
+            "rec_name": "Production Office",
+            "rec_tel": "+1-323-555-0302"
+        },
+        {
+            "id": 4,
+            "name": "Bon Jovi Touring, LLC",
+            "billing_address": "456 Music Avenue",
+            "city": "New York",
+            "state": "NY",
+            "zip": "10001",
+            "country_id": 1,
+            "discount_rate": 7,
+            "credit_limit": 250000,
+            "pay_email": "payments@bonjovi.com",
+            "rec_email": "ar@bonjovi.com",
+            "telephone": "+1-212-555-0400",
+            "copy_email": "billing@bonjovi.com",
+            "fax_number": "+1-212-555-0401",
+            "bank_account_number": "4567890123",
+            "routing_number": "026009593",
+            "rec_name": "Touring Accounts",
+            "rec_tel": "+1-212-555-0402"
+        },
+        {
+            "id": 5,
+            "name": "Demi Lovato Entertainment",
+            "billing_address": "789 Star Street",
+            "city": "Los Angeles",
+            "state": "CA",
+            "zip": "90069",
+            "country_id": 1,
+            "discount_rate": 4.5,
+            "credit_limit": 150000,
+            "pay_email": "pay@demilovato.com",
+            "rec_email": "receivables@demilovato.com",
+            "telephone": "+1-310-555-0500",
+            "copy_email": "finance@demilovato.com",
+            "fax_number": "+1-310-555-0501",
+            "bank_account_number": "5678901234",
+            "routing_number": "122105278",
+            "rec_name": "Entertainment Finance",
+            "rec_tel": "+1-310-555-0502"
+        },
+        {
+            "id": 6,
+            "name": "Renee Rapp Touring",
+            "billing_address": "321 Performance Lane",
+            "city": "Nashville",
+            "state": "TN",
+            "zip": "37203",
+            "country_id": 1,
+            "discount_rate": 2.5,
+            "credit_limit": 75000,
+            "pay_email": "payments@reneerapp.com",
+            "rec_email": "ar@reneerapp.com",
+            "telephone": "+1-615-555-0600",
+            "copy_email": "billing@reneerapp.com",
+            "fax_number": "+1-615-555-0601",
+            "bank_account_number": "6789012345",
+            "routing_number": "064000017",
+            "rec_name": "Tour Management",
+            "rec_tel": "+1-615-555-0602"
+        },
+        {
+            "id": 7,
+            "name": "Maple Leaf Entertainment Group",
+            "billing_address": "200 Bay Street, Suite 1500",
+            "city": "Toronto",
+            "state": "ON",
+            "zip": "M5J 2J4",
+            "country_id": 2,
+            "discount_rate": 6,
+            "credit_limit": 200000,
+            "pay_email": "payments@mapleleafent.com",
+            "rec_email": "receivables@mapleleafent.com",
+            "telephone": "+1-416-555-0700",
+            "copy_email": "billing@mapleleafent.com",
+            "fax_number": "+1-416-555-0701",
+            "bank_account_number": "7890123456",
+            "routing_number": "000200001",
+            "rec_name": "Accounts Department",
+            "rec_tel": "+1-416-555-0702"
+        },
+        {
+            "id": 8,
+            "name": "Royal Albert Hall Productions",
+            "billing_address": "Kensington Gore",
+            "city": "London",
+            "state": "Greater London",
+            "zip": "SW7 2AP",
+            "country_id": 3,
+            "discount_rate": 10,
+            "credit_limit": 300000,
+            "pay_email": "payments@royalalberthall.co.uk",
+            "rec_email": "finance@royalalberthall.co.uk",
+            "telephone": "+44-20-7589-3203",
+            "copy_email": "billing@royalalberthall.co.uk",
+            "fax_number": "+44-20-7589-3204",
+            "bank_account_number": "12345678",
+            "routing_number": "20-00-00",
+            "rec_name": "Finance Office",
+            "rec_tel": "+44-20-7589-3205"
+        },
+        {
+            "id": 9,
+            "name": "Estadio Azteca Events",
+            "billing_address": "Calzada de Tlalpan 3465",
+            "city": "Mexico City",
+            "state": "CDMX",
+            "zip": "04650",
+            "country_id": 4,
+            "discount_rate": 5.5,
+            "credit_limit": 180000,
+            "pay_email": "pagos@estadioazteca.mx",
+            "rec_email": "cobranza@estadioazteca.mx",
+            "telephone": "+52-55-5555-0900",
+            "copy_email": "facturacion@estadioazteca.mx",
+            "fax_number": "+52-55-5555-0901",
+            "bank_account_number": "012345678901234567",
+            "routing_number": "014",
+            "rec_name": "Departamento de Finanzas",
+            "rec_tel": "+52-55-5555-0902"
+        },
+        {
+            "id": 10,
+            "name": "Sydney Opera House Management",
+            "billing_address": "Bennelong Point",
+            "city": "Sydney",
+            "state": "NSW",
+            "zip": "2000",
+            "country_id": 5,
+            "discount_rate": 12,
+            "credit_limit": 400000,
+            "pay_email": "payments@sydneyoperahouse.com.au",
+            "rec_email": "accounts@sydneyoperahouse.com.au",
+            "telephone": "+61-2-9250-7111",
+            "copy_email": "billing@sydneyoperahouse.com.au",
+            "fax_number": "+61-2-9250-7112",
+            "bank_account_number": "123456789",
+            "routing_number": "062-000",
+            "rec_name": "Finance Team",
+            "rec_tel": "+61-2-9250-7113"
+        },
+        {
+            "id": 11,
+            "name": "Coachella Valley Music Festival",
+            "billing_address": "81-800 Avenue 51",
+            "city": "Indio",
+            "state": "CA",
+            "zip": "92201",
+            "country_id": 1,
+            "discount_rate": 15,
+            "credit_limit": 500000,
+            "pay_email": "payments@coachella.com",
+            "rec_email": "ar@coachella.com",
+            "telephone": "+1-760-555-1100",
+            "copy_email": "finance@coachella.com",
+            "fax_number": "+1-760-555-1101",
+            "bank_account_number": "8901234567",
+            "routing_number": "122105278",
+            "rec_name": "Festival Finance",
+            "rec_tel": "+1-760-555-1102"
+        },
+        {
+            "id": 12,
+            "name": "Vancouver Symphony Orchestra",
+            "billing_address": "601 Smithe Street",
+            "city": "Vancouver",
+            "state": "BC",
+            "zip": "V6B 3L4",
+            "country_id": 2,
+            "discount_rate": 8,
+            "credit_limit": 120000,
+            "pay_email": "payments@vancouversymphony.ca",
+            "rec_email": "receivables@vancouversymphony.ca",
+            "telephone": "+1-604-555-1200",
+            "copy_email": "billing@vancouversymphony.ca",
+            "fax_number": "+1-604-555-1201",
+            "bank_account_number": "9012345678",
+            "routing_number": "000100001",
+            "rec_name": "Orchestra Administration",
+            "rec_tel": "+1-604-555-1202"
+        },
+        {
+            "id": 13,
+            "name": "Glastonbury Festival Ltd",
+            "billing_address": "Worthy Farm",
+            "city": "Pilton",
+            "state": "Somerset",
+            "zip": "BA4 4BY",
+            "country_id": 3,
+            "discount_rate": 9.5,
+            "credit_limit": 350000,
+            "pay_email": "payments@glastonburyfestivals.co.uk",
+            "rec_email": "accounts@glastonburyfestivals.co.uk",
+            "telephone": "+44-1458-834-596",
+            "copy_email": "finance@glastonburyfestivals.co.uk",
+            "fax_number": "+44-1458-834-597",
+            "bank_account_number": "23456789",
+            "routing_number": "40-02-26",
+            "rec_name": "Festival Accounts",
+            "rec_tel": "+44-1458-834-598"
+        },
+        {
+            "id": 14,
+            "name": "Palacio de los Deportes",
+            "billing_address": "Avenida Río Churubusco 800",
+            "city": "Mexico City",
+            "state": "CDMX",
+            "zip": "08010",
+            "country_id": 4,
+            "discount_rate": 7.5,
+            "credit_limit": 220000,
+            "pay_email": "pagos@palaciodedeportes.mx",
+            "rec_email": "cobranza@palaciodedeportes.mx",
+            "telephone": "+52-55-5555-1400",
+            "copy_email": "facturacion@palaciodedeportes.mx",
+            "fax_number": "+52-55-5555-1401",
+            "bank_account_number": "234567890123456789",
+            "routing_number": "014",
+            "rec_name": "Oficina de Finanzas",
+            "rec_tel": "+52-55-5555-1402"
+        },
+        {
+            "id": 15,
+            "name": "Melbourne Arts Centre",
+            "billing_address": "100 St Kilda Road",
+            "city": "Melbourne",
+            "state": "VIC",
+            "zip": "3004",
+            "country_id": 5,
+            "discount_rate": 11,
+            "credit_limit": 280000,
+            "pay_email": "payments@artscentremelbourne.com.au",
+            "rec_email": "accounts@artscentremelbourne.com.au",
+            "telephone": "+61-3-9281-8000",
+            "copy_email": "billing@artscentremelbourne.com.au",
+            "fax_number": "+61-3-9281-8001",
+            "bank_account_number": "234567890",
+            "routing_number": "062-000",
+            "rec_name": "Finance Department",
+            "rec_tel": "+61-3-9281-8002"
+        }
+    ],
+    "invoices": [
+        {
+            "id": 1,
+            "invoiceNumber": "974658",
+            "date": "11/06/24",
+            "tour": "Cirque du Soleil Portfolio",
+            "market": "Portfolio Sizzle",
+            "venue_id": 7,
+            "amount": 8750,
+            "showDate": "2025-12-20",
+            "isDeleted": false,
+            "user_id": 17,
+            "company_id": 1,
+            "held": 1,
+            "release_date": null,
+            "payment_due": "2025-11-27",
+            "clientReference": "Generic Pre Sale",
+            "address": null,
+            "city": null,
+            "state": null,
+            "zip": null,
+            "country_id": null,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 2,
+            "invoiceNumber": "980043",
+            "date": "9/30/25",
+            "tour": "Cirque du Soleil Echo",
+            "market": "San Francisco, CA",
+            "venue_id": 6,
+            "amount": 7692.44,
+            "showDate": "2026-01-15",
+            "isDeleted": false,
+            "user_id": 21,
+            "company_id": 1,
+            "held": 0,
+            "release_date": "2025-12-20",
+            "payment_due": "2025-10-28",
+            "clientReference": "Amex Pre Sale",
+            "address": "2450 Mission Street, Suite 200",
+            "city": "San Francisco",
+            "state": "CA",
+            "zip": "94110",
+            "country_id": 1,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 3,
+            "invoiceNumber": "984958",
+            "date": "11/06/24",
+            "tour": "Cirque du Soleil Echo",
+            "market": "Dallas, TX",
+            "venue_id": 1,
+            "amount": 9571.78,
+            "showDate": "2026-02-15",
+            "isDeleted": false,
+            "user_id": 23,
+            "company_id": 1,
+            "held": 1,
+            "release_date": null,
+            "payment_due": "2025-01-10",
+            "clientReference": "Generic Spots",
+            "address": null,
+            "city": null,
+            "state": null,
+            "zip": null,
+            "country_id": null,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 4,
+            "invoiceNumber": "981873",
+            "date": "9/30/25",
+            "tour": "Cirque du Soleil Echo",
+            "market": "Seattle, WA",
+            "venue_id": 5,
+            "amount": 9205.24,
+            "showDate": "2025-03-25",
+            "isDeleted": false,
+            "user_id": 25,
+            "company_id": 1,
+            "held": 0,
+            "release_date": "2025-11-25",
+            "payment_due": "2025-02-15",
+            "clientReference": "Generic Pre sale",
+            "address": null,
+            "city": null,
+            "state": null,
+            "zip": null,
+            "country_id": null,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 5,
+            "invoiceNumber": "981873",
+            "date": "9/30/25",
+            "tour": "Cirque du Soleil Echo",
+            "market": "Seattle, WA",
+            "venue_id": 5,
+            "amount": 3205.24,
+            "showDate": "2025-12-05",
+            "isDeleted": true,
+            "user_id": 7,
+            "company_id": 1,
+            "held": 1,
+            "release_date": null,
+            "payment_due": "2025-02-15",
+            "clientReference": "Generic Pre sale",
+            "address": null,
+            "city": null,
+            "state": null,
+            "zip": null,
+            "country_id": null,
+            "delete_date": "2025-10-15T14:30:00Z",
+            "deleted_by": 7,
+            "deleted_reason": "Duplicate invoice - cancelled by client request"
+        },
+        {
+            "id": 6,
+            "invoiceNumber": "985234",
+            "date": "10/15/24",
+            "tour": "Live Nation Concerts",
+            "market": "Los Angeles, CA",
+            "venue_id": 5,
+            "amount": 9230.5,
+            "showDate": "2026-04-18",
+            "isDeleted": false,
+            "user_id": 9,
+            "company_id": 2,
+            "held": 0,
+            "release_date": "2025-12-15",
+            "payment_due": "2025-01-15",
+            "clientReference": "VIP Pre Sale",
+            "address": "6801 Hollywood Boulevard, Suite 300",
+            "city": "Los Angeles",
+            "state": "CA",
+            "zip": "90028",
+            "country_id": 1,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 7,
+            "invoiceNumber": "986789",
+            "date": "10/22/24",
+            "tour": "Matt Rife 2024",
+            "market": "Chicago, IL",
+            "venue_id": 1,
+            "amount": 8150,
+            "showDate": "2026-05-30",
+            "isDeleted": false,
+            "user_id": 11,
+            "company_id": 3,
+            "held": 1,
+            "release_date": null,
+            "payment_due": "2025-01-22",
+            "clientReference": "Early Bird Sale",
+            "address": null,
+            "city": null,
+            "state": null,
+            "zip": null,
+            "country_id": null,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 8,
+            "invoiceNumber": "987456",
+            "date": "11/01/24",
+            "tour": "Bon Jovi 2024",
+            "market": "New York, NY",
+            "venue_id": 1,
+            "amount": 9890.25,
+            "showDate": "2026-06-12",
+            "isDeleted": false,
+            "user_id": 13,
+            "company_id": 4,
+            "held": 0,
+            "release_date": "2026-01-19",
+            "payment_due": "2025-02-01",
+            "clientReference": "Fan Club Pre Sale",
+            "address": null,
+            "city": null,
+            "state": null,
+            "zip": null,
+            "country_id": null,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 9,
+            "invoiceNumber": "988123",
+            "date": "11/10/24",
+            "tour": "Demi Lovato Tour",
+            "market": "Miami, FL",
+            "venue_id": 3,
+            "amount": 8457,
+            "showDate": "2026-07-08",
+            "isDeleted": false,
+            "user_id": 15,
+            "company_id": 5,
+            "held": 1,
+            "release_date": null,
+            "payment_due": "2025-02-10",
+            "clientReference": "General Sale",
+            "address": "1200 Biscayne Boulevard, Floor 15",
+            "city": "Miami",
+            "state": "FL",
+            "zip": "33132",
+            "country_id": 1,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 10,
+            "invoiceNumber": "989567",
+            "date": "11/18/24",
+            "tour": "Renee Rapp - Snow Tour",
+            "market": "Boston, MA",
+            "venue_id": 2,
+            "amount": 6945.33,
+            "showDate": "2025-07-22",
+            "isDeleted": false,
+            "user_id": 19,
+            "company_id": 6,
+            "held": 0,
+            "release_date": "2025-01-18",
+            "payment_due": "2025-02-18",
+            "clientReference": "Presale Code",
+            "address": null,
+            "city": null,
+            "state": null,
+            "zip": null,
+            "country_id": null,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 11,
+            "invoiceNumber": "990234",
+            "date": "12/01/24",
+            "tour": "Eagles Tour 2024",
+            "market": "Phoenix, AZ",
+            "venue_id": 4,
+            "amount": 11250.75,
+            "showDate": "2026-08-15",
+            "isDeleted": false,
+            "user_id": 2,
+            "company_id": 7,
+            "held": 0,
+            "release_date": "2025-12-20",
+            "payment_due": "2025-03-01",
+            "clientReference": "Fan Club Exclusive",
+            "address": "201 E Jefferson Street, Suite 400",
+            "city": "Phoenix",
+            "state": "AZ",
+            "zip": "85004",
+            "country_id": 1,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 12,
+            "invoiceNumber": "991456",
+            "date": "12/05/24",
+            "tour": "Live Nation Concerts",
+            "market": "Denver, CO",
+            "venue_id": 2,
+            "amount": 10890.5,
+            "showDate": "2026-09-20",
+            "isDeleted": false,
+            "user_id": 4,
+            "company_id": 2,
+            "held": 1,
+            "release_date": null,
+            "payment_due": "2025-03-05",
+            "clientReference": "Early Access",
+            "address": null,
+            "city": null,
+            "state": null,
+            "zip": null,
+            "country_id": null,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 13,
+            "invoiceNumber": "992678",
+            "date": "12/10/24",
+            "tour": "Matt Rife 2024",
+            "market": "Atlanta, GA",
+            "venue_id": 7,
+            "amount": 7650.25,
+            "showDate": "2026-10-05",
+            "isDeleted": true,
+            "user_id": 6,
+            "company_id": 3,
+            "held": 0,
+            "release_date": "2025-12-25",
+            "payment_due": "2025-03-10",
+            "clientReference": "Group Discount",
+            "address": "1 State Farm Drive, Suite 200",
+            "city": "Atlanta",
+            "state": "GA",
+            "zip": "30303",
+            "country_id": 1,
+            "delete_date": "2025-11-20T10:15:00Z",
+            "deleted_by": 3,
+            "deleted_reason": "Event cancelled by venue"
+        },
+        {
+            "id": 14,
+            "invoiceNumber": "993789",
+            "date": "12/15/24",
+            "tour": "Bon Jovi 2024",
+            "market": "Las Vegas, NV",
+            "venue_id": 6,
+            "amount": 12450,
+            "showDate": "2026-11-12",
+            "isDeleted": false,
+            "user_id": 8,
+            "company_id": 4,
+            "held": 0,
+            "release_date": "2026-01-10",
+            "payment_due": "2025-03-15",
+            "clientReference": "VIP Package",
+            "address": "3780 Las Vegas Boulevard South",
+            "city": "Las Vegas",
+            "state": "NV",
+            "zip": "89109",
+            "country_id": 1,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 15,
+            "invoiceNumber": "994123",
+            "date": "12/20/24",
+            "tour": "Demi Lovato Tour",
+            "market": "Portland, OR",
+            "venue_id": 4,
+            "amount": 8950.33,
+            "showDate": "2026-12-08",
+            "isDeleted": false,
+            "user_id": 10,
+            "company_id": 5,
+            "held": 1,
+            "release_date": null,
+            "payment_due": "2025-03-20",
+            "clientReference": "Student Discount",
+            "address": null,
+            "city": null,
+            "state": null,
+            "zip": null,
+            "country_id": null,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 16,
+            "invoiceNumber": "995567",
+            "date": "12/25/24",
+            "tour": "Renee Rapp - Snow Tour",
+            "market": "Minneapolis, MN",
+            "venue_id": 5,
+            "amount": 7234.67,
+            "showDate": "2027-01-15",
+            "isDeleted": false,
+            "user_id": 12,
+            "company_id": 6,
+            "held": 0,
+            "release_date": "2026-01-20",
+            "payment_due": "2025-03-25",
+            "clientReference": "Holiday Special",
+            "address": "600 First Avenue North, Floor 3",
+            "city": "Minneapolis",
+            "state": "MN",
+            "zip": "55403",
+            "country_id": 1,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 17,
+            "invoiceNumber": "996234",
+            "date": "12/30/24",
+            "tour": "Cirque du Soleil Echo",
+            "market": "Toronto, ON",
+            "venue_id": 6,
+            "amount": 9876.5,
+            "showDate": "2027-02-20",
+            "isDeleted": false,
+            "user_id": 14,
+            "company_id": 1,
+            "held": 1,
+            "release_date": null,
+            "payment_due": "2025-03-30",
+            "clientReference": "Corporate Event",
+            "address": "40 Bay Street, Suite 500",
+            "city": "Toronto",
+            "state": "ON",
+            "zip": "M5J 2X2",
+            "country_id": 2,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 18,
+            "invoiceNumber": "997890",
+            "date": "1/05/25",
+            "tour": "Live Nation Concerts",
+            "market": "Nashville, TN",
+            "venue_id": 3,
+            "amount": 8567.25,
+            "showDate": "2027-03-10",
+            "isDeleted": true,
+            "user_id": 16,
+            "company_id": 2,
+            "held": 0,
+            "release_date": "2026-02-05",
+            "payment_due": "2025-04-05",
+            "clientReference": "Music City Special",
+            "address": "501 Broadway, Suite 300",
+            "city": "Nashville",
+            "state": "TN",
+            "zip": "37203",
+            "country_id": 1,
+            "delete_date": "2025-12-28T16:45:00Z",
+            "deleted_by": 5,
+            "deleted_reason": "Client requested cancellation due to scheduling conflict"
+        },
+        {
+            "id": 19,
+            "invoiceNumber": "998456",
+            "date": "1/10/25",
+            "tour": "Eagles Tour 2024",
+            "market": "Austin, TX",
+            "venue_id": 5,
+            "amount": 10234,
+            "showDate": "2027-04-18",
+            "isDeleted": false,
+            "user_id": 18,
+            "company_id": 7,
+            "held": 0,
+            "release_date": "2026-02-10",
+            "payment_due": "2025-04-10",
+            "clientReference": "Texas Exclusive",
+            "address": "2001 Robert Dedman Drive",
+            "city": "Austin",
+            "state": "TX",
+            "zip": "78712",
+            "country_id": 1,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        },
+        {
+            "id": 20,
+            "invoiceNumber": "999123",
+            "date": "1/15/25",
+            "tour": "Cirque du Soleil Portfolio",
+            "market": "Portfolio Showcase",
+            "venue_id": 1,
+            "amount": 6543.75,
+            "showDate": "2027-05-22",
+            "isDeleted": false,
+            "user_id": 20,
+            "company_id": 1,
+            "held": 1,
+            "release_date": null,
+            "payment_due": "2025-04-15",
+            "clientReference": "Portfolio Update",
+            "address": null,
+            "city": null,
+            "state": null,
+            "zip": null,
+            "country_id": null,
+            "delete_date": null,
+            "deleted_by": null,
+            "deleted_reason": null
+        }
+    ],
+    "invoice_items": [
+        {
+            "id": 1,
+            "order_id": 21,
+            "invoice_id": 1,
+            "code": "Big Top",
+            "description": "Large format tent structure rental",
+            "quantity": 1,
+            "price": 8750
+        },
+        {
+            "id": 2,
+            "order_id": 7,
+            "invoice_id": 2,
+            "code": "TV",
+            "description": "LED display screen rental - 65 inch",
+            "quantity": 2,
+            "price": 2500
+        },
+        {
+            "id": 3,
+            "order_id": 7,
+            "invoice_id": 2,
+            "code": "Print",
+            "description": "Printed promotional materials and banners",
+            "quantity": 12,
+            "price": 224.37
+        },
+        {
+            "id": 4,
+            "order_id": 7,
+            "invoice_id": 3,
+            "code": "Banner",
+            "description": "Large format vinyl banner - 10ft x 20ft",
+            "quantity": 2,
+            "price": 450
+        },
+        {
+            "id": 5,
+            "order_id": 7,
+            "invoice_id": 3,
+            "code": "Signage",
+            "description": "Directional signage set",
+            "quantity": 8,
+            "price": 125.5
+        },
+        {
+            "id": 6,
+            "order_id": 7,
+            "invoice_id": 3,
+            "code": "Digital Display",
+            "description": "Digital display board rental",
+            "quantity": 1,
+            "price": 3500
+        },
+        {
+            "id": 7,
+            "order_id": 7,
+            "invoice_id": 3,
+            "code": "Poster",
+            "description": "Event posters - 24x36 inch",
+            "quantity": 50,
+            "price": 12.5
+        },
+        {
+            "id": 8,
+            "order_id": 7,
+            "invoice_id": 3,
+            "code": "Flyer",
+            "description": "Promotional flyers - 8.5x11 inch",
+            "quantity": 500,
+            "price": 0.35
+        },
+        {
+            "id": 9,
+            "order_id": 7,
+            "invoice_id": 3,
+            "code": "Backdrop",
+            "description": "Stage backdrop - custom printed",
+            "quantity": 1,
+            "price": 3367.78
+        },
+        {
+            "id": 10,
+            "order_id": 8,
+            "invoice_id": 4,
+            "code": "LED Screen",
+            "description": "LED video wall rental - 10x15ft",
+            "quantity": 1,
+            "price": 1500
+        },
+        {
+            "id": 11,
+            "order_id": 8,
+            "invoice_id": 4,
+            "code": "TV",
+            "description": "TV monitor rental - 55 inch",
+            "quantity": 2,
+            "price": 800
+        },
+        {
+            "id": 12,
+            "order_id": 8,
+            "invoice_id": 4,
+            "code": "Banner",
+            "description": "Vinyl banner - 8ft x 16ft",
+            "quantity": 3,
+            "price": 320
+        },
+        {
+            "id": 13,
+            "order_id": 8,
+            "invoice_id": 4,
+            "code": "Signage",
+            "description": "Wayfinding signage package",
+            "quantity": 15,
+            "price": 95
+        },
+        {
+            "id": 14,
+            "order_id": 8,
+            "invoice_id": 4,
+            "code": "Poster",
+            "description": "Event posters - 18x24 inch",
+            "quantity": 30,
+            "price": 8.75
+        },
+        {
+            "id": 15,
+            "order_id": 8,
+            "invoice_id": 4,
+            "code": "Stage Set",
+            "description": "Stage set pieces and props",
+            "quantity": 1,
+            "price": 1994.74
+        },
+        {
+            "id": 16,
+            "order_id": 8,
+            "invoice_id": 4,
+            "code": "Backdrop",
+            "description": "Custom printed backdrop - 20x30ft",
+            "quantity": 1,
+            "price": 1205
+        },
+        {
+            "id": 17,
+            "order_id": 8,
+            "invoice_id": 4,
+            "code": "Print",
+            "description": "Printed marketing materials",
+            "quantity": 20,
+            "price": 12.9
+        },
+        {
+            "id": 18,
+            "order_id": 9,
+            "invoice_id": 5,
+            "code": "Billboard",
+            "description": "Outdoor billboard advertising",
+            "quantity": 1,
+            "price": 3205.24
+        },
+        {
+            "id": 19,
+            "order_id": 13,
+            "invoice_id": 6,
+            "code": "Big Top",
+            "description": "Large tent structure with setup",
+            "quantity": 1,
+            "price": 1500
+        },
+        {
+            "id": 20,
+            "order_id": 13,
+            "invoice_id": 6,
+            "code": "LED Screen",
+            "description": "LED video display - 12x20ft",
+            "quantity": 1,
+            "price": 1200
+        },
+        {
+            "id": 21,
+            "order_id": 13,
+            "invoice_id": 6,
+            "code": "TV",
+            "description": "TV monitor rental - 75 inch",
+            "quantity": 2,
+            "price": 800
+        },
+        {
+            "id": 22,
+            "order_id": 13,
+            "invoice_id": 6,
+            "code": "Banner",
+            "description": "Custom vinyl banners - various sizes",
+            "quantity": 5,
+            "price": 380
+        },
+        {
+            "id": 23,
+            "order_id": 13,
+            "invoice_id": 6,
+            "code": "Signage",
+            "description": "Event signage package",
+            "quantity": 12,
+            "price": 110
+        },
+        {
+            "id": 24,
+            "order_id": 13,
+            "invoice_id": 6,
+            "code": "Poster",
+            "description": "Event posters - 24x36 inch",
+            "quantity": 40,
+            "price": 11.25
+        },
+        {
+            "id": 25,
+            "order_id": 13,
+            "invoice_id": 6,
+            "code": "Stage Set",
+            "description": "Stage set design and installation",
+            "quantity": 1,
+            "price": 1260.5
+        },
+        {
+            "id": 26,
+            "order_id": 3,
+            "invoice_id": 7,
+            "code": "Digital Display",
+            "description": "Digital signage system rental",
+            "quantity": 2,
+            "price": 1200
+        },
+        {
+            "id": 27,
+            "order_id": 3,
+            "invoice_id": 7,
+            "code": "TV",
+            "description": "TV monitor rental - 65 inch",
+            "quantity": 3,
+            "price": 600
+        },
+        {
+            "id": 28,
+            "order_id": 3,
+            "invoice_id": 7,
+            "code": "Banner",
+            "description": "Vinyl banner - 12ft x 24ft",
+            "quantity": 2,
+            "price": 550
+        },
+        {
+            "id": 29,
+            "order_id": 3,
+            "invoice_id": 7,
+            "code": "Print",
+            "description": "Printed promotional materials",
+            "quantity": 25,
+            "price": 15
+        },
+        {
+            "id": 30,
+            "order_id": 3,
+            "invoice_id": 7,
+            "code": "Backdrop",
+            "description": "Custom stage backdrop - 15x25ft",
+            "quantity": 1,
+            "price": 2475
+        },
+        {
+            "id": 31,
+            "order_id": 14,
+            "invoice_id": 8,
+            "code": "Big Top",
+            "description": "Premium tent structure rental",
+            "quantity": 1,
+            "price": 1500
+        },
+        {
+            "id": 32,
+            "order_id": 14,
+            "invoice_id": 8,
+            "code": "LED Screen",
+            "description": "LED video wall - 15x25ft",
+            "quantity": 1,
+            "price": 1100
+        },
+        {
+            "id": 33,
+            "order_id": 14,
+            "invoice_id": 8,
+            "code": "TV",
+            "description": "TV monitor rental - 85 inch",
+            "quantity": 2,
+            "price": 650
+        },
+        {
+            "id": 34,
+            "order_id": 14,
+            "invoice_id": 8,
+            "code": "Banner",
+            "description": "Custom banners - various sizes",
+            "quantity": 4,
+            "price": 240
+        },
+        {
+            "id": 35,
+            "order_id": 14,
+            "invoice_id": 8,
+            "code": "Signage",
+            "description": "Comprehensive signage package",
+            "quantity": 15,
+            "price": 85
+        },
+        {
+            "id": 36,
+            "order_id": 14,
+            "invoice_id": 8,
+            "code": "Poster",
+            "description": "Event posters - 24x36 inch",
+            "quantity": 50,
+            "price": 10
+        },
+        {
+            "id": 37,
+            "order_id": 14,
+            "invoice_id": 8,
+            "code": "Flyer",
+            "description": "Promotional flyers - 8.5x11 inch",
+            "quantity": 800,
+            "price": 0.35
+        },
+        {
+            "id": 38,
+            "order_id": 14,
+            "invoice_id": 8,
+            "code": "Stage Set",
+            "description": "Premium stage set design",
+            "quantity": 1,
+            "price": 1500
+        },
+        {
+            "id": 39,
+            "order_id": 14,
+            "invoice_id": 8,
+            "code": "Backdrop",
+            "description": "Custom printed backdrop - 25x40ft",
+            "quantity": 1,
+            "price": 1515.25
+        },
+        {
+            "id": 40,
+            "order_id": 16,
+            "invoice_id": 9,
+            "code": "Digital Display",
+            "description": "Digital display board rental",
+            "quantity": 1,
+            "price": 3000
+        },
+        {
+            "id": 41,
+            "order_id": 16,
+            "invoice_id": 9,
+            "code": "TV",
+            "description": "TV monitor rental - 55 inch",
+            "quantity": 4,
+            "price": 1200
+        },
+        {
+            "id": 42,
+            "order_id": 16,
+            "invoice_id": 9,
+            "code": "Print",
+            "description": "Printed marketing materials package",
+            "quantity": 30,
+            "price": 21.9
+        },
+        {
+            "id": 43,
+            "order_id": 18,
+            "invoice_id": 10,
+            "code": "Banner",
+            "description": "Vinyl banner - 10ft x 20ft",
+            "quantity": 3,
+            "price": 420
+        },
+        {
+            "id": 44,
+            "order_id": 18,
+            "invoice_id": 10,
+            "code": "Signage",
+            "description": "Event signage set",
+            "quantity": 10,
+            "price": 105
+        },
+        {
+            "id": 45,
+            "order_id": 18,
+            "invoice_id": 10,
+            "code": "Poster",
+            "description": "Event posters - 18x24 inch",
+            "quantity": 35,
+            "price": 9.5
+        },
+        {
+            "id": 46,
+            "order_id": 18,
+            "invoice_id": 10,
+            "code": "Backdrop",
+            "description": "Stage backdrop - 12x20ft",
+            "quantity": 1,
+            "price": 4302.83
+        }
+    ],
+    "orders": [
+        {
+            "id": 1,
+            "tour_venue_id": 1,
+            "date": "2024-11-08T19:00:00Z",
+            "hold_invoices": 1,
+            "hash": "mattmsg001"
+        },
+        {
+            "id": 2,
+            "tour_venue_id": 22,
+            "date": "2024-11-08T20:00:00Z",
+            "hold_invoices": 0,
+            "hash": "mattmsg002"
+        },
+        {
+            "id": 3,
+            "tour_venue_id": 2,
+            "date": "2024-11-08T18:00:00Z",
+            "hold_invoices": 0,
+            "hash": "mattsun001"
+        },
+        {
+            "id": 4,
+            "tour_venue_id": 3,
+            "date": "2024-11-08T19:30:00Z",
+            "hold_invoices": 1,
+            "hash": "mattalys001"
+        },
+        {
+            "id": 5,
+            "tour_venue_id": 4,
+            "date": "2024-11-08T18:30:00Z",
+            "hold_invoices": 0,
+            "hash": "eaglecoca001"
+        },
+        {
+            "id": 6,
+            "tour_venue_id": 5,
+            "date": "2024-11-15T19:00:00Z",
+            "hold_invoices": 1,
+            "hash": "eagleholly001"
+        },
+        {
+            "id": 7,
+            "tour_venue_id": 6,
+            "date": "2024-11-08T19:00:00Z",
+            "hold_invoices": 0,
+            "hash": "cirquemsg001"
+        },
+        {
+            "id": 8,
+            "tour_venue_id": 7,
+            "date": "2024-11-15T19:00:00Z",
+            "hold_invoices": 1,
+            "hash": "cirqueholly001"
+        },
+        {
+            "id": 9,
+            "tour_venue_id": 8,
+            "date": "2024-11-16T19:30:00Z",
+            "hold_invoices": 0,
+            "hash": "cirquechase001"
+        },
+        {
+            "id": 10,
+            "tour_venue_id": 9,
+            "date": "2024-11-08T18:00:00Z",
+            "hold_invoices": 0,
+            "hash": "livesun001"
+        },
+        {
+            "id": 11,
+            "tour_venue_id": 10,
+            "date": "2024-11-08T19:30:00Z",
+            "hold_invoices": 1,
+            "hash": "livealys001"
+        },
+        {
+            "id": 12,
+            "tour_venue_id": 11,
+            "date": "2024-11-08T18:30:00Z",
+            "hold_invoices": 0,
+            "hash": "livecoca001"
+        },
+        {
+            "id": 13,
+            "tour_venue_id": 12,
+            "date": "2024-11-15T19:00:00Z",
+            "hold_invoices": 0,
+            "hash": "liveholly001"
+        },
+        {
+            "id": 14,
+            "tour_venue_id": 13,
+            "date": "2024-11-08T19:00:00Z",
+            "hold_invoices": 1,
+            "hash": "bonjovimsg001"
+        },
+        {
+            "id": 15,
+            "tour_venue_id": 14,
+            "date": "2024-11-16T19:30:00Z",
+            "hold_invoices": 0,
+            "hash": "bonjovichase001"
+        },
+        {
+            "id": 16,
+            "tour_venue_id": 15,
+            "date": "2024-11-08T19:30:00Z",
+            "hold_invoices": 1,
+            "hash": "demialys001"
+        },
+        {
+            "id": 17,
+            "tour_venue_id": 16,
+            "date": "2024-11-08T18:30:00Z",
+            "hold_invoices": 0,
+            "hash": "demicoca001"
+        },
+        {
+            "id": 18,
+            "tour_venue_id": 17,
+            "date": "2024-11-08T18:00:00Z",
+            "hold_invoices": 0,
+            "hash": "reneesun001"
+        },
+        {
+            "id": 19,
+            "tour_venue_id": 18,
+            "date": "2024-11-15T19:00:00Z",
+            "hold_invoices": 1,
+            "hash": "reneeholly001"
+        },
+        {
+            "id": 20,
+            "tour_venue_id": 19,
+            "date": "2024-11-16T19:30:00Z",
+            "hold_invoices": 0,
+            "hash": "reneechase001"
+        },
+        {
+            "id": 21,
+            "tour_venue_id": 29,
+            "date": "2024-11-08T19:00:00Z",
+            "hold_invoices": 0,
+            "hash": "portfoliomsg001"
+        },
+        {
+            "id": 22,
+            "tour_venue_id": 21,
+            "date": "2024-11-16T19:30:00Z",
+            "hold_invoices": 0,
+            "hash": "portfoliochase001"
+        }
+    ]
 }

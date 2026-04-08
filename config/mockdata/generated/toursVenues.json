@@ -1,0 +1,618 @@
+{
+    "tour_venue_status": [
+        {
+            "id": 1,
+            "label": "New Order"
+        },
+        {
+            "id": 2,
+            "label": "In Progress"
+        },
+        {
+            "id": 3,
+            "label": "Voice Over"
+        },
+        {
+            "id": 4,
+            "label": "Audio"
+        },
+        {
+            "id": 5,
+            "label": "Art"
+        },
+        {
+            "id": 6,
+            "label": "Paused"
+        },
+        {
+            "id": 7,
+            "label": "Completed"
+        }
+    ],
+    "tour_venue_stops": [
+        {
+            "id": 1,
+            "tour_id": 1,
+            "venue_id": 1,
+            "start_date": "2024-11-08T19:00:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 7,
+            "status": [1],
+            "created_at": "2026-02-22T03:56:51Z"
+        },
+        {
+            "id": 2,
+            "tour_id": 1,
+            "venue_id": 2,
+            "start_date": "2024-11-08T18:00:00Z",
+            "end_date": "2024-11-08T22:30:00Z",
+            "client": 9,
+            "status": [2],
+            "created_at": "2024-10-27T19:34:45Z"
+        },
+        {
+            "id": 3,
+            "tour_id": 1,
+            "venue_id": 3,
+            "start_date": "2024-11-08T19:30:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 10,
+            "status": [5],
+            "created_at": "2024-12-04T05:39:38Z"
+        },
+        {
+            "id": 4,
+            "tour_id": 2,
+            "venue_id": 4,
+            "start_date": "2024-11-08T18:30:00Z",
+            "end_date": "2024-11-08T22:00:00Z",
+            "client": 11,
+            "status": [6],
+            "created_at": "2025-02-02T16:09:29Z"
+        },
+        {
+            "id": 5,
+            "tour_id": 2,
+            "venue_id": 5,
+            "start_date": "2024-11-15T19:00:00Z",
+            "end_date": "2024-11-15T23:30:00Z",
+            "client": 12,
+            "status": [1, 5, 3, 4],
+            "created_at": "2024-10-25T00:41:56Z"
+        },
+        {
+            "id": 6,
+            "tour_id": 3,
+            "venue_id": 1,
+            "start_date": "2024-11-08T19:00:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 7,
+            "status": [1],
+            "created_at": "2025-01-23T21:46:07Z"
+        },
+        {
+            "id": 7,
+            "tour_id": 3,
+            "venue_id": 5,
+            "start_date": "2024-11-15T19:00:00Z",
+            "end_date": "2024-11-15T23:30:00Z",
+            "client": 12,
+            "status": [7],
+            "created_at": "2024-12-17T01:58:45Z"
+        },
+        {
+            "id": 8,
+            "tour_id": 3,
+            "venue_id": 6,
+            "start_date": "2024-11-16T19:30:00Z",
+            "end_date": "2024-11-16T23:00:00Z",
+            "client": 15,
+            "status": [3, 4],
+            "created_at": "2024-10-04T21:06:34Z"
+        },
+        {
+            "id": 9,
+            "tour_id": 4,
+            "venue_id": 2,
+            "start_date": "2024-11-08T18:00:00Z",
+            "end_date": "2024-11-08T22:30:00Z",
+            "client": 9,
+            "status": [2],
+            "created_at": "2025-03-14T14:58:34Z"
+        },
+        {
+            "id": 10,
+            "tour_id": 4,
+            "venue_id": 3,
+            "start_date": "2024-11-08T19:30:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 10,
+            "status": [7],
+            "created_at": "2025-02-25T00:55:21Z"
+        },
+        {
+            "id": 11,
+            "tour_id": 4,
+            "venue_id": 4,
+            "start_date": "2024-11-08T18:30:00Z",
+            "end_date": "2024-11-08T22:00:00Z",
+            "client": 11,
+            "status": [6],
+            "created_at": "2024-10-26T09:09:27Z"
+        },
+        {
+            "id": 12,
+            "tour_id": 4,
+            "venue_id": 5,
+            "start_date": "2024-11-15T19:00:00Z",
+            "end_date": "2024-11-15T23:30:00Z",
+            "client": 12,
+            "status": [2],
+            "created_at": "2024-11-14T23:06:57Z"
+        },
+        {
+            "id": 13,
+            "tour_id": 5,
+            "venue_id": 1,
+            "start_date": "2024-11-08T19:00:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 7,
+            "status": [1],
+            "created_at": "2024-12-15T00:43:25Z"
+        },
+        {
+            "id": 14,
+            "tour_id": 5,
+            "venue_id": 6,
+            "start_date": "2024-11-16T19:30:00Z",
+            "end_date": "2024-11-16T23:00:00Z",
+            "client": 15,
+            "status": [3, 4],
+            "created_at": "2025-02-01T04:13:12Z"
+        },
+        {
+            "id": 15,
+            "tour_id": 6,
+            "venue_id": 3,
+            "start_date": "2024-11-08T19:30:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 10,
+            "status": [2],
+            "created_at": "2025-01-19T19:57:02Z"
+        },
+        {
+            "id": 16,
+            "tour_id": 6,
+            "venue_id": 4,
+            "start_date": "2024-11-08T18:30:00Z",
+            "end_date": "2024-11-08T22:00:00Z",
+            "client": 11,
+            "status": [6],
+            "created_at": "2024-12-17T13:28:40Z"
+        },
+        {
+            "id": 17,
+            "tour_id": 7,
+            "venue_id": 2,
+            "start_date": "2024-11-08T18:00:00Z",
+            "end_date": "2024-11-08T22:30:00Z",
+            "client": 9,
+            "status": [5],
+            "created_at": "2025-01-29T17:51:05Z"
+        },
+        {
+            "id": 18,
+            "tour_id": 7,
+            "venue_id": 5,
+            "start_date": "2024-11-15T19:00:00Z",
+            "end_date": "2024-11-15T23:30:00Z",
+            "client": 12,
+            "status": [7],
+            "created_at": "2024-11-29T07:28:29Z"
+        },
+        {
+            "id": 19,
+            "tour_id": 7,
+            "venue_id": 6,
+            "start_date": "2024-11-16T19:30:00Z",
+            "end_date": "2024-11-16T23:00:00Z",
+            "client": 15,
+            "status": [3, 4],
+            "created_at": "2025-02-28T13:57:20Z"
+        },
+        {
+            "id": 20,
+            "tour_id": 8,
+            "venue_id": 1,
+            "start_date": "2024-11-08T19:00:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 7,
+            "status": [1],
+            "created_at": "2024-10-10T04:00:16Z"
+        },
+        {
+            "id": 21,
+            "tour_id": 8,
+            "venue_id": 6,
+            "start_date": "2024-11-16T19:30:00Z",
+            "end_date": "2024-11-16T23:00:00Z",
+            "client": 15,
+            "status": [3, 4],
+            "created_at": "2024-09-20T08:14:47Z"
+        }
+    ],
+    "tour_demo_venues": [
+        {
+            "id": 22,
+            "tour_id": 1,
+            "venue_id": null,
+            "start_date": "2024-10-01T00:00:00Z",
+            "end_date": "2024-12-15T00:00:00Z",
+            "client": 6,
+            "status": null,
+            "created_at": "2025-03-09T09:52:49Z"
+        },
+        {
+            "id": 23,
+            "tour_id": 2,
+            "venue_id": null,
+            "start_date": "2024-11-01T00:00:00Z",
+            "end_date": "2024-12-20T00:00:00Z",
+            "client": 15,
+            "status": null,
+            "created_at": "2024-10-28T23:33:09Z"
+        },
+        {
+            "id": 24,
+            "tour_id": 3,
+            "venue_id": null,
+            "start_date": "2024-09-15T00:00:00Z",
+            "end_date": "2024-12-10T00:00:00Z",
+            "client": 20,
+            "status": null,
+            "created_at": "2024-11-14T00:55:21Z"
+        },
+        {
+            "id": 25,
+            "tour_id": 4,
+            "venue_id": null,
+            "start_date": "2024-08-01T00:00:00Z",
+            "end_date": "2024-12-25T00:00:00Z",
+            "client": 9,
+            "status": null,
+            "created_at": "2024-11-21T21:29:12Z"
+        },
+        {
+            "id": 26,
+            "tour_id": 5,
+            "venue_id": null,
+            "start_date": "2024-12-01T00:00:00Z",
+            "end_date": "2025-01-05T00:00:00Z",
+            "client": 22,
+            "status": null,
+            "created_at": "2024-09-28T21:03:09Z"
+        },
+        {
+            "id": 27,
+            "tour_id": 6,
+            "venue_id": null,
+            "start_date": "2024-11-15T00:00:00Z",
+            "end_date": "2024-12-18T00:00:00Z",
+            "client": 11,
+            "status": null,
+            "created_at": "2025-02-26T16:35:29Z"
+        },
+        {
+            "id": 28,
+            "tour_id": 7,
+            "venue_id": null,
+            "start_date": "2024-10-20T00:00:00Z",
+            "end_date": "2024-12-22T00:00:00Z",
+            "client": 16,
+            "status": null,
+            "created_at": "2024-10-18T00:31:28Z"
+        },
+        {
+            "id": 29,
+            "tour_id": 8,
+            "venue_id": null,
+            "start_date": "2024-07-01T00:00:00Z",
+            "end_date": "2024-12-30T00:00:00Z",
+            "client": 24,
+            "status": null,
+            "created_at": "2025-01-20T02:44:35Z"
+        }
+    ],
+    "tour_venues": [
+        {
+            "id": 1,
+            "tour_id": 1,
+            "venue_id": 1,
+            "start_date": "2024-11-08T19:00:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 7,
+            "status": [1],
+            "created_at": "2026-02-22T03:56:51Z"
+        },
+        {
+            "id": 2,
+            "tour_id": 1,
+            "venue_id": 2,
+            "start_date": "2024-11-08T18:00:00Z",
+            "end_date": "2024-11-08T22:30:00Z",
+            "client": 9,
+            "status": [2],
+            "created_at": "2024-10-27T19:34:45Z"
+        },
+        {
+            "id": 3,
+            "tour_id": 1,
+            "venue_id": 3,
+            "start_date": "2024-11-08T19:30:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 10,
+            "status": [5],
+            "created_at": "2024-12-04T05:39:38Z"
+        },
+        {
+            "id": 4,
+            "tour_id": 2,
+            "venue_id": 4,
+            "start_date": "2024-11-08T18:30:00Z",
+            "end_date": "2024-11-08T22:00:00Z",
+            "client": 11,
+            "status": [6],
+            "created_at": "2025-02-02T16:09:29Z"
+        },
+        {
+            "id": 5,
+            "tour_id": 2,
+            "venue_id": 5,
+            "start_date": "2024-11-15T19:00:00Z",
+            "end_date": "2024-11-15T23:30:00Z",
+            "client": 12,
+            "status": [1, 5, 3, 4],
+            "created_at": "2024-10-25T00:41:56Z"
+        },
+        {
+            "id": 6,
+            "tour_id": 3,
+            "venue_id": 1,
+            "start_date": "2024-11-08T19:00:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 7,
+            "status": [1],
+            "created_at": "2025-01-23T21:46:07Z"
+        },
+        {
+            "id": 7,
+            "tour_id": 3,
+            "venue_id": 5,
+            "start_date": "2024-11-15T19:00:00Z",
+            "end_date": "2024-11-15T23:30:00Z",
+            "client": 12,
+            "status": [7],
+            "created_at": "2024-12-17T01:58:45Z"
+        },
+        {
+            "id": 8,
+            "tour_id": 3,
+            "venue_id": 6,
+            "start_date": "2024-11-16T19:30:00Z",
+            "end_date": "2024-11-16T23:00:00Z",
+            "client": 15,
+            "status": [3, 4],
+            "created_at": "2024-10-04T21:06:34Z"
+        },
+        {
+            "id": 9,
+            "tour_id": 4,
+            "venue_id": 2,
+            "start_date": "2024-11-08T18:00:00Z",
+            "end_date": "2024-11-08T22:30:00Z",
+            "client": 9,
+            "status": [2],
+            "created_at": "2025-03-14T14:58:34Z"
+        },
+        {
+            "id": 10,
+            "tour_id": 4,
+            "venue_id": 3,
+            "start_date": "2024-11-08T19:30:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 10,
+            "status": [7],
+            "created_at": "2025-02-25T00:55:21Z"
+        },
+        {
+            "id": 11,
+            "tour_id": 4,
+            "venue_id": 4,
+            "start_date": "2024-11-08T18:30:00Z",
+            "end_date": "2024-11-08T22:00:00Z",
+            "client": 11,
+            "status": [6],
+            "created_at": "2024-10-26T09:09:27Z"
+        },
+        {
+            "id": 12,
+            "tour_id": 4,
+            "venue_id": 5,
+            "start_date": "2024-11-15T19:00:00Z",
+            "end_date": "2024-11-15T23:30:00Z",
+            "client": 12,
+            "status": [2],
+            "created_at": "2024-11-14T23:06:57Z"
+        },
+        {
+            "id": 13,
+            "tour_id": 5,
+            "venue_id": 1,
+            "start_date": "2024-11-08T19:00:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 7,
+            "status": [1],
+            "created_at": "2024-12-15T00:43:25Z"
+        },
+        {
+            "id": 14,
+            "tour_id": 5,
+            "venue_id": 6,
+            "start_date": "2024-11-16T19:30:00Z",
+            "end_date": "2024-11-16T23:00:00Z",
+            "client": 15,
+            "status": [3, 4],
+            "created_at": "2025-02-01T04:13:12Z"
+        },
+        {
+            "id": 15,
+            "tour_id": 6,
+            "venue_id": 3,
+            "start_date": "2024-11-08T19:30:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 10,
+            "status": [2],
+            "created_at": "2025-01-19T19:57:02Z"
+        },
+        {
+            "id": 16,
+            "tour_id": 6,
+            "venue_id": 4,
+            "start_date": "2024-11-08T18:30:00Z",
+            "end_date": "2024-11-08T22:00:00Z",
+            "client": 11,
+            "status": [6],
+            "created_at": "2024-12-17T13:28:40Z"
+        },
+        {
+            "id": 17,
+            "tour_id": 7,
+            "venue_id": 2,
+            "start_date": "2024-11-08T18:00:00Z",
+            "end_date": "2024-11-08T22:30:00Z",
+            "client": 9,
+            "status": [5],
+            "created_at": "2025-01-29T17:51:05Z"
+        },
+        {
+            "id": 18,
+            "tour_id": 7,
+            "venue_id": 5,
+            "start_date": "2024-11-15T19:00:00Z",
+            "end_date": "2024-11-15T23:30:00Z",
+            "client": 12,
+            "status": [7],
+            "created_at": "2024-11-29T07:28:29Z"
+        },
+        {
+            "id": 19,
+            "tour_id": 7,
+            "venue_id": 6,
+            "start_date": "2024-11-16T19:30:00Z",
+            "end_date": "2024-11-16T23:00:00Z",
+            "client": 15,
+            "status": [3, 4],
+            "created_at": "2025-02-28T13:57:20Z"
+        },
+        {
+            "id": 20,
+            "tour_id": 8,
+            "venue_id": 1,
+            "start_date": "2024-11-08T19:00:00Z",
+            "end_date": "2024-11-08T23:00:00Z",
+            "client": 7,
+            "status": [1],
+            "created_at": "2024-10-10T04:00:16Z"
+        },
+        {
+            "id": 21,
+            "tour_id": 8,
+            "venue_id": 6,
+            "start_date": "2024-11-16T19:30:00Z",
+            "end_date": "2024-11-16T23:00:00Z",
+            "client": 15,
+            "status": [3, 4],
+            "created_at": "2024-09-20T08:14:47Z"
+        },
+        {
+            "id": 22,
+            "tour_id": 1,
+            "venue_id": null,
+            "start_date": "2024-10-01T00:00:00Z",
+            "end_date": "2024-12-15T00:00:00Z",
+            "client": 6,
+            "status": null,
+            "created_at": "2025-03-09T09:52:49Z"
+        },
+        {
+            "id": 23,
+            "tour_id": 2,
+            "venue_id": null,
+            "start_date": "2024-11-01T00:00:00Z",
+            "end_date": "2024-12-20T00:00:00Z",
+            "client": 15,
+            "status": null,
+            "created_at": "2024-10-28T23:33:09Z"
+        },
+        {
+            "id": 24,
+            "tour_id": 3,
+            "venue_id": null,
+            "start_date": "2024-09-15T00:00:00Z",
+            "end_date": "2024-12-10T00:00:00Z",
+            "client": 20,
+            "status": null,
+            "created_at": "2024-11-14T00:55:21Z"
+        },
+        {
+            "id": 25,
+            "tour_id": 4,
+            "venue_id": null,
+            "start_date": "2024-08-01T00:00:00Z",
+            "end_date": "2024-12-25T00:00:00Z",
+            "client": 9,
+            "status": null,
+            "created_at": "2024-11-21T21:29:12Z"
+        },
+        {
+            "id": 26,
+            "tour_id": 5,
+            "venue_id": null,
+            "start_date": "2024-12-01T00:00:00Z",
+            "end_date": "2025-01-05T00:00:00Z",
+            "client": 22,
+            "status": null,
+            "created_at": "2024-09-28T21:03:09Z"
+        },
+        {
+            "id": 27,
+            "tour_id": 6,
+            "venue_id": null,
+            "start_date": "2024-11-15T00:00:00Z",
+            "end_date": "2024-12-18T00:00:00Z",
+            "client": 11,
+            "status": null,
+            "created_at": "2025-02-26T16:35:29Z"
+        },
+        {
+            "id": 28,
+            "tour_id": 7,
+            "venue_id": null,
+            "start_date": "2024-10-20T00:00:00Z",
+            "end_date": "2024-12-22T00:00:00Z",
+            "client": 16,
+            "status": null,
+            "created_at": "2024-10-18T00:31:28Z"
+        },
+        {
+            "id": 29,
+            "tour_id": 8,
+            "venue_id": null,
+            "start_date": "2024-07-01T00:00:00Z",
+            "end_date": "2024-12-30T00:00:00Z",
+            "client": 24,
+            "status": null,
+            "created_at": "2025-01-20T02:44:35Z"
+        }
+    ]
+}

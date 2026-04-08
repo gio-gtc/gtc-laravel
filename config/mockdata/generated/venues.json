@@ -1,0 +1,60 @@
+{
+    "venues": [
+        {
+            "id": 1,
+            "name": "Maddison Square Garden",
+            "address": "4 Pennsylvania Plaza",
+            "city": "New York",
+            "state": "NY",
+            "country_id": 1
+        },
+        {
+            "id": 2,
+            "name": "Sunset Amphitheater at McKinney, Texas",
+            "address": "2343 N Central Expy",
+            "city": "McKinney",
+            "state": "TX",
+            "country_id": 1
+        },
+        {
+            "id": 3,
+            "name": "Alys Robinson Stephens Performing Arts Center",
+            "address": "1200 10th Ave S",
+            "city": "Birmingham",
+            "state": "AL",
+            "country_id": 1
+        },
+        {
+            "id": 4,
+            "name": "The Coca Cola Charlotte Harbor Event and Conference Center",
+            "address": "75 Taylor St",
+            "city": "Punta Gorda",
+            "state": "FL",
+            "country_id": 1
+        },
+        {
+            "id": 5,
+            "name": "Hollywood Bowl",
+            "address": "2301 N Highland Ave",
+            "city": "Los Angeles",
+            "state": "CA",
+            "country_id": 1
+        },
+        {
+            "id": 6,
+            "name": "Chase Center",
+            "address": "1 Warriors Way",
+            "city": "San Francisco",
+            "state": "CA",
+            "country_id": 1
+        },
+        {
+            "id": 7,
+            "name": "N/A",
+            "address": "",
+            "city": "",
+            "state": "",
+            "country_id": 1
+        }
+    ]
+}

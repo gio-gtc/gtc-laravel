@@ -1,0 +1,281 @@
+{
+    "venue_item_assigned": [
+        {
+            "id": 1,
+            "venue_item_id": 2,
+            "mockUser_id": 3
+        },
+        {
+            "id": 2,
+            "venue_item_id": 2,
+            "mockUser_id": 6
+        },
+        {
+            "id": 3,
+            "venue_item_id": 3,
+            "mockUser_id": 3
+        },
+        {
+            "id": 4,
+            "venue_item_id": 3,
+            "mockUser_id": 6
+        },
+        {
+            "id": 5,
+            "venue_item_id": 4,
+            "mockUser_id": 3
+        },
+        {
+            "id": 6,
+            "venue_item_id": 6,
+            "mockUser_id": 3
+        },
+        {
+            "id": 7,
+            "venue_item_id": 9,
+            "mockUser_id": 3
+        },
+        {
+            "id": 8,
+            "venue_item_id": 10,
+            "mockUser_id": 3
+        },
+        {
+            "id": 9,
+            "venue_item_id": 11,
+            "mockUser_id": 3
+        },
+        {
+            "id": 10,
+            "venue_item_id": 13,
+            "mockUser_id": 3
+        },
+        {
+            "id": 11,
+            "venue_item_id": 15,
+            "mockUser_id": 3
+        },
+        {
+            "id": 12,
+            "venue_item_id": 16,
+            "mockUser_id": 3
+        },
+        {
+            "id": 13,
+            "venue_item_id": 17,
+            "mockUser_id": 3
+        }
+    ],
+    "venue_item_status": [
+        {
+            "id": 1,
+            "type": "Still in Cart"
+        },
+        {
+            "id": 2,
+            "type": "Client Review"
+        },
+        {
+            "id": 3,
+            "type": "In Production"
+        },
+        {
+            "id": 4,
+            "type": "Out for Delivery"
+        },
+        {
+            "id": 5,
+            "type": "Cancelled"
+        },
+        {
+            "id": 6,
+            "type": "Revision Requested"
+        },
+        {
+            "id": 7,
+            "type": "Unassigned"
+        }
+    ],
+    "venue_items": [
+        {
+            "id": 1,
+            "tour_venue_id": 1,
+            "type": "media",
+            "label": "Generic Presale",
+            "isci": "GTC1818843",
+            "duration": ":45",
+            "dueDate": "1/15/25",
+            "status_id": 1
+        },
+        {
+            "id": 2,
+            "tour_venue_id": 1,
+            "type": "media",
+            "label": "Generic Coming soon",
+            "isci": "GTC1818847",
+            "duration": ":30",
+            "dueDate": "1/15/25",
+            "status_id": 2
+        },
+        {
+            "id": 3,
+            "tour_venue_id": 1,
+            "type": "media",
+            "label": "Generic Teaser",
+            "isci": "GTC1818848",
+            "duration": ":15",
+            "dueDate": "1/18/25",
+            "status_id": 3
+        },
+        {
+            "id": 4,
+            "tour_venue_id": 1,
+            "type": "media",
+            "label": "Generic Final",
+            "isci": "GTC1818849",
+            "duration": ":60",
+            "dueDate": "1/20/25",
+            "status_id": 4
+        },
+        {
+            "id": 5,
+            "tour_venue_id": 1,
+            "type": "media",
+            "label": "Generic Dropped",
+            "isci": "GTC1818850",
+            "duration": ":30",
+            "dueDate": "1/22/25",
+            "status_id": 5
+        },
+        {
+            "id": 6,
+            "tour_venue_id": 1,
+            "type": "media",
+            "label": "Generic Revise",
+            "isci": "GTC1818851",
+            "duration": ":45",
+            "dueDate": "1/25/25",
+            "status_id": 6
+        },
+        {
+            "id": 7,
+            "tour_venue_id": 1,
+            "type": "media",
+            "label": "Generic Unassigned",
+            "isci": "GTC1818852",
+            "duration": ":20",
+            "dueDate": "1/28/25",
+            "status_id": 7
+        },
+        {
+            "id": 8,
+            "tour_venue_id": 1,
+            "type": "static",
+            "label": "Key Art – Still in Cart",
+            "width": 1400,
+            "height": 400,
+            "dueDate": "1/15/25",
+            "status_id": 1
+        },
+        {
+            "id": 9,
+            "tour_venue_id": 1,
+            "type": "static",
+            "label": "Key Art – Client Review",
+            "width": 1400,
+            "height": 400,
+            "dueDate": "1/15/25",
+            "status_id": 2
+        },
+        {
+            "id": 10,
+            "tour_venue_id": 1,
+            "type": "static",
+            "label": "Key Art – In Production",
+            "width": 1400,
+            "height": 400,
+            "dueDate": "1/18/25",
+            "status_id": 3
+        },
+        {
+            "id": 11,
+            "tour_venue_id": 1,
+            "type": "static",
+            "label": "Key Art – Out for Delivery",
+            "width": 1400,
+            "height": 400,
+            "dueDate": "1/20/25",
+            "status_id": 4
+        },
+        {
+            "id": 12,
+            "tour_venue_id": 1,
+            "type": "static",
+            "label": "Key Art – Cancelled",
+            "width": 1400,
+            "height": 400,
+            "dueDate": "1/22/25",
+            "status_id": 5
+        },
+        {
+            "id": 13,
+            "tour_venue_id": 1,
+            "type": "static",
+            "label": "Key Art – Revision Requested",
+            "width": 1400,
+            "height": 400,
+            "dueDate": "1/25/25",
+            "status_id": 6
+        },
+        {
+            "id": 14,
+            "tour_venue_id": 1,
+            "type": "static",
+            "label": "Socials & Web Banners – Unassigned",
+            "width": 1400,
+            "height": 400,
+            "dueDate": "1/28/25",
+            "status_id": 7
+        },
+        {
+            "id": 15,
+            "tour_venue_id": 1,
+            "type": "localized",
+            "label": "Advert for FFFFFFFF",
+            "width": 1400,
+            "height": 400,
+            "cta": "Save the Date",
+            "dueDate": "1/15/25",
+            "notes": [
+                {
+                    "text": "Do not put city/state on artwork even though the admat has it.",
+                    "savedAt": "9/15/2024 @ 3:15PM"
+                },
+                {
+                    "text": "Change the background color to deeper blue to match logo.",
+                    "savedAt": "9/17/2024 @ 4:30PM"
+                }
+            ]
+        },
+        {
+            "id": 16,
+            "tour_venue_id": 1,
+            "type": "localized",
+            "label": "Advert for FFFFFFFF",
+            "width": 1400,
+            "height": 400,
+            "cta": "Last Chance",
+            "dueDate": "1/15/25"
+        },
+        {
+            "id": 17,
+            "tour_venue_id": 1,
+            "type": "localized",
+            "label": "Advert for FFFFFFFF",
+            "width": 1400,
+            "height": 400,
+            "cta": "Black Friday Sale",
+            "dueDate": "1/15/25"
+        }
+    ]
+}
