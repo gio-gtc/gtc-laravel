@@ -17,10 +17,10 @@ import {
 } from '@/components/ui/sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
-import type { Matcher } from 'react-day-picker';
 import { format, parseISO, startOfDay } from 'date-fns';
 import { Calendar } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import type { Matcher } from 'react-day-picker';
 
 function toISOString(date: Date): string {
     return format(date, 'yyyy-MM-dd');
@@ -269,9 +269,7 @@ export default function DatePickerInput({
                 disabled && 'pointer-events-none opacity-50',
             )}
         >
-            {name ? (
-                <input type="hidden" name={name} value={value} />
-            ) : null}
+            {name ? <input type="hidden" name={name} value={value} /> : null}
             {label ? (
                 <Label htmlFor={id} className="pt-2">
                     {label}
@@ -284,7 +282,11 @@ export default function DatePickerInput({
             >
                 <Popover open={open} onOpenChange={handleOpenChange}>
                     <PopoverTrigger asChild>{calendarButton}</PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
+                    <PopoverContent
+                        onWheel={(e) => e.stopPropagation()}
+                        className="max-h-[var(--radix-popover-content-available-height)] w-auto overflow-y-auto p-0"
+                        align="start"
+                    >
                         {dialogTitle && (
                             <PopoverHeader className="px-4 pt-4">
                                 <PopoverTitle>{dialogTitle}</PopoverTitle>
