@@ -83,6 +83,11 @@ function OrdersTable() {
         catalog.venue_item_status,
     ]);
 
+    const allTourVenues = useMemo(
+        () => [...catalog.tour_venue_stops, ...catalog.tour_venues_demos],
+        [catalog.tour_venue_stops, catalog.tour_venues_demos],
+    );
+
     // Transform data: merge venue stops + optional tour demo (same per-tour order as flat tourVenueData).
     const groupedData = useMemo<GroupedOrderData[]>(() => {
         return catalog.tours
@@ -95,7 +100,7 @@ function OrdersTable() {
                             (v) => v.id === ov.venue_id,
                         ) as Venue | null,
                     }));
-                const demo = catalog.tour_demo_venues.find(
+                const demo = catalog.tour_venues_demos.find(
                     (d) => d.tour_id === order.id,
                 );
                 const demoItem = demo
@@ -114,7 +119,7 @@ function OrdersTable() {
     }, [
         catalog.tours,
         catalog.tour_venue_stops,
-        catalog.tour_demo_venues,
+        catalog.tour_venues_demos,
         catalog.venues,
     ]);
 
@@ -404,7 +409,7 @@ function OrdersTable() {
                 newSet.delete(orderId);
                 setSelectedVenueIds((prevSelected) => {
                     // Get all venue IDs for this order
-                    const venueIdsForOrder = catalog.tour_venues
+                    const venueIdsForOrder = allTourVenues
                         .filter((ov) => ov.tour_id === orderId)
                         .map((ov) => ov.id);
                     // Remove any selected venues that belong to this order
@@ -435,7 +440,7 @@ function OrdersTable() {
     // Get selected order from first selected venue
     const selectedOrder = useMemo(() => {
         if (selectedVenueIds.length === 0) return null;
-        const firstSelectedVenue = catalog.tour_venues.find(
+        const firstSelectedVenue = allTourVenues.find(
             (ov) => ov.id === selectedVenueIds[0],
         );
         if (!firstSelectedVenue) return null;
@@ -443,7 +448,7 @@ function OrdersTable() {
             catalog.tours.find((o) => o.id === firstSelectedVenue.tour_id) ||
             null
         );
-    }, [selectedVenueIds, catalog.tour_venues, catalog.tours]);
+    }, [selectedVenueIds, allTourVenues, catalog.tours]);
 
     return (
         <div className="table-content-max-width space-y-4">
