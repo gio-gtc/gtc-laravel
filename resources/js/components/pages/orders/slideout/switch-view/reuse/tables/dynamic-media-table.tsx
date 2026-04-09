@@ -17,8 +17,9 @@ import {
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
 import { EditableCellSelect } from '@/components/utils/editable-table/editable-cell-select';
-import { MEDIA_DURATION_OPTIONS } from '@/components/utils/editable-table/media-duration-options';
+import { DURATION_SELECT_OPTIONS } from '@/components/utils/editable-table/media-duration-options';
 import { VenueItemStatusBadge } from '@/components/utils/venue-item-status-badge';
+import { formatDurationSeconds } from '@/helper-functions/format-time';
 import { toggleRowSelectionOnRowClick } from '@/lib/row-select-toggle';
 import { cn } from '@/lib/utils';
 import { MediaTableProps, MediaTableRow } from '@/types';
@@ -26,11 +27,6 @@ import { useState } from 'react';
 import { CollapsibleTableSectionHeader } from './collapsible-table-section-header';
 import { DeliverablesCell } from './sections/deliverables-buttons';
 import { MediaPreviewCell } from './sections/media-preview-cell';
-
-const DURATION_SELECT_OPTIONS = MEDIA_DURATION_OPTIONS.map((v) => ({
-    value: v,
-    label: v,
-}));
 
 export default function MediaTable({
     title,
@@ -227,14 +223,31 @@ export default function MediaTable({
                                                 <TableCell>
                                                     {cellEditing ? (
                                                         <EditableCellSelect
-                                                            value={row.duration}
+                                                            value={String(
+                                                                formatDurationSeconds(
+                                                                    row.duration_seconds,
+                                                                ),
+                                                            )}
                                                             itemId={row.id}
-                                                            field="duration"
+                                                            field="duration_seconds"
                                                             options={
                                                                 DURATION_SELECT_OPTIONS
                                                             }
-                                                            onChange={
-                                                                cellEditing.onCellChange
+                                                            onChange={(
+                                                                itemId,
+                                                                field,
+                                                                value,
+                                                            ) =>
+                                                                cellEditing.onCellChange(
+                                                                    itemId,
+                                                                    field,
+                                                                    field ===
+                                                                        'duration_seconds'
+                                                                        ? Number(
+                                                                              value,
+                                                                          )
+                                                                        : value,
+                                                                )
                                                             }
                                                             onDoubleClick={(
                                                                 id,
@@ -263,7 +276,7 @@ export default function MediaTable({
                                                             }
                                                             isEditing={cellEditing.isCellEditing(
                                                                 row.id,
-                                                                'duration',
+                                                                'duration_seconds',
                                                                 editScope,
                                                             )}
                                                             disabled={
@@ -271,7 +284,9 @@ export default function MediaTable({
                                                             }
                                                         />
                                                     ) : (
-                                                        row.duration
+                                                        formatDurationSeconds(
+                                                            row.duration_seconds,
+                                                        )
                                                     )}
                                                 </TableCell>
                                                 <TableCell>

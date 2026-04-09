@@ -3,11 +3,11 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { SortableHeader } from '@/components/utils/sortable-header';
 import {
     formatCurrency,
     getInvoiceVenueName,
-} from '@/components/utils/functions';
-import { SortableHeader } from '@/components/utils/sortable-header';
+} from '@/helper-functions/format-currency';
 import { cn } from '@/lib/utils';
 import { type Invoice, type Venue } from '@/types';
 import { type ColumnDef } from '@tanstack/react-table';
@@ -17,7 +17,7 @@ import { HelpCircle } from 'lucide-react';
 function parseInvoiceDate(dateStr: string): number {
     if (!dateStr) return 0;
     const [m, d, y] = dateStr.split('/').map(Number);
-    const year = y != null && y < 100 ? 2000 + y : y ?? 2000;
+    const year = y != null && y < 100 ? 2000 + y : (y ?? 2000);
     return new Date(year, (m ?? 1) - 1, d ?? 1).getTime();
 }
 

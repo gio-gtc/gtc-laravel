@@ -1,4 +1,4 @@
-import { getDaysRemaining } from '@/components/utils/functions';
+import { getDaysRemaining } from '@/helper-functions/format-time';
 import { type Invoice, type Venue } from '@/types';
 import { useMemo } from 'react';
 import { getInvoiceDayBadge } from './pieces/day-badge';

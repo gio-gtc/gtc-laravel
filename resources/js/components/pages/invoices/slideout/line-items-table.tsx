@@ -8,7 +8,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
-import { formatCurrency } from '@/components/utils/functions';
+import { formatCurrency } from '@/helper-functions/format-currency';
 import { cn } from '@/lib/utils';
 import { type InvoiceItem } from '@/types';
 import { Plus, X } from 'lucide-react';

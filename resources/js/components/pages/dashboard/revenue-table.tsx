@@ -8,7 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { formatCurrency } from '@/components/utils/functions';
+import { formatCurrency } from '@/helper-functions/format-currency';
 import { type SharedData } from '@/types';
 import { type DashboardPageProps } from '@/types/inertia-pages';
 import { usePage } from '@inertiajs/react';

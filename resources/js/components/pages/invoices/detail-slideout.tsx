@@ -2,7 +2,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import {
     getInvoiceAddress,
     getInvoiceVenueName,
-} from '@/components/utils/functions';
+} from '@/helper-functions/format-currency';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';

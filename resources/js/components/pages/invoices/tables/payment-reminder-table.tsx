@@ -1,4 +1,4 @@
-import { getDaysRemaining } from '@/components/utils/functions';
+import { getDaysRemaining } from '@/helper-functions/format-time';
 import { type Invoice, type Venue } from '@/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getReleasedInvoiceDayBadge } from './pieces/day-badge';
@@ -42,10 +42,7 @@ function PaymentReminderTable({
         [venues],
     );
 
-    const handleRowClick = (
-        invoice: Invoice,
-        event: React.MouseEvent,
-    ) => {
+    const handleRowClick = (invoice: Invoice, event: React.MouseEvent) => {
         const currentIndex = data.findIndex((inv) => inv.id === invoice.id);
 
         if (event.shiftKey) {

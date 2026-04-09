@@ -6,7 +6,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { formatCurrency } from '@/components/utils/functions';
+import { formatCurrency } from '@/helper-functions/format-currency';
 import { Invoice } from '@/types';
 import { Download } from 'lucide-react';
 

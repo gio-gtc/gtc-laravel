@@ -6,7 +6,7 @@
             "type": "media",
             "label": "Generic Presale",
             "isci": "GTC1818843",
-            "duration": ":45",
+            "duration_seconds": 45,
             "dueDate": "1/15/25",
             "status_id": 1
         },
@@ -16,7 +16,7 @@
             "type": "media",
             "label": "Generic Coming soon",
             "isci": "GTC1818847",
-            "duration": ":30",
+            "duration_seconds": 30,
             "dueDate": "1/15/25",
             "status_id": 2
         },
@@ -26,7 +26,7 @@
             "type": "media",
             "label": "Generic Teaser",
             "isci": "GTC1818848",
-            "duration": ":15",
+            "duration_seconds": 15,
             "dueDate": "1/18/25",
             "status_id": 3
         },
@@ -36,7 +36,7 @@
             "type": "media",
             "label": "Generic Final",
             "isci": "GTC1818849",
-            "duration": ":60",
+            "duration_seconds": 60,
             "dueDate": "1/20/25",
             "status_id": 4
         },
@@ -46,7 +46,7 @@
             "type": "media",
             "label": "Generic Dropped",
             "isci": "GTC1818850",
-            "duration": ":30",
+            "duration_seconds": 30,
             "dueDate": "1/22/25",
             "status_id": 5
         },
@@ -56,7 +56,7 @@
             "type": "media",
             "label": "Generic Revise",
             "isci": "GTC1818851",
-            "duration": ":45",
+            "duration_seconds": 45,
             "dueDate": "1/25/25",
             "status_id": 6
         },
@@ -66,7 +66,7 @@
             "type": "media",
             "label": "Generic Unassigned",
             "isci": "GTC1818852",
-            "duration": ":20",
+            "duration_seconds": 20,
             "dueDate": "1/28/25",
             "status_id": 7
         },

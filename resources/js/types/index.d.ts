@@ -229,7 +229,7 @@ export interface MediaTableRow {
     id: string | number;
     isci: string;
     cutName: string;
-    duration: string;
+    duration_seconds: number;
     dueDate: string;
     assigned: User[];
     status: VenueItemStatus['type'];
@@ -317,7 +317,7 @@ export interface VenueItemsRowBase {
 export interface VenueItemsMediaRow extends VenueItemsRowBase {
     type: 'media';
     isci: string;
-    duration: string;
+    duration_seconds: number;
     status_id: number;
     previewVideoUrl?: string | null;
     deliverables?: MediaTableRow['deliverables'];

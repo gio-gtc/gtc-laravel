@@ -1,4 +1,4 @@
-import { getDaysRemaining } from '@/components/utils/functions';
+import { getDaysRemaining } from '@/helper-functions/format-time';
 import { type Invoice } from '@/types';
 
 export function getInvoiceDayBadge(invoice: Invoice): React.ReactNode {

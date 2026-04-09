@@ -6,10 +6,11 @@ import PaymentReminderTable from '@/components/pages/invoices/tables/payment-rem
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar';
 import {
-    getDaysRemaining,
     getInvoiceAddress,
     getInvoiceVenueName,
-} from '@/components/utils/functions';
+} from '@/helper-functions/format-strings';
+import { getDaysRemaining } from '@/helper-functions/format-time';
+import { cn } from '@/lib/utils';
 import {
     type Company,
     type Country,
@@ -17,7 +18,6 @@ import {
     type SharedData,
 } from '@/types';
 import { type InvoicesPageProps } from '@/types/inertia-pages';
-import { cn } from '@/lib/utils';
 import { usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
