@@ -176,7 +176,7 @@ export default function Dashboard() {
                             <span className="text-sm">Total</span>
                             <span className="text-2xl">$1,361,428</span>
                         </div>
-                        <div className="flex justify-between border-t-1 py-2">
+                        <div className="flex justify-between border-t-1 pt-2">
                             <span className="text-sm">Total Follow up</span>
                             <span className="text-2xl">$261,428</span>
                         </div>
@@ -188,20 +188,44 @@ export default function Dashboard() {
                     {/* Orders Section */}
                     <div className="space-y-4">
                         <Heading title="Orders" type="section" />
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <CardLink label="Pending" content="48" />
-                            <CardLink label="In Production" content="218" />
-                            <CardLink label="Outstanding ER" content="34" />
-                            <CardLink label="Outstanding Custom" content="21" />
+                        <div className="grid justify-center gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
+                            <CardLink
+                                cardClassName="max-w-[430px] lg:max-w-none"
+                                label="Pending"
+                                content="48"
+                            />
+                            <CardLink
+                                cardClassName="max-w-[430px] lg:max-w-none"
+                                label="In Production"
+                                content="218"
+                            />
+                            <CardLink
+                                cardClassName="max-w-[430px] lg:max-w-none"
+                                label="Outstanding ER"
+                                content="34"
+                            />
+                            <CardLink
+                                cardClassName="max-w-[430px] lg:max-w-none"
+                                label="Outstanding Custom"
+                                content="21"
+                            />
                         </div>
                     </div>
 
                     {/* Held Invoices Section */}
                     <div className="space-y-4">
                         <Heading title="Held Invoices" type="section" />
-                        <div className="grid gap-4 md:grid-cols-2">
-                            <CardLink label="Amount" content="32" />
-                            <CardLink label="In Production" content="218" />
+                        <div className="grid justify-center gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
+                            <CardLink
+                                cardClassName="max-w-[430px] lg:max-w-none"
+                                label="Amount"
+                                content="32"
+                            />
+                            <CardLink
+                                cardClassName="max-w-[430px] lg:max-w-none"
+                                label="In Production"
+                                content="218"
+                            />
                         </div>
                     </div>
                 </div>

@@ -6,19 +6,22 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 import { ArrowUp } from 'lucide-react';
 
 function CardLink({
     label,
     content,
     change,
+    cardClassName,
 }: {
     label: string;
     content: string;
     change?: string;
+    cardClassName?: string;
 }) {
     return (
-        <Card className="gap-2 pt-4 pb-0">
+        <Card className={cn('gap-2 pt-4 pb-0', cardClassName)}>
             <CardHeader>
                 <CardTitle className="text-sm font-medium text-gray-600">
                     {label}
