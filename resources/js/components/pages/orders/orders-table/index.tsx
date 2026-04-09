@@ -84,8 +84,8 @@ function OrdersTable() {
     ]);
 
     const allTourVenues = useMemo(
-        () => [...catalog.tour_venue_stops, ...catalog.tour_venues_demos],
-        [catalog.tour_venue_stops, catalog.tour_venues_demos],
+        () => [...catalog.tour_venue_stops, ...catalog.tour_venue_demos],
+        [catalog.tour_venue_stops, catalog.tour_venue_demos],
     );
 
     // Transform data: merge venue stops + optional tour demo (same per-tour order as flat tourVenueData).
@@ -100,7 +100,7 @@ function OrdersTable() {
                             (v) => v.id === ov.venue_id,
                         ) as Venue | null,
                     }));
-                const demo = catalog.tour_venues_demos.find(
+                const demo = catalog.tour_venue_demos.find(
                     (d) => d.tour_id === order.id,
                 );
                 const demoItem = demo
@@ -119,7 +119,7 @@ function OrdersTable() {
     }, [
         catalog.tours,
         catalog.tour_venue_stops,
-        catalog.tour_venues_demos,
+        catalog.tour_venue_demos,
         catalog.venues,
     ]);
 

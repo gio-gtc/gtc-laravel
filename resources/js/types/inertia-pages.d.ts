@@ -44,7 +44,7 @@ export interface OrdersPageProps {
     tours: Tour[];
     tour_venue_status: TourVenueStatusRow[];
     tour_venue_stops: TourVenue[];
-    tour_venues_demos: TourVenue[];
+    tour_venue_demos: TourVenue[];
     venues: Venue[];
     orders: Order[];
     venue_items: VenueItemsRow[];
