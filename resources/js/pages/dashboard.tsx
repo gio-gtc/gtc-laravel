@@ -184,28 +184,28 @@ export default function Dashboard() {
                 </div>
 
                 {/* Orders and Held Invoices Section */}
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 lg:grid-cols-2">
                     {/* Orders Section */}
                     <div className="space-y-4">
                         <Heading title="Orders" type="section" />
-                        <div className="grid justify-center gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
+                        <div className="grid justify-center gap-4 sm:grid-cols-2">
                             <CardLink
-                                cardClassName="max-w-[430px] lg:max-w-none"
+                                cardClassName="max-w-[430px] w-full lg:max-w-none"
                                 label="Pending"
                                 content="48"
                             />
                             <CardLink
-                                cardClassName="max-w-[430px] lg:max-w-none"
+                                cardClassName="max-w-[430px] w-full lg:max-w-none"
                                 label="In Production"
                                 content="218"
                             />
                             <CardLink
-                                cardClassName="max-w-[430px] lg:max-w-none"
+                                cardClassName="max-w-[430px] w-full lg:max-w-none"
                                 label="Outstanding ER"
                                 content="34"
                             />
                             <CardLink
-                                cardClassName="max-w-[430px] lg:max-w-none"
+                                cardClassName="max-w-[430px] w-full lg:max-w-none"
                                 label="Outstanding Custom"
                                 content="21"
                             />
@@ -215,14 +215,14 @@ export default function Dashboard() {
                     {/* Held Invoices Section */}
                     <div className="space-y-4">
                         <Heading title="Held Invoices" type="section" />
-                        <div className="grid justify-center gap-4 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
+                        <div className="grid justify-center gap-4 sm:grid-cols-2">
                             <CardLink
-                                cardClassName="max-w-[430px] lg:max-w-none"
+                                cardClassName="max-w-[430px] w-full lg:max-w-none"
                                 label="Amount"
                                 content="32"
                             />
                             <CardLink
-                                cardClassName="max-w-[430px] lg:max-w-none"
+                                cardClassName="max-w-[430px] w-full lg:max-w-none"
                                 label="In Production"
                                 content="218"
                             />
