@@ -247,6 +247,10 @@
         @apply text-sm font-normal text-black;
     }
 
+    .sm-gray-500-weight-500 {
+        @apply text-sm font-medium text-gray-500;
+    }
+
     .sm-gray-600-weight-500 {
         @apply text-sm font-medium text-gray-600;
     }

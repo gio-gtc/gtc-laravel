@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
+import { ArrowLeft, ArrowRight, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -46,12 +46,9 @@ const PaginationLink = ({
 }: PaginationLinkProps) => (
     <Button
         aria-current={isActive ? 'page' : undefined}
-        variant={isActive ? 'outline' : 'ghost'}
+        variant={isActive ? 'secondary' : 'ghost'}
         size={size}
-        className={cn(
-            isActive && 'border-foreground/20 bg-background',
-            className,
-        )}
+        className={cn(isActive && 'border-foreground/20 bg-gray-50', className)}
         {...props}
     />
 );
@@ -64,10 +61,10 @@ const PaginationPrevious = ({
     <PaginationLink
         aria-label="Go to previous page"
         size="default"
-        className={cn('gap-1 pl-2.5', className)}
+        className={cn('gap-1 rounded-xl border pl-2.5', className)}
         {...props}
     >
-        <ChevronLeft className="h-4 w-4" />
+        <ArrowLeft className="h-4 w-4 text-gray-400" />
         <span>Previous</span>
     </PaginationLink>
 );
@@ -80,11 +77,11 @@ const PaginationNext = ({
     <PaginationLink
         aria-label="Go to next page"
         size="default"
-        className={cn('gap-1 pr-2.5', className)}
+        className={cn('gap-1 rounded-xl border pr-2.5', className)}
         {...props}
     >
         <span>Next</span>
-        <ChevronRight className="h-4 w-4" />
+        <ArrowRight className="h-4 w-4 text-gray-400" />
     </PaginationLink>
 );
 PaginationNext.displayName = 'PaginationNext';
