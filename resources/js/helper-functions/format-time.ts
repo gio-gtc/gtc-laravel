@@ -8,7 +8,7 @@ export function formatDurationSeconds(totalSeconds: number): string {
     const safe = Math.max(0, Math.floor(totalSeconds));
     const minutes = Math.floor(safe / 60);
     const seconds = safe % 60;
-    return `${minutes}:${String(seconds).padStart(2, '0')}`;
+    return `${minutes || ''}:${String(seconds).padStart(2, '0')}`;
 }
 
 export function getDaysRemaining(

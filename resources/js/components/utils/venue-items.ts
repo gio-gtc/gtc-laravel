@@ -5,10 +5,10 @@ import type {
     User,
     VenueItemAssigned,
     VenueItemStatus,
+    VenueItemsArtRow,
+    VenueItemsBroadcastRadioSocialRow,
     VenueItemsLocalizedRow,
-    VenueItemsMediaRow,
     VenueItemsRow,
-    VenueItemsStaticRow,
 } from '@/types';
 
 export type OrdersVenueLineCatalog = {
@@ -85,7 +85,7 @@ export function getAssignedUsersForVenueItem(
 }
 
 export function venueItemsMediaTableRow(
-    row: VenueItemsMediaRow,
+    row: VenueItemsBroadcastRadioSocialRow,
     assigned: User[],
     venueItemStatus: VenueItemStatus[],
 ): MediaTableRow {
@@ -104,8 +104,8 @@ export function venueItemsMediaTableRow(
     };
 }
 
-export function venueItemsStaticTableRow(
-    row: VenueItemsStaticRow,
+export function venueItemsArtTableRow(
+    row: VenueItemsArtRow,
     assigned: User[],
     venueItemStatus: VenueItemStatus[],
 ): StaticAssetsTableRow {

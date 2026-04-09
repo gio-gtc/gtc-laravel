@@ -4,10 +4,8 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { SortableHeader } from '@/components/utils/sortable-header';
-import {
-    formatCurrency,
-    getInvoiceVenueName,
-} from '@/helper-functions/format-currency';
+import { formatCurrency } from '@/helper-functions/format-currency';
+import { getInvoiceVenueName } from '@/helper-functions/format-strings';
 import { cn } from '@/lib/utils';
 import { type Invoice, type Venue } from '@/types';
 import { type ColumnDef } from '@tanstack/react-table';

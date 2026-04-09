@@ -3,7 +3,7 @@
         {
             "id": 1,
             "tour_venue_id": 1,
-            "type": "media",
+            "type": "broadcast",
             "label": "Generic Presale",
             "isci": "GTC1818843",
             "duration_seconds": 45,
@@ -13,7 +13,7 @@
         {
             "id": 2,
             "tour_venue_id": 1,
-            "type": "media",
+            "type": "broadcast",
             "label": "Generic Coming soon",
             "isci": "GTC1818847",
             "duration_seconds": 30,
@@ -23,7 +23,7 @@
         {
             "id": 3,
             "tour_venue_id": 1,
-            "type": "media",
+            "type": "broadcast",
             "label": "Generic Teaser",
             "isci": "GTC1818848",
             "duration_seconds": 15,
@@ -33,7 +33,7 @@
         {
             "id": 4,
             "tour_venue_id": 1,
-            "type": "media",
+            "type": "social",
             "label": "Generic Final",
             "isci": "GTC1818849",
             "duration_seconds": 60,
@@ -43,7 +43,7 @@
         {
             "id": 5,
             "tour_venue_id": 1,
-            "type": "media",
+            "type": "social",
             "label": "Generic Dropped",
             "isci": "GTC1818850",
             "duration_seconds": 30,
@@ -53,7 +53,7 @@
         {
             "id": 6,
             "tour_venue_id": 1,
-            "type": "media",
+            "type": "radio",
             "label": "Generic Revise",
             "isci": "GTC1818851",
             "duration_seconds": 45,
@@ -63,7 +63,7 @@
         {
             "id": 7,
             "tour_venue_id": 1,
-            "type": "media",
+            "type": "radio",
             "label": "Generic Unassigned",
             "isci": "GTC1818852",
             "duration_seconds": 20,
@@ -73,8 +73,8 @@
         {
             "id": 8,
             "tour_venue_id": 1,
-            "type": "static",
-            "label": "Key Art – Still in Cart",
+            "type": "art",
+            "label": "Key Art - Still in Cart",
             "width": 1400,
             "height": 400,
             "dueDate": "1/15/25",
@@ -83,8 +83,8 @@
         {
             "id": 9,
             "tour_venue_id": 1,
-            "type": "static",
-            "label": "Key Art – Client Review",
+            "type": "art",
+            "label": "Key Art - Client Review",
             "width": 1400,
             "height": 400,
             "dueDate": "1/15/25",
@@ -93,8 +93,8 @@
         {
             "id": 10,
             "tour_venue_id": 1,
-            "type": "static",
-            "label": "Key Art – In Production",
+            "type": "art",
+            "label": "Key Art - In Production",
             "width": 1400,
             "height": 400,
             "dueDate": "1/18/25",
@@ -103,8 +103,8 @@
         {
             "id": 11,
             "tour_venue_id": 1,
-            "type": "static",
-            "label": "Key Art – Out for Delivery",
+            "type": "art",
+            "label": "Key Art - Out for Delivery",
             "width": 1400,
             "height": 400,
             "dueDate": "1/20/25",
@@ -113,8 +113,8 @@
         {
             "id": 12,
             "tour_venue_id": 1,
-            "type": "static",
-            "label": "Key Art – Cancelled",
+            "type": "art",
+            "label": "Key Art - Cancelled",
             "width": 1400,
             "height": 400,
             "dueDate": "1/22/25",
@@ -123,8 +123,8 @@
         {
             "id": 13,
             "tour_venue_id": 1,
-            "type": "static",
-            "label": "Key Art – Revision Requested",
+            "type": "art",
+            "label": "Key Art - Revision Requested",
             "width": 1400,
             "height": 400,
             "dueDate": "1/25/25",
@@ -133,8 +133,8 @@
         {
             "id": 14,
             "tour_venue_id": 1,
-            "type": "static",
-            "label": "Socials & Web Banners – Unassigned",
+            "type": "art",
+            "label": "Socials & Web Banners - Unassigned",
             "width": 1400,
             "height": 400,
             "dueDate": "1/28/25",

@@ -304,7 +304,12 @@ export interface LocalizedArtNote {
     savedAt: string;
 }
 
-export type VenueItemsRowType = 'media' | 'static' | 'localized';
+export type VenueItemsRowType =
+    | 'broadcast'
+    | 'radio'
+    | 'social'
+    | 'art'
+    | 'localized';
 
 export interface VenueItemsRowBase {
     id: string | number;
@@ -314,8 +319,9 @@ export interface VenueItemsRowBase {
     label: string;
 }
 
-export interface VenueItemsMediaRow extends VenueItemsRowBase {
-    type: 'media';
+/** Line items for broadcast, radio, or social (video/audio spots). */
+export interface VenueItemsBroadcastRadioSocialRow extends VenueItemsRowBase {
+    type: 'broadcast' | 'radio' | 'social';
     isci: string;
     duration_seconds: number;
     status_id: number;
@@ -326,8 +332,9 @@ export interface VenueItemsMediaRow extends VenueItemsRowBase {
     order_id?: number;
 }
 
-export interface VenueItemsStaticRow extends VenueItemsRowBase {
-    type: 'static';
+/** Key art and static assets (General Media). */
+export interface VenueItemsArtRow extends VenueItemsRowBase {
+    type: 'art';
     width: number;
     height: number;
     status_id: number;
@@ -345,8 +352,8 @@ export interface VenueItemsLocalizedRow extends VenueItemsRowBase {
 }
 
 export type VenueItemsRow =
-    | VenueItemsMediaRow
-    | VenueItemsStaticRow
+    | VenueItemsBroadcastRadioSocialRow
+    | VenueItemsArtRow
     | VenueItemsLocalizedRow;
 
 export interface LocalizedArtTableRow {

@@ -3,8 +3,8 @@ import { buildVenueItemStatusSelectOptions } from '@/components/utils/editable-t
 import {
     getAssignedUsersForVenueItem,
     venueItemStatusIdToLabel,
+    venueItemsArtTableRow,
     venueItemsMediaTableRow,
-    venueItemsStaticTableRow,
     type OrdersVenueLineCatalog,
 } from '@/components/utils/venue-items';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
@@ -21,8 +21,8 @@ import {
     type TourVenue,
     type User,
     type Venue,
-    type VenueItemsMediaRow,
-    type VenueItemsStaticRow,
+    type VenueItemsArtRow,
+    type VenueItemsBroadcastRadioSocialRow,
 } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { format, isValid, parse, parseISO } from 'date-fns';
@@ -108,60 +108,85 @@ function GeneralMediaView({
     const [statusFilter, setStatusFilter] = useState<MediaStatusFilter>([]);
     const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
-    const venueMediaWithCallbacks = useMemo(() => {
-        if (!venueItem) return [];
-        return catalog.venue_items
-            .filter(
-                (r): r is VenueItemsMediaRow =>
-                    r.type === 'media' &&
-                    r.tour_venue_id === venueItem.orderVenue.id,
-            )
-            .map((row) => {
-                const mediaRow = venueItemsMediaTableRow(
-                    row,
-                    getAssignedUsersForVenueItem(
-                        row.id,
-                        venueLineCatalog,
-                        usersWithFallback,
-                    ),
-                    catalog.venue_item_status,
-                );
-                const resolvedStatus = venueItemStatusIdToLabel(
-                    row.status_id,
-                    catalog.venue_item_status,
-                );
-                const showDeliverables =
-                    row.has_deliverable_actions ??
-                    resolvedStatus === 'Client Review';
-                return {
-                    ...mediaRow,
-                    deliverables: showDeliverables
-                        ? {
-                              onReject: () => {
-                                  setRevisionModalOpen(true);
-                              },
-                          }
-                        : undefined,
-                };
-            });
-    }, [
-        venueItem,
-        catalog.venue_items,
-        catalog.venue_item_status,
-        venueLineCatalog,
-        usersWithFallback,
-    ]);
+    const mapBroadcastRadioSocialRow = useCallback(
+        (row: VenueItemsBroadcastRadioSocialRow) => {
+            const mediaRow = venueItemsMediaTableRow(
+                row,
+                getAssignedUsersForVenueItem(
+                    row.id,
+                    venueLineCatalog,
+                    usersWithFallback,
+                ),
+                catalog.venue_item_status,
+            );
+            const resolvedStatus = venueItemStatusIdToLabel(
+                row.status_id,
+                catalog.venue_item_status,
+            );
+            const showDeliverables =
+                row.has_deliverable_actions ??
+                resolvedStatus === 'Client Review';
+            return {
+                ...mediaRow,
+                deliverables: showDeliverables
+                    ? {
+                          onReject: () => {
+                              setRevisionModalOpen(true);
+                          },
+                      }
+                    : undefined,
+            };
+        },
+        [
+            catalog.venue_item_status,
+            venueLineCatalog,
+            usersWithFallback,
+        ],
+    );
 
-    const venueStaticAssetsWithCallbacks = useMemo(() => {
+    const venueBroadcastWithCallbacks = useMemo(() => {
         if (!venueItem) return [];
         return catalog.venue_items
             .filter(
-                (r): r is VenueItemsStaticRow =>
-                    r.type === 'static' &&
+                (r): r is VenueItemsBroadcastRadioSocialRow =>
+                    r.type === 'broadcast' &&
+                    r.tour_venue_id === venueItem.orderVenue.id,
+            )
+            .map(mapBroadcastRadioSocialRow);
+    }, [venueItem, catalog.venue_items, mapBroadcastRadioSocialRow]);
+
+    const venueSocialLineWithCallbacks = useMemo(() => {
+        if (!venueItem) return [];
+        return catalog.venue_items
+            .filter(
+                (r): r is VenueItemsBroadcastRadioSocialRow =>
+                    r.type === 'social' &&
+                    r.tour_venue_id === venueItem.orderVenue.id,
+            )
+            .map(mapBroadcastRadioSocialRow);
+    }, [venueItem, catalog.venue_items, mapBroadcastRadioSocialRow]);
+
+    const venueRadioWithCallbacks = useMemo(() => {
+        if (!venueItem) return [];
+        return catalog.venue_items
+            .filter(
+                (r): r is VenueItemsBroadcastRadioSocialRow =>
+                    r.type === 'radio' &&
+                    r.tour_venue_id === venueItem.orderVenue.id,
+            )
+            .map(mapBroadcastRadioSocialRow);
+    }, [venueItem, catalog.venue_items, mapBroadcastRadioSocialRow]);
+
+    const venueArtWithCallbacks = useMemo(() => {
+        if (!venueItem) return [];
+        return catalog.venue_items
+            .filter(
+                (r): r is VenueItemsArtRow =>
+                    r.type === 'art' &&
                     r.tour_venue_id === venueItem.orderVenue.id,
             )
             .map((row) => {
-                const staticRow = venueItemsStaticTableRow(
+                const staticRow = venueItemsArtTableRow(
                     row,
                     getAssignedUsersForVenueItem(
                         row.id,
@@ -197,15 +222,41 @@ function GeneralMediaView({
     ]);
 
     const {
-        localData: localMediaRows,
-        handleDoubleClick: handleMediaCellDoubleClick,
-        handleCellChange: handleMediaCellChange,
-        handleCellBlur: handleMediaCellBlur,
-        handleCellKeyDown: handleMediaCellKeyDown,
-        isEditing: isMediaCellEditing,
-        bulkPatchByIds: bulkPatchMediaRows,
+        localData: localBroadcastRows,
+        handleDoubleClick: handleBroadcastCellDoubleClick,
+        handleCellChange: handleBroadcastCellChange,
+        handleCellBlur: handleBroadcastCellBlur,
+        handleCellKeyDown: handleBroadcastCellKeyDown,
+        isEditing: isBroadcastCellEditing,
+        bulkPatchByIds: bulkPatchBroadcastRows,
     } = useEditableTable<MediaTableRow>({
-        data: venueMediaWithCallbacks,
+        data: venueBroadcastWithCallbacks,
+        getId: (r) => r.id,
+    });
+
+    const {
+        localData: localSocialLineRows,
+        handleDoubleClick: handleSocialLineCellDoubleClick,
+        handleCellChange: handleSocialLineCellChange,
+        handleCellBlur: handleSocialLineCellBlur,
+        handleCellKeyDown: handleSocialLineCellKeyDown,
+        isEditing: isSocialLineCellEditing,
+        bulkPatchByIds: bulkPatchSocialLineRows,
+    } = useEditableTable<MediaTableRow>({
+        data: venueSocialLineWithCallbacks,
+        getId: (r) => r.id,
+    });
+
+    const {
+        localData: localRadioRows,
+        handleDoubleClick: handleRadioCellDoubleClick,
+        handleCellChange: handleRadioCellChange,
+        handleCellBlur: handleRadioCellBlur,
+        handleCellKeyDown: handleRadioCellKeyDown,
+        isEditing: isRadioCellEditing,
+        bulkPatchByIds: bulkPatchRadioRows,
+    } = useEditableTable<MediaTableRow>({
+        data: venueRadioWithCallbacks,
         getId: (r) => r.id,
     });
 
@@ -218,7 +269,7 @@ function GeneralMediaView({
         isEditing: isStaticCellEditing,
         bulkPatchByIds: bulkPatchStaticRows,
     } = useEditableTable<StaticAssetsTableRow>({
-        data: venueStaticAssetsWithCallbacks,
+        data: venueArtWithCallbacks,
         getId: (r) => r.id,
     });
 
@@ -276,9 +327,9 @@ function GeneralMediaView({
         [handleVideoSectionPreviewClick],
     );
 
-    const openAudioVideoPreview = useCallback(
+    const openRadioVideoPreview = useCallback(
         (row: MediaTableRow, iconIndex: number) => {
-            setVideoPreviewTableTitle('Audio');
+            setVideoPreviewTableTitle('Radio');
             handleAudioSectionPreviewClick(row, iconIndex);
         },
         [handleAudioSectionPreviewClick],
@@ -307,63 +358,147 @@ function GeneralMediaView({
 
     const openDueDateBulkEdit = useCallback(
         (rowId: string | number) => {
-            const mediaRow = localMediaRows.find((r) => r.id === rowId);
+            const broadcastRow = localBroadcastRows.find((r) => r.id === rowId);
+            const socialLineRow = localSocialLineRows.find((r) => r.id === rowId);
+            const radioRow = localRadioRows.find((r) => r.id === rowId);
             const staticRow = localStaticRows.find((r) => r.id === rowId);
-            const row = mediaRow ?? staticRow;
+            const row =
+                broadcastRow ?? socialLineRow ?? radioRow ?? staticRow;
             if (!row) return;
             setDueDateSeedIso(tableDueDateDisplayToIso(row.dueDate));
             setDueDateModalOpen(true);
         },
-        [localMediaRows, localStaticRows],
+        [
+            localBroadcastRows,
+            localSocialLineRows,
+            localRadioRows,
+            localStaticRows,
+        ],
     );
 
     const openAssignedBulkEdit = useCallback(
         (rowId: string | number) => {
-            const mediaRow = localMediaRows.find((r) => r.id === rowId);
+            const broadcastRow = localBroadcastRows.find((r) => r.id === rowId);
+            const socialLineRow = localSocialLineRows.find((r) => r.id === rowId);
+            const radioRow = localRadioRows.find((r) => r.id === rowId);
             const staticRow = localStaticRows.find((r) => r.id === rowId);
-            const row = mediaRow ?? staticRow;
+            const row =
+                broadcastRow ?? socialLineRow ?? radioRow ?? staticRow;
             if (!row) return;
             setAssignedSeed([...row.assigned]);
             setAssignedModalOpen(true);
         },
-        [localMediaRows, localStaticRows],
+        [
+            localBroadcastRows,
+            localSocialLineRows,
+            localRadioRows,
+            localStaticRows,
+        ],
     );
 
     const handleDueDateBulkSave = useCallback(
         ({ dueDateIso }: { dueDateIso: string }) => {
             const dueDate = format(parseISO(dueDateIso), 'M/d/yy');
-            bulkPatchMediaRows(selectedRowIds, { dueDate });
+            bulkPatchBroadcastRows(selectedRowIds, { dueDate });
+            bulkPatchSocialLineRows(selectedRowIds, { dueDate });
+            bulkPatchRadioRows(selectedRowIds, { dueDate });
             bulkPatchStaticRows(selectedRowIds, { dueDate });
         },
-        [bulkPatchMediaRows, bulkPatchStaticRows, selectedRowIds],
+        [
+            bulkPatchBroadcastRows,
+            bulkPatchSocialLineRows,
+            bulkPatchRadioRows,
+            bulkPatchStaticRows,
+            selectedRowIds,
+        ],
     );
 
     const handleAssignedBulkSave = useCallback(
         ({ assigned }: { assigned: User[] }) => {
-            bulkPatchMediaRows(selectedRowIds, { assigned });
+            bulkPatchBroadcastRows(selectedRowIds, { assigned });
+            bulkPatchSocialLineRows(selectedRowIds, { assigned });
+            bulkPatchRadioRows(selectedRowIds, { assigned });
             bulkPatchStaticRows(selectedRowIds, { assigned });
         },
-        [bulkPatchMediaRows, bulkPatchStaticRows, selectedRowIds],
+        [
+            bulkPatchBroadcastRows,
+            bulkPatchSocialLineRows,
+            bulkPatchRadioRows,
+            bulkPatchStaticRows,
+            selectedRowIds,
+        ],
     );
 
-    const sharedMediaCellEditing = {
-        onCellChange: handleMediaCellChange,
-        onCellDoubleClick: handleMediaCellDoubleClick,
-        onCellBlur: handleMediaCellBlur,
-        onCellKeyDown: handleMediaCellKeyDown,
-        isCellEditing: isMediaCellEditing,
+    const sharedBroadcastCellEditing = {
+        onCellChange: handleBroadcastCellChange,
+        onCellDoubleClick: handleBroadcastCellDoubleClick,
+        onCellBlur: handleBroadcastCellBlur,
+        onCellKeyDown: handleBroadcastCellKeyDown,
+        isCellEditing: isBroadcastCellEditing,
     };
 
-    const filteredMediaData = useMemo(
+    const sharedSocialLineCellEditing = {
+        onCellChange: handleSocialLineCellChange,
+        onCellDoubleClick: handleSocialLineCellDoubleClick,
+        onCellBlur: handleSocialLineCellBlur,
+        onCellKeyDown: handleSocialLineCellKeyDown,
+        isCellEditing: isSocialLineCellEditing,
+    };
+
+    const sharedRadioCellEditing = {
+        onCellChange: handleRadioCellChange,
+        onCellDoubleClick: handleRadioCellDoubleClick,
+        onCellBlur: handleRadioCellBlur,
+        onCellKeyDown: handleRadioCellKeyDown,
+        isCellEditing: isRadioCellEditing,
+    };
+
+    const filteredBroadcastData = useMemo(
         () =>
             filterAndSortRows(
-                localMediaRows,
+                localBroadcastRows,
                 orders,
                 statusFilter,
                 sortDirection,
                 catalog.orders,
             ),
-        [localMediaRows, orders, statusFilter, sortDirection, catalog.orders],
+        [
+            localBroadcastRows,
+            orders,
+            statusFilter,
+            sortDirection,
+            catalog.orders,
+        ],
+    );
+
+    const filteredSocialLineData = useMemo(
+        () =>
+            filterAndSortRows(
+                localSocialLineRows,
+                orders,
+                statusFilter,
+                sortDirection,
+                catalog.orders,
+            ),
+        [
+            localSocialLineRows,
+            orders,
+            statusFilter,
+            sortDirection,
+            catalog.orders,
+        ],
+    );
+
+    const filteredRadioData = useMemo(
+        () =>
+            filterAndSortRows(
+                localRadioRows,
+                orders,
+                statusFilter,
+                sortDirection,
+                catalog.orders,
+            ),
+        [localRadioRows, orders, statusFilter, sortDirection, catalog.orders],
     );
 
     const filteredStaticAssetsData = useMemo(
@@ -395,8 +530,8 @@ function GeneralMediaView({
                 />
                 <MediaTable
                     title="Broadcast & Streaming Video"
-                    data={filteredMediaData}
-                    cellEditing={sharedMediaCellEditing}
+                    data={filteredBroadcastData}
+                    cellEditing={sharedBroadcastCellEditing}
                     editScope="broadcast"
                     venueItemStatusSelectOptions={venueItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
@@ -412,9 +547,9 @@ function GeneralMediaView({
                 />
                 <MediaTable
                     title="Social Video"
-                    data={filteredMediaData}
-                    cellEditing={sharedMediaCellEditing}
-                    editScope="social"
+                    data={filteredSocialLineData}
+                    cellEditing={sharedSocialLineCellEditing}
+                    editScope="socialLine"
                     venueItemStatusSelectOptions={venueItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
@@ -428,10 +563,10 @@ function GeneralMediaView({
                     onPreviewClick={openSocialVideoPreview}
                 />
                 <MediaTable
-                    title="Audio"
-                    data={filteredMediaData}
-                    cellEditing={sharedMediaCellEditing}
-                    editScope="audio"
+                    title="Radio"
+                    data={filteredRadioData}
+                    cellEditing={sharedRadioCellEditing}
+                    editScope="radio"
                     venueItemStatusSelectOptions={venueItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
@@ -443,7 +578,7 @@ function GeneralMediaView({
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
-                    onPreviewClick={openAudioVideoPreview}
+                    onPreviewClick={openRadioVideoPreview}
                 />
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
@@ -515,9 +650,10 @@ function GeneralMediaView({
                 initialIsci={editIsciRow?.isci ?? ''}
                 onSave={({ isci }) => {
                     if (editIsciRow) {
-                        bulkPatchMediaRows(new Set([editIsciRow.id]), {
-                            isci,
-                        });
+                        const idSet = new Set([editIsciRow.id]);
+                        bulkPatchBroadcastRows(idSet, { isci });
+                        bulkPatchSocialLineRows(idSet, { isci });
+                        bulkPatchRadioRows(idSet, { isci });
                     }
                 }}
             />
