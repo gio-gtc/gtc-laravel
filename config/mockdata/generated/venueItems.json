@@ -1,7 +1,7 @@
 {
     "venue_items": [
         {
-            "id": 1,
+            "id": "c1000001-0000-4000-a000-000000000001",
             "tour_venue_id": 1,
             "type": "broadcast",
             "label": "Generic Presale",
@@ -11,7 +11,7 @@
             "status_id": 1
         },
         {
-            "id": 2,
+            "id": "c1000002-0000-4000-a000-000000000002",
             "tour_venue_id": 1,
             "type": "broadcast",
             "label": "Generic Coming soon",
@@ -21,7 +21,7 @@
             "status_id": 2
         },
         {
-            "id": 3,
+            "id": "c1000003-0000-4000-a000-000000000003",
             "tour_venue_id": 1,
             "type": "broadcast",
             "label": "Generic Teaser",
@@ -31,7 +31,7 @@
             "status_id": 3
         },
         {
-            "id": 4,
+            "id": "c1000004-0000-4000-a000-000000000004",
             "tour_venue_id": 1,
             "type": "social",
             "label": "Generic Final",
@@ -41,7 +41,7 @@
             "status_id": 4
         },
         {
-            "id": 5,
+            "id": "c1000005-0000-4000-a000-000000000005",
             "tour_venue_id": 1,
             "type": "social",
             "label": "Generic Dropped",
@@ -51,7 +51,7 @@
             "status_id": 5
         },
         {
-            "id": 6,
+            "id": "c1000006-0000-4000-a000-000000000006",
             "tour_venue_id": 1,
             "type": "radio",
             "label": "Generic Revise",
@@ -61,7 +61,7 @@
             "status_id": 6
         },
         {
-            "id": 7,
+            "id": "c1000007-0000-4000-a000-000000000007",
             "tour_venue_id": 1,
             "type": "radio",
             "label": "Generic Unassigned",
@@ -71,7 +71,7 @@
             "status_id": 7
         },
         {
-            "id": 8,
+            "id": "c1000008-0000-4000-a000-000000000008",
             "tour_venue_id": 1,
             "type": "art",
             "label": "Key Art - Still in Cart",
@@ -81,7 +81,7 @@
             "status_id": 1
         },
         {
-            "id": 9,
+            "id": "c1000009-0000-4000-a000-000000000009",
             "tour_venue_id": 1,
             "type": "art",
             "label": "Key Art - Client Review",
@@ -91,7 +91,7 @@
             "status_id": 2
         },
         {
-            "id": 10,
+            "id": "c1000010-0000-4000-a000-00000000000a",
             "tour_venue_id": 1,
             "type": "art",
             "label": "Key Art - In Production",
@@ -101,7 +101,7 @@
             "status_id": 3
         },
         {
-            "id": 11,
+            "id": "c1000011-0000-4000-a000-00000000000b",
             "tour_venue_id": 1,
             "type": "art",
             "label": "Key Art - Out for Delivery",
@@ -111,7 +111,7 @@
             "status_id": 4
         },
         {
-            "id": 12,
+            "id": "c1000012-0000-4000-a000-00000000000c",
             "tour_venue_id": 1,
             "type": "art",
             "label": "Key Art - Cancelled",
@@ -121,7 +121,7 @@
             "status_id": 5
         },
         {
-            "id": 13,
+            "id": "c1000013-0000-4000-a000-00000000000d",
             "tour_venue_id": 1,
             "type": "art",
             "label": "Key Art - Revision Requested",
@@ -131,7 +131,7 @@
             "status_id": 6
         },
         {
-            "id": 14,
+            "id": "c1000014-0000-4000-a000-00000000000e",
             "tour_venue_id": 1,
             "type": "art",
             "label": "Socials & Web Banners - Unassigned",
@@ -141,7 +141,7 @@
             "status_id": 7
         },
         {
-            "id": 15,
+            "id": "c1000015-0000-4000-a000-00000000000f",
             "tour_venue_id": 1,
             "type": "localized",
             "label": "Advert for FFFFFFFF",
@@ -161,7 +161,7 @@
             ]
         },
         {
-            "id": 16,
+            "id": "c1000016-0000-4000-a000-000000000010",
             "tour_venue_id": 1,
             "type": "localized",
             "label": "Advert for FFFFFFFF",
@@ -171,7 +171,7 @@
             "dueDate": "1/15/25"
         },
         {
-            "id": 17,
+            "id": "c1000017-0000-4000-a000-000000000011",
             "tour_venue_id": 1,
             "type": "localized",
             "label": "Advert for FFFFFFFF",
@@ -179,72 +179,156 @@
             "height": 400,
             "cta": "Black Friday Sale",
             "dueDate": "1/15/25"
+        },
+        {
+            "id": "d2000001-0000-4000-a000-000000000001",
+            "tour_venue_id": 22,
+            "type": "broadcast",
+            "tab": "broadcast",
+            "label": "Video international",
+            "isci": "GTCMR202601",
+            "duration_seconds": 30,
+            "dueDate": "12/15/24",
+            "status_id": 2,
+            "thumbnailUrl": "https://picsum.photos/seed/gtc-b1/320/180",
+            "mediaUrl": "https://static.vecteezy.com/system/resources/previews/005/287/289/mp4/programming-or-software-development-loopable-concept-isometric-laptop-with-programming-code-programming-concept-free-video.mp4",
+            "kind": "video"
+        },
+        {
+            "id": "d2000002-0000-4000-a000-000000000002",
+            "tour_venue_id": 22,
+            "type": "broadcast",
+            "tab": "broadcast",
+            "label": "Video international superless v2",
+            "isci": "GTCMR202602",
+            "duration_seconds": 72,
+            "dueDate": "12/15/24",
+            "status_id": 3,
+            "thumbnailUrl": "https://picsum.photos/seed/gtc-b2/320/180",
+            "mediaUrl": "https://static.vecteezy.com/system/resources/previews/001/804/008/mp4/raining-on-a-plant-and-a-bee-free-video.mp4",
+            "kind": "video"
+        },
+        {
+            "id": "d2000003-0000-4000-a000-000000000003",
+            "tour_venue_id": 22,
+            "type": "social",
+            "tab": "social",
+            "label": "Instagram story loop",
+            "isci": "GTCMR202603",
+            "duration_seconds": 15,
+            "dueDate": "12/10/24",
+            "status_id": 3,
+            "thumbnailUrl": "https://picsum.photos/seed/gtc-s1/320/180",
+            "mediaUrl": "https://static.vecteezy.com/system/resources/previews/003/535/355/mp4/happy-new-year-2024-green-screen-background-with-colored-lines-and-happy-new-year-in-the-center-mask-style-free-for-commercial-use-free-video.mp4",
+            "kind": "video"
+        },
+        {
+            "id": "d2000004-0000-4000-a000-000000000004",
+            "tour_venue_id": 22,
+            "type": "social",
+            "tab": "social",
+            "label": "TikTok cutdown",
+            "isci": "GTCMR202604",
+            "duration_seconds": 45,
+            "dueDate": "12/10/24",
+            "status_id": 4,
+            "thumbnailUrl": "https://picsum.photos/seed/gtc-s2/320/180",
+            "mediaUrl": "https://picsum.photos/seed/gtc-s2-full/1920/1080",
+            "kind": "image"
+        },
+        {
+            "id": "d2000005-0000-4000-a000-000000000005",
+            "tour_venue_id": 22,
+            "type": "radio",
+            "tab": "radio",
+            "label": "30s spot — clean",
+            "isci": "GTCMR202605",
+            "duration_seconds": 30,
+            "dueDate": "12/15/24",
+            "status_id": 2,
+            "thumbnailUrl": "https://picsum.photos/seed/gtc-r1/320/180",
+            "mediaUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+            "kind": "audio"
+        },
+        {
+            "id": "d2000006-0000-4000-a000-000000000006",
+            "tour_venue_id": 22,
+            "type": "art",
+            "tab": "art",
+            "label": "Key art horizontal",
+            "width": 1920,
+            "height": 1080,
+            "dueDate": "12/1/24",
+            "status_id": 2,
+            "thumbnailUrl": "https://picsum.photos/seed/gtc-a1/320/180",
+            "mediaUrl": "https://picsum.photos/seed/gtc-a1-full/1920/1080",
+            "kind": "image"
         }
     ],
     "venue_item_assigned": [
         {
             "id": 1,
-            "venue_item_id": 2,
+            "venue_item_id": "c1000002-0000-4000-a000-000000000002",
             "mockUser_id": 3
         },
         {
             "id": 2,
-            "venue_item_id": 2,
+            "venue_item_id": "c1000002-0000-4000-a000-000000000002",
             "mockUser_id": 6
         },
         {
             "id": 3,
-            "venue_item_id": 3,
+            "venue_item_id": "c1000003-0000-4000-a000-000000000003",
             "mockUser_id": 3
         },
         {
             "id": 4,
-            "venue_item_id": 3,
+            "venue_item_id": "c1000003-0000-4000-a000-000000000003",
             "mockUser_id": 6
         },
         {
             "id": 5,
-            "venue_item_id": 4,
+            "venue_item_id": "c1000004-0000-4000-a000-000000000004",
             "mockUser_id": 3
         },
         {
             "id": 6,
-            "venue_item_id": 6,
+            "venue_item_id": "c1000006-0000-4000-a000-000000000006",
             "mockUser_id": 3
         },
         {
             "id": 7,
-            "venue_item_id": 9,
+            "venue_item_id": "c1000009-0000-4000-a000-000000000009",
             "mockUser_id": 3
         },
         {
             "id": 8,
-            "venue_item_id": 10,
+            "venue_item_id": "c1000010-0000-4000-a000-00000000000a",
             "mockUser_id": 3
         },
         {
             "id": 9,
-            "venue_item_id": 11,
+            "venue_item_id": "c1000011-0000-4000-a000-00000000000b",
             "mockUser_id": 3
         },
         {
             "id": 10,
-            "venue_item_id": 13,
+            "venue_item_id": "c1000013-0000-4000-a000-00000000000d",
             "mockUser_id": 3
         },
         {
             "id": 11,
-            "venue_item_id": 15,
+            "venue_item_id": "c1000015-0000-4000-a000-00000000000f",
             "mockUser_id": 3
         },
         {
             "id": 12,
-            "venue_item_id": 16,
+            "venue_item_id": "c1000016-0000-4000-a000-000000000010",
             "mockUser_id": 3
         },
         {
             "id": 13,
-            "venue_item_id": 17,
+            "venue_item_id": "c1000017-0000-4000-a000-000000000011",
             "mockUser_id": 3
         }
     ],

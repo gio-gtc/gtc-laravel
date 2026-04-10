@@ -1,6 +1,7 @@
 import { useCoarseOrNoHoverPointer } from '@/hooks/use-coarse-or-no-hover-pointer';
 import { unpicPassthroughTransform } from '@/lib/unpic-passthrough-transform';
 import { cn } from '@/lib/utils';
+import { formatDurationSeconds } from '@/helper-functions/format-time';
 import { type DemoAsset, type DemoTab } from '@/types/demo';
 import { Image } from '@unpic/react/base';
 import {
@@ -114,15 +115,18 @@ export default function DemoSidebar({
                                     <button
                                         type="button"
                                         onClick={() => onSelectAsset(asset.id)}
-                                        className={`flex w-full cursor-pointer gap-3 rounded-lg p-2 text-left transition-all duration-300 ${
+                                        className={cn(
+                                            'flex w-full cursor-pointer gap-3 rounded-lg p-2 text-left outline-none focus:outline-none',
+                                            'transition-[box-shadow,backdrop-filter] duration-200',
+                                            'focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-0',
                                             selected
-                                                ? 'border border-white/10 bg-gradient-to-br from-white/30 via-transparent to-transparent shadow-lg backdrop-blur-lg'
-                                                : 'hover:bg-gradient-to-br hover:from-white/10 hover:via-transparent hover:to-transparent hover:shadow-xs hover:backdrop-blur-xs'
-                                        }`}
+                                                ? 'ring-1 ring-inset ring-white/10 bg-gradient-to-br from-white/30 via-transparent to-transparent shadow-lg backdrop-blur-lg'
+                                                : 'hover:bg-gradient-to-br hover:from-white/10 hover:via-transparent hover:to-transparent hover:shadow-xs hover:backdrop-blur-xs',
+                                        )}
                                     >
                                         <Image
                                             src={asset.thumbnailUrl}
-                                            alt={asset.title}
+                                            alt={asset.label}
                                             layout="fixed"
                                             width={120}
                                             height={64}
@@ -134,11 +138,15 @@ export default function DemoSidebar({
                                         />
                                         <div className="flex min-w-0 flex-1 flex-col justify-center gap-0.5">
                                             <span className="text-white uppercase">
-                                                {asset.title}
+                                                {asset.label}
                                             </span>
-                                            <span className="text-gray-400 tabular-nums">
-                                                {asset.durationLabel}
-                                            </span>
+                                            {asset.duration_seconds > 0 ? (
+                                                <span className="text-gray-400 tabular-nums">
+                                                    {formatDurationSeconds(
+                                                        asset.duration_seconds,
+                                                    )}
+                                                </span>
+                                            ) : null}
                                         </div>
                                     </button>
                                 </li>

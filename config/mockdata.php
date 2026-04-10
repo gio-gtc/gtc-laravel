@@ -44,9 +44,6 @@ $invoices = json_decode(file_get_contents($invoicesPath), true, 512, JSON_THROW_
 
 
 return array_merge(
-    [
-        'demos' => require __DIR__.'/mockdata/demos.php',
-    ],
     $orders,
     $homepage,
     $users,

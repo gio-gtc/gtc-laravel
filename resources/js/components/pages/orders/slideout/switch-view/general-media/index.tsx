@@ -1,4 +1,10 @@
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { buildVenueItemStatusSelectOptions } from '@/components/utils/editable-table/venue-item-status-options';
 import {
     getAssignedUsersForVenueItem,
@@ -288,10 +294,21 @@ function GeneralMediaView({
     const [editIsciRow, setEditIsciRow] = useState<MediaTableRow | null>(null);
     const [videoPreviewTableTitle, setVideoPreviewTableTitle] = useState('');
     const [audioPlaceholderMode, setAudioPlaceholderMode] = useState(false);
+    const [imagePreview, setImagePreview] = useState<{
+        src: string;
+        title: string;
+    } | null>(null);
 
     const handleVideoSectionPreviewClick = useCallback(
         (row: MediaTableRow, iconIndex: number) => {
             if (iconIndex === 0) {
+                if (row.previewImageUrl) {
+                    setImagePreview({
+                        src: row.previewImageUrl,
+                        title: `${row.isci} – ${row.cutName}`,
+                    });
+                    return;
+                }
                 setVideoPreviewRow(row);
                 setAudioPlaceholderMode(false);
                 setVideoPlayerModalOpen(true);
@@ -303,6 +320,13 @@ function GeneralMediaView({
     const handleAudioSectionPreviewClick = useCallback(
         (row: MediaTableRow, iconIndex: number) => {
             if (iconIndex === 0) {
+                if (row.previewImageUrl) {
+                    setImagePreview({
+                        src: row.previewImageUrl,
+                        title: `${row.isci} – ${row.cutName}`,
+                    });
+                    return;
+                }
                 setVideoPreviewRow(row);
                 setAudioPlaceholderMode(true);
                 setVideoPlayerModalOpen(true);
@@ -335,6 +359,14 @@ function GeneralMediaView({
         [handleAudioSectionPreviewClick],
     );
 
+    const openStaticImagePreview = useCallback((row: StaticAssetsTableRow) => {
+        if (!row.previewImageUrl) return;
+        setImagePreview({
+            src: row.previewImageUrl,
+            title: row.cutName,
+        });
+    }, []);
+
     const billingInvoices = useMemo((): Invoice[] => {
         if (!order || !venueItem || venueItem.venue == null) return [];
         return catalog.invoices.filter(
@@ -355,6 +387,12 @@ function GeneralMediaView({
     const orders = venueItem ? venueOrders : [];
 
     const isDemoRow = venueItem != null && venueItem.venue === null;
+
+    const demoLinkHref = useMemo(() => {
+        if (!isDemoRow || !venueItem) return undefined;
+        const u = venueItem.orderVenue.demo_uuid;
+        return u ? `/demo/${u}` : undefined;
+    }, [isDemoRow, venueItem]);
 
     const openDueDateBulkEdit = useCallback(
         (rowId: string | number) => {
@@ -522,11 +560,7 @@ function GeneralMediaView({
                     onStatusFilterChange={setStatusFilter}
                     sortDirection={sortDirection}
                     onSortDirectionChange={setSortDirection}
-                    demoLinkHref={
-                        isDemoRow
-                            ? '/demo/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'
-                            : undefined
-                    }
+                    demoLinkHref={demoLinkHref}
                 />
                 <MediaTable
                     title="Broadcast & Streaming Video"
@@ -588,6 +622,7 @@ function GeneralMediaView({
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
+                    onPreviewImageClick={openStaticImagePreview}
                     cellEditing={{
                         onCellChange: handleStaticCellChange,
                         onCellDoubleClick: handleStaticCellDoubleClick,
@@ -686,6 +721,26 @@ function GeneralMediaView({
                     console.log(message);
                 }}
             />
+            <Dialog
+                open={imagePreview !== null}
+                onOpenChange={(open) => {
+                    if (!open) setImagePreview(null);
+                }}
+            >
+                <DialogContent className="max-w-4xl">
+                    <DialogHeader>
+                        <DialogTitle>{imagePreview?.title ?? 'Preview'}</DialogTitle>
+                    </DialogHeader>
+                    {imagePreview ? (
+                        <img
+                            src={imagePreview.src}
+                            alt={imagePreview.title}
+                            className="max-h-[70vh] w-full object-contain"
+                        />
+                    ) : null}
+                </DialogContent>
+            </Dialog>
+
             <VideoPlayerModal
                 isOpen={videoPlayerModalOpen}
                 onClose={() => {

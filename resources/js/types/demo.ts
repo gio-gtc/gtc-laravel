@@ -5,8 +5,8 @@ export type DemoAssetKind = 'video' | 'audio' | 'image';
 export interface DemoAsset {
     id: string;
     tab: DemoTab;
-    title: string;
-    durationLabel: string;
+    label: string;
+    duration_seconds: number;
     thumbnailUrl: string;
     mediaUrl: string;
     kind: DemoAssetKind;

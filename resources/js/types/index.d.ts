@@ -168,6 +168,8 @@ export interface TourVenue {
     id: number;
     tour_id: number;
     venue_id: number | null;
+    /** When set, `/demo/{demo_uuid}` loads assets for this tour–venue from venue_items. */
+    demo_uuid?: string | null;
     start_date: string;
     end_date: string;
     client: number;
@@ -209,7 +211,7 @@ export interface Venue {
 
 export interface VenueItemAssigned {
     id: number;
-    venue_item_id: number;
+    venue_item_id: string;
     mockUser_id: number;
 }
 
@@ -235,6 +237,8 @@ export interface MediaTableRow {
     status: VenueItemStatus['type'];
     /** Optional video URL for the preview modal. When absent, a default placeholder video is used. */
     previewVideoUrl?: string | null;
+    /** When set, preview opens a full-image dialog instead of video (e.g. social image cutdown). */
+    previewImageUrl?: string | null;
     deliverables?: {
         onReject?: () => void;
         onApprove?: () => void;
@@ -276,6 +280,8 @@ export interface StaticAssetsTableRow {
     dueDate: string; // e.g., "1/15/25"
     assigned: User[];
     status: VenueItemStatus['type'];
+    /** Full-size image URL for key-art preview when present. */
+    previewImageUrl?: string | null;
     deliverables?: {
         onReject?: () => void;
         onApprove?: () => void;
@@ -292,6 +298,8 @@ export interface StaticAssetsMediaTableProps {
     onAdd?: () => void;
     /** When set, Cut Name / W / H use EditableCellInput */
     cellEditing?: VenueTableCellEditing;
+    /** Opens full-size image preview for rows with `previewImageUrl`. */
+    onPreviewImageClick?: (row: StaticAssetsTableRow) => void;
     selectedRowIds?: ReadonlySet<string | number>;
     onRowSelectToggle?: (rowId: string | number) => void;
     onBulkEditDueDateDoubleClick?: (rowId: string | number) => void;
@@ -311,21 +319,31 @@ export type VenueItemsRowType =
     | 'art'
     | 'localized';
 
+/** Aligns with demo sidebar tabs when the row is part of a public demo bundle. */
+export type VenueItemDemoTab = 'broadcast' | 'social' | 'radio' | 'art';
+
 export interface VenueItemsRowBase {
-    id: string | number;
+    id: string;
     tour_venue_id: number;
     type: VenueItemsRowType;
     dueDate: string;
     label: string;
+    /** When set, used for public demo routing; otherwise `type` is used where it matches a demo tab. */
+    tab?: VenueItemDemoTab;
 }
 
 /** Line items for broadcast, radio, or social (video/audio spots). */
+export type VenueItemMediaKind = 'video' | 'audio' | 'image';
+
 export interface VenueItemsBroadcastRadioSocialRow extends VenueItemsRowBase {
     type: 'broadcast' | 'radio' | 'social';
     isci: string;
     duration_seconds: number;
     status_id: number;
     previewVideoUrl?: string | null;
+    thumbnailUrl?: string;
+    mediaUrl?: string;
+    kind?: VenueItemMediaKind;
     deliverables?: MediaTableRow['deliverables'];
     /** Set from server JSON when row supports deliverable actions (replaces inline mock callbacks). */
     has_deliverable_actions?: boolean;
@@ -338,6 +356,9 @@ export interface VenueItemsArtRow extends VenueItemsRowBase {
     width: number;
     height: number;
     status_id: number;
+    thumbnailUrl?: string;
+    mediaUrl?: string;
+    kind?: 'image';
     deliverables?: StaticAssetsTableRow['deliverables'];
     has_deliverable_actions?: boolean;
     order_id?: number;

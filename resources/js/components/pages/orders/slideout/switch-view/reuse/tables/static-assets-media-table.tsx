@@ -17,6 +17,7 @@ import type {
     StaticAssetsMediaTableProps,
     StaticAssetsTableRow,
 } from '@/types';
+import { ImageIcon } from 'lucide-react';
 import { useState } from 'react';
 import { CollapsibleTableSectionHeader } from './collapsible-table-section-header';
 import { DeliverablesCell } from './sections/deliverables-buttons';
@@ -31,6 +32,7 @@ export default function StaticAssetsMediaTable({
     onRowSelectToggle,
     onBulkEditDueDateDoubleClick,
     onBulkEditAssignedDoubleClick,
+    onPreviewImageClick,
     venueItemStatusSelectOptions,
 }: StaticAssetsMediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -65,8 +67,11 @@ export default function StaticAssetsMediaTable({
                                     <TableHead className="w-[9%] text-center">
                                         Assigned
                                     </TableHead>
-                                    <TableHead className="w-[19%] text-center">
+                                    <TableHead className="w-[14%] text-center">
                                         Status
+                                    </TableHead>
+                                    <TableHead className="w-[8%] text-center">
+                                        Preview
                                     </TableHead>
                                     <TableHead className="w-[11%] text-center">
                                         Deliverables
@@ -314,6 +319,25 @@ export default function StaticAssetsMediaTable({
                                                     </div>
                                                 </TableCell>
 
+                                                <TableCell className="text-center">
+                                                    {row.previewImageUrl &&
+                                                    onPreviewImageClick ? (
+                                                        <button
+                                                            type="button"
+                                                            className="inline-flex cursor-pointer text-gray-400 hover:text-gray-900"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                onPreviewImageClick(
+                                                                    row,
+                                                                );
+                                                            }}
+                                                            aria-label="Preview image"
+                                                        >
+                                                            <ImageIcon className="size-4" />
+                                                        </button>
+                                                    ) : null}
+                                                </TableCell>
+
                                                 <TableCell className="flex h-[30px] items-center justify-center gap-2 py-0">
                                                     <DeliverablesCell
                                                         status={row.status}
@@ -328,7 +352,7 @@ export default function StaticAssetsMediaTable({
                                 ) : (
                                     <TableRow>
                                         <TableCell
-                                            colSpan={7}
+                                            colSpan={8}
                                             className="h-24 text-center"
                                         ></TableCell>
                                     </TableRow>

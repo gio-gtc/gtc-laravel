@@ -82,7 +82,7 @@ export default function DemoMediaStage({ asset }: { asset: DemoAsset | null }) {
             <Image
                 key={asset.id}
                 src={asset.mediaUrl}
-                alt={asset.title}
+                alt={asset.label}
                 layout="constrained"
                 width={1920}
                 height={1080}
@@ -99,7 +99,7 @@ export default function DemoMediaStage({ asset }: { asset: DemoAsset | null }) {
             id={asset.id}
             mediaUrl={asset.mediaUrl}
             kind={asset.kind === 'audio' ? 'audio' : 'video'}
-            title={asset.title}
+            title={asset.label}
         />
     );
 }
