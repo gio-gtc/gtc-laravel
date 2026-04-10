@@ -1,6 +1,14 @@
 import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
 import type { KeyboardEvent } from 'react';
+import type {
+    AllAudioCuts,
+    AllBroadcastCuts,
+    AudioSpotType,
+    BroadcastSpotType,
+    SocialCutOption,
+    SocialVideoLayoutType,
+} from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
 
 export interface VenueTableCellEditing {
     onCellChange: (
@@ -336,14 +344,13 @@ export interface VenueItemsRowBase {
     tour_venue_id: number;
     type: VenueItemsRowType;
     dueDate: string;
-    label: string;
 }
 
 /** Line items for broadcast, radio, or social (video/audio spots). */
 export type VenueItemMediaKind = 'video' | 'audio' | 'image';
 
-export interface VenueItemsBroadcastRadioSocialRow extends VenueItemsRowBase {
-    type: 'broadcast' | 'radio' | 'social';
+/** Shared fields for broadcast / radio / social venue line items. */
+export interface VenueItemsMediaLineShared {
     isci: string;
     duration_seconds: number;
     status_id: number;
@@ -361,9 +368,42 @@ export interface VenueItemsBroadcastRadioSocialRow extends VenueItemsRowBase {
     order_id?: number;
 }
 
+/** Broadcast: spot types and cuts match add Broadcast & Streaming modal. */
+export interface VenueItemsBroadcastRow
+    extends VenueItemsRowBase,
+        VenueItemsMediaLineShared {
+    type: 'broadcast';
+    spot_type: BroadcastSpotType;
+    cut: AllBroadcastCuts;
+}
+
+/** Radio (audio): spot types and cuts match add Audio modal. */
+export interface VenueItemsRadioRow
+    extends VenueItemsRowBase,
+        VenueItemsMediaLineShared {
+    type: 'radio';
+    spot_type: AudioSpotType;
+    cut: AllAudioCuts;
+}
+
+/** Social: layout type and cut match add Social Video modal. */
+export interface VenueItemsSocialRow
+    extends VenueItemsRowBase,
+        VenueItemsMediaLineShared {
+    type: 'social';
+    spot_type: SocialVideoLayoutType;
+    cut: SocialCutOption;
+}
+
+export type VenueItemsBroadcastRadioSocialRow =
+    | VenueItemsBroadcastRow
+    | VenueItemsRadioRow
+    | VenueItemsSocialRow;
+
 /** Key art and static assets (General Media). */
 export interface VenueItemsArtRow extends VenueItemsRowBase {
     type: 'art';
+    label: string;
     width: number;
     height: number;
     status_id: number;
@@ -377,6 +417,7 @@ export interface VenueItemsArtRow extends VenueItemsRowBase {
 
 export interface VenueItemsLocalizedRow extends VenueItemsRowBase {
     type: 'localized';
+    label: string;
     width: number;
     height: number;
     cta: string;

@@ -45,6 +45,11 @@ export function venueItemEncodingIdToLabel(
     return found?.type ?? '';
 }
 
+/** Display label for broadcast/radio/social mock rows (`spot_type` + single space + `cut`). */
+export function venueItemMediaLineLabel(spotType: string, cut: string): string {
+    return `${spotType} ${cut}`;
+}
+
 /** Default language pill selection for add-line modals (English, else first catalog row). */
 export function defaultVenueItemLanguageLabels(
     venueItemLanguage: VenueItemLanguage[],
@@ -110,7 +115,8 @@ export function venueItemsMediaTableRow(
     venueItemStatus: VenueItemStatus[],
 ): MediaTableRow {
     const {
-        label,
+        spot_type,
+        cut,
         status_id,
         has_deliverable_actions: _h,
         deliverables: _d,
@@ -129,7 +135,7 @@ export function venueItemsMediaTableRow(
             : (mediaUrl ?? row.previewVideoUrl ?? null);
     return {
         ...rest,
-        cutName: label,
+        cutName: venueItemMediaLineLabel(spot_type, cut),
         assigned,
         status: venueItemStatusIdToLabel(status_id, venueItemStatus),
         previewVideoUrl,

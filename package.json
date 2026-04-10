@@ -9,7 +9,8 @@
         "format": "prettier --write resources/",
         "format:check": "prettier --check resources/",
         "lint": "eslint . --fix",
-        "types": "tsc --noEmit"
+        "types": "tsc --noEmit",
+        "validate:venue-items": "npx --yes tsx scripts/validate-venue-items-mock.ts"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",

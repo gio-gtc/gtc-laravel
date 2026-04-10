@@ -68,6 +68,24 @@ class DemoController extends Controller
     }
 
     /**
+     * Display label for venue line items: broadcast/radio/social use `spot_type` + space + `cut` (same as TS `venueItemMediaLineLabel`).
+     *
+     * @param  array<string, mixed>  $row
+     */
+    private function venueItemDisplayLabel(array $row): string
+    {
+        $lineType = (string) ($row['type'] ?? '');
+        if (in_array($lineType, ['broadcast', 'radio', 'social'], true)) {
+            $spotType = (string) ($row['spot_type'] ?? '');
+            $cut = (string) ($row['cut'] ?? '');
+
+            return $spotType.' '.$cut;
+        }
+
+        return (string) ($row['label'] ?? '');
+    }
+
+    /**
      * @param  array<string, mixed>  $row
      * @return array<string, mixed>
      */
@@ -83,7 +101,7 @@ class DemoController extends Controller
         return [
             'id' => (string) ($row['id'] ?? ''),
             'tab' => $tab,
-            'label' => (string) ($row['label'] ?? ''),
+            'label' => $this->venueItemDisplayLabel($row),
             'duration_seconds' => $durationSeconds,
             'thumbnailUrl' => (string) ($row['thumbnailUrl'] ?? ''),
             'mediaUrl' => (string) ($row['mediaUrl'] ?? ''),

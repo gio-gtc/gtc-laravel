@@ -11,22 +11,12 @@ import {
 } from './modal-duration';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
-
-const TYPE_OPTIONS = [
-    'Social - 16:9',
-    'FB/IG Story',
-    'TikTok',
-    'Social Square',
-    'Social - 4:5',
-] as const;
+import {
+    SOCIAL_CUT_OPTIONS,
+    SOCIAL_VIDEO_TYPE_OPTIONS,
+} from './spot-type-cuts-options';
 
 const CARD_HOLDER_OPTIONS = ['Amex', 'Citi'] as const;
-const SOCIAL_CUT_OPTIONS = [
-    'Pre Sale',
-    'On Sale Now',
-    'Evergreen',
-    'Sign Up Now',
-] as const;
 const DURATION_OPTIONS = [':10', ':15', ':30'] as const;
 
 export interface AddSocialVideoFormValues {
@@ -121,7 +111,7 @@ export default function AddSocialVideoModal({
                         </p>
                         <MultiSelectCombobox
                             id="type"
-                            options={TYPE_OPTIONS}
+                            options={SOCIAL_VIDEO_TYPE_OPTIONS}
                             value={type}
                             onValueChange={setType}
                             placeholder="Select Type"
