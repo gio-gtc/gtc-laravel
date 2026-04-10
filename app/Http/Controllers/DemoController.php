@@ -74,7 +74,7 @@ class DemoController extends Controller
     private function venueItemToDemoAsset(array $row): array
     {
         $type = (string) ($row['type'] ?? 'broadcast');
-        $tab = (string) ($row['tab'] ?? $type);
+        $tab = $type;
         $durationSeconds = (int) ($row['duration_seconds'] ?? 0);
         if ($type === 'art') {
             $durationSeconds = 0;

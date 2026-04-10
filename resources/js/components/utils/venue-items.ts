@@ -114,7 +114,6 @@ export function venueItemsMediaTableRow(
         status_id,
         has_deliverable_actions: _h,
         deliverables: _d,
-        tab: _tab,
         thumbnailUrl: _thumb,
         mediaUrl,
         kind,
@@ -148,7 +147,6 @@ export function venueItemsArtTableRow(
         status_id,
         has_deliverable_actions: _h,
         deliverables: _d,
-        tab: _tab,
         kind: _k,
         ...rest
     } = row;

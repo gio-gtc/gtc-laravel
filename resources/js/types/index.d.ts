@@ -329,17 +329,12 @@ export type VenueItemsRowType =
     | 'art'
     | 'localized';
 
-/** Aligns with demo sidebar tabs when the row is part of a public demo bundle. */
-export type VenueItemDemoTab = 'broadcast' | 'social' | 'radio' | 'art';
-
 export interface VenueItemsRowBase {
     id: string;
     tour_venue_id: number;
     type: VenueItemsRowType;
     dueDate: string;
     label: string;
-    /** When set, used for public demo routing; otherwise `type` is used where it matches a demo tab. */
-    tab?: VenueItemDemoTab;
 }
 
 /** Line items for broadcast, radio, or social (video/audio spots). */
