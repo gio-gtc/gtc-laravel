@@ -363,8 +363,6 @@ export default function MediaTable({
                                                                     status={
                                                                         v as MediaTableRow['status']
                                                                     }
-                                                                    // TODO: move inside component
-                                                                    className="xs-gray-700-weight-600"
                                                                 />
                                                             )}
                                                             onChange={
@@ -405,7 +403,6 @@ export default function MediaTable({
                                                     ) : (
                                                         <VenueItemStatusBadge
                                                             status={row.status}
-                                                            className="xs-gray-700-weight-600"
                                                         />
                                                     )}
                                                 </TableCell>
