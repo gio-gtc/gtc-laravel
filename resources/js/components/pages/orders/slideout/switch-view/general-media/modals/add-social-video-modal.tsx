@@ -3,8 +3,12 @@ import { Label } from '@/components/ui/label';
 import { defaultVenueItemLanguageLabels } from '@/components/utils/venue-items';
 import { cn } from '@/lib/utils';
 import type { VenueItemLanguage } from '@/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
+import {
+    durationSecondsToModalPillLabel,
+    isNonDefaultModalDuration,
+} from './modal-duration';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
 
@@ -38,6 +42,7 @@ interface AddSocialVideoModalProps {
     onClose: () => void;
     onAdd?: (values: AddSocialVideoFormValues) => void;
     venue_item_language: VenueItemLanguage[];
+    initialDurationSeconds?: number;
 }
 
 export default function AddSocialVideoModal({
@@ -45,6 +50,7 @@ export default function AddSocialVideoModal({
     onClose,
     onAdd,
     venue_item_language,
+    initialDurationSeconds,
 }: AddSocialVideoModalProps) {
     const [type, setType] = useState<string[]>([]);
     const [cuts, setCuts] = useState<string[]>([]);
@@ -53,6 +59,25 @@ export default function AddSocialVideoModal({
     const [language, setLanguage] = useState<string[]>(() =>
         defaultVenueItemLanguageLabels(venue_item_language),
     );
+
+    useEffect(() => {
+        if (!isOpen) return;
+        if (initialDurationSeconds === undefined) {
+            setDuration([]);
+            return;
+        }
+        const s = Math.floor(initialDurationSeconds);
+        setDuration([durationSecondsToModalPillLabel(s, 'social')]);
+    }, [isOpen, initialDurationSeconds]);
+
+    const extraDurationLabel =
+        initialDurationSeconds !== undefined &&
+        isNonDefaultModalDuration(initialDurationSeconds, 'social')
+            ? durationSecondsToModalPillLabel(
+                  initialDurationSeconds,
+                  'social',
+              )
+            : null;
 
     const resetForm = () => {
         setType([]);
@@ -175,6 +200,25 @@ export default function AddSocialVideoModal({
                                     </PillButton>
                                 );
                             })}
+                            {extraDurationLabel !== null && (
+                                <PillButton
+                                    key={extraDurationLabel}
+                                    className="w-full"
+                                    selected={duration.includes(
+                                        extraDurationLabel,
+                                    )}
+                                    onClick={() =>
+                                        setDuration((prev) =>
+                                            toggleInArray(
+                                                prev,
+                                                extraDurationLabel,
+                                            ),
+                                        )
+                                    }
+                                >
+                                    {extraDurationLabel}
+                                </PillButton>
+                            )}
                         </div>
                     </div>
 

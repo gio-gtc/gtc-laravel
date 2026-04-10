@@ -18,8 +18,12 @@ import {
 } from '@/components/utils/venue-items';
 import { cn } from '@/lib/utils';
 import type { VenueItemEncoding, VenueItemLanguage } from '@/types';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
+import {
+    durationSecondsToModalPillLabel,
+    isNonDefaultModalDuration,
+} from './modal-duration';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
 import {
@@ -103,6 +107,8 @@ interface AddBroadcastStreamingModalProps {
     onAdd?: (values: AddBroadcastStreamingFormValues) => void;
     venue_item_language: VenueItemLanguage[];
     venue_item_encoding: VenueItemEncoding[];
+    /** When set (e.g. edit from table), pre-select duration and optionally show extra pill. */
+    initialDurationSeconds?: number;
 }
 
 export default function AddBroadcastStreamingModal({
@@ -111,6 +117,7 @@ export default function AddBroadcastStreamingModal({
     onAdd,
     venue_item_language,
     venue_item_encoding,
+    initialDurationSeconds,
 }: AddBroadcastStreamingModalProps) {
     const [type, setType] = useState('Generic');
     const [cuts, setCuts] = useState<string[]>([]);
@@ -121,6 +128,25 @@ export default function AddBroadcastStreamingModal({
     const [encodingSelections, setEncodingSelections] = useState<
         Record<string, string>
     >({});
+
+    useEffect(() => {
+        if (!isOpen) return;
+        if (initialDurationSeconds === undefined) {
+            setDuration([]);
+            return;
+        }
+        const s = Math.floor(initialDurationSeconds);
+        setDuration([durationSecondsToModalPillLabel(s, 'broadcast')]);
+    }, [isOpen, initialDurationSeconds]);
+
+    const extraDurationLabel =
+        initialDurationSeconds !== undefined &&
+        isNonDefaultModalDuration(initialDurationSeconds, 'broadcast')
+            ? durationSecondsToModalPillLabel(
+                  initialDurationSeconds,
+                  'broadcast',
+              )
+            : null;
 
     const { availableCuts } = useMemo(() => {
         const config = type ? OPTIONS_BY_TYPE[type] : null;
@@ -304,6 +330,27 @@ export default function AddBroadcastStreamingModal({
                                     </PillButton>
                                 );
                             })}
+                            {extraDurationLabel !== null && (
+                                <PillButton
+                                    key={extraDurationLabel}
+                                    className="w-full"
+                                    selected={duration.includes(
+                                        extraDurationLabel,
+                                    )}
+                                    disabled={type === 'International'}
+                                    onClick={() =>
+                                        type !== 'International' &&
+                                        setDuration((prev) =>
+                                            toggleInArray(
+                                                prev,
+                                                extraDurationLabel,
+                                            ),
+                                        )
+                                    }
+                                >
+                                    {extraDurationLabel}
+                                </PillButton>
+                            )}
                         </div>
                     </div>
 

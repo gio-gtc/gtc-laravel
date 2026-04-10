@@ -269,6 +269,8 @@ export interface MediaTableProps {
     onUploadRow?: (row: MediaTableRow) => void;
     /** Called when user chooses "Edit ISCI" from the ISCI column dropdown */
     onEditIsciRow?: (row: MediaTableRow) => void;
+    /** Opens add modal prefilled for line edit (e.g. duration) when provided */
+    onEditLineInModal?: (row: MediaTableRow) => void;
     /** Called when a preview icon is clicked (row, iconIndex). Video: 0 = play, 1 = link; audio: 0 only. */
     onPreviewClick?: (row: MediaTableRow, iconIndex: number) => void;
     /** When set, Cut Name uses EditableCellInput (parent should own useEditableTable) */

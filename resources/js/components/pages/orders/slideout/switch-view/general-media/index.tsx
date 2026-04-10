@@ -286,6 +286,13 @@ function GeneralMediaView({
 
     const [audioModalOpen, setAudioModalOpen] = useState(false);
     const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
+    const [broadcastModalInitialDuration, setBroadcastModalInitialDuration] =
+        useState<number | undefined>(undefined);
+    const [socialModalInitialDuration, setSocialModalInitialDuration] =
+        useState<number | undefined>(undefined);
+    const [audioModalInitialDuration, setAudioModalInitialDuration] = useState<
+        number | undefined
+    >(undefined);
     const [keyArtModalOpen, setKeyArtModalOpen] = useState(false);
     const [socialVideoModalOpen, setSocialVideoModalOpen] = useState(false);
     const [videoPlayerModalOpen, setVideoPlayerModalOpen] = useState(false);
@@ -572,11 +579,18 @@ function GeneralMediaView({
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
-                    onAdd={() => setBroadcastModalOpen(true)}
+                    onAdd={() => {
+                        setBroadcastModalInitialDuration(undefined);
+                        setBroadcastModalOpen(true);
+                    }}
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
+                    onEditLineInModal={(row) => {
+                        setBroadcastModalInitialDuration(row.duration_seconds);
+                        setBroadcastModalOpen(true);
+                    }}
                     onPreviewClick={openBroadcastVideoPreview}
                 />
                 <MediaTable
@@ -589,11 +603,18 @@ function GeneralMediaView({
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
-                    onAdd={() => setSocialVideoModalOpen(true)}
+                    onAdd={() => {
+                        setSocialModalInitialDuration(undefined);
+                        setSocialVideoModalOpen(true);
+                    }}
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
+                    onEditLineInModal={(row) => {
+                        setSocialModalInitialDuration(row.duration_seconds);
+                        setSocialVideoModalOpen(true);
+                    }}
                     onPreviewClick={openSocialVideoPreview}
                 />
                 <MediaTable
@@ -606,12 +627,19 @@ function GeneralMediaView({
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
-                    onAdd={() => setAudioModalOpen(true)}
+                    onAdd={() => {
+                        setAudioModalInitialDuration(undefined);
+                        setAudioModalOpen(true);
+                    }}
                     previewKind="audio"
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
+                    onEditLineInModal={(row) => {
+                        setAudioModalInitialDuration(row.duration_seconds);
+                        setAudioModalOpen(true);
+                    }}
                     onPreviewClick={openRadioVideoPreview}
                 />
                 <StaticAssetsMediaTable
@@ -694,19 +722,31 @@ function GeneralMediaView({
             />
             <AddBroadcastStreamingModal
                 isOpen={broadcastModalOpen}
-                onClose={() => setBroadcastModalOpen(false)}
+                onClose={() => {
+                    setBroadcastModalOpen(false);
+                    setBroadcastModalInitialDuration(undefined);
+                }}
                 venue_item_language={catalog.venue_item_language}
                 venue_item_encoding={catalog.venue_item_encoding}
+                initialDurationSeconds={broadcastModalInitialDuration}
             />
             <AddSocialVideoModal
                 isOpen={socialVideoModalOpen}
-                onClose={() => setSocialVideoModalOpen(false)}
+                onClose={() => {
+                    setSocialVideoModalOpen(false);
+                    setSocialModalInitialDuration(undefined);
+                }}
                 venue_item_language={catalog.venue_item_language}
+                initialDurationSeconds={socialModalInitialDuration}
             />
             <AddAudioModal
                 isOpen={audioModalOpen}
-                onClose={() => setAudioModalOpen(false)}
+                onClose={() => {
+                    setAudioModalOpen(false);
+                    setAudioModalInitialDuration(undefined);
+                }}
                 venue_item_language={catalog.venue_item_language}
+                initialDurationSeconds={audioModalInitialDuration}
             />
             <AddKeyArtStaticAssetsModal
                 isOpen={keyArtModalOpen}

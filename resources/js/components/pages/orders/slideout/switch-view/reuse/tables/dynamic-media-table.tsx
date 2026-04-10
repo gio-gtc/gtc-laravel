@@ -17,7 +17,7 @@ import {
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
 import { EditableCellSelect } from '@/components/utils/editable-table/editable-cell-select';
-import { DURATION_SELECT_OPTIONS } from '@/components/utils/editable-table/media-duration-options';
+import { durationSelectOptionsForMediaTable } from '@/components/utils/editable-table/media-duration-options';
 import { VenueItemStatusBadge } from '@/components/utils/venue-item-status-badge';
 import { formatDurationSeconds } from '@/helper-functions/format-time';
 import { toggleRowSelectionOnRowClick } from '@/lib/row-select-toggle';
@@ -36,6 +36,7 @@ export default function MediaTable({
     previewKind = 'video',
     onUploadRow,
     onEditIsciRow,
+    onEditLineInModal,
     onPreviewClick,
     cellEditing,
     editScope,
@@ -46,6 +47,9 @@ export default function MediaTable({
     venueItemStatusSelectOptions,
 }: MediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
+
+    const durationVariant =
+        previewKind === 'audio' ? 'audio' : 'broadcastSocial';
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -156,6 +160,20 @@ export default function MediaTable({
                                                             >
                                                                 Edit ISCI
                                                             </DropdownMenuItem>
+                                                            {onEditLineInModal && (
+                                                                <DropdownMenuItem
+                                                                    disabled={
+                                                                        isDisabledRow
+                                                                    }
+                                                                    onClick={() =>
+                                                                        onEditLineInModal(
+                                                                            row,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Edit line details
+                                                                </DropdownMenuItem>
+                                                            )}
                                                             <DropdownMenuItem
                                                                 onClick={async () => {
                                                                     try {
@@ -224,14 +242,22 @@ export default function MediaTable({
                                                     {cellEditing ? (
                                                         <EditableCellSelect
                                                             value={String(
-                                                                formatDurationSeconds(
-                                                                    row.duration_seconds,
-                                                                ),
+                                                                row.duration_seconds,
                                                             )}
                                                             itemId={row.id}
                                                             field="duration_seconds"
-                                                            options={
-                                                                DURATION_SELECT_OPTIONS
+                                                            options={durationSelectOptionsForMediaTable(
+                                                                row.duration_seconds,
+                                                                durationVariant,
+                                                            )}
+                                                            renderDisplay={(
+                                                                v,
+                                                            ) =>
+                                                                formatDurationSeconds(
+                                                                    Number(
+                                                                        v,
+                                                                    ) || 0,
+                                                                )
                                                             }
                                                             onChange={(
                                                                 itemId,

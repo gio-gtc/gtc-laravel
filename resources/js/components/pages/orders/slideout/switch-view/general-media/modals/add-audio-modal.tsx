@@ -10,8 +10,12 @@ import {
 import { defaultVenueItemLanguageLabels } from '@/components/utils/venue-items';
 import { cn } from '@/lib/utils';
 import type { VenueItemLanguage } from '@/types';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
+import {
+    durationSecondsToModalPillLabel,
+    isNonDefaultModalDuration,
+} from './modal-duration';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
 import { OPTIONS_BY_TYPE_AUDIO } from './spot-type-cuts-options';
@@ -31,6 +35,7 @@ interface AddAudioModalProps {
     onClose: () => void;
     onAdd?: (values: AddAudioFormValues) => void;
     venue_item_language: VenueItemLanguage[];
+    initialDurationSeconds?: number;
 }
 
 export default function AddAudioModal({
@@ -38,6 +43,7 @@ export default function AddAudioModal({
     onClose,
     onAdd,
     venue_item_language,
+    initialDurationSeconds,
 }: AddAudioModalProps) {
     const [type, setType] = useState('Generic');
     const [cuts, setCuts] = useState<string[]>([]);
@@ -45,6 +51,25 @@ export default function AddAudioModal({
     const [language, setLanguage] = useState<string[]>(() =>
         defaultVenueItemLanguageLabels(venue_item_language),
     );
+
+    useEffect(() => {
+        if (!isOpen) return;
+        if (initialDurationSeconds === undefined) {
+            setDuration([]);
+            return;
+        }
+        const s = Math.floor(initialDurationSeconds);
+        setDuration([durationSecondsToModalPillLabel(s, 'audio')]);
+    }, [isOpen, initialDurationSeconds]);
+
+    const extraDurationLabel =
+        initialDurationSeconds !== undefined &&
+        isNonDefaultModalDuration(initialDurationSeconds, 'audio')
+            ? durationSecondsToModalPillLabel(
+                  initialDurationSeconds,
+                  'audio',
+              )
+            : null;
 
     const { availableCuts } = useMemo(() => {
         const config = type ? OPTIONS_BY_TYPE_AUDIO[type] : null;
@@ -168,6 +193,27 @@ export default function AddAudioModal({
                                     </PillButton>
                                 );
                             })}
+                            {extraDurationLabel !== null && (
+                                <PillButton
+                                    key={extraDurationLabel}
+                                    className="w-full"
+                                    selected={duration.includes(
+                                        extraDurationLabel,
+                                    )}
+                                    disabled={type === 'International'}
+                                    onClick={() =>
+                                        type !== 'International' &&
+                                        setDuration((prev) =>
+                                            toggleInArray(
+                                                prev,
+                                                extraDurationLabel,
+                                            ),
+                                        )
+                                    }
+                                >
+                                    {extraDurationLabel}
+                                </PillButton>
+                            )}
                         </div>
                     </div>
 
