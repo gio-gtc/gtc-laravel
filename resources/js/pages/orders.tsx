@@ -27,6 +27,8 @@ export default function Orders() {
             venue_items: props.venue_items,
             venue_item_assigned: props.venue_item_assigned,
             venue_item_status: props.venue_item_status,
+            venue_item_language: props.venue_item_language,
+            venue_item_encoding: props.venue_item_encoding,
             invoices: props.invoices,
         }),
         [
@@ -39,6 +41,8 @@ export default function Orders() {
             props.venue_items,
             props.venue_item_assigned,
             props.venue_item_status,
+            props.venue_item_language,
+            props.venue_item_encoding,
             props.invoices,
         ],
     );

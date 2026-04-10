@@ -7,7 +7,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { defaultVenueItemLanguageLabels } from '@/components/utils/venue-items';
 import { cn } from '@/lib/utils';
+import type { VenueItemLanguage } from '@/types';
 import { useMemo, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
@@ -15,7 +17,6 @@ import { orderModalStyles, toggleInArray } from './shared';
 import { OPTIONS_BY_TYPE_AUDIO } from './spot-type-cuts-options';
 
 const DURATION_OPTIONS = [':15', ':30', ':60'] as const;
-const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French'] as const;
 
 /** Same multi-select semantics as Add Broadcast & Streaming (type drives cuts; duration/language are toggles). */
 export interface AddAudioFormValues {
@@ -29,17 +30,21 @@ interface AddAudioModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAdd?: (values: AddAudioFormValues) => void;
+    venue_item_language: VenueItemLanguage[];
 }
 
 export default function AddAudioModal({
     isOpen,
     onClose,
     onAdd,
+    venue_item_language,
 }: AddAudioModalProps) {
     const [type, setType] = useState('Generic');
     const [cuts, setCuts] = useState<string[]>([]);
     const [duration, setDuration] = useState<string[]>([]);
-    const [language, setLanguage] = useState<string[]>(['English']);
+    const [language, setLanguage] = useState<string[]>(() =>
+        defaultVenueItemLanguageLabels(venue_item_language),
+    );
 
     const { availableCuts } = useMemo(() => {
         const config = type ? OPTIONS_BY_TYPE_AUDIO[type] : null;
@@ -51,7 +56,7 @@ export default function AddAudioModal({
     const resetForm = () => {
         setCuts([]);
         setDuration([]);
-        setLanguage(['English']);
+        setLanguage(defaultVenueItemLanguageLabels(venue_item_language));
     };
 
     const resetAllFields = () => {
@@ -171,22 +176,22 @@ export default function AddAudioModal({
                             Language
                         </Label>
                         <div className="flex flex-col gap-2">
-                            {LANGUAGE_OPTIONS.map((lang) => {
+                            {venue_item_language.map((lang) => {
                                 const isDisabled = type === 'International';
                                 return (
                                     <PillButton
-                                        key={lang}
+                                        key={lang.id}
                                         className="w-full"
-                                        selected={language.includes(lang)}
+                                        selected={language.includes(lang.type)}
                                         disabled={isDisabled}
                                         onClick={() =>
                                             !isDisabled &&
                                             setLanguage((prev) =>
-                                                toggleInArray(prev, lang),
+                                                toggleInArray(prev, lang.type),
                                             )
                                         }
                                     >
-                                        {lang}
+                                        {lang.type}
                                     </PillButton>
                                 );
                             })}

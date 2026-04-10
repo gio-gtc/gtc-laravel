@@ -695,14 +695,18 @@ function GeneralMediaView({
             <AddBroadcastStreamingModal
                 isOpen={broadcastModalOpen}
                 onClose={() => setBroadcastModalOpen(false)}
+                venue_item_language={catalog.venue_item_language}
+                venue_item_encoding={catalog.venue_item_encoding}
             />
             <AddSocialVideoModal
                 isOpen={socialVideoModalOpen}
                 onClose={() => setSocialVideoModalOpen(false)}
+                venue_item_language={catalog.venue_item_language}
             />
             <AddAudioModal
                 isOpen={audioModalOpen}
                 onClose={() => setAudioModalOpen(false)}
+                venue_item_language={catalog.venue_item_language}
             />
             <AddKeyArtStaticAssetsModal
                 isOpen={keyArtModalOpen}

@@ -8,7 +8,9 @@
             "isci": "GTC1818843",
             "duration_seconds": 45,
             "dueDate": "1/15/25",
-            "status_id": 1
+            "status_id": 1,
+            "language_id": 1,
+            "encoding_id": 1
         },
         {
             "id": "c1000002-0000-4000-a000-000000000002",
@@ -18,7 +20,9 @@
             "isci": "GTC1818847",
             "duration_seconds": 30,
             "dueDate": "1/15/25",
-            "status_id": 2
+            "status_id": 2,
+            "language_id": 2,
+            "encoding_id": 2
         },
         {
             "id": "c1000003-0000-4000-a000-000000000003",
@@ -28,7 +32,9 @@
             "isci": "GTC1818848",
             "duration_seconds": 15,
             "dueDate": "1/18/25",
-            "status_id": 3
+            "status_id": 3,
+            "language_id": 3,
+            "encoding_id": 3
         },
         {
             "id": "c1000004-0000-4000-a000-000000000004",
@@ -38,7 +44,8 @@
             "isci": "GTC1818849",
             "duration_seconds": 60,
             "dueDate": "1/20/25",
-            "status_id": 4
+            "status_id": 4,
+            "language_id": 1
         },
         {
             "id": "c1000005-0000-4000-a000-000000000005",
@@ -48,7 +55,8 @@
             "isci": "GTC1818850",
             "duration_seconds": 30,
             "dueDate": "1/22/25",
-            "status_id": 5
+            "status_id": 5,
+            "language_id": 2
         },
         {
             "id": "c1000006-0000-4000-a000-000000000006",
@@ -58,7 +66,8 @@
             "isci": "GTC1818851",
             "duration_seconds": 45,
             "dueDate": "1/25/25",
-            "status_id": 6
+            "status_id": 6,
+            "language_id": 2
         },
         {
             "id": "c1000007-0000-4000-a000-000000000007",
@@ -68,7 +77,8 @@
             "isci": "GTC1818852",
             "duration_seconds": 20,
             "dueDate": "1/28/25",
-            "status_id": 7
+            "status_id": 7,
+            "language_id": 3
         },
         {
             "id": "c1000008-0000-4000-a000-000000000008",
@@ -190,6 +200,8 @@
             "duration_seconds": 30,
             "dueDate": "12/15/24",
             "status_id": 2,
+            "language_id": 1,
+            "encoding_id": 4,
             "thumbnailUrl": "https://picsum.photos/seed/gtc-b1/320/180",
             "mediaUrl": "https://static.vecteezy.com/system/resources/previews/005/287/289/mp4/programming-or-software-development-loopable-concept-isometric-laptop-with-programming-code-programming-concept-free-video.mp4",
             "kind": "video"
@@ -204,6 +216,8 @@
             "duration_seconds": 72,
             "dueDate": "12/15/24",
             "status_id": 3,
+            "language_id": 2,
+            "encoding_id": 5,
             "thumbnailUrl": "https://picsum.photos/seed/gtc-b2/320/180",
             "mediaUrl": "https://static.vecteezy.com/system/resources/previews/001/804/008/mp4/raining-on-a-plant-and-a-bee-free-video.mp4",
             "kind": "video"
@@ -218,6 +232,7 @@
             "duration_seconds": 15,
             "dueDate": "12/10/24",
             "status_id": 3,
+            "language_id": 3,
             "thumbnailUrl": "https://picsum.photos/seed/gtc-s1/320/180",
             "mediaUrl": "https://static.vecteezy.com/system/resources/previews/003/535/355/mp4/happy-new-year-2024-green-screen-background-with-colored-lines-and-happy-new-year-in-the-center-mask-style-free-for-commercial-use-free-video.mp4",
             "kind": "video"
@@ -232,6 +247,7 @@
             "duration_seconds": 45,
             "dueDate": "12/10/24",
             "status_id": 4,
+            "language_id": 1,
             "thumbnailUrl": "https://picsum.photos/seed/gtc-s2/320/180",
             "mediaUrl": "https://picsum.photos/seed/gtc-s2-full/1920/1080",
             "kind": "image"
@@ -246,6 +262,7 @@
             "duration_seconds": 30,
             "dueDate": "12/15/24",
             "status_id": 2,
+            "language_id": 1,
             "thumbnailUrl": "https://picsum.photos/seed/gtc-r1/320/180",
             "mediaUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
             "kind": "audio"
@@ -330,6 +347,46 @@
             "id": 13,
             "venue_item_id": "c1000017-0000-4000-a000-000000000011",
             "mockUser_id": 3
+        }
+    ],
+    "venue_item_language": [
+        {
+            "id": 1,
+            "type": "English"
+        },
+        {
+            "id": 2,
+            "type": "Spanish"
+        },
+        {
+            "id": 3,
+            "type": "French"
+        }
+    ],
+    "venue_item_encoding": [
+        {
+            "id": 1,
+            "type": "H264-MP4 (Online or Venue)"
+        },
+        {
+            "id": 2,
+            "type": "Station MP4 (Broadcast)"
+        },
+        {
+            "id": 3,
+            "type": "Hulu"
+        },
+        {
+            "id": 4,
+            "type": "Amazon"
+        },
+        {
+            "id": 5,
+            "type": "Netflix"
+        },
+        {
+            "id": 6,
+            "type": "Connect TV"
         }
     ],
     "venue_item_status": [

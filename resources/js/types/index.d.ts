@@ -227,6 +227,16 @@ export interface VenueItemStatus {
         | 'Unassigned';
 }
 
+export interface VenueItemLanguage {
+    id: number;
+    type: string;
+}
+
+export interface VenueItemEncoding {
+    id: number;
+    type: string;
+}
+
 export interface MediaTableRow {
     id: string | number;
     isci: string;
@@ -340,6 +350,10 @@ export interface VenueItemsBroadcastRadioSocialRow extends VenueItemsRowBase {
     isci: string;
     duration_seconds: number;
     status_id: number;
+    /** Present on broadcast, social, and radio mock rows when supplied. */
+    language_id?: number;
+    /** Present on broadcast mock rows only when supplied. */
+    encoding_id?: number;
     previewVideoUrl?: string | null;
     thumbnailUrl?: string;
     mediaUrl?: string;

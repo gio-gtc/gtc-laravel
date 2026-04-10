@@ -36,6 +36,8 @@ final class DemoCatalog
             'venue_items' => config('mockdata.venue_items', []),
             'venue_item_assigned' => config('mockdata.venue_item_assigned', []),
             'venue_item_status' => config('mockdata.venue_item_status', []),
+            'venue_item_language' => config('mockdata.venue_item_language', []),
+            'venue_item_encoding' => config('mockdata.venue_item_encoding', []),
             'invoices' => config('mockdata.invoices', []),
         ];
     }

@@ -1,6 +1,8 @@
 import { MultiSelectCombobox } from '@/components/ui/combobox';
 import { Label } from '@/components/ui/label';
+import { defaultVenueItemLanguageLabels } from '@/components/utils/venue-items';
 import { cn } from '@/lib/utils';
+import type { VenueItemLanguage } from '@/types';
 import { useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
@@ -22,8 +24,6 @@ const SOCIAL_CUT_OPTIONS = [
     'Sign Up Now',
 ] as const;
 const DURATION_OPTIONS = [':10', ':15', ':30'] as const;
-const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French'] as const;
-// TODO: encoding = "H264 MP4"
 
 export interface AddSocialVideoFormValues {
     type: string[];
@@ -37,25 +37,29 @@ interface AddSocialVideoModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAdd?: (values: AddSocialVideoFormValues) => void;
+    venue_item_language: VenueItemLanguage[];
 }
 
 export default function AddSocialVideoModal({
     isOpen,
     onClose,
     onAdd,
+    venue_item_language,
 }: AddSocialVideoModalProps) {
     const [type, setType] = useState<string[]>([]);
     const [cuts, setCuts] = useState<string[]>([]);
     const [cardHolder, setCardHolder] = useState<string[]>([]);
     const [duration, setDuration] = useState<string[]>([]);
-    const [language, setLanguage] = useState<string[]>(['English']);
+    const [language, setLanguage] = useState<string[]>(() =>
+        defaultVenueItemLanguageLabels(venue_item_language),
+    );
 
     const resetForm = () => {
         setType([]);
         setCuts([]);
         setCardHolder([]);
         setDuration([]);
-        setLanguage(['English']);
+        setLanguage(defaultVenueItemLanguageLabels(venue_item_language));
     };
 
     const handleOnClose = () => {
@@ -179,18 +183,18 @@ export default function AddSocialVideoModal({
                             Language
                         </Label>
                         <div className="flex flex-col gap-2">
-                            {LANGUAGE_OPTIONS.map((lang) => (
+                            {venue_item_language.map((lang) => (
                                 <PillButton
-                                    key={lang}
+                                    key={lang.id}
                                     className="w-full"
-                                    selected={language.includes(lang)}
+                                    selected={language.includes(lang.type)}
                                     onClick={() =>
                                         setLanguage((prev) =>
-                                            toggleInArray(prev, lang),
+                                            toggleInArray(prev, lang.type),
                                         )
                                     }
                                 >
-                                    {lang}
+                                    {lang.type}
                                 </PillButton>
                             ))}
                         </div>

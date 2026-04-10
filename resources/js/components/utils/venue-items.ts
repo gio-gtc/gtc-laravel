@@ -4,6 +4,8 @@ import type {
     StaticAssetsTableRow,
     User,
     VenueItemAssigned,
+    VenueItemEncoding,
+    VenueItemLanguage,
     VenueItemStatus,
     VenueItemsArtRow,
     VenueItemsBroadcastRadioSocialRow,
@@ -25,6 +27,32 @@ export function venueItemStatusIdToLabel(
 ): VenueLineItemStatusLabel {
     const found = venueItemStatus.find((s) => s.id === statusId);
     return (found?.type ?? 'Still in Cart') as VenueLineItemStatusLabel;
+}
+
+export function venueItemLanguageIdToLabel(
+    languageId: number,
+    venueItemLanguage: VenueItemLanguage[],
+): string {
+    const found = venueItemLanguage.find((l) => l.id === languageId);
+    return found?.type ?? '';
+}
+
+export function venueItemEncodingIdToLabel(
+    encodingId: number,
+    venueItemEncoding: VenueItemEncoding[],
+): string {
+    const found = venueItemEncoding.find((e) => e.id === encodingId);
+    return found?.type ?? '';
+}
+
+/** Default language pill selection for add-line modals (English, else first catalog row). */
+export function defaultVenueItemLanguageLabels(
+    venueItemLanguage: VenueItemLanguage[],
+): string[] {
+    const en = venueItemLanguage.find((l) => l.type === 'English');
+    if (en) return [en.type];
+    const first = venueItemLanguage[0];
+    return first ? [first.type] : [];
 }
 
 function tourVenueIdMatchesRow(

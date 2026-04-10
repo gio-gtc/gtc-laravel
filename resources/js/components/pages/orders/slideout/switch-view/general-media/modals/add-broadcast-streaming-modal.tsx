@@ -12,7 +12,12 @@ import {
     ColumnedRowsParent,
 } from '@/components/utils/column-row-layouts';
 import Divider from '@/components/utils/divider';
+import {
+    defaultVenueItemLanguageLabels,
+    venueItemEncodingIdToLabel,
+} from '@/components/utils/venue-items';
 import { cn } from '@/lib/utils';
+import type { VenueItemEncoding, VenueItemLanguage } from '@/types';
 import { useMemo, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
@@ -23,9 +28,8 @@ import {
 } from './spot-type-cuts-options';
 
 const DURATION_OPTIONS = [':10', ':15', ':30'] as const;
-const LANGUAGE_OPTIONS = ['English', 'Spanish', 'French'] as const;
 
-/** Placeholder value until real encoding options are provided */
+/** Placeholder until each row has a selected encoding id */
 const ENCODING_UNSET = '__none__';
 
 export interface BroadcastEncodingRow {
@@ -52,6 +56,7 @@ function buildEncodingRows(
     cuts: string[],
     duration: string[],
     language: string[],
+    internationalSingleLanguage: string,
 ): Array<{
     key: string;
     cut: string;
@@ -72,7 +77,7 @@ function buildEncodingRows(
             cut === INTERNATIONAL_TV_PACKAGE ? ([':30'] as const) : duration;
         const langs =
             cut === INTERNATIONAL_TV_PACKAGE
-                ? (['English'] as const)
+                ? ([internationalSingleLanguage] as const)
                 : language;
         if (durs.length === 0 || langs.length === 0) continue;
 
@@ -96,17 +101,23 @@ interface AddBroadcastStreamingModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAdd?: (values: AddBroadcastStreamingFormValues) => void;
+    venue_item_language: VenueItemLanguage[];
+    venue_item_encoding: VenueItemEncoding[];
 }
 
 export default function AddBroadcastStreamingModal({
     isOpen,
     onClose,
     onAdd,
+    venue_item_language,
+    venue_item_encoding,
 }: AddBroadcastStreamingModalProps) {
     const [type, setType] = useState('Generic');
     const [cuts, setCuts] = useState<string[]>([]);
     const [duration, setDuration] = useState<string[]>([]);
-    const [language, setLanguage] = useState<string[]>(['English']);
+    const [language, setLanguage] = useState<string[]>(() =>
+        defaultVenueItemLanguageLabels(venue_item_language),
+    );
     const [encodingSelections, setEncodingSelections] = useState<
         Record<string, string>
     >({});
@@ -118,9 +129,23 @@ export default function AddBroadcastStreamingModal({
         };
     }, [type]);
 
+    const internationalLangLabel = useMemo(
+        () =>
+            venue_item_language.find((l) => l.type === 'English')?.type ??
+            defaultVenueItemLanguageLabels(venue_item_language)[0] ??
+            '',
+        [venue_item_language],
+    );
+
     const encodingRows = useMemo(
-        () => buildEncodingRows(cuts, duration, language),
-        [cuts, duration, language],
+        () =>
+            buildEncodingRows(
+                cuts,
+                duration,
+                language,
+                internationalLangLabel,
+            ),
+        [cuts, duration, language, internationalLangLabel],
     );
 
     const encodingByRowKey = useMemo(() => {
@@ -143,7 +168,7 @@ export default function AddBroadcastStreamingModal({
     const resetForm = () => {
         setCuts([]);
         setDuration([]);
-        setLanguage(['English']);
+        setLanguage(defaultVenueItemLanguageLabels(venue_item_language));
     };
 
     const resetEncodingFields = () => {
@@ -171,13 +196,20 @@ export default function AddBroadcastStreamingModal({
     const handleAddToOrder = () => {
         if (!canSubmit) return;
 
-        const encodings: BroadcastEncodingRow[] = encodingRows.map((row) => ({
-            cut: row.cut,
-            duration: row.duration,
-            language: row.language,
-            encoding: encodingByRowKey[row.key]!,
-            label: row.label,
-        }));
+        const encodings: BroadcastEncodingRow[] = encodingRows.map((row) => {
+            const raw = encodingByRowKey[row.key]!;
+            const encodingId = Number.parseInt(raw, 10);
+            return {
+                cut: row.cut,
+                duration: row.duration,
+                language: row.language,
+                encoding: venueItemEncodingIdToLabel(
+                    encodingId,
+                    venue_item_encoding,
+                ),
+                label: row.label,
+            };
+        });
 
         onAdd?.({
             type,
@@ -280,22 +312,22 @@ export default function AddBroadcastStreamingModal({
                             Language
                         </Label>
                         <div className="flex flex-col gap-2">
-                            {LANGUAGE_OPTIONS.map((lang) => {
+                            {venue_item_language.map((lang) => {
                                 const isDisabled = type === 'International';
                                 return (
                                     <PillButton
-                                        key={lang}
+                                        key={lang.id}
                                         className="w-full"
-                                        selected={language.includes(lang)}
+                                        selected={language.includes(lang.type)}
                                         disabled={isDisabled}
                                         onClick={() =>
                                             !isDisabled &&
                                             setLanguage((prev) =>
-                                                toggleInArray(prev, lang),
+                                                toggleInArray(prev, lang.type),
                                             )
                                         }
                                     >
-                                        {lang}
+                                        {lang.type}
                                     </PillButton>
                                 );
                             })}
@@ -347,25 +379,15 @@ export default function AddBroadcastStreamingModal({
                                     <SelectItem value={ENCODING_UNSET}>
                                         Select encoding
                                     </SelectItem>
-                                    <SelectItem
-                                        value="H264-MP4"
-                                        className="text-left"
-                                    >
-                                        H264-MP4 (Online or Venue)
-                                    </SelectItem>
-                                    <SelectItem value="station-mp4">
-                                        Station MP4 (Broadcast)
-                                    </SelectItem>
-                                    <SelectItem value="hulu">Hulu</SelectItem>
-                                    <SelectItem value="amazon">
-                                        Amazon
-                                    </SelectItem>
-                                    <SelectItem value="netflix">
-                                        Netflix
-                                    </SelectItem>
-                                    <SelectItem value="connect-tv">
-                                        Connect TV
-                                    </SelectItem>
+                                    {venue_item_encoding.map((enc) => (
+                                        <SelectItem
+                                            key={enc.id}
+                                            value={String(enc.id)}
+                                            className="text-left"
+                                        >
+                                            {enc.type}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </ColumnedRowsChild>
