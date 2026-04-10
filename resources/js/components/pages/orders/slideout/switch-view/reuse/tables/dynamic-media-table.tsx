@@ -363,6 +363,7 @@ export default function MediaTable({
                                                                     status={
                                                                         v as MediaTableRow['status']
                                                                     }
+                                                                    // TODO: move inside component
                                                                     className="xs-gray-700-weight-600"
                                                                 />
                                                             )}

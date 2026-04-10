@@ -67,13 +67,13 @@ export default function StaticAssetsMediaTable({
                                     <TableHead className="w-[9%] text-center">
                                         Assigned
                                     </TableHead>
-                                    <TableHead className="w-[14%] text-center">
+                                    <TableHead className="w-[15%] text-center">
                                         Status
                                     </TableHead>
                                     <TableHead className="w-[8%] text-center">
                                         Preview
                                     </TableHead>
-                                    <TableHead className="w-[11%] text-center">
+                                    <TableHead className="w-[10%] text-center">
                                         Deliverables
                                     </TableHead>
                                 </TableRow>
@@ -269,7 +269,7 @@ export default function StaticAssetsMediaTable({
                                                     </div>
                                                 </TableCell>
 
-                                                {/* Preview Icons */}
+                                                {/* Status Section */}
                                                 <TableCell>
                                                     <div className="flex justify-center rounded-full focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 focus:outline-none">
                                                         {cellEditing ? (
@@ -319,6 +319,7 @@ export default function StaticAssetsMediaTable({
                                                     </div>
                                                 </TableCell>
 
+                                                {/* Preview Section */}
                                                 <TableCell className="text-center">
                                                     {row.previewImageUrl &&
                                                     onPreviewImageClick ? (
@@ -338,6 +339,7 @@ export default function StaticAssetsMediaTable({
                                                     ) : null}
                                                 </TableCell>
 
+                                                {/* Deliverables Section */}
                                                 <TableCell className="flex h-[30px] items-center justify-center gap-2 py-0">
                                                     <DeliverablesCell
                                                         status={row.status}

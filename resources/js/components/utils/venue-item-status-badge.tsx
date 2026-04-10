@@ -18,7 +18,7 @@ export function VenueItemStatusBadge({
     switch (status) {
         case 'Still in Cart':
         case 'Client Review':
-            colorClasses = 'border-yellow-400 bg-yellow-50 text-yellow-700';
+            colorClasses = 'border-yellow-400 bg-yellow-50';
             break;
         case 'In Production':
         case 'Out for Delivery':
