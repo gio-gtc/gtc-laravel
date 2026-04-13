@@ -29,6 +29,9 @@ import {
     type Venue,
     type VenueItemsArtRow,
     type VenueItemsBroadcastRadioSocialRow,
+    type VenueItemsBroadcastRow,
+    type VenueItemsRadioRow,
+    type VenueItemsSocialRow,
 } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { format, isValid, parse, parseISO } from 'date-fns';
@@ -82,6 +85,7 @@ function GeneralMediaView({
 }: GeneralMediaViewProps) {
     const { auth } = usePage<SharedData>().props;
     const catalog = useOrdersCatalog();
+    const { replaceVenueItem } = catalog;
     const usersWithFallback = useUsersWithFallback();
 
     const venueLineCatalog = useMemo((): OrdersVenueLineCatalog => {
@@ -286,13 +290,20 @@ function GeneralMediaView({
 
     const [audioModalOpen, setAudioModalOpen] = useState(false);
     const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
-    const [broadcastModalInitialDuration, setBroadcastModalInitialDuration] =
-        useState<number | undefined>(undefined);
-    const [socialModalInitialDuration, setSocialModalInitialDuration] =
-        useState<number | undefined>(undefined);
-    const [audioModalInitialDuration, setAudioModalInitialDuration] = useState<
-        number | undefined
-    >(undefined);
+    const [broadcastModalMode, setBroadcastModalMode] = useState<'add' | 'edit'>(
+        'add',
+    );
+    const [broadcastEditRow, setBroadcastEditRow] =
+        useState<VenueItemsBroadcastRow | null>(null);
+    const [socialModalMode, setSocialModalMode] = useState<'add' | 'edit'>(
+        'add',
+    );
+    const [socialEditRow, setSocialEditRow] =
+        useState<VenueItemsSocialRow | null>(null);
+    const [radioModalMode, setRadioModalMode] = useState<'add' | 'edit'>('add');
+    const [radioEditRow, setRadioEditRow] = useState<VenueItemsRadioRow | null>(
+        null,
+    );
     const [keyArtModalOpen, setKeyArtModalOpen] = useState(false);
     const [socialVideoModalOpen, setSocialVideoModalOpen] = useState(false);
     const [videoPlayerModalOpen, setVideoPlayerModalOpen] = useState(false);
@@ -305,6 +316,48 @@ function GeneralMediaView({
         src: string;
         title: string;
     } | null>(null);
+
+    const closeBroadcastModal = useCallback(() => {
+        setBroadcastModalOpen(false);
+        setBroadcastModalMode('add');
+        setBroadcastEditRow(null);
+    }, []);
+
+    const closeSocialVideoModal = useCallback(() => {
+        setSocialVideoModalOpen(false);
+        setSocialModalMode('add');
+        setSocialEditRow(null);
+    }, []);
+
+    const closeAudioModal = useCallback(() => {
+        setAudioModalOpen(false);
+        setRadioModalMode('add');
+        setRadioEditRow(null);
+    }, []);
+
+    const handleBroadcastEditSave = useCallback(
+        (row: VenueItemsBroadcastRow) => {
+            replaceVenueItem(row);
+            closeBroadcastModal();
+        },
+        [replaceVenueItem, closeBroadcastModal],
+    );
+
+    const handleSocialEditSave = useCallback(
+        (row: VenueItemsSocialRow) => {
+            replaceVenueItem(row);
+            closeSocialVideoModal();
+        },
+        [replaceVenueItem, closeSocialVideoModal],
+    );
+
+    const handleRadioEditSave = useCallback(
+        (row: VenueItemsRadioRow) => {
+            replaceVenueItem(row);
+            closeAudioModal();
+        },
+        [replaceVenueItem, closeAudioModal],
+    );
 
     const handleVideoSectionPreviewClick = useCallback(
         (row: MediaTableRow, iconIndex: number) => {
@@ -391,7 +444,10 @@ function GeneralMediaView({
         );
     }, [venueItem, catalog.orders]);
 
-    const orders = venueItem ? venueOrders : [];
+    const orders = useMemo(
+        () => (venueItem ? venueOrders : []),
+        [venueItem, venueOrders],
+    );
 
     const isDemoRow = venueItem != null && venueItem.venue === null;
 
@@ -580,7 +636,8 @@ function GeneralMediaView({
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
                     onAdd={() => {
-                        setBroadcastModalInitialDuration(undefined);
+                        setBroadcastModalMode('add');
+                        setBroadcastEditRow(null);
                         setBroadcastModalOpen(true);
                     }}
                     onUploadRow={(row) =>
@@ -588,7 +645,14 @@ function GeneralMediaView({
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     onEditLineInModal={(row) => {
-                        setBroadcastModalInitialDuration(row.duration_seconds);
+                        const raw = catalog.venue_items.find(
+                            (r): r is VenueItemsBroadcastRow =>
+                                String(r.id) === String(row.id) &&
+                                r.type === 'broadcast',
+                        );
+                        if (!raw) return;
+                        setBroadcastModalMode('edit');
+                        setBroadcastEditRow(raw);
                         setBroadcastModalOpen(true);
                     }}
                     onPreviewClick={openBroadcastVideoPreview}
@@ -604,7 +668,8 @@ function GeneralMediaView({
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
                     onAdd={() => {
-                        setSocialModalInitialDuration(undefined);
+                        setSocialModalMode('add');
+                        setSocialEditRow(null);
                         setSocialVideoModalOpen(true);
                     }}
                     onUploadRow={(row) =>
@@ -612,7 +677,14 @@ function GeneralMediaView({
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     onEditLineInModal={(row) => {
-                        setSocialModalInitialDuration(row.duration_seconds);
+                        const raw = catalog.venue_items.find(
+                            (r): r is VenueItemsSocialRow =>
+                                String(r.id) === String(row.id) &&
+                                r.type === 'social',
+                        );
+                        if (!raw) return;
+                        setSocialModalMode('edit');
+                        setSocialEditRow(raw);
                         setSocialVideoModalOpen(true);
                     }}
                     onPreviewClick={openSocialVideoPreview}
@@ -628,7 +700,8 @@ function GeneralMediaView({
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
                     onAdd={() => {
-                        setAudioModalInitialDuration(undefined);
+                        setRadioModalMode('add');
+                        setRadioEditRow(null);
                         setAudioModalOpen(true);
                     }}
                     previewKind="audio"
@@ -637,7 +710,14 @@ function GeneralMediaView({
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     onEditLineInModal={(row) => {
-                        setAudioModalInitialDuration(row.duration_seconds);
+                        const raw = catalog.venue_items.find(
+                            (r): r is VenueItemsRadioRow =>
+                                String(r.id) === String(row.id) &&
+                                r.type === 'radio',
+                        );
+                        if (!raw) return;
+                        setRadioModalMode('edit');
+                        setRadioEditRow(raw);
                         setAudioModalOpen(true);
                     }}
                     onPreviewClick={openRadioVideoPreview}
@@ -721,32 +801,44 @@ function GeneralMediaView({
                 }}
             />
             <AddBroadcastStreamingModal
+                key={
+                    broadcastModalMode === 'edit' && broadcastEditRow
+                        ? `broadcast-edit-${broadcastEditRow.id}`
+                        : 'broadcast-add'
+                }
                 isOpen={broadcastModalOpen}
-                onClose={() => {
-                    setBroadcastModalOpen(false);
-                    setBroadcastModalInitialDuration(undefined);
-                }}
+                onClose={closeBroadcastModal}
+                mode={broadcastModalMode}
+                initialVenueRow={broadcastEditRow ?? undefined}
+                onEditSave={handleBroadcastEditSave}
                 venue_item_language={catalog.venue_item_language}
                 venue_item_encoding={catalog.venue_item_encoding}
-                initialDurationSeconds={broadcastModalInitialDuration}
             />
             <AddSocialVideoModal
+                key={
+                    socialModalMode === 'edit' && socialEditRow
+                        ? `social-edit-${socialEditRow.id}`
+                        : 'social-add'
+                }
                 isOpen={socialVideoModalOpen}
-                onClose={() => {
-                    setSocialVideoModalOpen(false);
-                    setSocialModalInitialDuration(undefined);
-                }}
+                onClose={closeSocialVideoModal}
+                mode={socialModalMode}
+                initialVenueRow={socialEditRow ?? undefined}
+                onEditSave={handleSocialEditSave}
                 venue_item_language={catalog.venue_item_language}
-                initialDurationSeconds={socialModalInitialDuration}
             />
             <AddAudioModal
+                key={
+                    radioModalMode === 'edit' && radioEditRow
+                        ? `radio-edit-${radioEditRow.id}`
+                        : 'radio-add'
+                }
                 isOpen={audioModalOpen}
-                onClose={() => {
-                    setAudioModalOpen(false);
-                    setAudioModalInitialDuration(undefined);
-                }}
+                onClose={closeAudioModal}
+                mode={radioModalMode}
+                initialVenueRow={radioEditRow ?? undefined}
+                onEditSave={handleRadioEditSave}
                 venue_item_language={catalog.venue_item_language}
-                initialDurationSeconds={audioModalInitialDuration}
             />
             <AddKeyArtStaticAssetsModal
                 isOpen={keyArtModalOpen}

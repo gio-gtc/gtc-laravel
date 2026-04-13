@@ -145,9 +145,21 @@ export default function MediaTable({
                                                             >
                                                                 Upload
                                                             </DropdownMenuItem>
-                                                            <DropdownMenuItem>
-                                                                Edit Order
-                                                            </DropdownMenuItem>
+                                                            {onEditLineInModal && (
+                                                                <DropdownMenuItem
+                                                                    disabled={
+                                                                        isDisabledRow
+                                                                    }
+                                                                    onClick={() =>
+                                                                        onEditLineInModal(
+                                                                            row,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    Edit Line
+                                                                    Details
+                                                                </DropdownMenuItem>
+                                                            )}
                                                             <DropdownMenuItem
                                                                 disabled={
                                                                     isDisabledRow
@@ -160,20 +172,6 @@ export default function MediaTable({
                                                             >
                                                                 Edit ISCI
                                                             </DropdownMenuItem>
-                                                            {onEditLineInModal && (
-                                                                <DropdownMenuItem
-                                                                    disabled={
-                                                                        isDisabledRow
-                                                                    }
-                                                                    onClick={() =>
-                                                                        onEditLineInModal(
-                                                                            row,
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    Edit line details
-                                                                </DropdownMenuItem>
-                                                            )}
                                                             <DropdownMenuItem
                                                                 onClick={async () => {
                                                                     try {
@@ -254,9 +252,8 @@ export default function MediaTable({
                                                                 v,
                                                             ) =>
                                                                 formatDurationSeconds(
-                                                                    Number(
-                                                                        v,
-                                                                    ) || 0,
+                                                                    Number(v) ||
+                                                                        0,
                                                                 )
                                                             }
                                                             onChange={(

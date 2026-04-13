@@ -22,6 +22,8 @@ export interface MultiSelectComboboxProps {
     options: readonly string[];
     value: string[];
     onValueChange: (value: string[]) => void;
+    /** `single`: at most one option; picking replaces selection, picking again clears. */
+    mode?: 'multi' | 'single';
     placeholder?: string;
     emptyMessage?: string;
     removeSearch?: boolean;
@@ -35,6 +37,7 @@ export function MultiSelectCombobox({
     options,
     value,
     onValueChange,
+    mode = 'multi',
     placeholder = 'Select...',
     emptyMessage = 'No results found.',
     removeSearch = true,
@@ -47,6 +50,12 @@ export function MultiSelectCombobox({
     const [search, setSearch] = React.useState('');
 
     const toggleOption = (option: string) => {
+        if (mode === 'single') {
+            const isSelected = value.includes(option);
+            onValueChange(isSelected ? [] : [option]);
+            setOpen(false);
+            return;
+        }
         const isSelected = value.includes(option);
         onValueChange(
             isSelected ? value.filter((v) => v !== option) : [...value, option],

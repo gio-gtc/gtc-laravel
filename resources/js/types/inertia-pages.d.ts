@@ -57,6 +57,11 @@ export interface OrdersPageProps {
     invoices: Invoice[];
 }
 
+/** Orders page catalog with client-side line updates (slideout edit modals). */
+export interface OrdersCatalogValue extends OrdersPageProps {
+    replaceVenueItem: (row: VenueItemsRow) => void;
+}
+
 export interface InvoicesPageProps {
     invoices: Invoice[];
     companies: Company[];
