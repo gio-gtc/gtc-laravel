@@ -83,6 +83,22 @@ export type SocialVideoLayoutType = (typeof SOCIAL_VIDEO_TYPE_OPTIONS)[number];
 
 export type SocialCutOption = (typeof SOCIAL_CUT_OPTIONS)[number];
 
+/** Add Key Art & Static Assets modal — billable package lines. */
+export const VENUE_ITEM_ART_PACKAGE_TYPES = [
+    'Key Art Package',
+    'Socials & Web Banners',
+    'International Key art & Social Package',
+] as const;
+
+export type VenueItemArtPackageType =
+    (typeof VENUE_ITEM_ART_PACKAGE_TYPES)[number];
+
+/** Add Social Video modal — optional reporting dimension. */
+export const VENUE_ITEM_SOCIAL_CARD_HOLDERS = ['Amex', 'Citi'] as const;
+
+export type VenueItemSocialCardHolder =
+    (typeof VENUE_ITEM_SOCIAL_CARD_HOLDERS)[number];
+
 /** Any cut string that appears in the broadcast add-modal for some spot type. */
 export type AllBroadcastCuts =
     | (typeof CUTS_OPTIONS)[number]

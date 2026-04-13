@@ -9,10 +9,15 @@ import {
     isValidAudioSpotCut,
     isValidBroadcastSpotCut,
     isValidSocialSpotCut,
+    VENUE_ITEM_ART_PACKAGE_TYPES,
+    VENUE_ITEM_SOCIAL_CARD_HOLDERS,
 } from '../resources/js/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options.ts';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const jsonPath = join(__dirname, '../config/mockdata/generated/venueItems.json');
+
+const allowedArtPackages = new Set<string>(VENUE_ITEM_ART_PACKAGE_TYPES);
+const allowedCardHolders = new Set<string>(VENUE_ITEM_SOCIAL_CARD_HOLDERS);
 
 type VenueItemRow = {
     id: string;
@@ -20,6 +25,8 @@ type VenueItemRow = {
     spot_type?: string;
     cut?: string;
     label?: string;
+    package_type?: string;
+    card_holder?: string;
 };
 
 const data = JSON.parse(readFileSync(jsonPath, 'utf8')) as {
@@ -50,10 +57,27 @@ for (const row of data.venue_items) {
             );
             errors++;
         }
+        const ch = row.card_holder;
+        if (ch !== undefined && !allowedCardHolders.has(ch)) {
+            console.error(
+                `Invalid social row ${id}: card_holder=${JSON.stringify(ch)} (expected Amex, Citi, or omit)`,
+            );
+            errors++;
+        }
+    } else if (type === 'art') {
+        const pkg = row.package_type;
+        if (!pkg || !allowedArtPackages.has(pkg)) {
+            console.error(
+                `Invalid art row ${id}: package_type must be one of ${[...allowedArtPackages].join(', ')}`,
+            );
+            errors++;
+        }
     }
 }
 
 if (errors > 0) {
     process.exit(1);
 }
-console.log('venueItems.json: all broadcast/radio/social rows pass modal alignment checks.');
+console.log(
+    'venueItems.json: broadcast/radio/social/art rows pass modal and contract checks.',
+);

@@ -26,10 +26,8 @@ import {
 } from './modal-duration';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
-import {
-    INTERNATIONAL_TV_PACKAGE,
-    OPTIONS_BY_TYPE,
-} from './spot-type-cuts-options';
+import { buildBroadcastEncodingMatrixRows } from '@/lib/venue-items/broadcast-encoding-matrix';
+import { OPTIONS_BY_TYPE } from './spot-type-cuts-options';
 
 const DURATION_OPTIONS = [':10', ':15', ':30'] as const;
 
@@ -50,55 +48,6 @@ export interface AddBroadcastStreamingFormValues {
     duration: string[];
     language: string[];
     encodings: BroadcastEncodingRow[];
-}
-
-function rowKey(cut: string, duration: string, language: string) {
-    return `${cut} ${duration} ${language}`;
-}
-
-function buildEncodingRows(
-    cuts: string[],
-    duration: string[],
-    language: string[],
-    internationalSingleLanguage: string,
-): Array<{
-    key: string;
-    cut: string;
-    duration: string;
-    language: string;
-    label: string;
-}> {
-    const rows: Array<{
-        key: string;
-        cut: string;
-        duration: string;
-        language: string;
-        label: string;
-    }> = [];
-
-    for (const cut of cuts) {
-        const durs =
-            cut === INTERNATIONAL_TV_PACKAGE ? ([':30'] as const) : duration;
-        const langs =
-            cut === INTERNATIONAL_TV_PACKAGE
-                ? ([internationalSingleLanguage] as const)
-                : language;
-        if (durs.length === 0 || langs.length === 0) continue;
-
-        for (const d of durs) {
-            for (const lang of langs) {
-                const label = `${cut} ${d} ${lang}`;
-                rows.push({
-                    key: rowKey(cut, d, lang),
-                    cut,
-                    duration: d,
-                    language: lang,
-                    label,
-                });
-            }
-        }
-    }
-    return rows;
 }
 
 interface AddBroadcastStreamingModalProps {
@@ -165,7 +114,7 @@ export default function AddBroadcastStreamingModal({
 
     const encodingRows = useMemo(
         () =>
-            buildEncodingRows(
+            buildBroadcastEncodingMatrixRows(
                 cuts,
                 duration,
                 language,

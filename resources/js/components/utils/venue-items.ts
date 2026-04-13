@@ -118,16 +118,18 @@ export function venueItemsMediaTableRow(
         spot_type,
         cut,
         status_id,
-        has_deliverable_actions: _h,
-        deliverables: _d,
-        thumbnailUrl: _thumb,
+        has_deliverable_actions,
+        deliverables,
+        thumbnailUrl,
         mediaUrl,
         kind,
         ...rest
     } = row;
+    void has_deliverable_actions;
+    void deliverables;
     const previewImageUrl =
         kind === 'image'
-            ? (mediaUrl ?? row.thumbnailUrl ?? null)
+            ? (mediaUrl ?? thumbnailUrl ?? null)
             : null;
     const previewVideoUrl =
         kind === 'image'
@@ -151,11 +153,16 @@ export function venueItemsArtTableRow(
     const {
         label,
         status_id,
-        has_deliverable_actions: _h,
-        deliverables: _d,
-        kind: _k,
+        package_type,
+        has_deliverable_actions,
+        deliverables,
+        kind,
         ...rest
     } = row;
+    void package_type;
+    void has_deliverable_actions;
+    void deliverables;
+    void kind;
     const previewImageUrl = row.mediaUrl ?? row.thumbnailUrl ?? null;
     return {
         ...rest,

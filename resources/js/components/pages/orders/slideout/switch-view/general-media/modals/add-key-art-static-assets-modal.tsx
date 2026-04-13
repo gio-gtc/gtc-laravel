@@ -1,16 +1,16 @@
 import { Label } from '@/components/ui/label';
+import {
+    VENUE_ITEM_ART_PACKAGE_TYPES,
+    type VenueItemArtPackageType,
+} from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
 import { useEffect, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
 
-const TYPE_OPTIONS = [
-    'Key Art Package',
-    'Socials & Web Banners',
-    'International Key art & Social Package',
-] as const;
+const TYPE_OPTIONS = VENUE_ITEM_ART_PACKAGE_TYPES;
 
-export type KeyArtType = (typeof TYPE_OPTIONS)[number];
+export type KeyArtType = VenueItemArtPackageType;
 
 export interface AddKeyArtStaticAssetsFormValues {
     types: KeyArtType[];

@@ -69,6 +69,7 @@ class DemoController extends Controller
 
     /**
      * Display label for venue line items: broadcast/radio/social use `spot_type` + space + `cut` (same as TS `venueItemMediaLineLabel`).
+     * Social rows may include `card_holder` (Amex, Citi). Art rows use `package_type` + `label`.
      *
      * @param  array<string, mixed>  $row
      */
@@ -78,8 +79,22 @@ class DemoController extends Controller
         if (in_array($lineType, ['broadcast', 'radio', 'social'], true)) {
             $spotType = (string) ($row['spot_type'] ?? '');
             $cut = (string) ($row['cut'] ?? '');
+            $base = $spotType.' '.$cut;
+            if ($lineType === 'social' && isset($row['card_holder']) && $row['card_holder'] !== '') {
+                return $base.' · '.(string) $row['card_holder'];
+            }
 
-            return $spotType.' '.$cut;
+            return $base;
+        }
+
+        if ($lineType === 'art') {
+            $pkg = isset($row['package_type']) ? (string) $row['package_type'] : '';
+            $label = (string) ($row['label'] ?? '');
+            if ($pkg !== '') {
+                return $pkg.($label !== '' ? ' — '.$label : '');
+            }
+
+            return $label;
         }
 
         return (string) ($row['label'] ?? '');

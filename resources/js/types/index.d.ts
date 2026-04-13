@@ -8,6 +8,8 @@ import type {
     BroadcastSpotType,
     SocialCutOption,
     SocialVideoLayoutType,
+    VenueItemArtPackageType,
+    VenueItemSocialCardHolder,
 } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
 
 export interface VenueTableCellEditing {
@@ -393,6 +395,8 @@ export interface VenueItemsSocialRow
     type: 'social';
     spot_type: SocialVideoLayoutType;
     cut: SocialCutOption;
+    /** When set, matches add-modal card holder selection (reporting / search). */
+    card_holder?: VenueItemSocialCardHolder;
 }
 
 export type VenueItemsBroadcastRadioSocialRow =
@@ -403,6 +407,8 @@ export type VenueItemsBroadcastRadioSocialRow =
 /** Key art and static assets (General Media). */
 export interface VenueItemsArtRow extends VenueItemsRowBase {
     type: 'art';
+    /** Billable line from Add Key Art & Static Assets (one row per selected type). */
+    package_type: VenueItemArtPackageType;
     label: string;
     width: number;
     height: number;
