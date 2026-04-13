@@ -1,6 +1,5 @@
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import InputError from '@/components/input-error';
-import DatePickerInput from '@/components/utils/date-picker-input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,6 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import DatePickerInput from '@/components/utils/date-picker-input';
 import { useInitials } from '@/hooks/use-initials';
 import { type SharedData, type User } from '@/types';
 import { Form, usePage } from '@inertiajs/react';
@@ -496,7 +496,7 @@ export default function UserInfoModal({
                                                 }}
                                                 forwardOnlyFromToday
                                                 dialogTitle="Out of office start date"
-                                                className="max-w-[140px]"
+                                                className="max-w-[150px]"
                                             />
                                             <DatePickerInput
                                                 id="ooo_end"
@@ -510,7 +510,7 @@ export default function UserInfoModal({
                                                 }
                                                 forwardOnlyFromToday
                                                 dialogTitle="Out of office end date"
-                                                className="max-w-[140px]"
+                                                className="max-w-[150px]"
                                                 disabled={!outOfOfficeStartDate}
                                             />
                                         </div>

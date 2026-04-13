@@ -305,7 +305,7 @@ export default function DatePickerInput({
                     required={required}
                     disabled={disabled}
                     className={cn(
-                        'min-w-0 flex-1 border-0 py-2 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0',
+                        'min-w-0 flex-1 border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0',
                         inputClassName,
                     )}
                     aria-label={placeholder}

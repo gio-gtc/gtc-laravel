@@ -15,6 +15,7 @@ function Input({ className, variant = 'default', type, ...props }: InputProps) {
         orderSlideout: '',
         invoiceSlideout: '',
     };
+
     return (
         <input
             type={type}
