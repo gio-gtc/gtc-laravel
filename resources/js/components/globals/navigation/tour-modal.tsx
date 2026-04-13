@@ -77,7 +77,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                         >
                             <DatePickerInput
                                 id="start_date"
-                                className="max-w-[140px]"
+                                className="max-w-[150px]"
                                 value={startDate}
                                 onChange={(value) => setStartDate(value)}
                                 required
@@ -91,7 +91,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                         >
                             <DatePickerInput
                                 id="expire_on_sale_now_cuts"
-                                className="max-w-[140px]"
+                                className="max-w-[150px]"
                                 value={expireOnSaleNowCuts}
                                 onChange={(value) =>
                                     setExpireOnSaleNowCuts(value)
