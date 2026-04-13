@@ -298,4 +298,8 @@
     .xs-gray-300-weight-400 {
         @apply text-xs font-normal text-gray-300;
     }
+
+    [data-placeholder] {
+        @apply text-gray-400;
+    }
 }

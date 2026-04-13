@@ -32,7 +32,7 @@ function DollarInput({
                 inputMode="decimal"
                 placeholder={placeholder}
                 onChange={handleChange}
-                className="border-gray-300 py-2 pr-2.5 pl-6"
+                className="py-2 pl-6"
             />
         </div>
     );
