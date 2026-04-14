@@ -40,6 +40,19 @@
             "encoding_id": 3
         },
         {
+            "id": "c1000003-0000-4000-a000-000000000099",
+            "tour_venue_id": 1,
+            "type": "broadcast",
+            "spot_type": "Generic",
+            "cut": "Pre Sale",
+            "isci": "GTC1818899",
+            "duration_seconds": 30,
+            "dueDate": "1/20/25",
+            "status_id": 1,
+            "language_id": 1,
+            "encoding_custom": "ProRes HQ 422"
+        },
+        {
             "id": "c1000004-0000-4000-a000-000000000004",
             "tour_venue_id": 1,
             "type": "social",

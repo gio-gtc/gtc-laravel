@@ -1,5 +1,7 @@
 import { MultiSelectCombobox } from '@/components/ui/combobox';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { LabelCheck } from '@/components/ui/label-check';
 import {
     Select,
     SelectContent,
@@ -17,26 +19,26 @@ import {
     venueItemEncodingIdToLabel,
     venueItemLanguageIdToLabel,
 } from '@/components/utils/venue-items';
-import {
-    languageTypeToId,
-    modalDurationPillToSeconds,
-} from '@/lib/venue-items/modal-mappers';
+import { cn } from '@/lib/utils';
 import {
     broadcastEncodingRowKey,
     buildBroadcastEncodingMatrixRows,
 } from '@/lib/venue-items/broadcast-encoding-matrix';
-import { cn } from '@/lib/utils';
+import {
+    languageTypeToId,
+    modalDurationPillToSeconds,
+} from '@/lib/venue-items/modal-mappers';
 import type {
     VenueItemEncoding,
     VenueItemLanguage,
     VenueItemsBroadcastRow,
 } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
-import OrderModalLayout from './order-modal-layout';
 import {
     durationSecondsToModalPillLabel,
     isNonDefaultModalDuration,
 } from './modal-duration';
+import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
 import { OPTIONS_BY_TYPE } from './spot-type-cuts-options';
@@ -52,6 +54,7 @@ export interface BroadcastEncodingRow {
     language: string;
     encoding: string;
     label: string;
+    encodingMode: 'catalog' | 'custom';
 }
 
 export interface AddBroadcastStreamingFormValues {
@@ -98,12 +101,20 @@ export default function AddBroadcastStreamingModal({
     const [encodingSelections, setEncodingSelections] = useState<
         Record<string, string>
     >({});
+    const [encodingCustomEnabled, setEncodingCustomEnabled] = useState<
+        Record<string, boolean>
+    >({});
+    const [encodingCustomText, setEncodingCustomText] = useState<
+        Record<string, string>
+    >({});
 
     const [editType, setEditType] = useState('Generic');
     const [editCut, setEditCut] = useState('');
     const [editDuration, setEditDuration] = useState('');
     const [editLanguage, setEditLanguage] = useState('');
     const [editEncodingId, setEditEncodingId] = useState(ENCODING_UNSET);
+    const [editEncodingCustom, setEditEncodingCustom] = useState(false);
+    const [editEncodingCustomText, setEditEncodingCustomText] = useState('');
 
     useEffect(() => {
         if (!isOpen || !isEdit || !initialVenueRow) return;
@@ -119,14 +130,23 @@ export default function AddBroadcastStreamingModal({
             initialVenueRow.language_id ?? -1,
             venue_item_language,
         );
-        setEditLanguage(
-            langLabel || venue_item_language[0]?.type || '',
-        );
-        setEditEncodingId(
-            initialVenueRow.encoding_id != null
-                ? String(initialVenueRow.encoding_id)
-                : ENCODING_UNSET,
-        );
+        setEditLanguage(langLabel || venue_item_language[0]?.type || '');
+        if (
+            initialVenueRow.encoding_custom != null &&
+            initialVenueRow.encoding_custom !== ''
+        ) {
+            setEditEncodingCustom(true);
+            setEditEncodingCustomText(initialVenueRow.encoding_custom);
+            setEditEncodingId(ENCODING_UNSET);
+        } else if (initialVenueRow.encoding_id != null) {
+            setEditEncodingCustom(false);
+            setEditEncodingCustomText('');
+            setEditEncodingId(String(initialVenueRow.encoding_id));
+        } else {
+            setEditEncodingCustom(false);
+            setEditEncodingCustomText('');
+            setEditEncodingId(ENCODING_UNSET);
+        }
         /* eslint-enable react-hooks/set-state-in-effect */
     }, [isOpen, isEdit, initialVenueRow, venue_item_language]);
 
@@ -173,10 +193,7 @@ export default function AddBroadcastStreamingModal({
         isEdit &&
         editDuration &&
         isNonDefaultModalDuration(editDurationSeconds, 'broadcast')
-            ? durationSecondsToModalPillLabel(
-                  editDurationSeconds,
-                  'broadcast',
-              )
+            ? durationSecondsToModalPillLabel(editDurationSeconds, 'broadcast')
             : null;
 
     const editEncodingRowLabel = useMemo(() => {
@@ -213,18 +230,34 @@ export default function AddBroadcastStreamingModal({
 
     const canSubmit = useMemo(() => {
         if (encodingRows.length === 0) return false;
-        return encodingRows.every(
-            (row) =>
-                encodingByRowKey[row.key] &&
-                encodingByRowKey[row.key] !== ENCODING_UNSET,
-        );
-    }, [encodingRows, encodingByRowKey]);
+        return encodingRows.every((row) => {
+            if (encodingCustomEnabled[row.key]) {
+                return (encodingCustomText[row.key] ?? '').trim() !== '';
+            }
+            const v = encodingByRowKey[row.key];
+            return Boolean(v && v !== ENCODING_UNSET);
+        });
+    }, [
+        encodingRows,
+        encodingByRowKey,
+        encodingCustomEnabled,
+        encodingCustomText,
+    ]);
 
     const canSubmitEdit = useMemo(() => {
         if (!editCut || !editDuration || !editLanguage) return false;
-        if (editEncodingId === ENCODING_UNSET) return false;
-        return true;
-    }, [editCut, editDuration, editLanguage, editEncodingId]);
+        if (editEncodingCustom) {
+            return editEncodingCustomText.trim() !== '';
+        }
+        return editEncodingId !== ENCODING_UNSET;
+    }, [
+        editCut,
+        editDuration,
+        editLanguage,
+        editEncodingId,
+        editEncodingCustom,
+        editEncodingCustomText,
+    ]);
 
     const resetForm = () => {
         setCuts([]);
@@ -234,6 +267,8 @@ export default function AddBroadcastStreamingModal({
 
     const resetEncodingFields = () => {
         setEncodingSelections({});
+        setEncodingCustomEnabled({});
+        setEncodingCustomText({});
     };
 
     const handleTypeChange = (newType: string) => {
@@ -253,9 +288,7 @@ export default function AddBroadcastStreamingModal({
         const config = OPTIONS_BY_TYPE[newType];
         const cutOpts = config?.cuts ?? [];
         if (cutOpts.length) {
-            setEditCut((c) =>
-                cutOpts.includes(c) ? c : (cutOpts[0] ?? ''),
-            );
+            setEditCut((c) => (cutOpts.includes(c) ? c : (cutOpts[0] ?? '')));
         } else {
             setEditCut('');
         }
@@ -264,6 +297,9 @@ export default function AddBroadcastStreamingModal({
     const handleClose = () => {
         resetForm();
         resetEncodingFields();
+        setEditEncodingCustom(false);
+        setEditEncodingCustomText('');
+        setEditEncodingId(ENCODING_UNSET);
         onClose();
     };
 
@@ -271,6 +307,16 @@ export default function AddBroadcastStreamingModal({
         if (!canSubmit) return;
 
         const encodings: BroadcastEncodingRow[] = encodingRows.map((row) => {
+            if (encodingCustomEnabled[row.key]) {
+                return {
+                    cut: row.cut,
+                    duration: row.duration,
+                    language: row.language,
+                    encoding: (encodingCustomText[row.key] ?? '').trim(),
+                    label: row.label,
+                    encodingMode: 'custom' as const,
+                };
+            }
             const raw = encodingByRowKey[row.key]!;
             const encodingId = Number.parseInt(raw, 10);
             return {
@@ -282,6 +328,7 @@ export default function AddBroadcastStreamingModal({
                     venue_item_encoding,
                 ),
                 label: row.label,
+                encodingMode: 'catalog' as const,
             };
         });
 
@@ -297,22 +344,40 @@ export default function AddBroadcastStreamingModal({
 
     const handleEditSave = () => {
         if (!canSubmitEdit || !initialVenueRow) return;
-        const encodingId = Number.parseInt(editEncodingId, 10);
-        if (Number.isNaN(encodingId)) return;
         const langId = languageTypeToId(venue_item_language, editLanguage);
         if (langId === undefined) return;
 
-        onEditSave?.({
-            ...initialVenueRow,
-            spot_type: editType as VenueItemsBroadcastRow['spot_type'],
-            cut: editCut as VenueItemsBroadcastRow['cut'],
-            duration_seconds: modalDurationPillToSeconds(
-                editDuration,
-                'broadcast',
-            ),
-            language_id: langId,
-            encoding_id: encodingId,
-        });
+        if (editEncodingCustom) {
+            const text = editEncodingCustomText.trim();
+            if (!text) return;
+            onEditSave?.({
+                ...initialVenueRow,
+                spot_type: editType as VenueItemsBroadcastRow['spot_type'],
+                cut: editCut as VenueItemsBroadcastRow['cut'],
+                duration_seconds: modalDurationPillToSeconds(
+                    editDuration,
+                    'broadcast',
+                ),
+                language_id: langId,
+                encoding_custom: text,
+                encoding_id: undefined,
+            });
+        } else {
+            const encodingId = Number.parseInt(editEncodingId, 10);
+            if (Number.isNaN(encodingId)) return;
+            onEditSave?.({
+                ...initialVenueRow,
+                spot_type: editType as VenueItemsBroadcastRow['spot_type'],
+                cut: editCut as VenueItemsBroadcastRow['cut'],
+                duration_seconds: modalDurationPillToSeconds(
+                    editDuration,
+                    'broadcast',
+                ),
+                language_id: langId,
+                encoding_id: encodingId,
+                encoding_custom: undefined,
+            });
+        }
         handleClose();
     };
 
@@ -384,19 +449,22 @@ export default function AddBroadcastStreamingModal({
                                 mode="single"
                                 options={editAvailableCuts}
                                 value={editCut ? [editCut] : []}
-                                onValueChange={(v) =>
-                                    setEditCut(v[0] ?? '')
-                                }
+                                onValueChange={(v) => setEditCut(v[0] ?? '')}
                                 placeholder="Select Cuts"
                                 emptyMessage="No cuts found."
-                                triggerClassName={orderModalStyles.selectTrigger}
+                                triggerClassName={
+                                    orderModalStyles.selectTrigger
+                                }
                             />
                         </div>
 
                         <div className="flex flex-row justify-around gap-2 text-xs sm:justify-center">
                             <div className="flex flex-col gap-2">
                                 <Label
-                                    className={cn('pb-4', orderModalStyles.label)}
+                                    className={cn(
+                                        'pb-4',
+                                        orderModalStyles.label,
+                                    )}
                                 >
                                     Duration
                                 </Label>
@@ -448,7 +516,10 @@ export default function AddBroadcastStreamingModal({
 
                             <div className="flex flex-col gap-2">
                                 <Label
-                                    className={cn('pb-4', orderModalStyles.label)}
+                                    className={cn(
+                                        'pb-4',
+                                        orderModalStyles.label,
+                                    )}
                                 >
                                     Language
                                 </Label>
@@ -489,53 +560,107 @@ export default function AddBroadcastStreamingModal({
                                 Select the types of encoding for each Spot
                             </p>
                         </div>
-                        <ColumnedRowsParent className="max-h-[215px] overflow-auto">
+                        <ColumnedRowsParent className="max-h-[215px] overflow-y-auto py-0.5">
                             <ColumnedRowsChild
-                                labelFor={`edit-encoding-${broadcastEncodingRowKey(
+                                labelFor={`edit-encoding-ctl-${broadcastEncodingRowKey(
                                     editCut || ' ',
                                     editDuration || ' ',
                                     editLanguage || ' ',
-                                )}`}
+                                ).replace(/\s+/g, '-')}`}
                                 labelContent={
                                     editEncodingRowLabel ||
                                     'Select cut, duration, and language'
                                 }
                                 required
-                                childrenContainerClasses="flex gap-1"
+                                multiInput
+                                childrenContainerClasses="flex flex-col gap-2"
                                 labelClassName="sm:flex-none max-w-[192px] w-full"
                             >
-                                <Select
-                                    value={editEncodingId}
-                                    onValueChange={setEditEncodingId}
-                                >
-                                    <SelectTrigger
-                                        id={`edit-encoding-${broadcastEncodingRowKey(
+                                <div className="flex gap-2">
+                                    <div className="w-full max-w-[190px]">
+                                        {editEncodingCustom ? (
+                                            <Input
+                                                id={`edit-encoding-ctl-${broadcastEncodingRowKey(
+                                                    editCut || ' ',
+                                                    editDuration || ' ',
+                                                    editLanguage || ' ',
+                                                ).replace(/\s+/g, '-')}`}
+                                                value={editEncodingCustomText}
+                                                onChange={(e) =>
+                                                    setEditEncodingCustomText(
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                placeholder="Custom Encoding"
+                                                className={cn(
+                                                    'text-xs',
+                                                    orderModalStyles.selectTrigger,
+                                                )}
+                                            />
+                                        ) : (
+                                            <Select
+                                                value={editEncodingId}
+                                                onValueChange={
+                                                    setEditEncodingId
+                                                }
+                                            >
+                                                <SelectTrigger
+                                                    id={`edit-encoding-ctl-${broadcastEncodingRowKey(
+                                                        editCut || ' ',
+                                                        editDuration || ' ',
+                                                        editLanguage || ' ',
+                                                    ).replace(/\s+/g, '-')}`}
+                                                    className={cn(
+                                                        'truncate text-left',
+                                                        orderModalStyles.selectTrigger,
+                                                    )}
+                                                >
+                                                    <SelectValue placeholder="Select encoding" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem
+                                                        value={ENCODING_UNSET}
+                                                    >
+                                                        Select encoding
+                                                    </SelectItem>
+                                                    {venue_item_encoding.map(
+                                                        (enc) => (
+                                                            <SelectItem
+                                                                key={enc.id}
+                                                                value={String(
+                                                                    enc.id,
+                                                                )}
+                                                                className="text-left"
+                                                            >
+                                                                {enc.type}
+                                                            </SelectItem>
+                                                        ),
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                        )}
+                                    </div>
+
+                                    <LabelCheck
+                                        id={`edit-encoding-custom-${broadcastEncodingRowKey(
                                             editCut || ' ',
                                             editDuration || ' ',
                                             editLanguage || ' ',
-                                        )}`}
-                                        className={cn(
-                                            'max-w-[191px] text-left',
-                                            orderModalStyles.selectTrigger,
-                                        )}
-                                    >
-                                        <SelectValue placeholder="Select encoding" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value={ENCODING_UNSET}>
-                                            Select encoding
-                                        </SelectItem>
-                                        {venue_item_encoding.map((enc) => (
-                                            <SelectItem
-                                                key={enc.id}
-                                                value={String(enc.id)}
-                                                className="text-left"
-                                            >
-                                                {enc.type}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                        ).replace(/\s+/g, '-')}`}
+                                        label="Custom"
+                                        checked={editEncodingCustom}
+                                        onCheckedChange={(checked) => {
+                                            setEditEncodingCustom(checked);
+                                            if (checked) {
+                                                setEditEncodingId(
+                                                    ENCODING_UNSET,
+                                                );
+                                            } else {
+                                                setEditEncodingCustomText('');
+                                            }
+                                        }}
+                                    />
+                                </div>
                             </ColumnedRowsChild>
                         </ColumnedRowsParent>
                     </div>
@@ -553,7 +678,10 @@ export default function AddBroadcastStreamingModal({
                             <p className={orderModalStyles.helper}>
                                 Select the type of Spot
                             </p>
-                            <Select value={type} onValueChange={handleTypeChange}>
+                            <Select
+                                value={type}
+                                onValueChange={handleTypeChange}
+                            >
                                 <SelectTrigger
                                     id="type"
                                     className={orderModalStyles.selectTrigger}
@@ -593,14 +721,19 @@ export default function AddBroadcastStreamingModal({
                                 onValueChange={setCuts}
                                 placeholder="Select Cuts"
                                 emptyMessage="No cuts found."
-                                triggerClassName={orderModalStyles.selectTrigger}
+                                triggerClassName={
+                                    orderModalStyles.selectTrigger
+                                }
                             />
                         </div>
 
                         <div className="flex flex-row justify-around gap-2 text-xs sm:justify-center">
                             <div className="flex flex-col gap-2">
                                 <Label
-                                    className={cn('pb-4', orderModalStyles.label)}
+                                    className={cn(
+                                        'pb-4',
+                                        orderModalStyles.label,
+                                    )}
                                 >
                                     Duration
                                 </Label>
@@ -653,7 +786,10 @@ export default function AddBroadcastStreamingModal({
 
                             <div className="flex flex-col gap-2">
                                 <Label
-                                    className={cn('pb-4', orderModalStyles.label)}
+                                    className={cn(
+                                        'pb-4',
+                                        orderModalStyles.label,
+                                    )}
                                 >
                                     Language
                                 </Label>
@@ -699,54 +835,153 @@ export default function AddBroadcastStreamingModal({
                                 Select the types of encoding for each Spot
                             </p>
                         </div>
-                        <ColumnedRowsParent className="max-h-[215px] overflow-auto">
-                            {encodingRows.map((row) => (
-                                <ColumnedRowsChild
-                                    key={row.key}
-                                    labelFor={`encoding-${row.key}`}
-                                    labelContent={row.label}
-                                    required
-                                    childrenContainerClasses="flex gap-1"
-                                    labelClassName="sm:flex-none max-w-[192px] w-full"
-                                >
-                                    <Select
-                                        value={
-                                            encodingByRowKey[row.key] ??
-                                            ENCODING_UNSET
-                                        }
-                                        onValueChange={(v) =>
-                                            setEncodingSelections((prev) => ({
-                                                ...prev,
-                                                [row.key]: v,
-                                            }))
-                                        }
+                        <ColumnedRowsParent className="max-h-[215px] overflow-auto py-0.5">
+                            {encodingRows.map((row) => {
+                                const encCtlId = `enc-ctl-${row.key.replace(
+                                    /\s+/g,
+                                    '-',
+                                )}`;
+                                const encCustomId = `enc-custom-${row.key.replace(
+                                    /\s+/g,
+                                    '-',
+                                )}`;
+                                return (
+                                    <ColumnedRowsChild
+                                        key={row.key}
+                                        labelFor={encCtlId}
+                                        labelContent={row.label}
+                                        required
+                                        multiInput
+                                        childrenContainerClasses="flex flex-col gap-2"
+                                        labelClassName="sm:flex-none max-w-[191px] w-full"
                                     >
-                                        <SelectTrigger
-                                            id={`encoding-${row.key}`}
-                                            className={cn(
-                                                'max-w-[191px] text-left',
-                                                orderModalStyles.selectTrigger,
-                                            )}
-                                        >
-                                            <SelectValue placeholder="Select encoding" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value={ENCODING_UNSET}>
-                                                Select encoding
-                                            </SelectItem>
-                                            {venue_item_encoding.map((enc) => (
-                                                <SelectItem
-                                                    key={enc.id}
-                                                    value={String(enc.id)}
-                                                    className="text-left"
-                                                >
-                                                    {enc.type}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </ColumnedRowsChild>
-                            ))}
+                                        <div className="flex gap-2">
+                                            <div className="w-full max-w-[190px]">
+                                                {encodingCustomEnabled[
+                                                    row.key
+                                                ] ? (
+                                                    <Input
+                                                        id={encCtlId}
+                                                        value={
+                                                            encodingCustomText[
+                                                                row.key
+                                                            ] ?? ''
+                                                        }
+                                                        onChange={(e) =>
+                                                            setEncodingCustomText(
+                                                                (prev) => ({
+                                                                    ...prev,
+                                                                    [row.key]:
+                                                                        e.target
+                                                                            .value,
+                                                                }),
+                                                            )
+                                                        }
+                                                        placeholder="Custom Encoding"
+                                                        className={cn(
+                                                            'max-w-[191px] text-xs',
+                                                            orderModalStyles.selectTrigger,
+                                                        )}
+                                                    />
+                                                ) : (
+                                                    <Select
+                                                        value={
+                                                            encodingByRowKey[
+                                                                row.key
+                                                            ] ?? ENCODING_UNSET
+                                                        }
+                                                        onValueChange={(v) =>
+                                                            setEncodingSelections(
+                                                                (prev) => ({
+                                                                    ...prev,
+                                                                    [row.key]:
+                                                                        v,
+                                                                }),
+                                                            )
+                                                        }
+                                                    >
+                                                        <SelectTrigger
+                                                            id={encCtlId}
+                                                            className={cn(
+                                                                'truncate text-left',
+                                                                orderModalStyles.selectTrigger,
+                                                            )}
+                                                        >
+                                                            <SelectValue placeholder="Select encoding" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem
+                                                                value={
+                                                                    ENCODING_UNSET
+                                                                }
+                                                            >
+                                                                Select encoding
+                                                            </SelectItem>
+                                                            {venue_item_encoding.map(
+                                                                (enc) => (
+                                                                    <SelectItem
+                                                                        key={
+                                                                            enc.id
+                                                                        }
+                                                                        value={String(
+                                                                            enc.id,
+                                                                        )}
+                                                                        className="text-left"
+                                                                    >
+                                                                        {
+                                                                            enc.type
+                                                                        }
+                                                                    </SelectItem>
+                                                                ),
+                                                            )}
+                                                        </SelectContent>
+                                                    </Select>
+                                                )}
+                                            </div>
+
+                                            <LabelCheck
+                                                id={encCustomId}
+                                                className="flex-1"
+                                                label="Custom"
+                                                checked={Boolean(
+                                                    encodingCustomEnabled[
+                                                        row.key
+                                                    ],
+                                                )}
+                                                onCheckedChange={(checked) => {
+                                                    setEncodingCustomEnabled(
+                                                        (prev) => ({
+                                                            ...prev,
+                                                            [row.key]: checked,
+                                                        }),
+                                                    );
+                                                    if (checked) {
+                                                        setEncodingSelections(
+                                                            (p) => ({
+                                                                ...p,
+                                                                [row.key]:
+                                                                    ENCODING_UNSET,
+                                                            }),
+                                                        );
+                                                    } else {
+                                                        setEncodingCustomText(
+                                                            (p) => {
+                                                                const next = {
+                                                                    ...p,
+                                                                };
+                                                                delete next[
+                                                                    row.key
+                                                                ];
+                                                                return next;
+                                                            },
+                                                        );
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+                                    </ColumnedRowsChild>
+                                );
+                            })}
                         </ColumnedRowsParent>
                     </div>
                 </>

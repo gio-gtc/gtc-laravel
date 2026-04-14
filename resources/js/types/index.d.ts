@@ -360,6 +360,8 @@ export interface VenueItemsMediaLineShared {
     language_id?: number;
     /** Present on broadcast mock rows only when supplied. */
     encoding_id?: number;
+    /** Free-form encoding when not using `encoding_id` (broadcast). */
+    encoding_custom?: string;
     previewVideoUrl?: string | null;
     thumbnailUrl?: string;
     mediaUrl?: string;

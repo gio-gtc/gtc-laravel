@@ -68,11 +68,36 @@ export function expandBroadcastRowsFromForm(
             catalogs.venue_item_language,
             enc.language,
         );
+        if (languageId === undefined) continue;
+
+        if (enc.encodingMode === 'custom') {
+            const text = enc.encoding.trim();
+            if (!text) continue;
+
+            rows.push({
+                id: ctx.nextId(),
+                tour_venue_id: ctx.tourVenueId,
+                type: 'broadcast',
+                dueDate: ctx.dueDate,
+                spot_type: spotType,
+                cut: asBroadcastCut(enc.cut),
+                isci: ctx.nextIsci(),
+                duration_seconds: modalDurationPillToSeconds(
+                    enc.duration,
+                    BROADCAST_DURATION_KIND,
+                ),
+                status_id: ctx.statusId,
+                language_id: languageId,
+                encoding_custom: text,
+            });
+            continue;
+        }
+
         const encodingId = encodingLabelToId(
             catalogs.venue_item_encoding,
             enc.encoding,
         );
-        if (languageId === undefined || encodingId === undefined) continue;
+        if (encodingId === undefined) continue;
 
         rows.push({
             id: ctx.nextId(),
