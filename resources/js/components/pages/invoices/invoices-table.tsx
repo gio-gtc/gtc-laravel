@@ -231,7 +231,7 @@ function InvoicesTable() {
         <>
             <div className="table-content-max-width mb-2">
                 {/* Header Actions */}
-                <div className="flex justify-between gap-1 overflow-auto">
+                <div className="flex justify-between gap-1 overflow-x-auto">
                     <InvoiceStatusFilters
                         filter={filter}
                         onFilterChange={handleFilterChange}

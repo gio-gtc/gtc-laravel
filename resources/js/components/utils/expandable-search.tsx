@@ -73,7 +73,7 @@ export function ExpandableSearch({
     return (
         <div
             className={cn(
-                'relative flex items-center overflow-hidden transition-[width] ease-in-out',
+                'relative flex items-center overflow-visible transition-[width] ease-in-out',
                 isSearchExpanded ? expandedWidth : 'w-9',
                 className,
             )}
