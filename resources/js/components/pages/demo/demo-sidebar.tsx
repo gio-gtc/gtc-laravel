@@ -1,14 +1,14 @@
+import { CustomSocialIcon } from '@/components/ui/icons';
+import { formatDurationSeconds } from '@/helper-functions/format-time';
 import { useCoarseOrNoHoverPointer } from '@/hooks/use-coarse-or-no-hover-pointer';
 import { unpicPassthroughTransform } from '@/lib/unpic-passthrough-transform';
 import { cn } from '@/lib/utils';
-import { formatDurationSeconds } from '@/helper-functions/format-time';
 import { type DemoAsset, type DemoTab } from '@/types/demo';
 import { Image } from '@unpic/react/base';
 import {
     BoomBoxIcon,
     Menu,
     RadioTower,
-    Share2,
     WallpaperIcon,
     type LucideIcon,
 } from 'lucide-react';
@@ -16,7 +16,7 @@ import { useCallback, useState } from 'react';
 
 const TABS: { id: DemoTab; label: string; icon: LucideIcon }[] = [
     { id: 'broadcast', label: 'Broadcast', icon: RadioTower },
-    { id: 'social', label: 'Social', icon: Share2 },
+    { id: 'social', label: 'Social', icon: CustomSocialIcon },
     { id: 'radio', label: 'Radio', icon: BoomBoxIcon },
     { id: 'art', label: 'Art', icon: WallpaperIcon },
 ];
@@ -90,14 +90,14 @@ export default function DemoSidebar({
                                     key={id}
                                     type="button"
                                     onClick={() => onTabChange(id)}
-                                    className={`flex min-w-0 flex-1 grow cursor-pointer flex-col items-center justify-center gap-2 px-2 py-4 text-white uppercase transition-all duration-300 ${
+                                    className={`flex max-w-[120px] min-w-0 flex-1 grow cursor-pointer flex-col items-center justify-center gap-2 px-2 py-4 text-white uppercase transition-all duration-300 ${
                                         active
                                             ? 'grow-2 bg-white/15 text-white'
                                             : 'text-white/70 hover:bg-white/10 hover:text-white'
                                     }`}
                                 >
                                     <Icon
-                                        className="size-[40px] shrink-0 opacity-90"
+                                        className="size-[40px] shrink-0 text-white opacity-90"
                                         strokeWidth={1.5}
                                         aria-hidden
                                     />
@@ -120,7 +120,7 @@ export default function DemoSidebar({
                                             'transition-[box-shadow,backdrop-filter] duration-200',
                                             'focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-0',
                                             selected
-                                                ? 'ring-1 ring-inset ring-white/10 bg-gradient-to-br from-white/30 via-transparent to-transparent shadow-lg backdrop-blur-lg'
+                                                ? 'bg-gradient-to-br from-white/20 via-transparent to-transparent shadow-lg ring-1 ring-white/12 backdrop-blur-lg ring-inset'
                                                 : 'hover:bg-gradient-to-br hover:from-white/10 hover:via-transparent hover:to-transparent hover:shadow-xs hover:backdrop-blur-xs',
                                         )}
                                     >
