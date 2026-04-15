@@ -5,11 +5,11 @@ import { Input } from '../ui/input';
 function InputAdditions({
     inputList,
     setInputList,
-    // inputClassName = 'xs-gray-700-weight-600',
+    variant = 'default',
 }: {
     inputList: string[];
     setInputList: (input: string[]) => void;
-    // inputClassName?: string;
+    variant?: 'default' | 'orderSlideout' | 'invoiceSlideout';
 }) {
     const addInput = () => {
         setInputList([...inputList, '']);
@@ -29,11 +29,9 @@ function InputAdditions({
                 name={`ar_email_${index}`}
                 type="email"
                 placeholder="email@company.com"
+                variant={variant}
                 required={index === 0}
-                className={cn(
-                    'pr-9 pl-9',
-                    // inputClassName
-                )}
+                className={cn('pr-9 pl-9')}
                 value={email}
                 onChange={(e) => {
                     const newList = [...inputList];

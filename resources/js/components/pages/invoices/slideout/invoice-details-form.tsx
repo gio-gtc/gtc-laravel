@@ -39,11 +39,9 @@ export default function InvoiceDetailsForm({
             >
                 <DatePickerInput
                     id="release_date"
-                    label=""
+                    variant="invoiceSlideout"
                     value={formData.release_date}
                     onChange={(value) => onChange('release_date', value)}
-                    className="max-w-[140px]"
-                    inputClassName="xs-gray-700-weight-600"
                 />
             </ColumnedRowsChild>
 
@@ -54,11 +52,9 @@ export default function InvoiceDetailsForm({
             >
                 <DatePickerInput
                     id="payment_due"
-                    label=""
+                    variant="invoiceSlideout"
                     value={formData.payment_due}
                     onChange={(value) => onChange('payment_due', value)}
-                    className="max-w-[140px]"
-                    inputClassName="xs-gray-700-weight-600"
                 />
             </ColumnedRowsChild>
 
@@ -69,11 +65,11 @@ export default function InvoiceDetailsForm({
             >
                 <Input
                     id="clientReference"
+                    variant="invoiceSlideout"
                     value={formData.clientReference}
                     onChange={(e) =>
                         onChange('clientReference', e.target.value)
                     }
-                    className="xs-gray-700-weight-600"
                 />
             </ColumnedRowsChild>
 
@@ -85,9 +81,9 @@ export default function InvoiceDetailsForm({
                 <Input
                     id="orderedBy"
                     value={orderedByUser?.name || ''}
+                    variant="invoiceSlideout"
                     disabled
                     readOnly
-                    className="xs-gray-700-weight-600"
                 />
             </ColumnedRowsChild>
 
@@ -97,16 +93,17 @@ export default function InvoiceDetailsForm({
                 labelLocation="other"
             >
                 <div className="relative">
-                    <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Input
                         id="accountPayableEmail"
                         type="email"
+                        variant="invoiceSlideout"
                         placeholder="email@company.com"
                         value={formData.accountPayableEmail}
                         onChange={(e) =>
                             onChange('accountPayableEmail', e.target.value)
                         }
-                        className="xs-gray-700-weight-600 pl-9"
+                        className="pl-9"
                     />
                 </div>
             </ColumnedRowsChild>
@@ -118,6 +115,7 @@ export default function InvoiceDetailsForm({
                 multiInput
             >
                 <InputAdditions
+                    variant="invoiceSlideout"
                     inputList={formData.additionalEmails}
                     setInputList={(newList) =>
                         onChange('additionalEmails', newList)

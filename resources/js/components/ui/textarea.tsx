@@ -14,7 +14,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         const variants = {
             default: 'md-gray-900-weight-400',
             orderSlideout: '',
-            invoiceSlideout: '',
+            invoiceSlideout: 'xs-gray-700-weight-600',
         };
 
         return (

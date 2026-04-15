@@ -39,7 +39,7 @@ function SelectTrigger({
     const variants = {
         default: 'md-gray-900-weight-400 h-[44px]',
         orderSlideout: '',
-        invoiceSlideout: '',
+        invoiceSlideout: 'xs-gray-700-weight-600 max-h-[30px]',
     };
 
     return (

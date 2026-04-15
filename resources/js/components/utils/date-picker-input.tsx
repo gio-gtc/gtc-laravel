@@ -61,6 +61,7 @@ interface DatePickerInputProps {
     value: string;
     onChange: (value: string) => void;
     className?: string;
+    variant?: 'default' | 'orderSlideout' | 'invoiceSlideout';
     required?: boolean;
     placeholder?: string;
     inputClassName?: string;
@@ -78,6 +79,7 @@ export default function DatePickerInput({
     value,
     onChange,
     className,
+    variant = 'default',
     required = false,
     placeholder = 'mm/dd/yyyy',
     inputClassName = '',
@@ -226,12 +228,15 @@ export default function DatePickerInput({
                 <div
                     className={cn(
                         'relative flex w-full items-center gap-2 rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50',
+                        variant === 'invoiceSlideout' && 'max-w-[130px]',
+                        variant === 'default' && 'max-w-[150px]',
                     )}
                 >
                     {calendarButton}
                     <Input
                         id={id}
                         type="text"
+                        variant={variant}
                         value={inputValue}
                         onChange={handleInputChange}
                         onBlur={handleInputBlur}
@@ -278,6 +283,8 @@ export default function DatePickerInput({
             <div
                 className={cn(
                     'relative flex w-full items-center gap-2 rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50',
+                    variant === 'invoiceSlideout' && 'max-w-[130px]',
+                    variant === 'default' && 'max-w-[150px]',
                 )}
             >
                 <Popover open={open} onOpenChange={handleOpenChange}>
@@ -298,6 +305,7 @@ export default function DatePickerInput({
                 <Input
                     id={id}
                     type="text"
+                    variant={variant}
                     value={inputValue}
                     onChange={handleInputChange}
                     onBlur={handleInputBlur}
