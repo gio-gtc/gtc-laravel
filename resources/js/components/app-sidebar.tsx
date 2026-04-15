@@ -36,7 +36,7 @@ export function AppSidebar() {
         <Sidebar
             collapsible="icon"
             variant="sidebar"
-            className="top-[50px] bottom-0 z-40 h-[calc(100svh-50px)] border-t border-[#5b5b5c] bg-foreground text-white"
+            className="border-t border-[#5b5b5c] bg-foreground text-white"
         >
             <SidebarContent>
                 <NavMain items={mainNavItems} />
