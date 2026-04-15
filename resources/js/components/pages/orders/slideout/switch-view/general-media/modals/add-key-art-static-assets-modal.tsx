@@ -1,8 +1,8 @@
-import { Label } from '@/components/ui/label';
 import {
     VENUE_ITEM_ART_PACKAGE_TYPES,
     type VenueItemArtPackageType,
 } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
+import { Label } from '@/components/ui/label';
 import { useEffect, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
@@ -58,7 +58,7 @@ export default function AddKeyArtStaticAssetsModal({
             primaryLabel="Add to Order"
             onPrimaryClick={handleAddToOrder}
             primaryDisabled={types.length === 0}
-            modalClasses="sm:max-w-[264px] px-2"
+            modalClasses="sm:max-w-[270px] px-2"
         >
             <div className="flex flex-col gap-2 text-xs">
                 <Label className={orderModalStyles.label}>Type</Label>
