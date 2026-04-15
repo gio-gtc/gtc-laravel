@@ -52,7 +52,7 @@ export default function StaticAssetsMediaTable({
                         <Table compactRows>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="w-full max-w-[36%] text-center">
+                                    <TableHead className="w-full max-w-[32%] text-center">
                                         Cut Name
                                     </TableHead>
                                     <TableHead className="w-full max-w-[8%] text-center">
@@ -61,7 +61,7 @@ export default function StaticAssetsMediaTable({
                                     <TableHead className="w-full max-w-[8%] text-center">
                                         H
                                     </TableHead>
-                                    <TableHead className="w-full max-w-[9%] text-center">
+                                    <TableHead className="w-full max-w-[10%] text-center">
                                         Due Date
                                     </TableHead>
                                     <TableHead className="w-full max-w-[9%] text-center">
@@ -143,7 +143,7 @@ export default function StaticAssetsMediaTable({
                                                 <TableCell>
                                                     {cellEditing ? (
                                                         <EditableCellInput
-                                                            className=""
+                                                            variant="orderSlideoutTableCells"
                                                             value={row.width}
                                                             itemId={row.id}
                                                             field="width"
@@ -182,7 +182,7 @@ export default function StaticAssetsMediaTable({
                                                 <TableCell>
                                                     {cellEditing ? (
                                                         <EditableCellInput
-                                                            className="text-gray-400"
+                                                            variant="orderSlideoutTableCells"
                                                             value={row.height}
                                                             itemId={row.id}
                                                             field="height"
@@ -283,6 +283,7 @@ export default function StaticAssetsMediaTable({
                                                     <div className="flex justify-center rounded-full focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 focus:outline-none">
                                                         {cellEditing ? (
                                                             <EditableCellSelect
+                                                                variant="orderSlideoutTableCells"
                                                                 value={
                                                                     row.status
                                                                 }
