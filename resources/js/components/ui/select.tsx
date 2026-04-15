@@ -40,6 +40,7 @@ function SelectTrigger({
     const variants: Record<InputVariants, string> = {
         default: 'md-gray-900-weight-400 h-[44px]',
         orderSlideoutTableCells: 'max-h-[30px]',
+        orderSlideoutpopup: '',
         invoiceSlideout: 'xs-gray-700-weight-600 max-h-[30px]',
     };
 

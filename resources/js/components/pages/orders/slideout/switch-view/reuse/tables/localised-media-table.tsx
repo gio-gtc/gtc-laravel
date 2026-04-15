@@ -250,7 +250,7 @@ export default function LocalizedArtTable({
                                             {/* Assigned Section */}
                                             <TableCell>
                                                 <div
-                                                    className="min-h-[inherit] cursor-pointer"
+                                                    className="min-h-[30px] cursor-pointer"
                                                     onDoubleClick={(e) => {
                                                         e.stopPropagation();
                                                         if (

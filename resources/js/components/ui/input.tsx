@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 export type InputVariants =
     | 'default'
     | 'orderSlideoutTableCells'
+    | 'orderSlideoutpopup'
     | 'invoiceSlideout';
 
 interface InputProps extends React.ComponentProps<'input'> {
@@ -18,6 +19,7 @@ function Input({ className, variant = 'default', type, ...props }: InputProps) {
     const variants: Record<InputVariants, string> = {
         default: 'md-gray-900-weight-400 h-[44px]',
         orderSlideoutTableCells: 'xs-gray-500-weight-600 max-h-[30px]',
+        orderSlideoutpopup: '',
         invoiceSlideout: 'xs-gray-700-weight-600 max-h-[30px]',
     };
 

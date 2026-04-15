@@ -15,6 +15,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         const variants: Record<InputVariants, string> = {
             default: 'md-gray-900-weight-400',
             orderSlideoutTableCells: '',
+            orderSlideoutpopup: '',
             invoiceSlideout: 'xs-gray-700-weight-600',
         };
 

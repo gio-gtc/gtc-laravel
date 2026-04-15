@@ -345,7 +345,7 @@ export default function MediaTable({
                                                 <TableCell>
                                                     <div
                                                         className={cn(
-                                                            'min-h-[inherit]',
+                                                            'min-h-[30px]',
                                                             !isDisabledRow &&
                                                                 'cursor-pointer',
                                                         )}
