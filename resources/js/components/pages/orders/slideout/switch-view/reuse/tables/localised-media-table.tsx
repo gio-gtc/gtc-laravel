@@ -48,28 +48,28 @@ export default function LocalizedArtTable({
                         <Table compactRows>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="xs-gray-500-weight-600 w-[31%] text-center">
+                                    <TableHead className="w-full max-w-[31%] text-center">
                                         Description
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 w-[7%] text-center">
+                                    <TableHead className="w-full max-w-[7%] text-center">
                                         W
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 w-[7%] text-center">
+                                    <TableHead className="w-full max-w-[7%] text-center">
                                         H
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 w-[16%] text-center">
+                                    <TableHead className="w-full max-w-[16%] text-center">
                                         CTA
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 w-[10%] text-center">
+                                    <TableHead className="w-full max-w-[10%] text-center">
                                         Due Date
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 w-[10%] text-center">
+                                    <TableHead className="w-full max-w-[10%] text-center">
                                         Assigned
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 w-[7%] text-center">
+                                    <TableHead className="w-full max-w-[7%] text-center">
                                         Notes
                                     </TableHead>
-                                    <TableHead className="xs-gray-500-weight-600 w-[12%] text-center">
+                                    <TableHead className="w-full max-w-[12%] text-center">
                                         Download
                                     </TableHead>
                                 </TableRow>
@@ -84,10 +84,6 @@ export default function LocalizedArtTable({
                                                 selectedRowIds?.has(row.id) &&
                                                     'bg-red-100',
                                             )}
-                                            // className={cn(
-                                            //     'cursor-pointer select-none hover:bg-gray-100',
-                                            //     isSelected && 'bg-red-100',
-                                            // )}
                                             onClick={(e) =>
                                                 toggleRowSelectionOnRowClick(
                                                     e,
@@ -103,6 +99,7 @@ export default function LocalizedArtTable({
                                                         itemId={row.id}
                                                         field="description"
                                                         type="text"
+                                                        variant="orderSlideoutTableCells"
                                                         onChange={
                                                             cellEditing.onCellChange
                                                         }
@@ -124,6 +121,8 @@ export default function LocalizedArtTable({
                                                     row.description
                                                 )}
                                             </TableCell>
+
+                                            {/* W Section */}
                                             <TableCell>
                                                 {cellEditing ? (
                                                     <EditableCellInput
@@ -131,6 +130,7 @@ export default function LocalizedArtTable({
                                                         itemId={row.id}
                                                         field="width"
                                                         type="number"
+                                                        variant="orderSlideoutTableCells"
                                                         min={0}
                                                         step={1}
                                                         emptyValue={0}
@@ -157,6 +157,8 @@ export default function LocalizedArtTable({
                                                     row.width
                                                 )}
                                             </TableCell>
+
+                                            {/* H Section */}
                                             <TableCell>
                                                 {cellEditing ? (
                                                     <EditableCellInput
@@ -164,6 +166,7 @@ export default function LocalizedArtTable({
                                                         itemId={row.id}
                                                         field="height"
                                                         type="number"
+                                                        variant="orderSlideoutTableCells"
                                                         min={0}
                                                         step={1}
                                                         emptyValue={0}
@@ -190,6 +193,8 @@ export default function LocalizedArtTable({
                                                     row.height
                                                 )}
                                             </TableCell>
+
+                                            {/* CTA Section */}
                                             <TableCell>
                                                 {cellEditing ? (
                                                     <EditableCellInput
@@ -197,6 +202,7 @@ export default function LocalizedArtTable({
                                                         itemId={row.id}
                                                         field="cta"
                                                         type="text"
+                                                        variant="orderSlideoutTableCells"
                                                         onChange={
                                                             cellEditing.onCellChange
                                                         }
@@ -218,6 +224,8 @@ export default function LocalizedArtTable({
                                                     row.cta
                                                 )}
                                             </TableCell>
+
+                                            {/* Due Date Section */}
                                             <TableCell>
                                                 <div
                                                     className="min-h-[inherit] cursor-pointer"
@@ -238,6 +246,8 @@ export default function LocalizedArtTable({
                                                     {row.dueDate}
                                                 </div>
                                             </TableCell>
+
+                                            {/* Assigned Section */}
                                             <TableCell>
                                                 <div
                                                     className="min-h-[inherit] cursor-pointer"
@@ -264,6 +274,7 @@ export default function LocalizedArtTable({
                                                 </div>
                                             </TableCell>
 
+                                            {/* Notes Section */}
                                             <TableCell className="text-center">
                                                 <Button
                                                     variant="ghost"
@@ -280,6 +291,7 @@ export default function LocalizedArtTable({
                                                 </Button>
                                             </TableCell>
 
+                                            {/* Downloads Section */}
                                             <TableCell>
                                                 <Button
                                                     variant="ghost"
