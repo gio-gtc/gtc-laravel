@@ -1,4 +1,4 @@
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { ContainedSheet, SheetContent } from '@/components/ui/sheet';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
 import { type Tour, type TourVenue, type Venue } from '@/types';
@@ -142,14 +142,15 @@ export default function VenueDetailSlideout({
     const isDemo = venueItem?.venue == null;
 
     return (
-        <Sheet open={isOpen} onOpenChange={onClose}>
+        <ContainedSheet open={isOpen} onClose={onClose}>
             <SheetContent
                 side="right"
+                containedInMainColumn
                 className={cn(
                     'w-full gap-1 overflow-y-auto',
                     isMaximized
                         ? 'w-full max-w-full sm:max-w-full'
-                        : 'sm:max-w-5xl',
+                        : 'sm:max-w-[875px]',
                     'transition-[max-width] duration-300 ease-in-out',
                 )}
                 showExitBtn={false}
@@ -208,6 +209,6 @@ export default function VenueDetailSlideout({
                     venueItem={venueItem}
                 />
             </SheetContent>
-        </Sheet>
+        </ContainedSheet>
     );
 }

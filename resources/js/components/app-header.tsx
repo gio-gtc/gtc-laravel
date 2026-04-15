@@ -23,7 +23,7 @@ export function AppHeader({ breadcrumbs = [] }: AppHeaderProps) {
     const { auth } = page.props;
     const getInitials = useInitials();
     return (
-        <div className="bg-foreground text-background">
+        <div className="relative z-[60] bg-foreground text-background">
             <div className="flex h-[50px] items-center justify-center gap-1 px-2">
                 {/* Menu */}
                 <div className="flex w-full items-center max-sm:w-1/3 sm:gap-3">

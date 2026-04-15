@@ -5,6 +5,7 @@ import InvoiceDetailTable from '@/components/pages/invoices/tables/invoice-detai
 import PaymentReminderTable from '@/components/pages/invoices/tables/payment-reminder-table';
 import { Button } from '@/components/ui/button';
 import { useSidebar } from '@/components/ui/sidebar';
+import { useContainedSheetOpen } from '@/components/ui/sheet';
 import {
     getInvoiceAddress,
     getInvoiceVenueName,
@@ -69,6 +70,8 @@ function InvoicesTable() {
         useState<number[]>([]);
     const isReminder = filter === 'reminder';
     const { isMobile, state: sidebarState } = useSidebar();
+
+    const invoiceSlideoutOpen = useContainedSheetOpen(selectedInvoice !== null);
 
     /** Shift left by half the sidebar gutter so flex-centered content aligns with viewport (50vw) center. */
     const topReminderScreenCenterClass = isMobile
@@ -307,7 +310,7 @@ function InvoicesTable() {
                 {/* Invoice Detail Slide-out */}
                 <InvoiceDetailSlideout
                     invoice={selectedInvoice}
-                    isOpen={selectedInvoice !== null}
+                    isOpen={invoiceSlideoutOpen}
                     onClose={() => setSelectedInvoice(null)}
                     companies={companiesData}
                     countries={countriesData}

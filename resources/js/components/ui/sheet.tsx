@@ -1,3 +1,4 @@
+import { useMainPortal } from '@/contexts/main-portal-context';
 import * as SheetPrimitive from '@radix-ui/react-dialog';
 import { XIcon } from 'lucide-react';
 import * as React from 'react';
@@ -6,6 +7,35 @@ import { cn } from '@/lib/utils';
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
     return <SheetPrimitive.Root data-slot="sheet" {...props} />;
+}
+
+/** Non-modal sheet for portaled main-column slideouts; header/sidebar stay interactive. */
+function ContainedSheet({
+    open,
+    onClose,
+    children,
+}: {
+    open: boolean;
+    onClose: () => void;
+    children: React.ReactNode;
+}) {
+    return (
+        <Sheet
+            modal={false}
+            open={open}
+            onOpenChange={(next) => {
+                if (!next) onClose();
+            }}
+        >
+            {children}
+        </Sheet>
+    );
+}
+
+/** Gate `open` until `<main>` is mounted so the sheet never falls back to viewport-fixed. */
+function useContainedSheetOpen(wanted: boolean): boolean {
+    const main = useMainPortal();
+    return wanted && main !== null;
 }
 
 function SheetTrigger({
@@ -20,24 +50,43 @@ function SheetClose({
     return <SheetPrimitive.Close data-slot="sheet-close" {...props} />;
 }
 
-function SheetPortal({
-    ...props
-}: React.ComponentProps<typeof SheetPrimitive.Portal>) {
-    return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />;
-}
-
 function SheetOverlay({
     className,
+    inset = 'fixed',
     ...props
-}: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
+}: React.ComponentProps<typeof SheetPrimitive.Overlay> & {
+    /** `absolute` when the sheet portals into a positioned ancestor (e.g. `<main>`). */
+    inset?: 'fixed' | 'absolute';
+}) {
     return (
         <SheetPrimitive.Overlay
             data-slot="sheet-overlay"
             className={cn(
-                'fixed inset-0 z-50 bg-black/80 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
+                inset === 'fixed' ? 'fixed' : 'absolute',
+                'inset-0 z-50 bg-black/80 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0',
                 className,
             )}
             {...props}
+        />
+    );
+}
+
+/**
+ * Radix `Dialog.Overlay` renders nothing when `modal={false}`, which removes the dimmed
+ * backdrop entirely. For portaled sheets we use a full-area close control instead so the
+ * dimmed region still dismisses the sheet while the dialog stays non-modal.
+ */
+function SheetContainedBackdrop({ className }: { className?: string }) {
+    return (
+        <SheetPrimitive.Close
+            type="button"
+            data-slot="sheet-contained-backdrop"
+            aria-hidden
+            tabIndex={-1}
+            className={cn(
+                'absolute inset-0 z-40 cursor-default border-0 p-0',
+                className,
+            )}
         />
     );
 }
@@ -47,18 +96,67 @@ function SheetContent({
     children,
     side = 'right',
     showExitBtn = true,
+    containedInMainColumn = false,
+    portalContainer,
+    onPointerDownOutside,
+    onInteractOutside,
     ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
     side?: 'top' | 'right' | 'bottom' | 'left';
     showExitBtn?: boolean;
+    /**
+     * When true, portal into [`useMainPortal`](@/contexts/main-portal-context) (optional
+     * `portalContainer` overrides). Omit on sheets that must stay full-viewport (e.g. pickers).
+     */
+    containedInMainColumn?: boolean;
+    /** Explicit portal root; overrides context when `containedInMainColumn` is true. */
+    portalContainer?: HTMLElement | null;
 }) {
+    const mainFromContext = useMainPortal();
+
+    const resolvedPortal: HTMLElement | null = containedInMainColumn
+        ? portalContainer !== undefined
+            ? portalContainer
+            : mainFromContext
+        : (portalContainer ?? null);
+
+    const isContained = resolvedPortal != null;
+    const inset = isContained ? 'absolute' : 'fixed';
+
+    const guardDismissOutsideContainer = (e: {
+        preventDefault: () => void;
+        target: EventTarget | null;
+    }) => {
+        if (!resolvedPortal) return;
+        const t = e.target;
+        if (t instanceof Node && !resolvedPortal.contains(t)) {
+            e.preventDefault();
+        }
+    };
+
     return (
-        <SheetPortal>
-            <SheetOverlay />
+        <SheetPrimitive.Portal
+            data-slot="sheet-portal"
+            container={resolvedPortal ?? undefined}
+        >
+            {isContained ? (
+                <SheetContainedBackdrop />
+            ) : (
+                <SheetOverlay inset={inset} />
+            )}
             <SheetPrimitive.Content
                 data-slot="sheet-content"
+                onPointerDownOutside={(e) => {
+                    guardDismissOutsideContainer(e);
+                    onPointerDownOutside?.(e);
+                }}
+                onInteractOutside={(e) => {
+                    guardDismissOutsideContainer(e);
+                    onInteractOutside?.(e);
+                }}
                 className={cn(
-                    'fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500',
+                    inset,
+                    'z-50 flex flex-col gap-4 bg-background shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:animate-in data-[state=open]:duration-500',
                     side === 'right' &&
                         'inset-y-0 right-0 h-full w-3/4 border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm',
                     side === 'left' &&
@@ -79,7 +177,7 @@ function SheetContent({
                     </SheetPrimitive.Close>
                 )}
             </SheetPrimitive.Content>
-        </SheetPortal>
+        </SheetPrimitive.Portal>
     );
 }
 
@@ -129,7 +227,9 @@ function SheetDescription({
     );
 }
 
+export { useMainPortal } from '@/contexts/main-portal-context';
 export {
+    ContainedSheet,
     Sheet,
     SheetClose,
     SheetContent,
@@ -138,4 +238,5 @@ export {
     SheetHeader,
     SheetTitle,
     SheetTrigger,
+    useContainedSheetOpen,
 };

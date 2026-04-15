@@ -1,4 +1,4 @@
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { ContainedSheet, SheetContent } from '@/components/ui/sheet';
 import {
     getInvoiceAddress,
     getInvoiceVenueName,
@@ -214,14 +214,15 @@ export default function InvoiceDetailSlideout({
     };
 
     return (
-        <Sheet open={isOpen} onOpenChange={onClose}>
+        <ContainedSheet open={isOpen} onClose={onClose}>
             <SheetContent
                 side="right"
+                containedInMainColumn
                 className={cn(
                     'w-full overflow-y-auto p-0',
                     isMaximized
                         ? 'w-full max-w-full sm:max-w-full'
-                        : 'sm:max-w-5xl',
+                        : 'sm:max-w-[875px]',
                     'transition-[max-width] duration-300 ease-in-out',
                 )}
                 showExitBtn={false}
@@ -340,6 +341,6 @@ export default function InvoiceDetailSlideout({
                 invoice={invoice}
                 action={modalAction}
             />
-        </Sheet>
+        </ContainedSheet>
     );
 }

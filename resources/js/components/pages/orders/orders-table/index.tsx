@@ -38,6 +38,7 @@ import AddVenueModal from '../add-venue-modal';
 import OrdersTableHeaderActions, {
     type GroupedOrderData,
 } from '../orders-table-header-actions';
+import { useContainedSheetOpen } from '@/components/ui/sheet';
 import VenueDetailSlideout from '../slideout';
 import OrdersTableDemoRow from './orders-table-demo-row';
 import {
@@ -70,6 +71,8 @@ function OrdersTable() {
         } | null;
     } | null>(null);
     const usersWithFallback = useUsersWithFallback();
+
+    const slideoutOpen = useContainedSheetOpen(selectedSlideout !== null);
 
     const venueLineCatalog = useMemo((): OrdersVenueLineCatalog => {
         return {
@@ -426,7 +429,7 @@ function OrdersTable() {
     };
 
     // Handle venue row selection (single selection across entire table)
-    const handleVenueRowClick = (orderVenueId: number, orderId: number) => {
+    const handleVenueRowClick = (orderVenueId: number) => {
         setSelectedVenueIds((prev) => {
             // Toggle off if this venue was already selected
             if (prev.includes(orderVenueId)) {
@@ -608,7 +611,7 @@ function OrdersTable() {
             <VenueDetailSlideout
                 venueItem={selectedSlideout?.venueItem ?? null}
                 order={selectedSlideout?.order ?? null}
-                isOpen={selectedSlideout !== null}
+                isOpen={slideoutOpen}
                 onClose={() => setSelectedSlideout(null)}
             />
         </div>
