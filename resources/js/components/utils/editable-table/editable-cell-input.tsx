@@ -1,4 +1,4 @@
-import { Input } from '@/components/ui/input';
+import { Input, InputVariants } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
 
@@ -30,7 +30,7 @@ interface EditableCellInputProps {
     emptyValue?: number | string;
     /** Placeholder shown in input when value is empty. Defaults to String(emptyValue) when emptyValue is set. */
     emptyPlaceholder?: string;
-    variant?: 'default' | 'orderSlideout' | 'invoiceSlideout';
+    variant?: InputVariants;
 }
 
 export function EditableCellInput({

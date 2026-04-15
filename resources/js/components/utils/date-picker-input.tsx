@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { Input } from '@/components/ui/input';
+import { Input, InputVariants } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
     Popover,
@@ -61,7 +61,7 @@ interface DatePickerInputProps {
     value: string;
     onChange: (value: string) => void;
     className?: string;
-    variant?: 'default' | 'orderSlideout' | 'invoiceSlideout';
+    variant?: InputVariants;
     required?: boolean;
     placeholder?: string;
     inputClassName?: string;

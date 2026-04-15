@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Mail, PlusCircle, XCircle } from 'lucide-react';
-import { Input } from '../ui/input';
+import { Input, InputVariants } from '../ui/input';
 
 function InputAdditions({
     inputList,
@@ -9,7 +9,7 @@ function InputAdditions({
 }: {
     inputList: string[];
     setInputList: (input: string[]) => void;
-    variant?: 'default' | 'orderSlideout' | 'invoiceSlideout';
+    variant?: InputVariants;
 }) {
     const addInput = () => {
         setInputList([...inputList, '']);
