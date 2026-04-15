@@ -30,6 +30,7 @@ interface EditableCellInputProps {
     emptyValue?: number | string;
     /** Placeholder shown in input when value is empty. Defaults to String(emptyValue) when emptyValue is set. */
     emptyPlaceholder?: string;
+    variant?: 'default' | 'orderSlideout' | 'invoiceSlideout';
 }
 
 export function EditableCellInput({
@@ -50,6 +51,7 @@ export function EditableCellInput({
     disabled = false,
     emptyValue,
     emptyPlaceholder,
+    variant = 'default',
 }: EditableCellInputProps) {
     const isEmpty =
         emptyValue !== undefined &&
@@ -103,8 +105,9 @@ export function EditableCellInput({
                 min={min}
                 step={step}
                 disabled={disabled}
+                variant={variant}
                 className={cn(
-                    'xs-gray-700-weight-500 w-full p-0.5',
+                    'w-full p-0.5',
                     alignmentClasses[align],
                     className,
                 )}

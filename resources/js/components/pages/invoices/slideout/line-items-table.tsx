@@ -91,6 +91,7 @@ export default function InvoiceLineItemsTable({
                                 </TableCell>
                                 <TableCell>
                                     <EditableCellInput
+                                        variant="invoiceSlideout"
                                         value={item.code}
                                         itemId={item.id}
                                         field="code"
@@ -105,6 +106,7 @@ export default function InvoiceLineItemsTable({
                                 </TableCell>
                                 <TableCell>
                                     <EditableCellInput
+                                        variant="invoiceSlideout"
                                         value={item.description || ''}
                                         itemId={item.id}
                                         field="description"
@@ -129,6 +131,7 @@ export default function InvoiceLineItemsTable({
                                 </TableCell>
                                 <TableCell>
                                     <EditableCellInput
+                                        variant="invoiceSlideout"
                                         className="text-gray-400"
                                         value={item.quantity}
                                         itemId={item.id}
@@ -152,6 +155,7 @@ export default function InvoiceLineItemsTable({
                                 </TableCell>
                                 <TableCell>
                                     <EditableCellInput
+                                        variant="invoiceSlideout"
                                         className="text-gray-400"
                                         value={item.price}
                                         itemId={item.id}
