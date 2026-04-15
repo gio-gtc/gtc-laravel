@@ -7,6 +7,12 @@ use Inertia\Response;
 
 class DemoController extends Controller
 {
+    private const ALLOWED_ART_PACKAGE_TYPES = [
+        'Key Art Package',
+        'Socials & Web Banners',
+        'International Key art & Social Package',
+    ];
+
     public function show(string $uuid, ?string $assetId = null): Response
     {
         $tourVenueId = $this->resolveTourVenueIdFromDemoUuid($uuid);
@@ -88,8 +94,8 @@ class DemoController extends Controller
         }
 
         if ($lineType === 'art') {
-            $pkg = isset($row['package_type']) ? (string) $row['package_type'] : '';
-            $label = (string) ($row['label'] ?? '');
+            $pkg = $this->normalizeArtPackageType($row['package_type'] ?? null);
+            $label = $this->normalizeArtLabel($pkg, $row['label'] ?? null);
             if ($pkg !== '') {
                 return $pkg.($label !== '' ? ' — '.$label : '');
             }
@@ -98,6 +104,35 @@ class DemoController extends Controller
         }
 
         return (string) ($row['label'] ?? '');
+    }
+
+    private function normalizeArtPackageType(mixed $packageType): string
+    {
+        $pkg = is_string($packageType) ? trim($packageType) : '';
+        if (in_array($pkg, self::ALLOWED_ART_PACKAGE_TYPES, true)) {
+            return $pkg;
+        }
+
+        return self::ALLOWED_ART_PACKAGE_TYPES[0];
+    }
+
+    private function normalizeArtLabel(string $normalizedPackageType, mixed $label): string
+    {
+        $value = is_string($label) ? trim($label) : '';
+
+        if ($value === '') {
+            return $normalizedPackageType;
+        }
+
+        if ($value === 'Key Art') {
+            return 'Key Art Package';
+        }
+
+        if (in_array($value, self::ALLOWED_ART_PACKAGE_TYPES, true)) {
+            return $value;
+        }
+
+        return $normalizedPackageType;
     }
 
     /**

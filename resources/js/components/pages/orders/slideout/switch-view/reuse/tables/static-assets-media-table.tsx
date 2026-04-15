@@ -1,3 +1,4 @@
+import { VENUE_ITEM_ART_PACKAGE_TYPES } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import {
     Table,
@@ -34,6 +35,10 @@ export default function StaticAssetsMediaTable({
     onBulkEditAssignedDoubleClick,
     onPreviewImageClick,
     venueItemStatusSelectOptions,
+    artPackageTypeSelectOptions = VENUE_ITEM_ART_PACKAGE_TYPES.map((value) => ({
+        value,
+        label: value,
+    })),
 }: StaticAssetsMediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -109,11 +114,14 @@ export default function StaticAssetsMediaTable({
                                                 {/* Cut Name Section */}
                                                 <TableCell>
                                                     {cellEditing ? (
-                                                        <EditableCellInput
+                                                        <EditableCellSelect
+                                                            variant="orderSlideoutTableCells"
                                                             value={row.cutName}
                                                             itemId={row.id}
                                                             field="cutName"
-                                                            type="text"
+                                                            options={
+                                                                artPackageTypeSelectOptions
+                                                            }
                                                             onChange={
                                                                 cellEditing.onCellChange
                                                             }

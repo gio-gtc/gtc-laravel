@@ -54,6 +54,7 @@ import AddAudioModal from './modals/add-audio-modal';
 import AddBroadcastStreamingModal from './modals/add-broadcast-streaming-modal';
 import AddKeyArtStaticAssetsModal from './modals/add-key-art-static-assets-modal';
 import AddSocialVideoModal from './modals/add-social-video-modal';
+import { VENUE_ITEM_ART_PACKAGE_TYPES } from './modals/spot-type-cuts-options';
 import RevisionRequestModal from './modals/revision-request-modal';
 import VideoPlayerModal from './modals/video-player-modal';
 
@@ -103,6 +104,14 @@ function GeneralMediaView({
     const venueItemStatusSelectOptions = useMemo(
         () => buildVenueItemStatusSelectOptions(catalog.venue_item_status),
         [catalog.venue_item_status],
+    );
+    const artPackageTypeSelectOptions = useMemo(
+        () =>
+            VENUE_ITEM_ART_PACKAGE_TYPES.map((value) => ({
+                value,
+                label: value,
+            })),
+        [],
     );
     const chatChannelId = venueItem
         ? `tour-venue-${venueItem.orderVenue.id}`
@@ -726,6 +735,7 @@ function GeneralMediaView({
                     title="Key Art & Static Assets"
                     data={filteredStaticAssetsData}
                     venueItemStatusSelectOptions={venueItemStatusSelectOptions}
+                    artPackageTypeSelectOptions={artPackageTypeSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}

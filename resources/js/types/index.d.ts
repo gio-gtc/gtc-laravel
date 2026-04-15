@@ -327,6 +327,7 @@ export interface StaticAssetsMediaTableProps {
     onBulkEditDueDateDoubleClick?: (rowId: string | number) => void;
     onBulkEditAssignedDoubleClick?: (rowId: string | number) => void;
     venueItemStatusSelectOptions: { value: string; label: string }[];
+    artPackageTypeSelectOptions?: { value: string; label: string }[];
 }
 
 export interface LocalizedArtNote {

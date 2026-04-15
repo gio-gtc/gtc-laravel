@@ -12,6 +12,7 @@ import type {
     VenueItemsLocalizedRow,
     VenueItemsRow,
 } from '@/types';
+import { VENUE_ITEM_ART_PACKAGE_TYPES } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
 
 export type OrdersVenueLineCatalog = {
     venue_items: VenueItemsRow[];
@@ -164,9 +165,13 @@ export function venueItemsArtTableRow(
     void deliverables;
     void kind;
     const previewImageUrl = row.mediaUrl ?? row.thumbnailUrl ?? null;
+    const allowedPackageTypes = VENUE_ITEM_ART_PACKAGE_TYPES as readonly string[];
+    const normalizedPackageType = allowedPackageTypes.includes(package_type)
+        ? package_type
+        : allowedPackageTypes[0];
     return {
         ...rest,
-        cutName: label,
+        cutName: normalizedPackageType ?? label,
         assigned,
         status: venueItemStatusIdToLabel(status_id, venueItemStatus),
         previewImageUrl,
