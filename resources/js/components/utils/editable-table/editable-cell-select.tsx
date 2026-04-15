@@ -1,3 +1,4 @@
+import { InputVariants } from '@/components/ui/input';
 import {
     Select,
     SelectContent,
@@ -31,6 +32,7 @@ interface EditableCellSelectProps {
     disabled?: boolean;
     /** Read-mode display; default is plain text. */
     renderDisplay?: (value: string) => React.ReactNode;
+    variant?: InputVariants;
 }
 
 function mergeOptionsForValue(
@@ -56,6 +58,7 @@ export function EditableCellSelect({
     className,
     disabled = false,
     renderDisplay,
+    variant = 'default',
 }: EditableCellSelectProps) {
     const [open, setOpen] = React.useState(false);
 
@@ -106,10 +109,8 @@ export function EditableCellSelect({
                     }}
                 >
                     <SelectTrigger
-                        className={cn(
-                            'xs-gray-700-weight-500 h-8 w-full px-1.5 py-0.5',
-                            className,
-                        )}
+                        variant={variant}
+                        className={cn('w-full px-1.5 py-0.5', className)}
                     >
                         <SelectValue placeholder="Choose…" />
                     </SelectTrigger>

@@ -66,28 +66,28 @@ export default function MediaTable({
                         <Table compactRows>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="w-[13%] text-center">
+                                    <TableHead className="w-full max-w-[13%] text-center">
                                         ISCI
                                     </TableHead>
-                                    <TableHead className="w-[24%] text-center">
+                                    <TableHead className="w-full max-w-[24%] text-center">
                                         Cut Name
                                     </TableHead>
-                                    <TableHead className="w-[8%] text-center">
+                                    <TableHead className="w-full max-w-[8%] text-center">
                                         Duration
                                     </TableHead>
-                                    <TableHead className="w-[9%] text-center">
+                                    <TableHead className="w-full max-w-[9%] text-center">
                                         Due Date
                                     </TableHead>
-                                    <TableHead className="w-[9%] text-center">
+                                    <TableHead className="w-full max-w-[9%] text-center">
                                         Assigned
                                     </TableHead>
-                                    <TableHead className="w-[18%] text-center">
+                                    <TableHead className="w-full max-w-[18%] text-center">
                                         Status
                                     </TableHead>
-                                    <TableHead className="w-[8%] text-center">
+                                    <TableHead className="w-full max-w-[8%] text-center">
                                         Preview
                                     </TableHead>
-                                    <TableHead className="w-[11%] text-center">
+                                    <TableHead className="w-full max-w-[11%] text-center">
                                         Deliverables
                                     </TableHead>
                                 </TableRow>
@@ -188,6 +188,9 @@ export default function MediaTable({
                                                         </DropdownMenuContent>
                                                     </DropdownMenu>
                                                 </TableCell>
+
+                                                {/* Cut Name Section */}
+                                                {/* TODO: Figure out how to quick edit this currently input (string) but data is type + cut */}
                                                 <TableCell>
                                                     {cellEditing ? (
                                                         <EditableCellInput
@@ -195,6 +198,7 @@ export default function MediaTable({
                                                             itemId={row.id}
                                                             field="cutName"
                                                             type="text"
+                                                            variant="orderSlideoutTableCells"
                                                             onChange={
                                                                 cellEditing.onCellChange
                                                             }
@@ -239,6 +243,7 @@ export default function MediaTable({
                                                 <TableCell>
                                                     {cellEditing ? (
                                                         <EditableCellSelect
+                                                            variant="orderSlideoutTableCells"
                                                             value={String(
                                                                 row.duration_seconds,
                                                             )}
@@ -373,6 +378,7 @@ export default function MediaTable({
                                                 <TableCell className="h-[30px] py-0 text-center">
                                                     {cellEditing ? (
                                                         <EditableCellSelect
+                                                            variant="orderSlideoutTableCells"
                                                             value={row.status}
                                                             itemId={row.id}
                                                             field="status"

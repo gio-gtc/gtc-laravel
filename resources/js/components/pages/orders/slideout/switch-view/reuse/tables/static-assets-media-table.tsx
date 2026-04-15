@@ -52,28 +52,28 @@ export default function StaticAssetsMediaTable({
                         <Table compactRows>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="w-[40%] text-center">
+                                    <TableHead className="w-full max-w-[36%] text-center">
                                         Cut Name
                                     </TableHead>
-                                    <TableHead className="w-[6%] text-center">
+                                    <TableHead className="w-full max-w-[8%] text-center">
                                         W
                                     </TableHead>
-                                    <TableHead className="w-[6] text-center">
+                                    <TableHead className="w-full max-w-[8%] text-center">
                                         H
                                     </TableHead>
-                                    <TableHead className="w-[9%] text-center">
+                                    <TableHead className="w-full max-w-[9%] text-center">
                                         Due Date
                                     </TableHead>
-                                    <TableHead className="w-[9%] text-center">
+                                    <TableHead className="w-full max-w-[9%] text-center">
                                         Assigned
                                     </TableHead>
-                                    <TableHead className="w-[15%] text-center">
+                                    <TableHead className="w-full max-w-[15%] text-center">
                                         Status
                                     </TableHead>
-                                    <TableHead className="w-[8%] text-center">
+                                    <TableHead className="w-full max-w-[8%] text-center">
                                         Preview
                                     </TableHead>
-                                    <TableHead className="w-[10%] text-center">
+                                    <TableHead className="w-full max-w-[10%] text-center">
                                         Deliverables
                                     </TableHead>
                                 </TableRow>
@@ -106,6 +106,7 @@ export default function StaticAssetsMediaTable({
                                                     )
                                                 }
                                             >
+                                                {/* Cut Name Section */}
                                                 <TableCell>
                                                     {cellEditing ? (
                                                         <EditableCellInput
@@ -137,6 +138,8 @@ export default function StaticAssetsMediaTable({
                                                         row.cutName
                                                     )}
                                                 </TableCell>
+
+                                                {/* W Section */}
                                                 <TableCell>
                                                     {cellEditing ? (
                                                         <EditableCellInput
@@ -174,6 +177,8 @@ export default function StaticAssetsMediaTable({
                                                         row.width
                                                     )}
                                                 </TableCell>
+
+                                                {/* H Section */}
                                                 <TableCell>
                                                     {cellEditing ? (
                                                         <EditableCellInput
@@ -211,6 +216,8 @@ export default function StaticAssetsMediaTable({
                                                         row.height
                                                     )}
                                                 </TableCell>
+
+                                                {/* Due Date Section */}
                                                 <TableCell>
                                                     <div
                                                         className={cn(
@@ -236,6 +243,8 @@ export default function StaticAssetsMediaTable({
                                                         {row.dueDate}
                                                     </div>
                                                 </TableCell>
+
+                                                {/* Assigned Section */}
                                                 <TableCell>
                                                     <div
                                                         className={cn(

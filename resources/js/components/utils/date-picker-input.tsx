@@ -99,6 +99,11 @@ export default function DatePickerInput({
     );
     const isMobile = useIsMobile();
 
+    const containerVariantClasses = cn(
+        variant === 'invoiceSlideout' && 'max-w-[130px]',
+        variant === 'default' && 'max-w-[150px]',
+    );
+
     useEffect(() => {
         setInputValue(value ? isoToMasked(value) : '');
     }, [value]);
@@ -228,8 +233,7 @@ export default function DatePickerInput({
                 <div
                     className={cn(
                         'relative flex w-full items-center gap-2 rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50',
-                        variant === 'invoiceSlideout' && 'max-w-[130px]',
-                        variant === 'default' && 'max-w-[150px]',
+                        containerVariantClasses,
                     )}
                 >
                     {calendarButton}
@@ -283,8 +287,7 @@ export default function DatePickerInput({
             <div
                 className={cn(
                     'relative flex w-full items-center gap-2 rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] outline-none focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50',
-                    variant === 'invoiceSlideout' && 'max-w-[130px]',
-                    variant === 'default' && 'max-w-[150px]',
+                    containerVariantClasses,
                 )}
             >
                 <Popover open={open} onOpenChange={handleOpenChange}>
