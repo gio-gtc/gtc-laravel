@@ -2,12 +2,12 @@ import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import Divider from '@/components/utils/divider';
+import { ModalFooterActions } from '@/components/utils/modal-footer-actions';
 import type { LocalizedArtNote } from '@/types';
 import { orderModalStyles } from '../../general-media/modals/shared';
 
@@ -77,22 +77,14 @@ export default function NotesModal({
                 <div>
                     <Divider />
 
-                    <DialogFooter className="flex gap-2 pt-2">
-                        <Button
-                            variant="outline"
-                            onClick={onClose}
-                            className={orderModalStyles.cancelButton}
-                        >
-                            Cancel
-                        </Button>
-
-                        <Button
-                            className={orderModalStyles.primaryButton}
-                            onClick={onClose}
-                        >
-                            Save
-                        </Button>
-                    </DialogFooter>
+                    <ModalFooterActions
+                        onCancel={onClose}
+                        confirmLabel="Save"
+                        cancelClassName={orderModalStyles.cancelButton}
+                        confirmClassName={orderModalStyles.primaryButton}
+                        confirmType="button"
+                        onConfirm={onClose}
+                    />
                 </div>
             </DialogContent>
         </Dialog>

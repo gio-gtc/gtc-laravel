@@ -3,11 +3,11 @@ import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
 import Divider from '@/components/utils/divider';
+import { ModalFooterActions } from '@/components/utils/modal-footer-actions';
 import FilterUserGroupSection from '@/components/utils/filter-user-group-section';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import type { SharedData, User } from '@/types';
@@ -72,16 +72,7 @@ export default function BulkEditAssignedModal({
                     />
                     <InputError message={undefined} />
                     <Divider />
-                    <DialogFooter className="gap-3 sm:gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={onClose}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit">Save</Button>
-                    </DialogFooter>
+                    <ModalFooterActions onCancel={onClose} confirmLabel="Save" />
                 </form>
             </DialogContent>
         </Dialog>

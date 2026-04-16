@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
@@ -13,6 +12,7 @@ import {
     ColumnedRowsParent,
 } from '@/components/utils/column-row-layouts';
 import Divider from '@/components/utils/divider';
+import { ModalFooterActions } from '@/components/utils/modal-footer-actions';
 import { useState } from 'react';
 
 export interface EditIsciModalProps {
@@ -64,16 +64,7 @@ export default function EditIsciModal({
                         </ColumnedRowsChild>
                     </ColumnedRowsParent>
                     <Divider />
-                    <DialogFooter className="gap-3 sm:gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={onClose}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit">Save</Button>
-                    </DialogFooter>
+                    <ModalFooterActions onCancel={onClose} confirmLabel="Save" />
                 </form>
             </DialogContent>
         </Dialog>

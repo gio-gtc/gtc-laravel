@@ -1,9 +1,7 @@
 import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
@@ -26,6 +24,7 @@ import {
 import DatePickerInput from '@/components/utils/date-picker-input';
 import Divider from '@/components/utils/divider';
 import DollarInput from '@/components/utils/dollar-input';
+import { ModalFooterActions } from '@/components/utils/modal-footer-actions';
 import { Mail } from 'lucide-react';
 import { useState } from 'react';
 
@@ -315,18 +314,10 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                     </ColumnedRowsParent>
 
                     <Divider />
-                    <DialogFooter className="gap-3 sm:gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={onClose}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit" className="bg-brand-gtc-red">
-                            Save Tour
-                        </Button>
-                    </DialogFooter>
+                    <ModalFooterActions
+                        onCancel={onClose}
+                        confirmLabel="Save Tour"
+                    />
                 </form>
             </DialogContent>
         </Dialog>

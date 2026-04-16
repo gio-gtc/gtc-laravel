@@ -1,9 +1,7 @@
 import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
@@ -13,6 +11,7 @@ import {
     ColumnedRowsParent,
 } from '@/components/utils/column-row-layouts';
 import Divider from '@/components/utils/divider';
+import { ModalFooterActions } from '@/components/utils/modal-footer-actions';
 import { useState } from 'react';
 
 interface TourVenueModalProps {
@@ -80,18 +79,10 @@ export default function InvoiceOrOrderModal({
                         </ColumnedRowsChild>
                     </ColumnedRowsParent>
                     <Divider />
-                    <DialogFooter className="gap-3 sm:gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={onClose}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit" className="bg-brand-gtc-red">
-                            Next
-                        </Button>
-                    </DialogFooter>
+                    <ModalFooterActions
+                        onCancel={onClose}
+                        confirmLabel="Next"
+                    />
                 </form>
             </DialogContent>
         </Dialog>

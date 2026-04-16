@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
@@ -22,6 +21,7 @@ import {
 } from '@/components/utils/column-row-layouts';
 import Divider from '@/components/utils/divider';
 import DollarInput from '@/components/utils/dollar-input';
+import { ModalFooterActions } from '@/components/utils/modal-footer-actions';
 import InputAdditions from '@/components/utils/input-additions';
 import { User } from 'lucide-react';
 import { useState } from 'react';
@@ -257,16 +257,7 @@ export default function OrganizationModal({
                     </ColumnedRowsParent>
 
                     <Divider />
-                    <DialogFooter className="gap-3 sm:gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={onClose}
-                        >
-                            Cancel
-                        </Button>
-                        <Button type="submit">Save</Button>
-                    </DialogFooter>
+                    <ModalFooterActions onCancel={onClose} confirmLabel="Save" />
                 </form>
             </DialogContent>
         </Dialog>
