@@ -6,6 +6,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 import { ArrowUp, MoreVertical } from 'lucide-react';
 import {
     Line,
@@ -46,12 +47,15 @@ function KPICard({
     change: string;
     chartData: { name: string; value: number }[];
 }) {
-    const matchingStyles = 'px-4 py-2.5';
+    const matchingStyles = 'px-4 py-2';
 
     return (
         <Card className="gap-1 bg-gray-50 py-0">
             <CardHeader
-                className={`flex flex-row items-center justify-between space-y-0 ${matchingStyles}`}
+                className={cn(
+                    matchingStyles,
+                    `flex flex-row items-center justify-between space-y-0`,
+                )}
             >
                 <CardTitle className="text-sm font-semibold">{title}</CardTitle>
                 <DropdownMenu>
@@ -67,7 +71,10 @@ function KPICard({
                 </DropdownMenu>
             </CardHeader>
             <CardContent
-                className={`rounded-xl border-t-1 bg-white py-2 ${matchingStyles}`}
+                className={cn(
+                    matchingStyles,
+                    `rounded-xl border-t-1 bg-white py-3`,
+                )}
             >
                 <div className="flex flex-col justify-between lg:flex-row">
                     <div className="text-3xl font-semibold">{value}</div>

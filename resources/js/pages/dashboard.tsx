@@ -95,7 +95,7 @@ export default function Dashboard() {
 
                 {/* Time Period Filters and Date Range */}
                 <div className="flex flex-col gap-4 sm:items-center sm:justify-between lg:flex-row">
-                    <div className="inline-flex gap-0.5 overflow-auto rounded-md bg-gray-100 p-0.5">
+                    <div className="inline-flex gap-0.5 overflow-auto rounded-md border bg-gray-100">
                         {timePeriods.map((period) => (
                             <Button
                                 key={period.value}
