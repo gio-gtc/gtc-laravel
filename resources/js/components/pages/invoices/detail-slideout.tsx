@@ -238,7 +238,7 @@ export default function InvoiceDetailSlideout({
                     isMaximized={isMaximized}
                 />
 
-                <div className="space-y-6 p-4">
+                <div className="space-y-6 px-4">
                     {/* Customer and Invoice Details Section */}
                     <div className="space-y-4">
                         <div className="flex flex-col gap-4 md:flex-row">
@@ -271,21 +271,23 @@ export default function InvoiceDetailSlideout({
 
                         <InvoiceFormActions onCancel={onClose} />
                     </div>
+                </div>
 
-                    {/* Action Buttons Section */}
-                    <InvoiceActionButtons
-                        isDeleted={invoice.isDeleted}
-                        onDeleteInvoice={() => {
-                            setModalAction('delete');
-                            setIsActionModalOpen(true);
-                        }}
-                        onRestoreInvoice={() => {
-                            setModalAction('restore');
-                            setIsActionModalOpen(true);
-                        }}
-                        disabled={false}
-                    />
+                {/* Action Buttons Section */}
+                <InvoiceActionButtons
+                    isDeleted={invoice.isDeleted}
+                    onDeleteInvoice={() => {
+                        setModalAction('delete');
+                        setIsActionModalOpen(true);
+                    }}
+                    onRestoreInvoice={() => {
+                        setModalAction('restore');
+                        setIsActionModalOpen(true);
+                    }}
+                    disabled={false}
+                />
 
+                <div className="space-y-6 px-4">
                     {/* Deletion Info */}
                     {invoice.isDeleted && (
                         <div className="space-y-1 text-sm font-semibold text-black">
