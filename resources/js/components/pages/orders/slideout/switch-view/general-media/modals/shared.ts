@@ -9,10 +9,12 @@ export function toggleInArray<T>(arr: T[], value: T): T[] {
 /** Shared modal styling. */
 export const orderModalStyles = {
     dialogTitle: 'font-bold text-gray-900',
-    selectTrigger: 'rounded-md border-gray-300 bg-white text-xs h-6.5',
+    input: 'text-xs max-h-[30px]',
+    selectTrigger: 'rounded-md border-gray-300 bg-white text-xs max-h-[30px]',
     label: 'text-gray-900',
     helper: 'text-gray-500',
-    pillBase: 'w-fit rounded-md transition-colors text-xs hover:text-white',
+    pillBase:
+        'w-fit rounded-md transition-colors text-xs hover:text-white max-h-[30px]',
     pillFull: 'w-full rounded-md transition-colors text-xs',
     pillUnselected:
         'border-gray-300 bg-white text-gray-900 hover:bg-brand-gtc-red/80',

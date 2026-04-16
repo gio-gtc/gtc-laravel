@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { unpicPassthroughTransform } from '@/lib/unpic-passthrough-transform';
+import { cn } from '@/lib/utils';
 import { Image } from '@unpic/react/base';
 import {
     useCallback,
@@ -15,6 +16,7 @@ import {
 } from 'react';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
+import { orderModalStyles } from './shared';
 
 const COMPONENT_NAME = 'ElapsedTimeDisplay';
 
@@ -378,13 +380,19 @@ export default function VideoPlayerModal({
                                     setClientReviewComment(ev.target.value)
                                 }
                                 placeholder="Add comment to Tour Venue"
-                                className="flex-1 bg-white"
+                                className={cn(
+                                    'flex-1 bg-white',
+                                    orderModalStyles.input,
+                                )}
                                 disabled={clientReviewCommentSending}
                                 aria-label="Add comment to Tour Venue"
                             />
                             <Button
                                 type="submit"
-                                className="shrink-0 bg-brand-gtc-red hover:bg-brand-gtc-red/90"
+                                className={cn(
+                                    'shrink-0 bg-brand-gtc-red hover:bg-brand-gtc-red/90',
+                                    orderModalStyles.input,
+                                )}
                                 disabled={
                                     clientReviewCommentSending ||
                                     !clientReviewComment.trim()

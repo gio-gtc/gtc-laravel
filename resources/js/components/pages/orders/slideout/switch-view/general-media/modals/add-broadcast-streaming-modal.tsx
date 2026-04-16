@@ -414,6 +414,7 @@ export default function AddBroadcastStreamingModal({
                             >
                                 <SelectTrigger
                                     id="edit-broadcast-type"
+                                    variant="orderSlideoutpopup"
                                     className={orderModalStyles.selectTrigger}
                                 >
                                     <SelectValue placeholder="Select the type of Spot" />
@@ -684,6 +685,7 @@ export default function AddBroadcastStreamingModal({
                             >
                                 <SelectTrigger
                                     id="type"
+                                    variant="orderSlideoutpopup"
                                     className={orderModalStyles.selectTrigger}
                                 >
                                     <SelectValue placeholder="Select the type of Spot" />

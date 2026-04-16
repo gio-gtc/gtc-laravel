@@ -60,10 +60,13 @@ export default function NotesModal({
                     </div>
 
                     <div className="flex gap-2">
-                        <Input id="" name="" placeholder="Add Note" />
+                        <Input
+                            placeholder="Add Note"
+                            className={orderModalStyles.input}
+                        />
 
                         <Button
-                            className={orderModalStyles.primaryButton}
+                            className={orderModalStyles.input}
                             onClick={onClose}
                         >
                             Submit

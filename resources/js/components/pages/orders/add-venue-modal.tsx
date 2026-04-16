@@ -168,7 +168,6 @@ export default function AddVenueModal({
                     >
                         <DatePickerInput
                             id="show-date-start"
-                            className="max-w-[140px]"
                             value={showStartDate || ''}
                             onChange={(value) => setShowStartDate(value)}
                             required
@@ -176,7 +175,6 @@ export default function AddVenueModal({
                         -
                         <DatePickerInput
                             id="show-date-end"
-                            className="max-w-[140px]"
                             value={showEndDate || ''}
                             onChange={(value) => setShowEndDate(value)}
                             required
@@ -191,7 +189,6 @@ export default function AddVenueModal({
                     >
                         <DatePickerInput
                             id="due-date"
-                            className="max-w-[140px]"
                             value={dueDate || ''}
                             onChange={(value) => setDueDate(value)}
                             required={!isEditMode}
