@@ -1,6 +1,6 @@
-import { cn } from '@/lib/utils';
 import { Mail, PlusCircle, XCircle } from 'lucide-react';
-import { Input, InputVariants } from '../ui/input';
+import { InputVariants } from '../ui/input';
+import { InputWithLeadingIcon } from '../ui/input-with-leading-icon';
 
 function InputAdditions({
     inputList,
@@ -22,23 +22,24 @@ function InputAdditions({
     };
 
     const inputs = inputList.map((email, index) => (
-        <div key={index} className="relative flex-1">
-            <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <Input
-                id={`ar_email_${index}`}
-                name={`ar_email_${index}`}
-                type="email"
-                placeholder="email@company.com"
-                variant={variant}
-                required={index === 0}
-                className={cn('pr-9 pl-9')}
-                value={email}
-                onChange={(e) => {
-                    const newList = [...inputList];
-                    newList[index] = e.target.value;
-                    setInputList(newList);
-                }}
-            />
+        <InputWithLeadingIcon
+            key={index}
+            className="flex-1"
+            icon={<Mail />}
+            inputClassName="pr-9"
+            id={`ar_email_${index}`}
+            name={`ar_email_${index}`}
+            type="email"
+            placeholder="email@company.com"
+            variant={variant}
+            required={index === 0}
+            value={email}
+            onChange={(e) => {
+                const newList = [...inputList];
+                newList[index] = e.target.value;
+                setInputList(newList);
+            }}
+        >
             {index === inputList.length - 1 && (
                 <button
                     type="button"
@@ -57,7 +58,7 @@ function InputAdditions({
                     <XCircle className="h-4 w-4" />
                 </button>
             )}
-        </div>
+        </InputWithLeadingIcon>
     ));
 
     return inputs;

@@ -8,6 +8,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { InputWithLeadingIcon } from '@/components/ui/input-with-leading-icon';
 import { Label } from '@/components/ui/label';
 import {
     Select,
@@ -184,17 +185,14 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 labelContent="Client Approval Email"
                                 required
                             >
-                                <div className="relative">
-                                    <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                                    <Input
-                                        id="client_approval_email"
-                                        name="client_approval_email"
-                                        type="email"
-                                        placeholder="Client Approval Email"
-                                        required
-                                        className="pl-9"
-                                    />
-                                </div>
+                                <InputWithLeadingIcon
+                                    icon={<Mail />}
+                                    id="client_approval_email"
+                                    name="client_approval_email"
+                                    type="email"
+                                    placeholder="Client Approval Email"
+                                    required
+                                />
                                 <InputError message={undefined} />
                             </ColumnedRowsChild>
                         </ColumnedRowsParent>

@@ -8,6 +8,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { InputWithLeadingIcon } from '@/components/ui/input-with-leading-icon';
 import {
     Select,
     SelectContent,
@@ -245,15 +246,12 @@ export default function OrganizationModal({
                             labelContent="Accounts Payable Contact"
                             childrenContainerClasses="modal-child-container"
                         >
-                            <div className="relative">
-                                <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                                <Input
-                                    id="ap_contact"
-                                    name="ap_contact"
-                                    placeholder="Contact Name"
-                                    className="pl-9"
-                                />
-                            </div>
+                            <InputWithLeadingIcon
+                                icon={<User />}
+                                id="ap_contact"
+                                name="ap_contact"
+                                placeholder="Contact Name"
+                            />
                             <InputError message={undefined} />
                         </ColumnedRowsChild>
                     </ColumnedRowsParent>

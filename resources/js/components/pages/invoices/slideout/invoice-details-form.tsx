@@ -1,4 +1,5 @@
 import { Input } from '@/components/ui/input';
+import { InputWithLeadingIcon } from '@/components/ui/input-with-leading-icon';
 import {
     ColumnedRowsChild,
     ColumnedRowsParent,
@@ -92,20 +93,17 @@ export default function InvoiceDetailsForm({
                 labelContent="Account Payable Email"
                 labelLocation="other"
             >
-                <div className="relative">
-                    <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                    <Input
-                        id="accountPayableEmail"
-                        type="email"
-                        variant="invoiceSlideout"
-                        placeholder="email@company.com"
-                        value={formData.accountPayableEmail}
-                        onChange={(e) =>
-                            onChange('accountPayableEmail', e.target.value)
-                        }
-                        className="pl-9"
-                    />
-                </div>
+                <InputWithLeadingIcon
+                    icon={<Mail />}
+                    id="accountPayableEmail"
+                    type="email"
+                    variant="invoiceSlideout"
+                    placeholder="email@company.com"
+                    value={formData.accountPayableEmail}
+                    onChange={(e) =>
+                        onChange('accountPayableEmail', e.target.value)
+                    }
+                />
             </ColumnedRowsChild>
 
             <ColumnedRowsChild

@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { InputWithLeadingIcon } from '@/components/ui/input-with-leading-icon';
 import { useInitials } from '@/hooks/use-initials';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
@@ -51,16 +51,13 @@ function UserMultiSelect({
     return (
         <div className="space-y-4">
             {/* Search Input */}
-            <div className="relative">
-                <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                    type="text"
-                    placeholder="Search users..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9"
-                />
-            </div>
+            <InputWithLeadingIcon
+                icon={<Search />}
+                type="text"
+                placeholder="Search users..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+            />
 
             {/* Selected Users */}
             {selectedUsers.length > 0 && (
