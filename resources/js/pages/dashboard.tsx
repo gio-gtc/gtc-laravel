@@ -142,38 +142,42 @@ export default function Dashboard() {
                 </div>
 
                 {/* Accounts Receivable Section */}
-                <div className="space-y-4 rounded-lg border-1 bg-gray-50 px-4 py-2">
-                    <Heading title="Accounts Receivable" type="section" />
-                    <div className="grid justify-center gap-4 xs:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+                <div className="space-y-4 rounded-lg border-1 bg-gray-50 p-2 px-4 xl:w-[1076px]">
+                    <Heading
+                        title="Accounts Receivable"
+                        type="section"
+                        containerClassName="mb-2"
+                    />
+                    <div className="mb-0 grid justify-center gap-4 xs:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
                         <CardLink
                             label="0-30 days"
                             content="$361,428"
                             change="10%"
-                            cardClassName="lg:max-w-[190px] xl:max-w-none w-full"
+                            cardClassName="w-full max-w-none xl:w-[190px]"
                         />
                         <CardLink
                             label="30-60 days"
                             content="$261,897"
                             change="10%"
-                            cardClassName="lg:max-w-[190px] xl:max-w-none w-full"
+                            cardClassName="w-full max-w-none xl:w-[190px]"
                         />
                         <CardLink
                             label="60-90 days"
                             content="$541,419"
                             change="10%"
-                            cardClassName="lg:max-w-[190px] xl:max-w-none w-full"
+                            cardClassName="w-full max-w-none xl:w-[190px]"
                         />
                         <CardLink
                             label="90-120 days"
                             content="$675,395"
                             change="10%"
-                            cardClassName="lg:max-w-[190px] xl:max-w-none w-full"
+                            cardClassName="w-full max-w-none xl:w-[190px]"
                         />
                         <CardLink
                             label="120+ days"
                             content="$275,823"
                             change="10%"
-                            cardClassName="lg:max-w-[190px] xl:max-w-none w-full"
+                            cardClassName="w-full max-w-none xl:w-[190px]"
                         />
                     </div>
                     <div className="font-semibold text-gray-900">
@@ -190,28 +194,28 @@ export default function Dashboard() {
                 </div>
 
                 {/* Orders and Held Invoices Section */}
-                <div className="grid gap-4 px-4 lg:grid-cols-2">
+                <div className="grid gap-4 px-4 lg:grid-cols-2 xl:inline-block">
                     {/* Orders Section */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 lg:mr-[15px] lg:inline-block">
                         <Heading title="Orders" type="section" />
-                        <div className="grid gap-4 xs:grid-cols-2">
+                        <div className="grid justify-center gap-4 xs:grid-cols-2">
                             <CardLink
-                                cardClassName="lg:max-w-[190px] xl:max-w-none w-full"
+                                cardClassName="w-full max-w-none xl:w-[190px]"
                                 label="Pending"
                                 content="48"
                             />
                             <CardLink
-                                cardClassName="lg:max-w-[190px] xl:max-w-none w-full"
+                                cardClassName="w-full max-w-none xl:w-[190px]"
                                 label="In Production"
                                 content="218"
                             />
                             <CardLink
-                                cardClassName="lg:max-w-[190px] xl:max-w-none w-full"
+                                cardClassName="w-full max-w-none xl:w-[190px]"
                                 label="Outstanding ER"
                                 content="34"
                             />
                             <CardLink
-                                cardClassName="lg:max-w-[190px] xl:max-w-none w-full"
+                                cardClassName="w-full max-w-none xl:w-[190px]"
                                 label="Outstanding Custom"
                                 content="21"
                             />
@@ -219,16 +223,16 @@ export default function Dashboard() {
                     </div>
 
                     {/* Held Invoices Section */}
-                    <div className="space-y-4">
+                    <div className="space-y-4 lg:inline-block">
                         <Heading title="Held Invoices" type="section" />
-                        <div className="grid gap-4 xs:grid-cols-2">
+                        <div className="grid justify-center gap-4 xs:grid-cols-2">
                             <CardLink
-                                cardClassName="lg:max-w-[190px] xl:max-w-none w-full"
+                                cardClassName="w-full max-w-none xl:w-[190px]"
                                 label="Amount"
                                 content="32"
                             />
                             <CardLink
-                                cardClassName="lg:max-w-[190px] xl:max-w-none w-full"
+                                cardClassName="w-full max-w-none xl:w-[190px]"
                                 label="In Production"
                                 content="218"
                             />

@@ -1,11 +1,15 @@
+import { cn } from '@/lib/utils';
+
 export default function Heading({
     title,
     description,
     type = 'page',
+    containerClassName = '',
 }: {
     title: string;
     description?: string;
     type?: 'page' | 'section' | 'small';
+    containerClassName?: string;
 }) {
     const styles = {
         container: '',
@@ -30,7 +34,7 @@ export default function Heading({
     }
 
     return (
-        <div className={styles.container}>
+        <div className={cn(styles.container, containerClassName)}>
             <h2 className={styles.title}>{title}</h2>
             {description && <p className={styles.description}>{description}</p>}
         </div>

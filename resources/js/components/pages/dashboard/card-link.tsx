@@ -22,12 +22,12 @@ function CardLink({
 }) {
     return (
         <Card className={cn('gap-2 pt-4 pb-0', cardClassName)}>
-            <CardHeader>
+            <CardHeader className="px-4">
                 <CardTitle className="text-sm font-medium text-gray-600">
                     {label}
                 </CardTitle>
             </CardHeader>
-            <CardContent className="pb-2">
+            <CardContent className="px-4 pb-2">
                 <div className="pb-2 text-2xl font-semibold text-gray-900">
                     {content}
                 </div>
