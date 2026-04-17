@@ -37,12 +37,20 @@ function RevenueTable() {
             <Table layout="none">
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Tour</TableHead>
-                        <TableHead className="text-right">
+                        <TableHead
+                        // className="w-full max-w-[64%]"
+                        >
+                            Tour
+                        </TableHead>
+                        <TableHead className="w-full max-w-[14%] text-right">
                             CURRENT MONTH
                         </TableHead>
-                        <TableHead className="text-right">YTD</TableHead>
-                        <TableHead className="text-right">TOTAL</TableHead>
+                        <TableHead className="w-full max-w-[14%] text-right">
+                            YTD
+                        </TableHead>
+                        <TableHead className="w-full max-w-[14%] text-right">
+                            TOTAL
+                        </TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody className="text-gray-900">
