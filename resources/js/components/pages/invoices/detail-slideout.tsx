@@ -290,7 +290,7 @@ export default function InvoiceDetailSlideout({
                     disabled={false}
                 />
 
-                <div className="space-y-6 px-3 pb-5">
+                <div className="space-y-3 px-3 pb-5">
                     {/* Deletion Info */}
                     {invoice.isDeleted && (
                         <div className="space-y-1 text-sm font-semibold text-black">

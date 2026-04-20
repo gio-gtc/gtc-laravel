@@ -58,7 +58,7 @@ export default function InvoiceLineItemsTable({
                 compactRows
                 className={cn(
                     isDeleted &&
-                        '[background-image:repeating-linear-gradient(-45deg,transparent,transparent_2px,rgba(0,0,0,0.04)_2px,rgba(0,0,0,0.04)_4px)]',
+                        '[background-image:repeating-linear-gradient(-45deg,transparent,transparent_4px,rgba(0,0,0,0.15)_6px,rgba(0,0,0,0.01)_4px)]',
                 )}
             >
                 <TableHeader>
