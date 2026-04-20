@@ -1,10 +1,20 @@
 import { Button } from '@/components/ui/button';
 
+type InvoiceStatusFilter = 'all' | 'on-hold' | 'released' | 'reminder';
+
+const INVOICE_STATUS_FILTER_OPTIONS: {
+    value: InvoiceStatusFilter;
+    label: string;
+}[] = [
+    { value: 'all', label: 'All' },
+    { value: 'on-hold', label: 'On Hold' },
+    { value: 'released', label: 'Released' },
+    { value: 'reminder', label: 'Payment Reminder' },
+];
+
 interface InvoiceStatusFiltersProps {
-    filter: 'all' | 'on-hold' | 'released' | 'reminder';
-    onFilterChange: (
-        filter: 'all' | 'on-hold' | 'released' | 'reminder',
-    ) => void;
+    filter: InvoiceStatusFilter;
+    onFilterChange: (filter: InvoiceStatusFilter) => void;
 }
 
 export default function InvoiceStatusFilters({
@@ -13,34 +23,16 @@ export default function InvoiceStatusFilters({
 }: InvoiceStatusFiltersProps) {
     return (
         <div className="flex items-center gap-1">
-            <Button
-                size={'md'}
-                variant={filter === 'all' ? 'default' : 'outline'}
-                onClick={() => onFilterChange('all')}
-            >
-                All
-            </Button>
-            <Button
-                size={'md'}
-                variant={filter === 'on-hold' ? 'default' : 'outline'}
-                onClick={() => onFilterChange('on-hold')}
-            >
-                On Hold
-            </Button>
-            <Button
-                size={'md'}
-                variant={filter === 'released' ? 'default' : 'outline'}
-                onClick={() => onFilterChange('released')}
-            >
-                Released
-            </Button>
-            <Button
-                size={'md'}
-                variant={filter === 'reminder' ? 'default' : 'outline'}
-                onClick={() => onFilterChange('reminder')}
-            >
-                Payment Reminder
-            </Button>
+            {INVOICE_STATUS_FILTER_OPTIONS.map(({ value, label }) => (
+                <Button
+                    key={value}
+                    size="md"
+                    variant={filter === value ? 'default' : 'outline'}
+                    onClick={() => onFilterChange(value)}
+                >
+                    {label}
+                </Button>
+            ))}
         </div>
     );
 }

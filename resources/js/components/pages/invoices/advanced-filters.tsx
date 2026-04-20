@@ -93,9 +93,7 @@ export default function InvoiceAdvancedFilters({
                     <div className="space-y-4">
                         {/* Country Filter Section */}
                         <div className="space-y-2">
-                            <p className="text-sm font-medium text-muted-foreground">
-                                Country
-                            </p>
+                            <p className="text-sm font-medium">Country</p>
                             <div className="flex flex-col gap-2 sm:flex-row">
                                 <Button
                                     variant={
@@ -137,9 +135,7 @@ export default function InvoiceAdvancedFilters({
 
                         {/* Date Filter Section */}
                         <div className="space-y-2">
-                            <p className="text-sm font-medium text-muted-foreground">
-                                Days
-                            </p>
+                            <p className="text-sm font-medium">Days</p>
                             <div className="flex flex-col gap-2">
                                 <div className="flex flex-col gap-2 sm:flex-row">
                                     <Button
@@ -190,9 +186,7 @@ export default function InvoiceAdvancedFilters({
 
                         {/* Date Range Filter Section */}
                         <div className="space-y-2">
-                            <p className="text-sm font-medium text-muted-foreground">
-                                Date Range
-                            </p>
+                            <p className="text-sm font-medium">Date Range</p>
                             <DateRangePicker
                                 startDate={dateRangeFilter.startDate}
                                 endDate={dateRangeFilter.endDate}
