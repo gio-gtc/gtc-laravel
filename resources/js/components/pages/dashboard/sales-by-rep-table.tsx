@@ -66,10 +66,10 @@ function SalesByRepTable() {
                         <TableHead className="w-full max-w-[43%] p-0">
                             Rep
                         </TableHead>
-                        <TableHead className="w-full max-w-[18%]">
+                        <TableHead className="w-full max-w-[18%] pr-[70px] pl-0 text-right">
                             CURRENT MONTH
                         </TableHead>
-                        <TableHead className="w-full max-w-[18%] text-center">
+                        <TableHead className="w-full max-w-[18%] pr-[70px] text-right">
                             YTD
                         </TableHead>
                         <TableHead className="w-full max-w-[18%] text-right">
@@ -101,10 +101,10 @@ function SalesByRepTable() {
                 <TableFooter className="bg-white text-gray-900">
                     <TableRow>
                         <TableCell className="font-semibold">Total</TableCell>
-                        <TableCell className="text-lg font-semibold">
+                        <TableCell className="pr-[70px] text-right text-lg font-semibold">
                             {formatCurrency(totals.currentMonth)}
                         </TableCell>
-                        <TableCell className="text-center text-lg font-semibold">
+                        <TableCell className="pr-[70px] text-right text-lg font-semibold">
                             {formatCurrency(totals.ytd)}
                         </TableCell>
                         <TableCell className="text-right text-lg font-semibold">
