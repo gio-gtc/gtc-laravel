@@ -123,6 +123,7 @@ export function EditableCellInput({
                     ? 'cursor-default'
                     : 'xs-gray-500-weight-600 cursor-pointer',
                 alignmentClasses[align],
+                variant === 'invoiceSlideout' && 'xs-gray-500-weight-600',
                 className,
             )}
         >
