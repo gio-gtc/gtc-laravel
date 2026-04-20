@@ -238,7 +238,7 @@ export default function InvoiceDetailSlideout({
                     isMaximized={isMaximized}
                 />
 
-                <div className="space-y-6 px-4">
+                <div className="space-y-6 px-3">
                     {/* Customer and Invoice Details Section */}
                     <div className="space-y-4">
                         <div className="flex flex-col gap-4 md:flex-row">
@@ -287,7 +287,7 @@ export default function InvoiceDetailSlideout({
                     disabled={false}
                 />
 
-                <div className="space-y-6 px-4">
+                <div className="space-y-6 px-3 pb-5">
                     {/* Deletion Info */}
                     {invoice.isDeleted && (
                         <div className="space-y-1 text-sm font-semibold text-black">

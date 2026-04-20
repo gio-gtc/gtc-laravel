@@ -126,7 +126,7 @@ export function EditableCellInput({
                 className,
             )}
         >
-            {displayValue || '\u00A0'}
+            {displayValue || ''}
         </p>
     );
 }

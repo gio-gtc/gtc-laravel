@@ -74,7 +74,7 @@ export default function VenueSlideoutHeader({
     return (
         <SheetHeader className="relative gap-0 p-0">
             {/* Top row: Status icon on left, action buttons on right */}
-            <div className="slide-out-container flex items-center justify-between shadow-md">
+            <div className="slide-out-container flex items-center justify-between shadow-lg">
                 <div className="flex gap-0.5">
                     <StatusIconGroup status={status} />
                 </div>
@@ -102,7 +102,7 @@ export default function VenueSlideoutHeader({
 
             {/* Main content: Title and details */}
             <Divider className="shadow-lg" />
-            <SheetTitle className="slide-out-container text-2xl font-medium text-black">
+            <SheetTitle className="slide-out-container text-[28px] font-medium text-black">
                 {tour}
             </SheetTitle>
             <Divider />

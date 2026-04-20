@@ -17,7 +17,7 @@ export default function InvoiceActionButtons({
     disabled = false,
 }: InvoiceActionButtonsProps) {
     return (
-        <div className="flex flex-col justify-center gap-2 rounded-lg bg-neutral-100 py-1 sm:flex-row">
+        <div className="flex flex-col justify-center gap-2 rounded-lg bg-neutral-100 px-3 py-1 sm:flex-row">
             {!isDeleted && (
                 <Button
                     variant="destructive"

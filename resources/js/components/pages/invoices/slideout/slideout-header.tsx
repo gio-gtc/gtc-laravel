@@ -1,5 +1,7 @@
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import NavOptionButton from '@/components/ui/slideout/nav-option-button';
+import Divider from '@/components/utils/divider';
+import { cn } from '@/lib/utils';
 import {
     ArrowRightToLine,
     ExpandIcon,
@@ -30,17 +32,9 @@ export default function InvoiceSlideoutHeader({
     isMaximized = false,
 }: InvoiceSlideoutHeaderProps) {
     return (
-        <SheetHeader className="relative border-b px-6 pt-6 pb-4">
-            <div className="flex flex-col items-start justify-between gap-1 sm:flex-row">
-                <div className="flex-1">
-                    <SheetTitle className="text-2xl font-medium text-black">
-                        {tour}
-                    </SheetTitle>
-                    <p className="sm-black-weight-500">
-                        {venue}, {market}
-                    </p>
-                </div>
-                <div className="flex items-center gap-1">
+        <SheetHeader className="relative gap-0 p-0">
+            <div className="slide-out-container flex items-end justify-end shadow-lg">
+                <div className="flex items-center gap-0.5">
                     <NavOptionButton onClick={onSend} icon={Send} />
                     <NavOptionButton
                         onClick={onMaximize}
@@ -53,6 +47,21 @@ export default function InvoiceSlideoutHeader({
                     />
                 </div>
             </div>
+
+            <div
+                className={cn(
+                    'flex flex-col px-3 lg:flex-row lg:items-baseline lg:gap-2',
+                    'py-[7px]',
+                )}
+            >
+                <SheetTitle className="text-[28px] font-medium text-black">
+                    {tour}
+                </SheetTitle>
+                <p className="sm-black-weight-500">
+                    {venue}, {market}
+                </p>
+            </div>
+            <Divider />
         </SheetHeader>
     );
 }

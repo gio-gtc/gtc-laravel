@@ -63,23 +63,25 @@ export default function InvoiceLineItemsTable({
             >
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[6%] text-center">ID</TableHead>
-                        <TableHead className="w-[18%] text-center">
+                        <TableHead className="w-full max-w-[6%] text-center">
+                            ID
+                        </TableHead>
+                        <TableHead className="w-full max-w-[18%] text-center">
                             Code
                         </TableHead>
-                        <TableHead className="w-[37%] text-center">
+                        <TableHead className="w-full max-w-[37%] text-center">
                             Description
                         </TableHead>
-                        <TableHead className="w-[8%] text-center">
+                        <TableHead className="w-full max-w-[8%] text-center">
                             Quantity
                         </TableHead>
-                        <TableHead className="w-[12%] text-center">
+                        <TableHead className="w-full max-w-[12%] text-center">
                             Price
                         </TableHead>
-                        <TableHead className="w-[12%] text-center">
+                        <TableHead className="w-full max-w-[12%] text-center">
                             Total
                         </TableHead>
-                        <TableHead className="w-[6%]"></TableHead>
+                        <TableHead className="w-full max-w-[6%]"></TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -129,10 +131,12 @@ export default function InvoiceLineItemsTable({
                                         disabled={isDeleted}
                                     />
                                 </TableCell>
+
+                                {/* Quantity Cell */}
                                 <TableCell>
                                     <EditableCellInput
                                         variant="invoiceSlideout"
-                                        className="text-gray-400"
+                                        className="!text-gray-400"
                                         value={item.quantity}
                                         itemId={item.id}
                                         field="quantity"
@@ -153,10 +157,12 @@ export default function InvoiceLineItemsTable({
                                         disabled={isDeleted}
                                     />
                                 </TableCell>
+
+                                {/* Price Cell */}
                                 <TableCell>
                                     <EditableCellInput
                                         variant="invoiceSlideout"
-                                        className="text-gray-400"
+                                        className="!text-gray-400"
                                         value={item.price}
                                         itemId={item.id}
                                         field="price"
@@ -181,6 +187,8 @@ export default function InvoiceLineItemsTable({
                                         disabled={isDeleted}
                                     />
                                 </TableCell>
+
+                                {/* Total Cell */}
                                 <TableCell className="text-right text-xs font-semibold text-gray-500">
                                     {formatCurrency(item.quantity * item.price)}
                                 </TableCell>
