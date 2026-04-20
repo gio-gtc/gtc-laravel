@@ -17,14 +17,17 @@ export default function InvoiceActionButtons({
     disabled = false,
 }: InvoiceActionButtonsProps) {
     return (
-        <div className="flex flex-col justify-center gap-2 rounded-lg bg-neutral-100 px-3 py-1 sm:flex-row">
+        <div className="flex flex-col justify-center gap-2 rounded-lg border bg-neutral-100 px-3 py-1 sm:flex-row">
             {!isDeleted && (
                 <Button
                     variant="destructive"
                     onClick={onReleaseHold}
                     disabled={disabled}
                     size={'md'}
-                    className={disabled ? 'cursor-not-allowed opacity-50' : ''}
+                    className={cn(
+                        'h-[36px]',
+                        disabled ? 'cursor-not-allowed opacity-50' : '',
+                    )}
                 >
                     Release Hold
                 </Button>
@@ -36,7 +39,7 @@ export default function InvoiceActionButtons({
                     disabled={disabled}
                     size={'md'}
                     className={cn(
-                        'text-gray-500',
+                        'h-[36px] text-gray-500',
                         disabled ? 'cursor-not-allowed opacity-50' : '',
                     )}
                 >
@@ -49,7 +52,7 @@ export default function InvoiceActionButtons({
                     disabled={disabled}
                     size={'md'}
                     className={cn(
-                        'text-gray-500',
+                        'h-[36px] text-gray-500',
                         disabled ? 'cursor-not-allowed opacity-50' : '',
                     )}
                 >
