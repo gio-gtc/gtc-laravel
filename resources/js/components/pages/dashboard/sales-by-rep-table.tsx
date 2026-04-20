@@ -38,18 +38,17 @@ function SalesByRepTable() {
         change: { direction: string; percentage: number },
     ) {
         const isUp = change.direction === 'up';
-        const arrowColor = isUp ? 'text-green-600' : 'text-red-600';
 
         return (
             <div className="flex items-center justify-end gap-2 text-nowrap">
                 <span>{formatCurrency(value)}</span>
                 <div
-                    className={`inline-flex w-full max-w-[53px] items-center gap-1 rounded-md border-1 p-0.5 text-xs ${arrowColor}`}
+                    className={`inline-flex w-full max-w-[53px] items-center gap-1 rounded-md border-1 p-0.5 text-xs`}
                 >
                     {isUp ? (
-                        <ArrowUp className="h-3 w-3" />
+                        <ArrowUp className={`h-3 w-3 text-green-600`} />
                     ) : (
-                        <ArrowDown className="h-3 w-3" />
+                        <ArrowDown className={`h-3 w-3 text-red-600`} />
                     )}
                     <span>{change.percentage}%</span>
                 </div>
