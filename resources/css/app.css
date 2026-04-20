@@ -274,6 +274,10 @@
         @apply text-sm font-semibold text-gray-800;
     }
 
+    .xs-gray-900-weight-400 {
+        @apply text-xs font-normal text-gray-900;
+    }
+
     .xs-gray-700-weight-600 {
         @apply text-xs font-semibold text-gray-700;
     }

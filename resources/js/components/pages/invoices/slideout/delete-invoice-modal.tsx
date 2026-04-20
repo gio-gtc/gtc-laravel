@@ -7,8 +7,8 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import Divider from '@/components/utils/divider';
 import { type Invoice } from '@/types';
 import { useState } from 'react';
 
@@ -77,11 +77,11 @@ export default function DeleteInvoiceModal({
                 }
             }}
         >
-            <DialogContent className="sm:max-w-[348px]">
+            <DialogContent className="gap-2.5 sm:max-w-[348px]">
                 <DialogHeader>
                     <DialogTitle>{copy.title}</DialogTitle>
                 </DialogHeader>
-                <Separator />
+                <Divider />
                 <div>
                     <div className="space-y-2">
                         <Label className="xs-gray-700-weight-600">
@@ -92,7 +92,7 @@ export default function DeleteInvoiceModal({
                         </p>
                         <Textarea
                             id="reason"
-                            className="text-xs md:text-xs"
+                            variant="invoiceSlideoutpopup"
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
                             placeholder={copy.placeholder}
@@ -100,7 +100,7 @@ export default function DeleteInvoiceModal({
                         />
                     </div>
                 </div>
-                <Separator />
+                <Divider />
                 <DialogFooter className="sm:justify-end">
                     <Button variant="outline" onClick={handleClose}>
                         Cancel

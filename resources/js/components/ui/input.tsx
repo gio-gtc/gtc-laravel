@@ -6,7 +6,8 @@ export type InputVariants =
     | 'default'
     | 'orderSlideoutTableCells'
     | 'orderSlideoutpopup'
-    | 'invoiceSlideout';
+    | 'invoiceSlideout'
+    | 'invoiceSlideoutpopup';
 
 interface InputProps extends React.ComponentProps<'input'> {
     variant?: InputVariants;
@@ -24,6 +25,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(function Input(
         orderSlideoutTableCells: 'xs-gray-500-weight-600 max-h-[30px]',
         orderSlideoutpopup: 'max-h-[30px]',
         invoiceSlideout: 'xs-gray-700-weight-600 max-h-[30px]',
+        invoiceSlideoutpopup: '',
     };
 
     return (

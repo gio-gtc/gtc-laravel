@@ -17,6 +17,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
             orderSlideoutTableCells: '',
             orderSlideoutpopup: '',
             invoiceSlideout: 'xs-gray-700-weight-600',
+            invoiceSlideoutpopup: 'xs-gray-900-weight-400 px-1.5 py-1',
         };
 
         return (

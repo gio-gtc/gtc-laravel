@@ -42,6 +42,7 @@ function SelectTrigger({
         orderSlideoutTableCells: 'max-h-[30px]',
         orderSlideoutpopup: 'max-h-[30px]',
         invoiceSlideout: 'xs-gray-700-weight-600 max-h-[30px]',
+        invoiceSlideoutpopup: '',
     };
 
     return (
