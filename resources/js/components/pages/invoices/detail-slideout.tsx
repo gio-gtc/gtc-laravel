@@ -1,4 +1,5 @@
 import { ContainedSheet, SheetContent } from '@/components/ui/sheet';
+import Divider from '@/components/utils/divider';
 import {
     getInvoiceAddress,
     getInvoiceVenueName,
@@ -223,7 +224,7 @@ export default function InvoiceDetailSlideout({
                     isMaximized
                         ? 'w-full max-w-full sm:max-w-full'
                         : 'sm:max-w-[875px]',
-                    'transition-[max-width] duration-300 ease-in-out',
+                    'gap-2.5 transition-[max-width] duration-300 ease-in-out',
                 )}
                 showExitBtn={false}
             >
@@ -272,6 +273,8 @@ export default function InvoiceDetailSlideout({
                         <InvoiceFormActions onCancel={onClose} />
                     </div>
                 </div>
+
+                <Divider />
 
                 {/* Action Buttons Section */}
                 <InvoiceActionButtons
