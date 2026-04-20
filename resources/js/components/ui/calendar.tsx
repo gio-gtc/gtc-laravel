@@ -205,9 +205,6 @@ function CalendarDayButton({
         if (modifiers.focused) ref.current?.focus();
     }, [modifiers.focused]);
 
-    const selectedColor = 'brand-gtc-red';
-    const accentColor = 'red-100';
-
     return (
         <Button
             ref={ref}
@@ -224,7 +221,8 @@ function CalendarDayButton({
             data-range-end={modifiers.range_end}
             data-range-middle={modifiers.range_middle}
             className={cn(
-                `flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-[3px] group-data-[focused=true]/day:ring-${selectedColor}/85 hover:bg-${accentColor} data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-end=true]:bg-${selectedColor} data-[range-end=true]:text-primary-foreground data-[range-middle=true]:rounded-none data-[range-middle=true]:bg-${accentColor} data-[range-middle=true]:text-accent-foreground data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md data-[range-start=true]:bg-${selectedColor} data-[range-start=true]:text-primary-foreground data-[selected-single=true]:bg-${selectedColor} data-[selected-single=true]:text-primary-foreground [&>span]:text-xs [&>span]:opacity-70`,
+                `flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-[3px] data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-end=true]:text-primary-foreground data-[range-middle=true]:rounded-none data-[range-middle=true]:text-accent-foreground data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md data-[range-start=true]:text-primary-foreground data-[selected-single=true]:text-primary-foreground [&>span]:text-xs [&>span]:opacity-70`,
+                'group-data-[focused=true]/day:ring-brand-gtc-red/85 hover:bg-red-100 data-[range-end=true]:bg-brand-gtc-red data-[range-middle=true]:bg-red-100 data-[range-start=true]:bg-brand-gtc-red data-[selected-single=true]:bg-brand-gtc-red',
                 defaultClassNames.day,
                 className,
             )}
