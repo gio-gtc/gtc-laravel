@@ -62,7 +62,7 @@ function SalesByRepTable() {
             <Table layout="none">
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-full max-w-[43%] p-0">
+                        <TableHead className="w-full max-w-[43%]">
                             Rep
                         </TableHead>
                         <TableHead className="w-full max-w-[18%] pr-[70px] pl-0 text-right">

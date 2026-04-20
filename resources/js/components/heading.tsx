@@ -27,7 +27,7 @@ export default function Heading({
             styles.description = 'text-sm text-muted-foreground';
             break;
         default:
-            // styles.container = 'mb-4 space-y-0.5';
+            styles.container = 'mb-4 space-y-0.5';
             styles.title = 'text-xl font-semibold tracking-tight';
             styles.description = 'text-gray-600';
             break;

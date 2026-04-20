@@ -91,6 +91,7 @@ export default function Dashboard() {
                 <Heading
                     title={`Welcome back, ${name}`}
                     description={todaysDateDisplay()}
+                    containerClassName="mb-0"
                 />
 
                 {/* Time Period Filters and Date Range */}

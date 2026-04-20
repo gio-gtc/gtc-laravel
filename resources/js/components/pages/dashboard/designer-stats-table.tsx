@@ -179,7 +179,7 @@ function DesignerStatsTable() {
                             <TableHead className="w-full max-w-[20%]">
                                 <button
                                     onClick={() => handleSort('name')}
-                                    className="flex items-center gap-2 hover:text-foreground"
+                                    className="flex cursor-pointer items-center gap-2 hover:text-foreground"
                                 >
                                     Employees
                                     {getSortIcon('name')}
@@ -188,7 +188,7 @@ function DesignerStatsTable() {
                             <TableHead className="w-full max-w-[15%]">
                                 <button
                                     onClick={() => handleSort('assetsAssigned')}
-                                    className="flex items-center gap-2 hover:text-foreground"
+                                    className="flex cursor-pointer items-center gap-2 hover:text-foreground"
                                 >
                                     Assets Assigned
                                     {getSortIcon('assetsAssigned')}
@@ -197,7 +197,7 @@ function DesignerStatsTable() {
                             <TableHead className="w-full max-w-[15%]">
                                 <button
                                     onClick={() => handleSort('assetsUploaded')}
-                                    className="flex items-center gap-2 hover:text-foreground"
+                                    className="flex cursor-pointer items-center gap-2 hover:text-foreground"
                                 >
                                     Assets Uploaded
                                     {getSortIcon('assetsUploaded')}
@@ -242,10 +242,10 @@ function DesignerStatsTable() {
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="sm-gray-600-weight-400 px-2">
+                                    <TableCell className="sm-gray-600-weight-400">
                                         {assetsAssigned}
                                     </TableCell>
-                                    <TableCell className="sm-gray-600-weight-400 px-2">
+                                    <TableCell className="sm-gray-600-weight-400">
                                         {assetsUploaded}
                                     </TableCell>
                                     <TableCell>
