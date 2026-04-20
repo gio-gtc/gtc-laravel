@@ -1,5 +1,4 @@
 import Heading from '@/components/heading';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     Pagination,
     PaginationContent,
@@ -18,6 +17,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { useInitials } from '@/hooks/use-initials';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
@@ -176,7 +176,7 @@ function DesignerStatsTable() {
                 <Table layout="none">
                     <TableHeader>
                         <TableRow>
-                            <TableHead>
+                            <TableHead className="w-full max-w-[20%]">
                                 <button
                                     onClick={() => handleSort('name')}
                                     className="flex items-center gap-2 hover:text-foreground"
@@ -185,7 +185,7 @@ function DesignerStatsTable() {
                                     {getSortIcon('name')}
                                 </button>
                             </TableHead>
-                            <TableHead>
+                            <TableHead className="w-full max-w-[15%]">
                                 <button
                                     onClick={() => handleSort('assetsAssigned')}
                                     className="flex items-center gap-2 hover:text-foreground"
@@ -194,7 +194,7 @@ function DesignerStatsTable() {
                                     {getSortIcon('assetsAssigned')}
                                 </button>
                             </TableHead>
-                            <TableHead>
+                            <TableHead className="w-full max-w-[15%]">
                                 <button
                                     onClick={() => handleSort('assetsUploaded')}
                                     className="flex items-center gap-2 hover:text-foreground"
@@ -203,7 +203,9 @@ function DesignerStatsTable() {
                                     {getSortIcon('assetsUploaded')}
                                 </button>
                             </TableHead>
-                            <TableHead>Rolling 30 Day Accuracy</TableHead>
+                            <TableHead className="w-full max-w-[50%]">
+                                Rolling 30 Day Accuracy
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -226,32 +228,24 @@ function DesignerStatsTable() {
                                 <TableRow key={designer.id}>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
-                                            <Avatar className="h-10 w-10 overflow-hidden rounded-full">
-                                                <AvatarImage
-                                                    src={
-                                                        designer.avatar ||
-                                                        undefined
-                                                    }
-                                                    alt={designer.name}
-                                                />
-                                                <AvatarFallback className="rounded-full bg-neutral-200 text-black">
-                                                    {getInitials(designer.name)}
-                                                </AvatarFallback>
-                                            </Avatar>
+                                            <UserAvatar
+                                                user={designer}
+                                                className="size-8"
+                                            />
                                             <div className="flex flex-col">
                                                 <span className="text-sm font-medium text-gray-900">
                                                     {designer.name}
                                                 </span>
-                                                <span className="text-sm text-gray-600">
+                                                <span className="sm-gray-600-weight-400">
                                                     {designer.email}
                                                 </span>
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="text-sm text-gray-600">
+                                    <TableCell className="sm-gray-600-weight-400 px-2">
                                         {assetsAssigned}
                                     </TableCell>
-                                    <TableCell className="text-sm text-gray-600">
+                                    <TableCell className="sm-gray-600-weight-400 px-2">
                                         {assetsUploaded}
                                     </TableCell>
                                     <TableCell>
