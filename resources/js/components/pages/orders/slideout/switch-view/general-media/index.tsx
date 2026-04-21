@@ -446,18 +446,6 @@ function GeneralMediaView({
         );
     }, [order, venueItem, catalog.invoices]);
 
-    const venueOrders = useMemo(() => {
-        if (!venueItem) return [];
-        return catalog.orders.filter(
-            (o) => o.tour_venue_id === venueItem.orderVenue.id,
-        );
-    }, [venueItem, catalog.orders]);
-
-    const orders = useMemo(
-        () => (venueItem ? venueOrders : []),
-        [venueItem, venueOrders],
-    );
-
     const isDemoRow = venueItem != null && venueItem.venue === null;
 
     const demoLinkHref = useMemo(() => {
@@ -567,60 +555,32 @@ function GeneralMediaView({
         () =>
             filterAndSortRows(
                 localBroadcastRows,
-                orders,
                 statusFilter,
                 sortDirection,
-                catalog.orders,
             ),
-        [
-            localBroadcastRows,
-            orders,
-            statusFilter,
-            sortDirection,
-            catalog.orders,
-        ],
+        [localBroadcastRows, statusFilter, sortDirection],
     );
 
     const filteredSocialLineData = useMemo(
         () =>
             filterAndSortRows(
                 localSocialLineRows,
-                orders,
                 statusFilter,
                 sortDirection,
-                catalog.orders,
             ),
-        [
-            localSocialLineRows,
-            orders,
-            statusFilter,
-            sortDirection,
-            catalog.orders,
-        ],
+        [localSocialLineRows, statusFilter, sortDirection],
     );
 
     const filteredRadioData = useMemo(
         () =>
-            filterAndSortRows(
-                localRadioRows,
-                orders,
-                statusFilter,
-                sortDirection,
-                catalog.orders,
-            ),
-        [localRadioRows, orders, statusFilter, sortDirection, catalog.orders],
+            filterAndSortRows(localRadioRows, statusFilter, sortDirection),
+        [localRadioRows, statusFilter, sortDirection],
     );
 
     const filteredStaticAssetsData = useMemo(
         () =>
-            filterAndSortRows(
-                localStaticRows,
-                orders,
-                statusFilter,
-                sortDirection,
-                catalog.orders,
-            ),
-        [localStaticRows, orders, statusFilter, sortDirection, catalog.orders],
+            filterAndSortRows(localStaticRows, statusFilter, sortDirection),
+        [localStaticRows, statusFilter, sortDirection],
     );
 
     return (

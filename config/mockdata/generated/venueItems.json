@@ -11,7 +11,8 @@
             "dueDate": "1/15/25",
             "status_id": 1,
             "language_id": 1,
-            "encoding_id": 1
+            "encoding_id": 1,
+            "created_date": "2025-11-21T00:00:00.000Z"
         },
         {
             "id": "c1000002-0000-4000-a000-000000000002",
@@ -24,7 +25,8 @@
             "dueDate": "1/15/25",
             "status_id": 2,
             "language_id": 2,
-            "encoding_id": 2
+            "encoding_id": 2,
+            "created_date": "2025-11-27T14:05:13.043Z"
         },
         {
             "id": "c1000003-0000-4000-a000-000000000003",
@@ -37,7 +39,8 @@
             "dueDate": "1/18/25",
             "status_id": 3,
             "language_id": 3,
-            "encoding_id": 3
+            "encoding_id": 3,
+            "created_date": "2025-12-04T04:10:26.086Z"
         },
         {
             "id": "c1000003-0000-4000-a000-000000000099",
@@ -50,7 +53,8 @@
             "dueDate": "1/20/25",
             "status_id": 1,
             "language_id": 1,
-            "encoding_custom": "ProRes HQ 422"
+            "encoding_custom": "ProRes HQ 422",
+            "created_date": "2025-12-10T18:15:39.130Z"
         },
         {
             "id": "c1000004-0000-4000-a000-000000000004",
@@ -63,7 +67,8 @@
             "dueDate": "1/20/25",
             "status_id": 4,
             "language_id": 1,
-            "card_holder": "Amex"
+            "card_holder": "Amex",
+            "created_date": "2025-12-17T08:20:52.173Z"
         },
         {
             "id": "c1000005-0000-4000-a000-000000000005",
@@ -76,7 +81,8 @@
             "dueDate": "1/22/25",
             "status_id": 5,
             "language_id": 2,
-            "card_holder": "Citi"
+            "card_holder": "Citi",
+            "created_date": "2025-12-23T22:26:05.217Z"
         },
         {
             "id": "c1000006-0000-4000-a000-000000000006",
@@ -88,7 +94,8 @@
             "duration_seconds": 45,
             "dueDate": "1/25/25",
             "status_id": 6,
-            "language_id": 2
+            "language_id": 2,
+            "created_date": "2025-12-30T12:31:18.260Z"
         },
         {
             "id": "c1000007-0000-4000-a000-000000000007",
@@ -100,7 +107,8 @@
             "duration_seconds": 20,
             "dueDate": "1/28/25",
             "status_id": 7,
-            "language_id": 3
+            "language_id": 3,
+            "created_date": "2026-01-06T02:36:31.304Z"
         },
         {
             "id": "c1000008-0000-4000-a000-000000000008",
@@ -111,7 +119,8 @@
             "width": 1400,
             "height": 400,
             "dueDate": "1/15/25",
-            "status_id": 1
+            "status_id": 1,
+            "created_date": "2026-01-12T16:41:44.347Z"
         },
         {
             "id": "c1000009-0000-4000-a000-000000000009",
@@ -122,7 +131,8 @@
             "width": 1400,
             "height": 400,
             "dueDate": "1/15/25",
-            "status_id": 2
+            "status_id": 2,
+            "created_date": "2026-01-19T06:46:57.391Z"
         },
         {
             "id": "c1000010-0000-4000-a000-00000000000a",
@@ -133,7 +143,8 @@
             "width": 1400,
             "height": 400,
             "dueDate": "1/18/25",
-            "status_id": 3
+            "status_id": 3,
+            "created_date": "2026-01-25T20:52:10.434Z"
         },
         {
             "id": "c1000011-0000-4000-a000-00000000000b",
@@ -144,7 +155,8 @@
             "width": 1400,
             "height": 400,
             "dueDate": "1/20/25",
-            "status_id": 4
+            "status_id": 4,
+            "created_date": "2026-02-01T10:57:23.478Z"
         },
         {
             "id": "c1000012-0000-4000-a000-00000000000c",
@@ -155,7 +167,8 @@
             "width": 1400,
             "height": 400,
             "dueDate": "1/22/25",
-            "status_id": 5
+            "status_id": 5,
+            "created_date": "2026-02-08T01:02:36.521Z"
         },
         {
             "id": "c1000013-0000-4000-a000-00000000000d",
@@ -166,7 +179,8 @@
             "width": 1400,
             "height": 400,
             "dueDate": "1/25/25",
-            "status_id": 6
+            "status_id": 6,
+            "created_date": "2026-02-14T15:07:49.565Z"
         },
         {
             "id": "c1000014-0000-4000-a000-00000000000e",
@@ -177,7 +191,8 @@
             "width": 1400,
             "height": 400,
             "dueDate": "1/28/25",
-            "status_id": 5
+            "status_id": 5,
+            "created_date": "2026-02-21T05:13:02.608Z"
         },
         {
             "id": "c1000015-0000-4000-a000-00000000000f",
@@ -197,7 +212,8 @@
                     "text": "Change the background color to deeper blue to match logo.",
                     "savedAt": "4/17/2026 @ 4:30PM"
                 }
-            ]
+            ],
+            "created_date": "2026-02-27T19:18:15.652Z"
         },
         {
             "id": "c1000016-0000-4000-a000-000000000010",
@@ -207,7 +223,8 @@
             "width": 1400,
             "height": 400,
             "cta": "Last Chance",
-            "dueDate": "1/15/25"
+            "dueDate": "1/15/25",
+            "created_date": "2026-03-06T09:23:28.695Z"
         },
         {
             "id": "c1000017-0000-4000-a000-000000000011",
@@ -217,7 +234,8 @@
             "width": 1400,
             "height": 400,
             "cta": "Black Friday Sale",
-            "dueDate": "1/15/25"
+            "dueDate": "1/15/25",
+            "created_date": "2026-03-12T23:28:41.739Z"
         },
         {
             "id": "d2000001-0000-4000-a000-000000000001",
@@ -233,7 +251,8 @@
             "encoding_id": 4,
             "thumbnailUrl": "https://picsum.photos/seed/gtc-b1/320/180",
             "mediaUrl": "https://static.vecteezy.com/system/resources/previews/005/287/289/mp4/programming-or-software-development-loopable-concept-isometric-laptop-with-programming-code-programming-concept-free-video.mp4",
-            "kind": "video"
+            "kind": "video",
+            "created_date": "2026-03-19T13:33:54.782Z"
         },
         {
             "id": "d2000002-0000-4000-a000-000000000002",
@@ -249,7 +268,8 @@
             "encoding_id": 5,
             "thumbnailUrl": "https://picsum.photos/seed/gtc-b2/320/180",
             "mediaUrl": "https://static.vecteezy.com/system/resources/previews/001/804/008/mp4/raining-on-a-plant-and-a-bee-free-video.mp4",
-            "kind": "video"
+            "kind": "video",
+            "created_date": "2026-03-26T03:39:07.826Z"
         },
         {
             "id": "d2000003-0000-4000-a000-000000000003",
@@ -265,7 +285,8 @@
             "card_holder": "Amex",
             "thumbnailUrl": "https://picsum.photos/seed/gtc-s1/320/180",
             "mediaUrl": "https://static.vecteezy.com/system/resources/previews/003/535/355/mp4/happy-new-year-2024-green-screen-background-with-colored-lines-and-happy-new-year-in-the-center-mask-style-free-for-commercial-use-free-video.mp4",
-            "kind": "video"
+            "kind": "video",
+            "created_date": "2026-04-01T17:44:20.869Z"
         },
         {
             "id": "d2000004-0000-4000-a000-000000000004",
@@ -281,7 +302,8 @@
             "card_holder": "Citi",
             "thumbnailUrl": "https://picsum.photos/seed/gtc-s2/320/180",
             "mediaUrl": "https://picsum.photos/seed/gtc-s2-full/1920/1080",
-            "kind": "image"
+            "kind": "image",
+            "created_date": "2026-04-08T07:49:33.913Z"
         },
         {
             "id": "d2000005-0000-4000-a000-000000000005",
@@ -296,7 +318,8 @@
             "language_id": 1,
             "thumbnailUrl": "https://picsum.photos/seed/gtc-r1/320/180",
             "mediaUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-            "kind": "audio"
+            "kind": "audio",
+            "created_date": "2026-04-14T21:54:46.956Z"
         },
         {
             "id": "d2000006-0000-4000-a000-000000000006",
@@ -310,7 +333,8 @@
             "status_id": 2,
             "thumbnailUrl": "https://picsum.photos/seed/gtc-a1/320/180",
             "mediaUrl": "https://picsum.photos/seed/gtc-a1-full/1920/1080",
-            "kind": "image"
+            "kind": "image",
+            "created_date": "2026-04-21T12:00:00.000Z"
         }
     ],
     "venue_item_assigned": [

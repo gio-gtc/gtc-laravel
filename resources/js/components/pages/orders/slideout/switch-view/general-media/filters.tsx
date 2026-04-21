@@ -127,7 +127,12 @@ export default function Filters({
                     </div>
                 </PopoverContent>
             </Popover>
-            <Button variant="outline" onClick={cycleSortDirection}>
+            <Button
+                variant="outline"
+                onClick={cycleSortDirection}
+                title="Sort by created date"
+                aria-label="Sort by created date"
+            >
                 <SortIcon className="size-3 text-gray-400" /> Sort
             </Button>
         </div>
@@ -136,37 +141,23 @@ export default function Filters({
 
 type RowWithStatus = {
     status: MediaTableRow['status'];
-    order_id?: number;
+    created_date: string;
 };
 
 export function filterAndSortRows<T extends RowWithStatus>(
     rows: T[],
-    venueOrders: { id: number }[],
     statusFilter: MediaStatusFilter,
     sortDirection: SortDirection,
-    orderCatalog: { id: number; date: string }[],
 ): T[] {
-    let result = rows.map((row, i) => ({
-        ...row,
-        order_id: venueOrders[i % venueOrders.length]?.id,
-    })) as T[];
+    let result = rows as T[];
 
     if (statusFilter.length > 0) {
         result = result.filter((row) => statusFilter.includes(row.status));
     }
 
     if (sortDirection === 'asc' || sortDirection === 'desc') {
-        const orderMap = new Map(
-            orderCatalog.map((o) => [o.id, o.date] as const),
-        );
         result = [...result].sort((a, b) => {
-            const dateA =
-                (a.order_id != null ? orderMap.get(a.order_id) : undefined) ??
-                '';
-            const dateB =
-                (b.order_id != null ? orderMap.get(b.order_id) : undefined) ??
-                '';
-            const cmp = String(dateA).localeCompare(String(dateB));
+            const cmp = a.created_date.localeCompare(b.created_date);
             return sortDirection === 'asc' ? cmp : -cmp;
         });
     }

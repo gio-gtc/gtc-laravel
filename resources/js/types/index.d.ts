@@ -264,8 +264,8 @@ export interface MediaTableRow {
         onApprove?: () => void;
         onDownload?: (optionId: string) => void;
     };
-    /** Order ID for sorting by order creation date */
-    order_id?: number;
+    /** ISO 8601 UTC — used for General Media sort by created date */
+    created_date: string;
 }
 
 export interface MediaTableProps {
@@ -309,8 +309,8 @@ export interface StaticAssetsTableRow {
         onApprove?: () => void;
         onDownload?: (optionId: string) => void;
     };
-    /** Order ID for sorting by order creation date */
-    order_id?: number;
+    /** ISO 8601 UTC — used for General Media sort by created date */
+    created_date: string;
 }
 
 export interface StaticAssetsMediaTableProps {
@@ -347,6 +347,8 @@ export interface VenueItemsRowBase {
     tour_venue_id: number;
     type: VenueItemsRowType;
     dueDate: string;
+    /** ISO 8601 UTC — line creation time (mock + API) */
+    created_date: string;
 }
 
 /** Line items for broadcast, radio, or social (video/audio spots). */

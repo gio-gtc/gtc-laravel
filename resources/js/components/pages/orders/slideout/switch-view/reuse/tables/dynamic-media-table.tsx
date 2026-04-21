@@ -189,7 +189,6 @@ export default function MediaTable({
                                                 </TableCell>
 
                                                 {/* Cut Name Section */}
-                                                {/* TODO: Figure out how to quick edit this currently input (string) but data is type + cut */}
                                                 <TableCell>
                                                     {/* {cellEditing ? (
                                                         <EditableCellInput

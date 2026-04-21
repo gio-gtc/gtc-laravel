@@ -19,6 +19,10 @@ const jsonPath = join(__dirname, '../config/mockdata/generated/venueItems.json')
 const allowedArtPackages = new Set<string>(VENUE_ITEM_ART_PACKAGE_TYPES);
 const allowedCardHolders = new Set<string>(VENUE_ITEM_SOCIAL_CARD_HOLDERS);
 
+/** ISO 8601 with Z suffix (UTC), e.g. 2026-04-21T12:00:00.000Z */
+const ISO_UTC_RE =
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+
 type VenueItemRow = {
     id: string;
     type: string;
@@ -35,6 +39,14 @@ const data = JSON.parse(readFileSync(jsonPath, 'utf8')) as {
 
 let errors = 0;
 for (const row of data.venue_items) {
+    const created = (row as { created_date?: string }).created_date;
+    if (typeof created !== 'string' || !ISO_UTC_RE.test(created)) {
+        console.error(
+            `Invalid or missing created_date on row ${row.id}: expected ISO 8601 UTC (…Z), got ${JSON.stringify(created)}`,
+        );
+        errors++;
+    }
+
     const { type, spot_type: st, cut, id } = row;
     if (type === 'broadcast') {
         if (!st || !cut || !isValidBroadcastSpotCut(st, cut)) {
