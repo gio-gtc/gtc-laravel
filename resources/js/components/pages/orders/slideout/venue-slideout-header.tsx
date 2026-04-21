@@ -102,7 +102,7 @@ export default function VenueSlideoutHeader({
 
             {/* Main content: Title and details */}
             <Divider className="shadow-lg" />
-            <SheetTitle className="slide-out-container text-[28px] font-medium text-black">
+            <SheetTitle className="px-3 py-[7px] text-[28px] font-medium text-black">
                 {tour}
             </SheetTitle>
             <Divider />

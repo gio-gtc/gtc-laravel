@@ -6,7 +6,6 @@ import GeneralMediaView from './general-media';
 import LocalArtView from './local-art';
 
 interface SwitchViewProps {
-    defaultToSwitched?: boolean;
     order: Tour | null;
     venueItem: { orderVenue: TourVenue; venue: Venue | null } | null;
     selectedRowIds: ReadonlySet<string | number>;
@@ -19,7 +18,6 @@ interface SwitchViewProps {
 }
 
 export default function SwitchView({
-    defaultToSwitched = false,
     order,
     venueItem,
     selectedRowIds,
@@ -27,27 +25,30 @@ export default function SwitchView({
     onClearSelection,
     onOpenAttachModal,
 }: SwitchViewProps) {
-    const [isSwitched, setIsSwitched] = useState(defaultToSwitched);
+    const [selected, setSelected] = useState<'local' | 'generic'>('generic');
 
     useEffect(() => {
         onClearSelection();
-    }, [isSwitched, onClearSelection]);
+    }, [selected, onClearSelection]);
 
     return (
         <>
-            <div className="flex gap-1 rounded-lg bg-neutral-100 p-1">
+            <div className="flex gap-1 rounded-lg border bg-neutral-100 p-1">
                 <SwitchButton
                     title="General Media"
-                    active={!isSwitched}
-                    setIsSwitched={setIsSwitched}
+                    selected={selected}
+                    value={'generic'}
+                    setSelected={setSelected}
                 />
                 <SwitchButton
                     title="Local Art"
-                    active={isSwitched}
-                    setIsSwitched={setIsSwitched}
+                    selected={selected}
+                    value={'local'}
+                    setSelected={setSelected}
                 />
             </div>
-            {isSwitched ? (
+
+            {selected === 'local' ? (
                 <LocalArtView
                     venueItem={venueItem}
                     selectedRowIds={selectedRowIds}
@@ -68,24 +69,29 @@ export default function SwitchView({
 
 function SwitchButton({
     title,
-    active,
-    setIsSwitched,
+    selected,
+    value,
+    setSelected,
 }: {
     title: string;
-    active: boolean;
-    setIsSwitched: Dispatch<SetStateAction<boolean>>;
+    selected: 'local' | 'generic';
+    value: 'local' | 'generic';
+    setSelected: Dispatch<SetStateAction<'local' | 'generic'>>;
 }) {
-    const activeClasses = active
-        ? 'bg-white shadow-xs'
-        : 'text-neutral-500 hover:bg-neutral-200/60 hover:text-black';
+    const selectedClasses =
+        selected === value
+            ? 'bg-white shadow-xs'
+            : 'text-neutral-500 hover:bg-neutral-200/60 hover:text-black';
+
+    console.log({ selected, value });
     return (
         <Button
             variant="ghost"
             size="sm"
-            onClick={() => setIsSwitched((prevState) => !prevState)}
+            onClick={() => setSelected(value)}
             className={cn(
                 'flex items-center rounded-md px-3.5 py-1.5 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
-                activeClasses,
+                selectedClasses,
             )}
         >
             {title}
