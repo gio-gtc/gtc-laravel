@@ -49,7 +49,8 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[988px]">
+            {/* <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[988px]"> */}
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[800px]">
                 <DialogHeader>
                     <DialogTitle>Add Tour</DialogTitle>
                 </DialogHeader>

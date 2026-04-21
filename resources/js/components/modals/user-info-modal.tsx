@@ -1,6 +1,5 @@
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import InputError from '@/components/input-error';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -18,6 +17,7 @@ import { type SharedData, type User } from '@/types';
 import { Form, usePage } from '@inertiajs/react';
 import { Camera, HelpCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { UserAvatar } from '../ui/user-avatar';
 import Divider from '../utils/divider';
 
 function splitName(fullName: string) {
@@ -133,29 +133,10 @@ export default function UserInfoModal({
                                         </Label>
 
                                         <div className="relative w-fit">
-                                            <Avatar className="h-24 w-24 overflow-hidden rounded-full">
-                                                <AvatarImage
-                                                    src={
-                                                        photoPreviewUrl ??
-                                                        (isCreateMode
-                                                            ? undefined
-                                                            : user.avatar) ??
-                                                        undefined
-                                                    }
-                                                    alt={
-                                                        isCreateMode
-                                                            ? 'Contact'
-                                                            : user.name
-                                                    }
-                                                />
-                                                <AvatarFallback className="rounded-full bg-neutral-200 text-black">
-                                                    {isCreateMode
-                                                        ? 'CN'
-                                                        : getInitials(
-                                                              user.name,
-                                                          )}
-                                                </AvatarFallback>
-                                            </Avatar>
+                                            <UserAvatar
+                                                user={user}
+                                                className="size-[88px] rounded-full border border-gray-100 p-0.5"
+                                            />
 
                                             <label
                                                 htmlFor="photo"
