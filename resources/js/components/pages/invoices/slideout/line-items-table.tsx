@@ -91,6 +91,8 @@ export default function InvoiceLineItemsTable({
                                 <TableCell className="xs-gray-500-weight-600">
                                     {item.id}
                                 </TableCell>
+
+                                {/* Code Cell */}
                                 <TableCell>
                                     <EditableCellInput
                                         variant="invoiceSlideout"
@@ -106,6 +108,8 @@ export default function InvoiceLineItemsTable({
                                         disabled={isDeleted}
                                     />
                                 </TableCell>
+
+                                {/* Description Cell */}
                                 <TableCell>
                                     <EditableCellInput
                                         variant="invoiceSlideout"
@@ -136,7 +140,7 @@ export default function InvoiceLineItemsTable({
                                 <TableCell>
                                     <EditableCellInput
                                         variant="invoiceSlideout"
-                                        className="!text-gray-400"
+                                        className="justify-center !text-gray-400"
                                         value={item.quantity}
                                         itemId={item.id}
                                         field="quantity"
@@ -162,7 +166,7 @@ export default function InvoiceLineItemsTable({
                                 <TableCell>
                                     <EditableCellInput
                                         variant="invoiceSlideout"
-                                        className="!text-gray-400"
+                                        className="justify-end !text-gray-400"
                                         value={item.price}
                                         itemId={item.id}
                                         field="price"
