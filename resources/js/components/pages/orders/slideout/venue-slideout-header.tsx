@@ -105,7 +105,7 @@ export default function VenueSlideoutHeader({
             <SheetTitle className="px-3 py-[7px] text-[28px] font-medium text-black">
                 {tour}
             </SheetTitle>
-            <Divider />
+            <Divider variant="fade" />
             <div className="slide-out-container flex-1">
                 <div className="sm-black-weight-500">
                     <p>{venueDisplay}</p>
@@ -115,7 +115,7 @@ export default function VenueSlideoutHeader({
                     {presaleInfo && <p>{presaleInfo}</p>}
                 </div>
             </div>
-            <Divider />
+            <Divider variant="fade" />
         </SheetHeader>
     );
 }

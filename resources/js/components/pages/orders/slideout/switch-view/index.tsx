@@ -83,7 +83,6 @@ function SwitchButton({
             ? 'bg-white shadow-xs'
             : 'text-neutral-500 hover:bg-neutral-200/60 hover:text-black';
 
-    console.log({ selected, value });
     return (
         <Button
             variant="ghost"

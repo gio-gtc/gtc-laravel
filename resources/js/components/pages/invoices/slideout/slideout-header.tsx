@@ -61,7 +61,7 @@ export default function InvoiceSlideoutHeader({
                     {venue}, {market}
                 </p>
             </div>
-            <Divider />
+            <Divider variant="fade" />
         </SheetHeader>
     );
 }
