@@ -116,7 +116,7 @@ export default function AddVenueModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[890px]">
+            <DialogContent className="overflow-y-visible sm:max-w-[890px]">
                 <DialogHeader>
                     <DialogTitle>
                         {order && (

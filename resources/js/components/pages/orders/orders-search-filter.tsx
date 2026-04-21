@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { type Tour, type TourVenue, type User, type Venue } from '@/types';
 import { Search, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { type Tour, type TourVenue, type User, type Venue } from '@/types';
 
 export type SuggestionType =
     | 'tour'
@@ -128,7 +128,10 @@ export default function OrdersSearchFilter({
 
                 const assignees = getTourVenueAssignees(orderVenue.id);
                 for (const collab of assignees) {
-                    if (collab.name && !seen.has(`collaborator:${collab.name}`)) {
+                    if (
+                        collab.name &&
+                        !seen.has(`collaborator:${collab.name}`)
+                    ) {
                         seen.add(`collaborator:${collab.name}`);
                         items.push({
                             type: 'collaborator',
@@ -209,7 +212,9 @@ export default function OrdersSearchFilter({
             case 'Enter':
                 e.preventDefault();
                 if (highlightedIndex >= 0) {
-                    handleSuggestionSelect(filteredSuggestions[highlightedIndex]);
+                    handleSuggestionSelect(
+                        filteredSuggestions[highlightedIndex],
+                    );
                 }
                 break;
             case 'Escape':
@@ -277,7 +282,7 @@ export default function OrdersSearchFilter({
                     {isDropdownOpen && (
                         <div
                             ref={dropdownRef}
-                            className="absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-auto rounded-md border bg-popover shadow-md"
+                            className="absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-auto rounded-md border bg-popover shadow-md"
                         >
                             {filteredSuggestions.map((suggestion, index) => (
                                 <button
@@ -310,7 +315,7 @@ export default function OrdersSearchFilter({
                 <Button
                     variant="outline"
                     type="button"
-                    className="w-9 rounded-full"
+                    className="h-[32px] w-9 rounded-full"
                     onClick={() => setIsSearchExpanded(true)}
                 >
                     <Search className="size-3.5 text-gray-400" />
