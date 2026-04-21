@@ -1,5 +1,5 @@
-import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
 import { Input } from '@/components/ui/input';
+import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
 import { type Venue } from '@/types';
 import { useMemo, useState } from 'react';
 
@@ -70,7 +70,6 @@ export default function VenueAutocomplete({
                 type="text"
                 value={displayValue}
                 onChange={handleInputChange}
-                onFocus={handleInputFocus}
                 onBlur={handleInputBlur}
                 placeholder="Search venues..."
                 required={required}
