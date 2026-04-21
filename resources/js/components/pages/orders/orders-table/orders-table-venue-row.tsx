@@ -70,7 +70,11 @@ export default function OrdersTableVenueRow({
                 <UserAvatarsStack users={assignees} />
             </TableCell>
             <TableCell className="flex gap-0.5 px-2 py-[1px] text-gray-500">
-                <StatusIconGroup status={venueItem.orderVenue.status} />
+                <StatusIconGroup
+                    status={venueItem.orderVenue.status}
+                    className="h-[27px] w-[27px]"
+                    iconClassName="h-[23px] w-[23px]"
+                />
             </TableCell>
         </TableRow>
     );

@@ -1,4 +1,5 @@
 import { FilledArrow } from '@/components/ui/icons';
+import { useContainedSheetOpen } from '@/components/ui/sheet';
 import {
     Table,
     TableBody,
@@ -38,7 +39,6 @@ import AddVenueModal from '../add-venue-modal';
 import OrdersTableHeaderActions, {
     type GroupedOrderData,
 } from '../orders-table-header-actions';
-import { useContainedSheetOpen } from '@/components/ui/sheet';
 import VenueDetailSlideout from '../slideout';
 import OrdersTableDemoRow from './orders-table-demo-row';
 import {
@@ -472,14 +472,24 @@ function OrdersTable() {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-[20%]">Name</TableHead>
-                            <TableHead className="w-[35%]">Venue</TableHead>
-                            <TableHead className="w-[10%]">Due Date</TableHead>
-                            <TableHead className="w-[11%]">Client</TableHead>
-                            <TableHead className="w-[12%]">
+                            <TableHead className="w-full max-w-[20%]">
+                                Name
+                            </TableHead>
+                            <TableHead className="w-full max-w-[35%]">
+                                Venue
+                            </TableHead>
+                            <TableHead className="w-full max-w-[10%]">
+                                Due Date
+                            </TableHead>
+                            <TableHead className="w-full max-w-[11%]">
+                                Client
+                            </TableHead>
+                            <TableHead className="w-full max-w-[12%]">
                                 Collaborators
                             </TableHead>
-                            <TableHead className="w-[12%]">Status</TableHead>
+                            <TableHead className="w-full max-w-[12%]">
+                                Status
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

@@ -47,9 +47,15 @@ const ICON_MAP: Record<
 
 interface StatusIconProps extends React.HTMLAttributes<HTMLDivElement> {
     status: TourVenueStatusValue;
+    iconClassName?: string;
 }
 
-function StatusIcon({ status, className, ...props }: StatusIconProps) {
+function StatusIcon({
+    status,
+    className,
+    iconClassName,
+    ...props
+}: StatusIconProps) {
     const { icon: Icon, containerClass } = ICON_MAP[status];
 
     return (
@@ -61,21 +67,30 @@ function StatusIcon({ status, className, ...props }: StatusIconProps) {
             )}
             {...props}
         >
-            <Icon className="size-4 text-white" />
+            <Icon className={cn('size-4 text-white', iconClassName)} />
         </div>
     );
 }
 
 const StatusIconGroup = ({
     status,
+    className,
+    iconClassName,
 }: {
     status: TourVenueStatusValue[] | null;
+    iconClassName?: string;
+    className?: string;
 }) => {
     if (status == null) return <></>;
 
     return status.map((status, index) => (
         // TODO: Check if key is unique enough
-        <StatusIcon key={`${status}-${index}`} status={status} />
+        <StatusIcon
+            key={`${status}-${index}`}
+            status={status}
+            iconClassName={iconClassName}
+            className={className}
+        />
     ));
 };
 
