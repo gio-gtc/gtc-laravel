@@ -274,7 +274,7 @@ export default function InvoiceDetailSlideout({
                     </div>
                 </div>
 
-                <Divider />
+                <Divider variant="fade" />
 
                 {/* Action Buttons Section */}
                 <InvoiceActionButtons
