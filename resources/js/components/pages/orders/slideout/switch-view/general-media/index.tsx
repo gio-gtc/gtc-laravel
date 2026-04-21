@@ -54,8 +54,8 @@ import AddAudioModal from './modals/add-audio-modal';
 import AddBroadcastStreamingModal from './modals/add-broadcast-streaming-modal';
 import AddKeyArtStaticAssetsModal from './modals/add-key-art-static-assets-modal';
 import AddSocialVideoModal from './modals/add-social-video-modal';
-import { VENUE_ITEM_ART_PACKAGE_TYPES } from './modals/spot-type-cuts-options';
 import RevisionRequestModal from './modals/revision-request-modal';
+import { VENUE_ITEM_ART_PACKAGE_TYPES } from './modals/spot-type-cuts-options';
 import VideoPlayerModal from './modals/video-player-modal';
 
 interface GeneralMediaViewProps {
@@ -156,11 +156,7 @@ function GeneralMediaView({
                     : undefined,
             };
         },
-        [
-            catalog.venue_item_status,
-            venueLineCatalog,
-            usersWithFallback,
-        ],
+        [catalog.venue_item_status, venueLineCatalog, usersWithFallback],
     );
 
     const venueBroadcastWithCallbacks = useMemo(() => {
@@ -299,9 +295,9 @@ function GeneralMediaView({
 
     const [audioModalOpen, setAudioModalOpen] = useState(false);
     const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
-    const [broadcastModalMode, setBroadcastModalMode] = useState<'add' | 'edit'>(
-        'add',
-    );
+    const [broadcastModalMode, setBroadcastModalMode] = useState<
+        'add' | 'edit'
+    >('add');
     const [broadcastEditRow, setBroadcastEditRow] =
         useState<VenueItemsBroadcastRow | null>(null);
     const [socialModalMode, setSocialModalMode] = useState<'add' | 'edit'>(
@@ -457,11 +453,12 @@ function GeneralMediaView({
     const openDueDateBulkEdit = useCallback(
         (rowId: string | number) => {
             const broadcastRow = localBroadcastRows.find((r) => r.id === rowId);
-            const socialLineRow = localSocialLineRows.find((r) => r.id === rowId);
+            const socialLineRow = localSocialLineRows.find(
+                (r) => r.id === rowId,
+            );
             const radioRow = localRadioRows.find((r) => r.id === rowId);
             const staticRow = localStaticRows.find((r) => r.id === rowId);
-            const row =
-                broadcastRow ?? socialLineRow ?? radioRow ?? staticRow;
+            const row = broadcastRow ?? socialLineRow ?? radioRow ?? staticRow;
             if (!row) return;
             setDueDateSeedIso(tableDueDateDisplayToIso(row.dueDate));
             setDueDateModalOpen(true);
@@ -477,11 +474,12 @@ function GeneralMediaView({
     const openAssignedBulkEdit = useCallback(
         (rowId: string | number) => {
             const broadcastRow = localBroadcastRows.find((r) => r.id === rowId);
-            const socialLineRow = localSocialLineRows.find((r) => r.id === rowId);
+            const socialLineRow = localSocialLineRows.find(
+                (r) => r.id === rowId,
+            );
             const radioRow = localRadioRows.find((r) => r.id === rowId);
             const staticRow = localStaticRows.find((r) => r.id === rowId);
-            const row =
-                broadcastRow ?? socialLineRow ?? radioRow ?? staticRow;
+            const row = broadcastRow ?? socialLineRow ?? radioRow ?? staticRow;
             if (!row) return;
             setAssignedSeed([...row.assigned]);
             setAssignedModalOpen(true);
@@ -553,47 +551,37 @@ function GeneralMediaView({
 
     const filteredBroadcastData = useMemo(
         () =>
-            filterAndSortRows(
-                localBroadcastRows,
-                statusFilter,
-                sortDirection,
-            ),
+            filterAndSortRows(localBroadcastRows, statusFilter, sortDirection),
         [localBroadcastRows, statusFilter, sortDirection],
     );
 
     const filteredSocialLineData = useMemo(
         () =>
-            filterAndSortRows(
-                localSocialLineRows,
-                statusFilter,
-                sortDirection,
-            ),
+            filterAndSortRows(localSocialLineRows, statusFilter, sortDirection),
         [localSocialLineRows, statusFilter, sortDirection],
     );
 
     const filteredRadioData = useMemo(
-        () =>
-            filterAndSortRows(localRadioRows, statusFilter, sortDirection),
+        () => filterAndSortRows(localRadioRows, statusFilter, sortDirection),
         [localRadioRows, statusFilter, sortDirection],
     );
 
     const filteredStaticAssetsData = useMemo(
-        () =>
-            filterAndSortRows(localStaticRows, statusFilter, sortDirection),
+        () => filterAndSortRows(localStaticRows, statusFilter, sortDirection),
         [localStaticRows, statusFilter, sortDirection],
     );
 
     return (
         <>
             {/* Media tables */}
-            <div className="slide-out-container space-y-4">
-                <Filters
-                    statusFilter={statusFilter}
-                    onStatusFilterChange={setStatusFilter}
-                    sortDirection={sortDirection}
-                    onSortDirectionChange={setSortDirection}
-                    demoLinkHref={demoLinkHref}
-                />
+            <Filters
+                statusFilter={statusFilter}
+                onStatusFilterChange={setStatusFilter}
+                sortDirection={sortDirection}
+                onSortDirectionChange={setSortDirection}
+                demoLinkHref={demoLinkHref}
+            />
+            <div className="space-y-4 px-3 py-1">
                 <MediaTable
                     title="Broadcast & Streaming Video"
                     data={filteredBroadcastData}
@@ -610,7 +598,10 @@ function GeneralMediaView({
                         setBroadcastModalOpen(true);
                     }}
                     onUploadRow={(row) =>
-                        onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
+                        onOpenAttachModal?.({
+                            rowId: row.id,
+                            isci: row.isci,
+                        })
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     onEditLineInModal={(row) => {
@@ -713,11 +704,11 @@ function GeneralMediaView({
             </div>
 
             {/* Submit Order Buttons */}
-            <div className="flex justify-center gap-1 rounded-lg bg-neutral-100 p-1">
-                <Button className="cursor-pointer bg-white text-gray-700 hover:bg-gray-200">
+            <div className="flex justify-center gap-1 rounded-lg border bg-neutral-100 px-1 py-0.5">
+                <Button className="h-[36px]" variant="outline" size="md">
                     Cancel
                 </Button>
-                <Button className="cursor-pointer bg-brand-gtc-red hover:bg-brand-gtc-red/70">
+                <Button className="h-[36px]" variant="destructive" size="md">
                     Submit Order
                 </Button>
             </div>
@@ -835,7 +826,9 @@ function GeneralMediaView({
             >
                 <DialogContent className="max-w-4xl">
                     <DialogHeader>
-                        <DialogTitle>{imagePreview?.title ?? 'Preview'}</DialogTitle>
+                        <DialogTitle>
+                            {imagePreview?.title ?? 'Preview'}
+                        </DialogTitle>
                     </DialogHeader>
                     {imagePreview ? (
                         <img

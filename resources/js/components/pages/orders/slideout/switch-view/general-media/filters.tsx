@@ -69,9 +69,9 @@ export default function Filters({
               : ArrowUpDown;
 
     return (
-        <div className="flex items-center justify-end gap-1">
+        <div className="flex items-center justify-end gap-1 px-3 pt-1">
             {demoLinkHref != null && demoLinkHref !== '' ? (
-                <Button variant="outline" asChild>
+                <Button variant="outline" asChild size="md">
                     <a
                         href={demoLinkHref}
                         target="_blank"
@@ -83,7 +83,7 @@ export default function Filters({
             ) : null}
             <Popover>
                 <PopoverTrigger asChild>
-                    <Button variant="outline">
+                    <Button variant="outline" size="md">
                         <Filter
                             className={cn(
                                 'size-3 text-gray-400',
@@ -129,6 +129,7 @@ export default function Filters({
             </Popover>
             <Button
                 variant="outline"
+                size="md"
                 onClick={cycleSortDirection}
                 title="Sort by created date"
                 aria-label="Sort by created date"

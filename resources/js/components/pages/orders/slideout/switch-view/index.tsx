@@ -85,7 +85,7 @@ function SwitchButton({
 
     return (
         <Button
-            variant="ghost"
+            variant={selected === value ? 'outline' : 'ghost'}
             size="sm"
             onClick={() => setSelected(value)}
             className={cn(
