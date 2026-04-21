@@ -15,7 +15,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
-import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
 import { EditableCellSelect } from '@/components/utils/editable-table/editable-cell-select';
 import { durationSelectOptionsForMediaTable } from '@/components/utils/editable-table/media-duration-options';
 import { VenueItemStatusBadge } from '@/components/utils/venue-item-status-badge';
@@ -192,7 +191,7 @@ export default function MediaTable({
                                                 {/* Cut Name Section */}
                                                 {/* TODO: Figure out how to quick edit this currently input (string) but data is type + cut */}
                                                 <TableCell>
-                                                    {cellEditing ? (
+                                                    {/* {cellEditing ? (
                                                         <EditableCellInput
                                                             value={row.cutName}
                                                             itemId={row.id}
@@ -236,9 +235,9 @@ export default function MediaTable({
                                                                 isDisabledRow
                                                             }
                                                         />
-                                                    ) : (
-                                                        row.cutName
-                                                    )}
+                                                    ) : ( */}
+                                                    {row.cutName}
+                                                    {/* )} */}
                                                 </TableCell>
                                                 <TableCell>
                                                     {cellEditing ? (
