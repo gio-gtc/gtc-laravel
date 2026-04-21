@@ -87,7 +87,7 @@ export default function Dashboard() {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-6 overflow-x-auto rounded-xl">
+            <div className="flex h-full max-w-[1076px] flex-1 flex-col gap-6 overflow-x-auto rounded-xl">
                 <Heading
                     title={`Welcome back, ${name}`}
                     description={todaysDateDisplay()}
