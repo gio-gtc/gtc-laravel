@@ -36,8 +36,8 @@ export default function OrdersTableHeaderActions({
     getTourVenueAssignees,
 }: OrdersTableHeaderActionsProps) {
     return (
-        <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1">
+        <div className="flex items-center justify-between gap-1 overflow-y-auto">
+            <div className="items-center">
                 <Button
                     variant="outline"
                     size={'md'}
