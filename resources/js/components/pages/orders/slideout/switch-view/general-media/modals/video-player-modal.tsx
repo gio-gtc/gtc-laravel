@@ -198,7 +198,12 @@ export default function VideoPlayerModal({
     ]);
 
     useEffect(() => {
-        if (!isOpen || !hasVideo || !containerReady || !videoJsContainerRef.current) {
+        if (
+            !isOpen ||
+            !hasVideo ||
+            !containerReady ||
+            !videoJsContainerRef.current
+        ) {
             return;
         }
 
@@ -311,9 +316,7 @@ export default function VideoPlayerModal({
                 <div
                     className={cn(
                         'video-player-modal relative w-full overflow-hidden bg-black shadow-2xl',
-                        clientReviewActions
-                            ? 'aspect-video rounded-t-xl'
-                            : 'aspect-video rounded-xl',
+                        clientReviewActions ? 'aspect-video' : 'aspect-video',
                         isAudio ? 'is-audio' : '',
                     )}
                 >
@@ -370,7 +373,7 @@ export default function VideoPlayerModal({
                     )}
                 </div>
                 {clientReviewActions && (
-                    <div className="max-h-[45dvh] overflow-y-auto rounded-b-xl bg-background px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-2xl sm:max-h-none sm:px-4">
+                    <div className="max-h-[45dvh] overflow-y-auto bg-white/10 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-2xl sm:max-h-none sm:px-4">
                         <div className="flex justify-center">
                             <ApprovalButtons
                                 onReject={handleClientReviewReject}
