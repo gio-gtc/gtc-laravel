@@ -242,7 +242,7 @@ export default function InvoiceDetailSlideout({
                 <div className="space-y-6 px-3">
                     {/* Customer and Invoice Details Section */}
                     <div className="space-y-4">
-                        <div className="flex flex-col gap-4 md:flex-row">
+                        <div className="flex flex-col gap-2 md:flex-row md:gap-4">
                             <InvoiceAddressForm
                                 countries={countries}
                                 formData={{

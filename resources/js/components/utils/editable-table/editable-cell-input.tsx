@@ -124,7 +124,8 @@ export function EditableCellInput({
                     : 'xs-gray-500-weight-600 cursor-pointer',
                 alignmentClasses[align],
                 variant === 'invoiceSlideout' && 'xs-gray-500-weight-600',
-                variant === 'invoiceSlideout' && 'flex h-full items-center',
+                variant === 'invoiceSlideout' &&
+                    'flex h-full items-center truncate',
                 className,
             )}
         >
