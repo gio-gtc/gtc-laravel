@@ -5,32 +5,13 @@ import { Search, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface ExpandableSearchProps {
-    /**
-     * Callback fired when the search query changes
-     */
     onSearchChange: (query: string) => void;
-    /**
-     * Placeholder text for the search input
-     */
     placeholder?: string;
-    /**
-     * Width of the expanded search input (default: 'w-64')
-     */
     expandedWidth?: string;
-    /**
-     * Duration of the transition animation in milliseconds (default: 300)
-     */
     transitionDuration?: number;
-    /**
-     * Optional className for the container
-     */
     className?: string;
 }
 
-/**
- * Reusable expandable search component with smooth animations.
- * Transforms from an icon button to a full search input when clicked.
- */
 export function ExpandableSearch({
     onSearchChange,
     placeholder = 'Search...',

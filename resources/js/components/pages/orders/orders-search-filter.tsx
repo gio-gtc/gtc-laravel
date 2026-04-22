@@ -233,7 +233,7 @@ export default function OrdersSearchFilter({
         <div
             ref={containerRef}
             className={cn(
-                'relative flex items-center overflow-visible transition-[width] ease-in-out',
+                'relative flex items-center overflow-visible pr-[2px] transition-[width] ease-in-out',
                 isSearchExpanded ? expandedWidth : 'w-9',
                 className,
             )}
