@@ -1,21 +1,37 @@
 import { useSyncExternalStore } from 'react';
 
 const MOBILE_BREAKPOINT = 768;
+const MOBILE_QUERY = `(max-width: ${MOBILE_BREAKPOINT - 1}px)`;
+const TOUCH_LANDSCAPE_QUERY = '(pointer: coarse) and (orientation: landscape)';
 
-const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+function getMediaQueries() {
+    if (typeof window === 'undefined') return [];
+    return [
+        window.matchMedia(MOBILE_QUERY),
+        window.matchMedia(TOUCH_LANDSCAPE_QUERY),
+    ];
+}
 
-function mediaQueryListener(callback: (event: MediaQueryListEvent) => void) {
-    mql.addEventListener('change', callback);
+function mediaQueryListener(callback: () => void) {
+    const mediaQueries = getMediaQueries();
+    mediaQueries.forEach((mql) => mql.addEventListener('change', callback));
 
     return () => {
-        mql.removeEventListener('change', callback);
+        mediaQueries.forEach((mql) =>
+            mql.removeEventListener('change', callback),
+        );
     };
 }
 
-function isSmallerThanBreakpoint() {
-    return mql.matches;
+function isCompactTouchViewport() {
+    const [mobileWidthMql, touchLandscapeMql] = getMediaQueries();
+    return Boolean(mobileWidthMql?.matches || touchLandscapeMql?.matches);
 }
 
 export function useIsMobile() {
-    return useSyncExternalStore(mediaQueryListener, isSmallerThanBreakpoint);
+    return useSyncExternalStore(
+        mediaQueryListener,
+        isCompactTouchViewport,
+        () => false,
+    );
 }

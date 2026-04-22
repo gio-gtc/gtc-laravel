@@ -89,7 +89,10 @@ export default function InvoiceAdvancedFilters({
                         Filters
                     </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 p-4">
+                <DropdownMenuContent
+                    align="end"
+                    className="max-h-[80vh] w-56 overflow-y-auto p-4"
+                >
                     <div className="space-y-4">
                         {/* Country Filter Section */}
                         <div className="space-y-2">

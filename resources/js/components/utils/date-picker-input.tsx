@@ -257,7 +257,7 @@ export default function DatePickerInput({
                 <Sheet open={open} onOpenChange={handleOpenChange}>
                     <SheetContent
                         side="bottom"
-                        className="max-h-[90vh] overflow-y-auto"
+                        className="max-h-[100vh] overflow-y-auto"
                     >
                         {dialogTitle && (
                             <SheetHeader>
