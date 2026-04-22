@@ -119,7 +119,7 @@ export default function MediaTable({
                                                     )
                                                 }
                                             >
-                                                <TableCell>
+                                                <TableCell className="truncate">
                                                     <DropdownMenu>
                                                         <DropdownMenuTrigger
                                                             asChild
@@ -189,7 +189,7 @@ export default function MediaTable({
                                                 </TableCell>
 
                                                 {/* Cut Name Section */}
-                                                <TableCell>
+                                                <TableCell className="truncate">
                                                     {/* {cellEditing ? (
                                                         <EditableCellInput
                                                             value={row.cutName}
@@ -340,10 +340,12 @@ export default function MediaTable({
                                                         {row.dueDate}
                                                     </div>
                                                 </TableCell>
+
+                                                {/* Assigned Section */}
                                                 <TableCell>
                                                     <div
                                                         className={cn(
-                                                            'min-h-[30px]',
+                                                            'flex min-h-[30px] align-middle',
                                                             !isDisabledRow &&
                                                                 'cursor-pointer',
                                                         )}

@@ -112,7 +112,7 @@ export default function StaticAssetsMediaTable({
                                                 }
                                             >
                                                 {/* Cut Name Section */}
-                                                <TableCell>
+                                                <TableCell className="truncate">
                                                     {cellEditing ? (
                                                         <EditableCellSelect
                                                             variant="orderSlideoutTableCells"

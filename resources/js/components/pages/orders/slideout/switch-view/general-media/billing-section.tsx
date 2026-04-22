@@ -46,15 +46,19 @@ function BillingSection({ billingInvoices }: { billingInvoices: Invoice[] }) {
         <Table compactRows>
             <TableHeader>
                 <TableRow className="text-center">
-                    <TableHead className="w-[11%] text-center">
+                    <TableHead className="w-full max-w-[11%] text-center">
                         Invoice #
                     </TableHead>
-                    <TableHead className="w-[11%] text-center">Date</TableHead>
-                    <TableHead className="w-[56%] text-center">
+                    <TableHead className="w-full max-w-[11%] text-center">
+                        Date
+                    </TableHead>
+                    <TableHead className="w-full max-w-[56%] text-center">
                         Reference
                     </TableHead>
-                    <TableHead className="w-[12%] text-center">Amt</TableHead>
-                    <TableHead className="w-[10%] text-center">
+                    <TableHead className="w-full max-w-[12%] text-center">
+                        Amt
+                    </TableHead>
+                    <TableHead className="w-full max-w-[10%] text-center">
                         Download
                     </TableHead>
                 </TableRow>
@@ -97,8 +101,12 @@ function BillingSection({ billingInvoices }: { billingInvoices: Invoice[] }) {
                     <TableRow key={item.id} className="xs-gray-500-weight-600">
                         <TableCell />
                         <TableCell />
-                        <TableCell>{item.reference}</TableCell>
-                        <TableCell>{formatCurrency(item.amount)}</TableCell>
+                        <TableCell className="truncate">
+                            {item.reference}
+                        </TableCell>
+                        <TableCell className="truncate">
+                            {formatCurrency(item.amount)}
+                        </TableCell>
                         <TableCell />
                     </TableRow>
                 ))}

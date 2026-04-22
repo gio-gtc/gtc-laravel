@@ -44,7 +44,7 @@ export default function OrdersTableVenueRow({
         >
             <TableCell className={cn('px-2 py-0.5 text-gray-500')}>
                 <div className="flex items-center justify-between">
-                    <span className="pl-2">
+                    <span className="truncate pl-2">
                         {v?.city || ''}, {v?.state || ''}
                     </span>
                     <ChevronRight
@@ -57,18 +57,23 @@ export default function OrdersTableVenueRow({
                     />
                 </div>
             </TableCell>
-            <TableCell className={cn('px-2 py-0.5 text-gray-500')}>
+
+            <TableCell className={cn('truncate px-2 py-0.5 text-gray-500')}>
                 {v?.name || ''}
             </TableCell>
-            <TableCell className={cn('px-2 py-0.5 text-gray-500')}>
+
+            <TableCell className={cn('truncate px-2 py-0.5 text-gray-500')}>
                 {formatDate(venueItem.orderVenue.start_date)}
             </TableCell>
+
             <TableCell className={cn('px-2 py-0.5 text-gray-500')}>
                 {client && <UserAvatar user={client} />}
             </TableCell>
+
             <TableCell className={cn('px-2 py-0.5 text-gray-500')}>
                 <UserAvatarsStack users={assignees} />
             </TableCell>
+
             <TableCell className="flex gap-0.5 px-2 py-[1px] text-gray-500">
                 <StatusIconGroup
                     status={venueItem.orderVenue.status}

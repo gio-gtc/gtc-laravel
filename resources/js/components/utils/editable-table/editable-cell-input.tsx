@@ -107,7 +107,7 @@ export function EditableCellInput({
                 disabled={disabled}
                 variant={variant}
                 className={cn(
-                    'w-full p-0.5',
+                    'w-full min-w-[60px] p-0.5',
                     alignmentClasses[align],
                     className,
                 )}
@@ -119,13 +119,12 @@ export function EditableCellInput({
         <p
             onDoubleClick={handleDoubleClick}
             className={cn(
+                'flex h-full items-center truncate',
                 disabled
                     ? 'cursor-default'
                     : 'xs-gray-500-weight-600 cursor-pointer',
                 alignmentClasses[align],
                 variant === 'invoiceSlideout' && 'xs-gray-500-weight-600',
-                variant === 'invoiceSlideout' &&
-                    'flex h-full items-center truncate',
                 className,
             )}
         >

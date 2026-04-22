@@ -48,28 +48,28 @@ export default function LocalizedArtTable({
                         <Table compactRows>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="w-full max-w-[31%] text-center">
+                                    <TableHead className="w-full text-center md:max-w-[31%]">
                                         Description
                                     </TableHead>
-                                    <TableHead className="w-full max-w-[7%] text-center">
+                                    <TableHead className="w-full text-center md:max-w-[7%]">
                                         W
                                     </TableHead>
-                                    <TableHead className="w-full max-w-[7%] text-center">
+                                    <TableHead className="w-full text-center md:max-w-[7%]">
                                         H
                                     </TableHead>
-                                    <TableHead className="w-full max-w-[16%] text-center">
+                                    <TableHead className="w-full text-center md:max-w-[16%]">
                                         CTA
                                     </TableHead>
-                                    <TableHead className="w-full max-w-[10%] text-center">
+                                    <TableHead className="w-full text-center md:max-w-[10%]">
                                         Due Date
                                     </TableHead>
-                                    <TableHead className="w-full max-w-[10%] text-center">
+                                    <TableHead className="w-full text-center md:max-w-[10%]">
                                         Assigned
                                     </TableHead>
-                                    <TableHead className="w-full max-w-[7%] text-center">
+                                    <TableHead className="w-full text-center md:max-w-[7%]">
                                         Notes
                                     </TableHead>
-                                    <TableHead className="w-full max-w-[12%] text-center">
+                                    <TableHead className="w-full text-center md:max-w-[12%]">
                                         Download
                                     </TableHead>
                                 </TableRow>
