@@ -198,12 +198,7 @@ export default function VideoPlayerModal({
     ]);
 
     useEffect(() => {
-        if (
-            !isOpen ||
-            !hasVideo ||
-            !containerReady ||
-            !videoJsContainerRef.current
-        ) {
+        if (!isOpen || !hasVideo || !containerReady || !videoJsContainerRef.current) {
             return;
         }
 
@@ -300,7 +295,13 @@ export default function VideoPlayerModal({
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent
-                className="min-w-[560px] gap-0 overflow-hidden border-0 bg-transparent p-0 shadow-none"
+                className={cn(
+                    'gap-0 overflow-hidden border-0 bg-transparent p-0 shadow-none',
+                    'w-[min(calc(100vw-1rem),960px)] max-w-[min(calc(100vw-1rem),960px)]',
+                    clientReviewActions
+                        ? 'max-h-[calc(100dvh-1rem)]'
+                        : 'max-h-[calc(100dvh-2rem)]',
+                )}
                 onPointerDownOutside={onClose}
                 onEscapeKeyDown={onClose}
             >
@@ -308,7 +309,13 @@ export default function VideoPlayerModal({
                     {label ?? 'Video preview'}
                 </DialogTitle>
                 <div
-                    className={`video-player-modal relative aspect-video w-full overflow-hidden rounded-xl bg-black shadow-2xl ${clientReviewActions ? 'rounded-t-xl' : 'rounded-xl'} ${isAudio ? 'is-audio' : ''}`}
+                    className={cn(
+                        'video-player-modal relative w-full overflow-hidden bg-black shadow-2xl',
+                        clientReviewActions
+                            ? 'aspect-video rounded-t-xl'
+                            : 'aspect-video rounded-xl',
+                        isAudio ? 'is-audio' : '',
+                    )}
                 >
                     {isAudio && (
                         <style>{`.video-player-modal.is-audio .vjs-poster { display: block !important; }`}</style>
@@ -363,7 +370,7 @@ export default function VideoPlayerModal({
                     )}
                 </div>
                 {clientReviewActions && (
-                    <div className="rounded-b-xl px-4 py-3 shadow-2xl">
+                    <div className="max-h-[45dvh] overflow-y-auto rounded-b-xl bg-background px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-2xl sm:max-h-none sm:px-4">
                         <div className="flex justify-center">
                             <ApprovalButtons
                                 onReject={handleClientReviewReject}
@@ -371,7 +378,7 @@ export default function VideoPlayerModal({
                             />
                         </div>
                         <form
-                            className="flex items-center gap-2 border-neutral-200 pt-3"
+                            className="flex flex-col gap-2 border-neutral-200 pt-3 sm:flex-row sm:items-center"
                             onSubmit={handleClientReviewCommentSubmit}
                         >
                             <Input
@@ -379,18 +386,18 @@ export default function VideoPlayerModal({
                                 onChange={(ev) =>
                                     setClientReviewComment(ev.target.value)
                                 }
-                                placeholder="Add comment to Tour Venue"
+                                placeholder="Add comment to tour order"
                                 className={cn(
                                     'flex-1 bg-white',
                                     orderModalStyles.input,
                                 )}
                                 disabled={clientReviewCommentSending}
-                                aria-label="Add comment to Tour Venue"
+                                aria-label="Add comment to tour order"
                             />
                             <Button
                                 type="submit"
                                 className={cn(
-                                    'shrink-0 bg-brand-gtc-red hover:bg-brand-gtc-red/90',
+                                    'w-full shrink-0 bg-brand-gtc-red hover:bg-brand-gtc-red/90 sm:w-auto',
                                     orderModalStyles.input,
                                 )}
                                 disabled={

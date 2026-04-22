@@ -15,3 +15,22 @@
     border: none;
     background-color: var(--media-play-overlay-bg-hover);
 }
+
+@media (max-width: 640px) {
+    .video-player-modal .video-js.gtc-video-js .vjs-control-bar {
+        gap: 0.125rem;
+        padding-inline: 0.25rem;
+    }
+
+    .video-player-modal .video-js.gtc-video-js .vjs-time-control {
+        min-width: 0;
+        padding-inline: 0.25rem;
+        font-size: 11px;
+    }
+
+    .video-player-modal .video-js.gtc-video-js .vjs-playback-rate,
+    .video-player-modal .video-js.gtc-video-js .vjs-picture-in-picture-control,
+    .video-player-modal .video-js.gtc-video-js .vjs-remaining-time {
+        display: none;
+    }
+}
