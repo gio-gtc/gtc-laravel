@@ -163,10 +163,10 @@ export default function DateRangePicker({
                 <Sheet open={open} onOpenChange={handleOpenChange}>
                     <SheetContent
                         side="bottom"
-                        className="max-h-[100vh] overflow-y-auto"
+                        className="max-h-[100vh] gap-0 overflow-y-auto"
                     >
                         {dialogTitle && (
-                            <SheetHeader>
+                            <SheetHeader className="pb-0">
                                 <SheetTitle>{dialogTitle}</SheetTitle>
                             </SheetHeader>
                         )}
