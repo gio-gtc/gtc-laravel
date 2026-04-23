@@ -23,6 +23,7 @@ import NotesModal from '../reuse/modals/notes-modal';
 import SectionContainers from '../reuse/section-containers';
 import LocalizedArtTable from '../reuse/tables/localised-media-table';
 import AttachmentsSection from '../reuse/tables/sections/attachments-section-table';
+import LocalizedArtFormModal from './modals/localized-art-form-modal';
 
 function tableDueDateDisplayToIso(display: string): string | undefined {
     const trimmed = display.trim();
@@ -100,6 +101,17 @@ function LocalArtView({
     const [assignedModalOpen, setAssignedModalOpen] = useState(false);
     const [dueDateSeedIso, setDueDateSeedIso] = useState<string | undefined>();
     const [assignedSeed, setAssignedSeed] = useState<User[]>([]);
+    const [formModalOpen, setFormModalOpen] = useState(false);
+
+    const resolvedOrderId = useMemo(() => {
+        if (!venueItem) return null;
+        const match = catalog.orders.find(
+            (o) => o.tour_venue_id === venueItem.orderVenue.id,
+        );
+        return match?.id ?? null;
+    }, [catalog.orders, venueItem]);
+
+    const canOpenForm = Boolean(venueItem?.venue?.id);
 
     const openDueDateBulkEdit = useCallback(
         (rowId: string | number) => {
@@ -144,6 +156,7 @@ function LocalArtView({
                     data={localLocalizedRows}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
+                    onAdd={canOpenForm ? () => setFormModalOpen(true) : undefined}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
                     onOpenNotes={(row) => setNotesModalRow(row)}
@@ -181,6 +194,14 @@ function LocalArtView({
                         : []
                 }
                 users={usersWithFallback}
+            />
+
+            <LocalizedArtFormModal
+                isOpen={formModalOpen}
+                onClose={() => setFormModalOpen(false)}
+                mockVenueId={venueItem?.venue?.id ?? null}
+                orderId={resolvedOrderId}
+                tourVenueId={venueItem?.orderVenue.id ?? null}
             />
 
             {/* Attachments Section */}

@@ -5,6 +5,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DemoController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\UploadController;
+use App\Http\Controllers\VenueFormController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -31,6 +33,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('channels/{channelId}/messages/{id}', [ChannelMessageController::class, 'update']);
         Route::delete('channels/{channelId}/messages/{id}', [ChannelMessageController::class, 'destroy']);
     });
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/venue-forms/{venue:mock_venue_id}/schema', [VenueFormController::class, 'show'])
+        ->name('venue.form.show');
+    Route::post('/venue-forms/{venue:mock_venue_id}', [VenueFormController::class, 'store'])
+        ->name('venue.form.store');
+
+    Route::post('/uploads', [UploadController::class, 'store'])->name('uploads.store');
 });
 
 require __DIR__.'/settings.php';
