@@ -203,16 +203,6 @@
             "height": 400,
             "cta": "Save the Date",
             "dueDate": "1/15/25",
-            "notes": [
-                {
-                    "text": "Do not put city/state on artwork even though the admat has it.",
-                    "savedAt": "2/15/2026 @ 3:15PM"
-                },
-                {
-                    "text": "Change the background color to deeper blue to match logo.",
-                    "savedAt": "4/17/2026 @ 4:30PM"
-                }
-            ],
             "created_date": "2026-02-27T19:18:15.652Z"
         },
         {
@@ -402,6 +392,26 @@
             "id": 13,
             "venue_item_id": "c1000017-0000-4000-a000-000000000011",
             "mockUser_id": 3
+        }
+    ],
+    "venue_item_notes": [
+        {
+            "id": 1,
+            "venue_item_id": "c1000015-0000-4000-a000-00000000000f",
+            "user_id": 3,
+            "message": "Do not put city/state on artwork even though the admat has it.",
+            "created_date": "2026-02-15T23:15:00.000Z",
+            "updated_date": null,
+            "deleted_date": null
+        },
+        {
+            "id": 2,
+            "venue_item_id": "c1000015-0000-4000-a000-00000000000f",
+            "user_id": 6,
+            "message": "Change the background color to deeper blue to match logo.",
+            "created_date": "2026-04-17T23:30:00.000Z",
+            "updated_date": null,
+            "deleted_date": null
         }
     ],
     "venue_item_language": [

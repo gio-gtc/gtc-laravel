@@ -33,8 +33,19 @@ type VenueItemRow = {
     card_holder?: string;
 };
 
+type VenueItemNoteRow = {
+    id: number;
+    venue_item_id: string;
+    user_id: number;
+    message: string;
+    created_date: string;
+    updated_date: string | null;
+    deleted_date: string | null;
+};
+
 const data = JSON.parse(readFileSync(jsonPath, 'utf8')) as {
     venue_items: VenueItemRow[];
+    venue_item_notes?: VenueItemNoteRow[];
 };
 
 let errors = 0;
@@ -87,9 +98,83 @@ for (const row of data.venue_items) {
     }
 }
 
+const venueItemIds = new Set(data.venue_items.map((r) => r.id));
+const seenNoteIds = new Set<number>();
+for (const note of data.venue_item_notes ?? []) {
+    if (typeof note.id !== 'number' || !Number.isInteger(note.id)) {
+        console.error(
+            `Invalid venue_item_notes row: id must be an integer, got ${JSON.stringify(note.id)}`,
+        );
+        errors++;
+    } else if (seenNoteIds.has(note.id)) {
+        console.error(
+            `Duplicate venue_item_notes id ${note.id}`,
+        );
+        errors++;
+    } else {
+        seenNoteIds.add(note.id);
+    }
+
+    if (
+        typeof note.venue_item_id !== 'string' ||
+        !venueItemIds.has(note.venue_item_id)
+    ) {
+        console.error(
+            `Invalid venue_item_notes row ${note.id}: venue_item_id=${JSON.stringify(note.venue_item_id)} does not reference a known venue_items.id`,
+        );
+        errors++;
+    }
+
+    if (typeof note.user_id !== 'number' || !Number.isInteger(note.user_id)) {
+        console.error(
+            `Invalid venue_item_notes row ${note.id}: user_id must be an integer, got ${JSON.stringify(note.user_id)}`,
+        );
+        errors++;
+    }
+
+    if (typeof note.message !== 'string' || note.message.trim() === '') {
+        console.error(
+            `Invalid venue_item_notes row ${note.id}: message must be a non-empty string`,
+        );
+        errors++;
+    }
+
+    if (
+        typeof note.created_date !== 'string' ||
+        !ISO_UTC_RE.test(note.created_date)
+    ) {
+        console.error(
+            `Invalid venue_item_notes row ${note.id}: created_date must be ISO 8601 UTC (…Z), got ${JSON.stringify(note.created_date)}`,
+        );
+        errors++;
+    }
+
+    if (
+        note.updated_date !== null &&
+        (typeof note.updated_date !== 'string' ||
+            !ISO_UTC_RE.test(note.updated_date))
+    ) {
+        console.error(
+            `Invalid venue_item_notes row ${note.id}: updated_date must be null or ISO 8601 UTC (…Z), got ${JSON.stringify(note.updated_date)}`,
+        );
+        errors++;
+    }
+
+    if (
+        note.deleted_date !== null &&
+        (typeof note.deleted_date !== 'string' ||
+            !ISO_UTC_RE.test(note.deleted_date))
+    ) {
+        console.error(
+            `Invalid venue_item_notes row ${note.id}: deleted_date must be null or ISO 8601 UTC (…Z), got ${JSON.stringify(note.deleted_date)}`,
+        );
+        errors++;
+    }
+}
+
 if (errors > 0) {
     process.exit(1);
 }
 console.log(
-    'venueItems.json: broadcast/radio/social/art rows pass modal and contract checks.',
+    'venueItems.json: broadcast/radio/social/art rows + venue_item_notes pass modal and contract checks.',
 );

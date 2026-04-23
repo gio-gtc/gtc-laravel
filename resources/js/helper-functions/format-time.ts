@@ -1,4 +1,4 @@
-import { differenceInCalendarDays } from 'date-fns';
+import { differenceInCalendarDays, format, parseISO } from 'date-fns';
 
 /**
  * Formats a duration in whole seconds as M:SS (minutes unpadded, seconds two digits).
@@ -20,4 +20,17 @@ export function getDaysRemaining(
         return 0;
     }
     return differenceInCalendarDays(new Date(targetDate), new Date());
+}
+
+/** ISO 8601 UTC → "M/d/yyyy @ h:mmA" rendered in the viewer's local timezone. */
+export function formatUtcAsLocalDateTime(iso: string): string {
+    const d = parseISO(iso);
+    return format(d, "M/d/yyyy '@' h:mma")
+        .replace('am', 'AM')
+        .replace('pm', 'PM');
+}
+
+/** Current time as ISO 8601 UTC (for new notes / UTC-first records). */
+export function nowUtcIso(): string {
+    return new Date().toISOString();
 }

@@ -8,20 +8,32 @@ import {
 import { Input } from '@/components/ui/input';
 import Divider from '@/components/utils/divider';
 import { ModalFooterActions } from '@/components/utils/modal-footer-actions';
-import type { LocalizedArtNote } from '@/types';
+import { formatUtcAsLocalDateTime } from '@/helper-functions/format-time';
+import type { User, VenueItemNote } from '@/types';
 import { orderModalStyles } from '../../general-media/modals/shared';
 
 interface NotesModalProps {
     isOpen: boolean;
     onClose: () => void;
-    notes: LocalizedArtNote[];
+    notes: VenueItemNote[];
+    users: User[];
     rowId?: string | number;
+}
+
+function resolveAuthorName(userId: number, users: User[]): string {
+    const user = users.find((u) => u.id === userId);
+    if (!user) return 'Unknown';
+    const first = user.first_name?.trim();
+    const last = user.last_name?.trim();
+    const full = [first, last].filter(Boolean).join(' ').trim();
+    return full || user.name || user.email || 'Unknown';
 }
 
 export default function NotesModal({
     isOpen,
     onClose,
     notes,
+    users,
 }: NotesModalProps) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -40,22 +52,28 @@ export default function NotesModal({
                     <div className="flex-1 overflow-y-auto rounded-lg border px-2.5 py-1">
                         {notes.length > 0 ? (
                             <div className="space-y-4 py-1">
-                                {notes.map((note, index) => (
-                                    <div key={index} className="space-y-1">
+                                {notes.map((note) => (
+                                    <div key={note.id} className="space-y-1">
                                         <p className="xs-gray-500-weight-400">
-                                            {note.text}
+                                            {note.message}
                                         </p>
                                         <Divider />
                                         <p className="xs-gray-300-weight-400 text-center italic">
-                                            Saved on {note.savedAt}
+                                            Saved on{' '}
+                                            {formatUtcAsLocalDateTime(
+                                                note.created_date,
+                                            )}{' '}
+                                            by{' '}
+                                            {resolveAuthorName(
+                                                note.user_id,
+                                                users,
+                                            )}
                                         </p>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-sm text-gray-500">
-                                No notes yet.
-                            </p>
+                            <p className="text-sm text-gray-500"></p>
                         )}
                     </div>
 

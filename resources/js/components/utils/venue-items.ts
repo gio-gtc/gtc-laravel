@@ -6,6 +6,7 @@ import type {
     VenueItemAssigned,
     VenueItemEncoding,
     VenueItemLanguage,
+    VenueItemNote,
     VenueItemStatus,
     VenueItemsArtRow,
     VenueItemsBroadcastRadioSocialRow,
@@ -17,8 +18,22 @@ import { VENUE_ITEM_ART_PACKAGE_TYPES } from '@/components/pages/orders/slideout
 export type OrdersVenueLineCatalog = {
     venue_items: VenueItemsRow[];
     venue_item_assigned: VenueItemAssigned[];
+    venue_item_notes: VenueItemNote[];
     venue_item_status: VenueItemStatus[];
 };
+
+/** Non-deleted notes for a venue item, sorted oldest → newest. */
+export function getNotesForVenueItem(
+    venueItemId: string | number,
+    notes: VenueItemNote[],
+): VenueItemNote[] {
+    const id = String(venueItemId);
+    return notes
+        .filter(
+            (n) => String(n.venue_item_id) === id && n.deleted_date === null,
+        )
+        .sort((a, b) => a.created_date.localeCompare(b.created_date));
+}
 
 type VenueLineItemStatusLabel = MediaTableRow['status'];
 

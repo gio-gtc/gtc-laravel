@@ -330,9 +330,17 @@ export interface StaticAssetsMediaTableProps {
     artPackageTypeSelectOptions?: { value: string; label: string }[];
 }
 
-export interface LocalizedArtNote {
-    text: string;
-    savedAt: string;
+export interface VenueItemNote {
+    id: number;
+    venue_item_id: string;
+    user_id: number;
+    message: string;
+    /** ISO 8601 UTC */
+    created_date: string;
+    /** ISO 8601 UTC, nullable */
+    updated_date: string | null;
+    /** ISO 8601 UTC, nullable — soft delete */
+    deleted_date: string | null;
 }
 
 export type VenueItemsRowType =
@@ -432,7 +440,6 @@ export interface VenueItemsLocalizedRow extends VenueItemsRowBase {
     width: number;
     height: number;
     cta: string;
-    notes?: LocalizedArtNote[];
 }
 
 export type VenueItemsRow =
@@ -448,7 +455,6 @@ export interface LocalizedArtTableRow {
     cta: string;
     dueDate: string;
     assigned: User[];
-    notes?: LocalizedArtNote[];
 }
 
 export interface LocalizedArtTableProps {

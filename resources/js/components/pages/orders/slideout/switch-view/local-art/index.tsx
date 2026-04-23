@@ -1,5 +1,6 @@
 import {
     getAssignedUsersForVenueItem,
+    getNotesForVenueItem,
     type OrdersVenueLineCatalog,
     venueItemsLocalizedTableRow,
 } from '@/components/utils/venue-items';
@@ -49,11 +50,13 @@ function LocalArtView({
         return {
             venue_items: catalog.venue_items,
             venue_item_assigned: catalog.venue_item_assigned,
+            venue_item_notes: catalog.venue_item_notes,
             venue_item_status: catalog.venue_item_status,
         };
     }, [
         catalog.venue_items,
         catalog.venue_item_assigned,
+        catalog.venue_item_notes,
         catalog.venue_item_status,
     ]);
 
@@ -169,7 +172,15 @@ function LocalArtView({
             <NotesModal
                 isOpen={notesModalRow !== null}
                 onClose={() => setNotesModalRow(null)}
-                notes={notesModalRow?.notes ?? []}
+                notes={
+                    notesModalRow
+                        ? getNotesForVenueItem(
+                              notesModalRow.id,
+                              catalog.venue_item_notes,
+                          )
+                        : []
+                }
+                users={usersWithFallback}
             />
 
             {/* Attachments Section */}
