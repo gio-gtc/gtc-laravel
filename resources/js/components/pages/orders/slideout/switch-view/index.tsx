@@ -86,10 +86,9 @@ function SwitchButton({
     return (
         <Button
             variant={selected === value ? 'outline' : 'ghost'}
-            size="sm"
             onClick={() => setSelected(value)}
             className={cn(
-                'flex items-center rounded-md px-3.5 py-1.5 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
+                'flex h-[36px] items-center rounded-md px-3.5 py-1.5 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none',
                 selectedClasses,
             )}
         >
