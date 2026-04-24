@@ -111,7 +111,7 @@ it('records a submission with order_id and tour_venue_id on happy path', functio
         'answers' => [
             'digital' => [
                 'selected' => ['digital.a'],
-                'cta' => ['preset' => 'get_tickets', 'custom' => []],
+                'cta' => ['presets' => ['get_tickets'], 'custom' => []],
             ],
             'order_info' => [
                 'deadline' => '2027-01-01',
@@ -148,7 +148,7 @@ it('requires station_call_letters when broadcast_type is tv (requiredIf)', funct
 
     $this->postJson("/venue-forms/{$mockVenueId}", [
         'answers' => [
-            'digital' => ['selected' => [], 'cta' => ['preset' => null, 'custom' => []]],
+            'digital' => ['selected' => [], 'cta' => ['presets' => [], 'custom' => []]],
             'order_info' => ['deadline' => '2027-01-01', 'broadcast_type' => 'tv'],
         ],
     ])->assertStatus(422);
@@ -160,7 +160,7 @@ it('allows station_call_letters to be omitted when broadcast_type is not tv', fu
 
     $this->postJson("/venue-forms/{$mockVenueId}", [
         'answers' => [
-            'digital' => ['selected' => [], 'cta' => ['preset' => null, 'custom' => []]],
+            'digital' => ['selected' => [], 'cta' => ['presets' => [], 'custom' => []]],
             'order_info' => ['deadline' => '2027-01-01', 'broadcast_type' => 'digital'],
         ],
     ])->assertOk();
@@ -177,7 +177,7 @@ it('rejects a file descriptor with a path not issued by UploadController', funct
 
     $this->postJson("/venue-forms/{$mockVenueId}", [
         'answers' => [
-            'digital' => ['selected' => [], 'cta' => ['preset' => null, 'custom' => []]],
+            'digital' => ['selected' => [], 'cta' => ['presets' => [], 'custom' => []]],
             'order_info' => [
                 'deadline' => '2027-01-01',
                 'broadcast_type' => 'digital',
@@ -212,7 +212,7 @@ it('strips file and attachments from schema and submits when omit_file_fields is
         'answers' => [
             'digital' => [
                 'selected' => ['digital.a'],
-                'cta' => ['preset' => 'get_tickets', 'custom' => []],
+                'cta' => ['presets' => ['get_tickets'], 'custom' => []],
             ],
             'order_info' => [
                 'deadline' => '2027-01-01',
@@ -243,7 +243,7 @@ it('accepts file descriptor when path was issued by UploadController', function 
     $this->postJson("/venue-forms/{$mockVenueId}", [
         'scope' => $scope,
         'answers' => [
-            'digital' => ['selected' => [], 'cta' => ['preset' => null, 'custom' => []]],
+            'digital' => ['selected' => [], 'cta' => ['presets' => [], 'custom' => []]],
             'order_info' => [
                 'deadline' => '2027-01-01',
                 'broadcast_type' => 'digital',

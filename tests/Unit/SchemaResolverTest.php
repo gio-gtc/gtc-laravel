@@ -58,6 +58,10 @@ it('produces blocks[] and jsonSchema with per-block properties', function () {
     $selectedSchema = $res->jsonSchema['properties']['digital']['properties']['selected'];
     expect($selectedSchema['items']['enum'])->toBe(['a', 'b', 'c']);
     expect($res->jsonSchema['properties']['digital']['properties'])->toHaveKey('cta');
+    $ctaProps = $res->jsonSchema['properties']['digital']['properties']['cta']['properties'];
+    expect($ctaProps)->toHaveKey('presets');
+    expect($ctaProps)->not->toHaveKey('preset');
+    expect($ctaProps['presets']['uniqueItems'])->toBeTrue();
 });
 
 it('applies venue overrides: hidden_items trims the item list and enum', function () {

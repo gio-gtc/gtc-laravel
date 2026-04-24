@@ -106,7 +106,7 @@ export default function VenueSlideoutHeader({
                 {tour}
             </SheetTitle>
             <Divider variant="fade" />
-            <div className="slide-out-container flex-1">
+            <div className="slide-out-container flex-1 !py-[10px]">
                 <div className="sm-black-weight-500">
                     <p>{venueDisplay}</p>
                     {eventDates && <p>{eventDates}</p>}

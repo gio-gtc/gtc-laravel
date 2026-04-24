@@ -40,7 +40,7 @@ use RuntimeException;
  *
  * Block-definition embeds shape (block_definitions.embeds):
  *   { "<embed_block_key>": "<property_name>" }
- *   e.g. { "cta_selector": "cta" }  =>  digital: { selected: [...], cta: { preset, custom } }
+ *   e.g. { "cta_selector": "cta" }  =>  digital: { selected: [...], cta: { presets, custom } }
  */
 final class SchemaResolver
 {
@@ -370,17 +370,18 @@ final class SchemaResolver
                     static fn (array $p) => $p['value'] ?? null,
                     $presets
                 )));
-                $presetSchema = $presetValues === []
-                    ? ['type' => ['string', 'null']]
-                    : ['anyOf' => [
-                        ['type' => 'string', 'enum' => $presetValues],
-                        ['type' => 'null'],
-                    ]];
+                $presetsItemsSchema = $presetValues === []
+                    ? ['type' => 'string']
+                    : ['type' => 'string', 'enum' => $presetValues];
 
                 return [
                     'type' => 'object',
                     'properties' => [
-                        'preset' => $presetSchema,
+                        'presets' => [
+                            'type' => 'array',
+                            'items' => $presetsItemsSchema,
+                            'uniqueItems' => true,
+                        ],
                         'custom' => [
                             'type' => 'array',
                             'items' => [

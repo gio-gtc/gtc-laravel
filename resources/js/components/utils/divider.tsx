@@ -11,7 +11,7 @@ function Divider({
 }) {
     const variants: Record<DividerVariants, string> = {
         default: '',
-        fade: 'bg-gradient-to-r from-gray-300 from-70% to-transparent',
+        fade: 'bg-gradient-to-r from-gray-300 from-10% to-transparent',
     };
 
     return (

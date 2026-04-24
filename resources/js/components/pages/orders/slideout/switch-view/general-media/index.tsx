@@ -704,7 +704,7 @@ function GeneralMediaView({
             </div>
 
             {/* Submit Order Buttons */}
-            <div className="flex justify-center gap-1 rounded-lg border bg-neutral-100 px-1 py-0.5">
+            <div className="flex justify-center gap-1 rounded-lg border bg-gray-50 px-1 py-0.5">
                 <Button className="h-[36px]" variant="outline" size="md">
                     Cancel
                 </Button>

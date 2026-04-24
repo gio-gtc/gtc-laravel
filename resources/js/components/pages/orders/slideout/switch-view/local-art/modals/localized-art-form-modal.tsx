@@ -1,17 +1,17 @@
 import {
+    SchemaForm,
+    type SchemaFormHandle,
+} from '@/components/forms/schema-form';
+import { orderModalStyles } from '@/components/pages/orders/slideout/switch-view/general-media/modals/shared';
+import { Button } from '@/components/ui/button';
+import {
     Dialog,
     DialogContent,
     DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import Divider from '@/components/utils/divider';
-import { orderModalStyles } from '@/components/pages/orders/slideout/switch-view/general-media/modals/shared';
-import {
-    SchemaForm,
-    type SchemaFormHandle,
-} from '@/components/forms/schema-form';
 import type { VenueFormSchemaResponse } from '@/types/forms';
 import { useEffect, useRef, useState } from 'react';
 
@@ -98,40 +98,39 @@ export default function LocalizedArtFormModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="gap-3 sm:max-w-[860px]">
+            <DialogContent className="gap-3 sm:max-w-[920px]">
                 <DialogHeader>
                     <DialogTitle className={orderModalStyles.dialogTitle}>
-                        Localized Art
+                        Add Localized Art
                     </DialogTitle>
                 </DialogHeader>
 
                 <Divider />
 
-                <div className="max-h-[65vh] overflow-y-auto pr-1">
-                    {load.status === 'loading' ? (
-                        <FormSkeleton />
-                    ) : load.status === 'error' ? (
-                        <p className="text-destructive text-sm" role="alert">
-                            {load.message}
-                        </p>
-                    ) : load.status === 'ready' ? (
-                        <SchemaForm
-                            ref={formRef}
-                            {...load.schema}
-                            hideSubmit
-                            extraPayload={{
-                                omit_file_fields: true,
-                                order_id: orderId ?? null,
-                                tour_venue_id: tourVenueId ?? null,
-                            }}
-                            onSuccess={() => {
-                                setSubmitting(false);
-                                onClose();
-                            }}
-                            onError={() => setSubmitting(false)}
-                        />
-                    ) : null}
-                </div>
+                {load.status === 'loading' ? (
+                    <FormSkeleton />
+                ) : load.status === 'error' ? (
+                    <p className="text-destructive text-sm" role="alert">
+                        {load.message}
+                    </p>
+                ) : load.status === 'ready' ? (
+                    <SchemaForm
+                        ref={formRef}
+                        {...load.schema}
+                        hideSubmit
+                        separateBlocksWithDivider
+                        extraPayload={{
+                            omit_file_fields: true,
+                            order_id: orderId ?? null,
+                            tour_venue_id: tourVenueId ?? null,
+                        }}
+                        onSuccess={() => {
+                            setSubmitting(false);
+                            onClose();
+                        }}
+                        onError={() => setSubmitting(false)}
+                    />
+                ) : null}
 
                 <Divider />
 

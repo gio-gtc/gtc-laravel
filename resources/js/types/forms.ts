@@ -69,7 +69,7 @@ export interface ItemListBlockValue {
 }
 
 export interface CtaSelectorValue {
-    preset: string | null;
+    presets: string[];
     custom: { label: string }[];
 }
 

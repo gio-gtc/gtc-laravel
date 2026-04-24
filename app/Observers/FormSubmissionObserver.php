@@ -160,18 +160,20 @@ class FormSubmissionObserver
     private function explodeCtaSelector(array $base, string $blockKey, array $value): array
     {
         $rows = [];
-        $preset = $value['preset'] ?? null;
-        if (is_string($preset) && $preset !== '') {
-            $rows[] = $base + [
-                'block_key' => $blockKey,
-                'field_key' => 'preset',
-                'field_type' => 'text',
-                'value_text' => $preset,
-                'value_number' => null,
-                'value_date' => null,
-                'value_bool' => null,
-                'value_file_path' => null,
-            ];
+        $presets = (array) ($value['presets'] ?? []);
+        foreach ($presets as $i => $preset) {
+            if (is_string($preset) && $preset !== '') {
+                $rows[] = $base + [
+                    'block_key' => $blockKey,
+                    'field_key' => 'presets.'.$i,
+                    'field_type' => 'text',
+                    'value_text' => $preset,
+                    'value_number' => null,
+                    'value_date' => null,
+                    'value_bool' => null,
+                    'value_file_path' => null,
+                ];
+            }
         }
         foreach ((array) ($value['custom'] ?? []) as $i => $cta) {
             if (! is_array($cta)) {

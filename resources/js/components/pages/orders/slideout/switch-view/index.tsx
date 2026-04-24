@@ -33,7 +33,7 @@ export default function SwitchView({
 
     return (
         <>
-            <div className="flex gap-1 rounded-lg border bg-neutral-100 p-1">
+            <div className="flex gap-1 rounded-lg border bg-gray-50 p-1">
                 <SwitchButton
                     title="General Media"
                     selected={selected}

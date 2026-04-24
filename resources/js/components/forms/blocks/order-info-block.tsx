@@ -13,16 +13,28 @@ import { evalRule } from '@/lib/forms/conditions';
 import type { FieldDescriptor, FileDescriptor } from '@/types/forms';
 import type { BlockRendererProps } from './types';
 
-export function OrderInfoBlock({ block, value, allValues, onChange, errors, uploadAction, scope }: BlockRendererProps) {
+export function OrderInfoBlock({
+    block,
+    value,
+    allValues,
+    onChange,
+    errors,
+    uploadAction,
+    scope,
+}: BlockRendererProps) {
     const current = (value as Record<string, unknown> | undefined) ?? {};
-    const set = (key: string, next: unknown) => onChange({ ...current, [key]: next });
+    const set = (key: string, next: unknown) =>
+        onChange({ ...current, [key]: next });
 
     return (
-        <section className="rounded-md border bg-card px-4 py-3">
+        <section className="bg-card px-4 py-3">
             <h2 className="text-base font-semibold">{block.name}</h2>
             <div className="mt-3 grid gap-4">
                 {block.fields.map((field) => {
-                    const visible = evalRule(field.visibleIf, allValues as Record<string, unknown>);
+                    const visible = evalRule(
+                        field.visibleIf,
+                        allValues as Record<string, unknown>,
+                    );
                     if (!visible) return null;
                     const err = errors[field.key];
                     return (
@@ -51,18 +63,31 @@ interface OrderInfoFieldProps {
     scope: string;
 }
 
-function OrderInfoField({ field, value, onChange, error, uploadAction, scope }: OrderInfoFieldProps) {
+function OrderInfoField({
+    field,
+    value,
+    onChange,
+    error,
+    uploadAction,
+    scope,
+}: OrderInfoFieldProps) {
     const id = `field-${field.key}`;
     const label = (
         <Label htmlFor={id}>
             {field.label}
-            {field.required ? <span className="text-destructive ml-0.5">*</span> : null}
+            {field.required ? (
+                <span className="ml-0.5 text-destructive">*</span>
+            ) : null}
         </Label>
     );
     const errEl = error ? (
-        <p className="text-destructive text-xs">{Array.isArray(error) ? error.join(' · ') : error}</p>
+        <p className="text-xs text-destructive">
+            {Array.isArray(error) ? error.join(' · ') : error}
+        </p>
     ) : null;
-    const help = field.helpText ? <p className="text-muted-foreground text-xs">{field.helpText}</p> : null;
+    const help = field.helpText ? (
+        <p className="text-xs text-muted-foreground">{field.helpText}</p>
+    ) : null;
 
     switch (field.type) {
         case 'textarea':
@@ -90,8 +115,18 @@ function OrderInfoField({ field, value, onChange, error, uploadAction, scope }: 
                         type="number"
                         min={field.min}
                         max={field.max}
-                        value={Number.isFinite(value as number) ? (value as number) : ''}
-                        onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
+                        value={
+                            Number.isFinite(value as number)
+                                ? (value as number)
+                                : ''
+                        }
+                        onChange={(e) =>
+                            onChange(
+                                e.target.value === ''
+                                    ? null
+                                    : Number(e.target.value),
+                            )
+                        }
                     />
                     {help}
                     {errEl}
@@ -148,7 +183,9 @@ function OrderInfoField({ field, value, onChange, error, uploadAction, scope }: 
                         onValueChange={(next) => onChange(next || null)}
                     >
                         <SelectTrigger id={id}>
-                            <SelectValue placeholder={field.placeholder ?? 'Choose…'} />
+                            <SelectValue
+                                placeholder={field.placeholder ?? 'Choose…'}
+                            />
                         </SelectTrigger>
                         <SelectContent>
                             {(field.options ?? []).map((o) => (
@@ -186,7 +223,10 @@ function OrderInfoField({ field, value, onChange, error, uploadAction, scope }: 
                         uploadAction={uploadAction}
                         scope={scope}
                         multiple
-                        value={((value as FileDescriptor[] | null) ?? []) as FileDescriptor[]}
+                        value={
+                            ((value as FileDescriptor[] | null) ??
+                                []) as FileDescriptor[]
+                        }
                         onChange={onChange}
                         accept={field.accept}
                         maxSizeMb={field.maxSizeMb}

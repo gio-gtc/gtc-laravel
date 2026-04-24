@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { CtaSelectorValue } from '@/types/forms';
@@ -6,11 +7,20 @@ import { Plus, X } from 'lucide-react';
 import type { BlockRendererProps } from './types';
 
 export function CtaSelectorBlock({ block, value, onChange, errors, htmlFieldPrefix }: BlockRendererProps) {
-    const current = (value as CtaSelectorValue | undefined) ?? { preset: null, custom: [] };
+    const current = (value as CtaSelectorValue | undefined) ?? { presets: [], custom: [] };
+    const presetSet = new Set(current.presets ?? []);
     const prefix = htmlFieldPrefix ?? block.key;
-    const presetGroupName = `${prefix}-preset`;
 
-    const setPreset = (next: string | null) => onChange({ ...current, preset: next });
+    const togglePreset = (presetValue: string, checked: boolean) => {
+        const next = new Set(presetSet);
+        if (checked) {
+            next.add(presetValue);
+        } else {
+            next.delete(presetValue);
+        }
+        onChange({ ...current, presets: Array.from(next) });
+    };
+
     const addCustom = () => onChange({ ...current, custom: [...current.custom, { label: '' }] });
     const setLabel = (idx: number, label: string) =>
         onChange({
@@ -29,30 +39,18 @@ export function CtaSelectorBlock({ block, value, onChange, errors, htmlFieldPref
                     {block.presets.map((p) => {
                         const id = `${prefix}-preset-${p.value}`;
                         return (
-                            <label
-                                key={p.value}
-                                htmlFor={id}
-                                className="flex items-center gap-2 text-sm"
-                            >
-                                <input
+                            <div key={p.value} className="flex items-center gap-2 text-sm">
+                                <Checkbox
                                     id={id}
-                                    type="radio"
-                                    name={presetGroupName}
-                                    className="h-4 w-4"
-                                    checked={current.preset === p.value}
-                                    onChange={() => setPreset(p.value)}
+                                    checked={presetSet.has(p.value)}
+                                    onCheckedChange={(checked) => togglePreset(p.value, checked === true)}
                                 />
-                                <span>{p.label}</span>
-                            </label>
+                                <Label htmlFor={id} className="cursor-pointer font-normal">
+                                    {p.label}
+                                </Label>
+                            </div>
                         );
                     })}
-                    <button
-                        type="button"
-                        onClick={() => setPreset(null)}
-                        className="text-muted-foreground text-xs underline"
-                    >
-                        Clear preset
-                    </button>
                 </div>
             ) : null}
 
@@ -68,7 +66,7 @@ export function CtaSelectorBlock({ block, value, onChange, errors, htmlFieldPref
                                 <Input
                                     id={`${prefix}-cta-${idx}`}
                                     value={cta.label}
-                                    placeholder="Custom CTA label"
+                                    placeholder="Enter a description…"
                                     onChange={(e) => setLabel(idx, e.target.value)}
                                 />
                                 {err ? (

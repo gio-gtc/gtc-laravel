@@ -1,5 +1,6 @@
-import { Button } from '@/components/ui/button';
 import { blockRegistry } from '@/components/forms/blocks/registry';
+import { Button } from '@/components/ui/button';
+import Divider from '@/components/utils/divider';
 import { evalRule, type ConditionRule } from '@/lib/forms/conditions';
 import { getCsrfHeaders } from '@/lib/forms/csrf';
 import type {
@@ -9,6 +10,7 @@ import type {
     VenueFormSchemaResponse,
 } from '@/types/forms';
 import {
+    Fragment,
     forwardRef,
     useCallback,
     useImperativeHandle,
@@ -31,6 +33,8 @@ export interface SchemaFormProps extends VenueFormSchemaResponse {
     onSuccess?: () => void;
     /** Called when the request returns validation errors. */
     onError?: (errors: Record<string, string>) => void;
+    /** When true, render a {@link Divider} between each visible block (not before the first). */
+    separateBlocksWithDivider?: boolean;
 }
 
 /**
@@ -53,10 +57,14 @@ function SchemaFormInner(
         extraPayload,
         onSuccess,
         onError,
+        separateBlocksWithDivider = false,
     }: SchemaFormProps,
     ref: Ref<SchemaFormHandle>,
 ) {
-    const initialAnswers = useMemo<AnswersMap>(() => seedAnswers(blocks), [blocks]);
+    const initialAnswers = useMemo<AnswersMap>(
+        () => seedAnswers(blocks),
+        [blocks],
+    );
     const [answers, setAnswers] = useState<AnswersMap>(initialAnswers);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [processing, setProcessing] = useState(false);
@@ -71,7 +79,13 @@ function SchemaFormInner(
     const errorsByBlock = useMemo(() => groupErrorsByBlock(errors), [errors]);
 
     const visibleBlocks = useMemo(
-        () => blocks.filter((b) => evalRule(getBlockCondition(b), answers as Record<string, unknown>)),
+        () =>
+            blocks.filter((b) =>
+                evalRule(
+                    getBlockCondition(b),
+                    answers as Record<string, unknown>,
+                ),
+            ),
         [answers, blocks],
     );
 
@@ -109,20 +123,35 @@ function SchemaFormInner(
                 return;
             }
 
-            const fallback = { __form: `Request failed with status ${res.status}.` };
+            const fallback = {
+                __form: `Request failed with status ${res.status}.`,
+            };
             setErrors(fallback);
             onError?.(fallback);
         } catch (err) {
-            const message = err instanceof Error ? err.message : 'Network error.';
+            const message =
+                err instanceof Error ? err.message : 'Network error.';
             const normalized = { __form: message };
             setErrors(normalized);
             onError?.(normalized);
         } finally {
             setProcessing(false);
         }
-    }, [answers, extraPayload, onError, onSuccess, processing, scope, submitAction]);
+    }, [
+        answers,
+        extraPayload,
+        onError,
+        onSuccess,
+        processing,
+        scope,
+        submitAction,
+    ]);
 
-    useImperativeHandle(ref, () => ({ submit, isProcessing: () => processing }), [submit, processing]);
+    useImperativeHandle(
+        ref,
+        () => ({ submit, isProcessing: () => processing }),
+        [submit, processing],
+    );
 
     return (
         <form
@@ -135,36 +164,41 @@ function SchemaFormInner(
             {venue?.name ? (
                 <header className="space-y-1">
                     <h2 className="text-xl font-semibold">{venue.name}</h2>
-                    <p className="text-muted-foreground text-sm">Fill out the marketing asset request.</p>
+                    <p className="text-sm text-muted-foreground">
+                        Fill out the marketing asset request.
+                    </p>
                 </header>
             ) : null}
 
             {errors.__form ? (
-                <p className="text-destructive text-sm" role="alert">
+                <p className="text-sm text-destructive" role="alert">
                     {errors.__form}
                 </p>
             ) : null}
 
-            {visibleBlocks.map((block) => {
+            {visibleBlocks.map((block, index) => {
                 const Renderer = blockRegistry[block.kind];
-                if (!Renderer) {
-                    return (
-                        <div key={block.key} className="text-muted-foreground rounded-md border border-dashed p-4 text-sm">
-                            Unknown block kind: <code>{block.kind}</code>
-                        </div>
-                    );
-                }
                 return (
-                    <Renderer
-                        key={block.key}
-                        block={block}
-                        value={answers[block.key]}
-                        allValues={answers}
-                        onChange={setBlockValue(block.key)}
-                        errors={errorsByBlock[block.key] ?? {}}
-                        uploadAction={uploadAction}
-                        scope={scope}
-                    />
+                    <Fragment key={block.key}>
+                        {separateBlocksWithDivider && index > 0 ? (
+                            <Divider />
+                        ) : null}
+                        {!Renderer ? (
+                            <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
+                                Unknown block kind: <code>{block.kind}</code>
+                            </div>
+                        ) : (
+                            <Renderer
+                                block={block}
+                                value={answers[block.key]}
+                                allValues={answers}
+                                onChange={setBlockValue(block.key)}
+                                errors={errorsByBlock[block.key] ?? {}}
+                                uploadAction={uploadAction}
+                                scope={scope}
+                            />
+                        )}
+                    </Fragment>
                 );
             })}
 
@@ -179,7 +213,9 @@ function SchemaFormInner(
     );
 }
 
-export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(SchemaFormInner);
+export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
+    SchemaFormInner,
+);
 SchemaForm.displayName = 'SchemaForm';
 
 function seedAnswers(blocks: BlockDescriptor[]): AnswersMap {
@@ -189,13 +225,13 @@ function seedAnswers(blocks: BlockDescriptor[]): AnswersMap {
             case 'item_list': {
                 const val: Record<string, unknown> = { selected: [] };
                 for (const embedKey of Object.keys(b.embeds ?? {})) {
-                    val[embedKey] = { preset: null, custom: [] };
+                    val[embedKey] = { presets: [], custom: [] };
                 }
                 out[b.key] = val as BlockValue;
                 break;
             }
             case 'cta_selector':
-                out[b.key] = { preset: null, custom: [] } as BlockValue;
+                out[b.key] = { presets: [], custom: [] } as BlockValue;
                 break;
             case 'custom_sizes':
                 out[b.key] = [] as BlockValue;
@@ -214,7 +250,9 @@ function seedAnswers(blocks: BlockDescriptor[]): AnswersMap {
     return out;
 }
 
-function groupErrorsByBlock(errors: Record<string, string>): Record<string, Record<string, string>> {
+function groupErrorsByBlock(
+    errors: Record<string, string>,
+): Record<string, Record<string, string>> {
     const grouped: Record<string, Record<string, string>> = {};
     for (const [key, message] of Object.entries(errors)) {
         if (!key.startsWith('answers.')) continue;

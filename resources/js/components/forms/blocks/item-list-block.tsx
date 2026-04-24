@@ -1,29 +1,34 @@
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import { Label } from '@/components/ui/label';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+    ColumnedRowsChild,
+    ColumnedRowsParent,
+} from '@/components/utils/column-row-layouts';
+import Divider from '@/components/utils/divider';
 import { cn } from '@/lib/utils';
 import type { ItemDescriptor, ItemListBlockValue } from '@/types/forms';
-import { ChevronDown } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { CtaSelectorBlock } from './cta-selector-block';
 import type { BlockRendererProps } from './types';
 
-export function ItemListBlock({ block, value, allValues, onChange, errors, uploadAction, scope }: BlockRendererProps) {
-    const [open, setOpen] = useState(true);
+function formatDims(item: ItemDescriptor): string {
+    if (item.width == null && item.height == null) {
+        return '—';
+    }
+    return `${item.width ?? '—'} x ${item.height ?? '—'}`;
+}
 
-    const current = (value as ItemListBlockValue | undefined) ?? { selected: [] };
+export function ItemListBlock({
+    block,
+    value,
+    allValues,
+    onChange,
+    errors,
+    uploadAction,
+    scope,
+}: BlockRendererProps) {
+    const current = (value as ItemListBlockValue | undefined) ?? {
+        selected: [],
+    };
     const selected = new Set(current.selected ?? []);
 
     const toggle = useCallback(
@@ -39,95 +44,108 @@ export function ItemListBlock({ block, value, allValues, onChange, errors, uploa
     const embedEntries = Object.entries(block.embeds ?? {});
 
     return (
-        <Collapsible open={open} onOpenChange={setOpen} className="rounded-md border bg-card">
-            <CollapsibleTrigger className="flex w-full items-center justify-between px-4 py-3">
-                <div className="flex items-center gap-2">
-                    <span className="text-base font-semibold">{block.name}</span>
-                    <span className="text-muted-foreground text-xs">
-                        {selected.size}/{block.items.length} selected
-                    </span>
-                </div>
-                <ChevronDown className={cn('h-4 w-4 transition-transform', open ? 'rotate-180' : 'rotate-0')} />
-            </CollapsibleTrigger>
-            <CollapsibleContent className="border-t px-4 pt-3 pb-4">
-                {block.items.length === 0 ? (
-                    <p className="text-muted-foreground text-sm">No items configured.</p>
-                ) : (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-10" />
-                                <TableHead>Name</TableHead>
-                                <TableHead className="w-24 text-right">Width</TableHead>
-                                <TableHead className="w-24 text-right">Height</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {block.items.map((item: ItemDescriptor) => {
-                                const id = `${block.key}-${item.key}`;
-                                const err = errors[`selected.${block.items.findIndex((i) => i.key === item.key)}`];
-                                return (
-                                    <TableRow key={item.key}>
-                                        <TableCell>
-                                            <Checkbox
-                                                id={id}
-                                                checked={selected.has(item.key)}
-                                                onCheckedChange={() => toggle(item.key)}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Label htmlFor={id} className={cn('font-normal', err && 'text-destructive')}>
-                                                {item.name}
-                                            </Label>
-                                        </TableCell>
-                                        <TableCell className="text-right tabular-nums">
-                                            {item.width ?? '—'}
-                                        </TableCell>
-                                        <TableCell className="text-right tabular-nums">
-                                            {item.height ?? '—'}
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                )}
+        <section className="bg-card px-4 py-3">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+                <h3 className="text-base font-semibold">{block.name}</h3>
+                <span className="text-xs text-muted-foreground">
+                    {selected.size}/{block.items.length} selected
+                </span>
+            </div>
 
-                {embedEntries.length > 0 ? (
-                    <div className="mt-4 space-y-4 border-t pt-4">
-                        {embedEntries.map(([propName, embed]) => (
-                            <CtaSelectorBlock
-                                key={propName}
-                                block={embed}
-                                value={(current as Record<string, unknown>)[propName] as never}
-                                allValues={allValues}
-                                errors={scopeErrorsToProp(errors, propName)}
-                                uploadAction={uploadAction}
-                                scope={scope}
-                                htmlFieldPrefix={`${block.key}-${propName}`}
-                                onChange={(next) => {
-                                    onChange({ ...current, [propName]: next });
-                                }}
-                            />
-                        ))}
+            {block.items.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                    No items configured.
+                </p>
+            ) : (
+                <ColumnedRowsParent>
+                    <div className="mb-0.5 flex flex-col gap-2 text-muted-foreground sm:flex-row sm:justify-between">
+                        <div className="pl-9 text-xs sm:flex-1">Type</div>
+                        <div className="pl-0 text-xs sm:flex-2">W x H</div>
                     </div>
-                ) : null}
+                    {block.items.map((item: ItemDescriptor) => {
+                        const id = `${block.key}-${item.key}`;
+                        const err =
+                            errors[
+                                `selected.${block.items.findIndex((i) => i.key === item.key)}`
+                            ];
+                        return (
+                            <ColumnedRowsChild
+                                key={item.key}
+                                labelFor={id}
+                                className="items-center"
+                                labelContent={
+                                    <span className="inline-flex items-center gap-2 font-normal">
+                                        <Checkbox
+                                            id={id}
+                                            checked={selected.has(item.key)}
+                                            onCheckedChange={() =>
+                                                toggle(item.key)
+                                            }
+                                        />
+                                        <span
+                                            className={cn(
+                                                err && 'text-destructive',
+                                            )}
+                                        >
+                                            {item.name}
+                                        </span>
+                                    </span>
+                                }
+                            >
+                                <span className="text-sm text-muted-foreground tabular-nums sm:text-left">
+                                    {formatDims(item)}
+                                </span>
+                            </ColumnedRowsChild>
+                        );
+                    })}
+                </ColumnedRowsParent>
+            )}
 
-                {errors.__self ? (
-                    <p className="text-destructive mt-2 text-sm">
-                        {Array.isArray(errors.__self) ? errors.__self.join(' · ') : errors.__self}
-                    </p>
-                ) : null}
-            </CollapsibleContent>
-        </Collapsible>
+            {embedEntries.length > 0 ? (
+                <div className="mt-4 space-y-4">
+                    <Divider className="mb-0" />
+                    {embedEntries.map(([propName, embed]) => (
+                        <CtaSelectorBlock
+                            key={propName}
+                            block={embed}
+                            value={
+                                (current as Record<string, unknown>)[
+                                    propName
+                                ] as never
+                            }
+                            allValues={allValues}
+                            errors={scopeErrorsToProp(errors, propName)}
+                            uploadAction={uploadAction}
+                            scope={scope}
+                            htmlFieldPrefix={`${block.key}-${propName}`}
+                            onChange={(next) => {
+                                onChange({ ...current, [propName]: next });
+                            }}
+                        />
+                    ))}
+                </div>
+            ) : null}
+
+            {errors.__self ? (
+                <p className="mt-2 text-sm text-destructive">
+                    {Array.isArray(errors.__self)
+                        ? errors.__self.join(' · ')
+                        : errors.__self}
+                </p>
+            ) : null}
+        </section>
     );
 }
 
-function scopeErrorsToProp(errors: Record<string, string | string[]>, propName: string): Record<string, string | string[]> {
+function scopeErrorsToProp(
+    errors: Record<string, string | string[]>,
+    propName: string,
+): Record<string, string | string[]> {
     const out: Record<string, string | string[]> = {};
     for (const [k, v] of Object.entries(errors)) {
         if (k === propName) out.__self = v;
-        else if (k.startsWith(`${propName}.`)) out[k.slice(propName.length + 1)] = v;
+        else if (k.startsWith(`${propName}.`))
+            out[k.slice(propName.length + 1)] = v;
     }
     return out;
 }
