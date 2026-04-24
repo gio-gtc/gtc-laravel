@@ -67,7 +67,7 @@ export interface ApprovalButtonsProps {
 
 export function ApprovalButtons({ onReject, onApprove }: ApprovalButtonsProps) {
     return (
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex w-full items-center justify-center gap-2.5 md:gap-1.5">
             <Button
                 variant="ghost"
                 size="icon"
@@ -122,7 +122,7 @@ export function DownloadButtons({
     };
 
     return (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2 md:gap-0.5">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button
