@@ -111,7 +111,34 @@ function LocalArtView({
         return match?.id ?? null;
     }, [catalog.orders, venueItem]);
 
-    const canOpenForm = Boolean(venueItem?.venue?.id);
+    /**
+     * /venue-forms/{mock_venue_id} must match the catalog venue id in DB (see VenueSeeder).
+     * `tour_venue_demos` rows intentionally have `venue: null` in the table so the slideout
+     * stays in "Demo" display mode; we still need a mock venue id to load the form.
+     */
+    const formMockVenueId = useMemo(() => {
+        if (!venueItem) {
+            return null;
+        }
+        if (venueItem.venue != null) {
+            return venueItem.venue.id;
+        }
+        const stopsForTour = catalog.tour_venue_stops
+            .filter(
+                (s) =>
+                    s.tour_id === venueItem.orderVenue.tour_id &&
+                    s.venue_id != null,
+            )
+            .sort((a, b) => a.id - b.id);
+        const firstCatalogVenueId = stopsForTour[0]?.venue_id;
+        if (firstCatalogVenueId != null) {
+            return firstCatalogVenueId;
+        }
+
+        return catalog.venues[0]?.id ?? null;
+    }, [venueItem, catalog.tour_venue_stops, catalog.venues]);
+
+    const canOpenForm = formMockVenueId != null;
 
     const openDueDateBulkEdit = useCallback(
         (rowId: string | number) => {
@@ -199,7 +226,7 @@ function LocalArtView({
             <LocalizedArtFormModal
                 isOpen={formModalOpen}
                 onClose={() => setFormModalOpen(false)}
-                mockVenueId={venueItem?.venue?.id ?? null}
+                mockVenueId={formMockVenueId}
                 orderId={resolvedOrderId}
                 tourVenueId={venueItem?.orderVenue.id ?? null}
             />
