@@ -11,7 +11,7 @@ export function VenueItemStatusBadge({
     className?: string;
 }) {
     const baseClasses =
-        'xs-gray-700-weight-600 inline-flex items-center rounded-full border-2 border-solid px-1.5 py-0.5 text-nowrap';
+        'xs-gray-700-weight-600 inline-flex items-center rounded-full border-1 border-solid px-1.5 py-0.5 text-nowrap';
 
     let colorClasses = '';
 
