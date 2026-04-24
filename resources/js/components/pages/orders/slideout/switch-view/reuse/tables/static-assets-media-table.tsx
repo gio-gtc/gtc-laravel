@@ -18,7 +18,6 @@ import type {
     StaticAssetsMediaTableProps,
     StaticAssetsTableRow,
 } from '@/types';
-import { ImageIcon } from 'lucide-react';
 import { useState } from 'react';
 import { CollapsibleTableSectionHeader } from './collapsible-table-section-header';
 import { DeliverablesCell } from './sections/deliverables-buttons';
@@ -74,9 +73,6 @@ export default function StaticAssetsMediaTable({
                                     </TableHead>
                                     <TableHead className="w-full max-w-[15%] text-center">
                                         Status
-                                    </TableHead>
-                                    <TableHead className="w-full max-w-[8%] text-center">
-                                        Preview
                                     </TableHead>
                                     <TableHead className="w-full max-w-[10%] text-center">
                                         Deliverables
@@ -335,26 +331,6 @@ export default function StaticAssetsMediaTable({
                                                             />
                                                         )}
                                                     </div>
-                                                </TableCell>
-
-                                                {/* Preview Section */}
-                                                <TableCell className="text-center">
-                                                    {row.previewImageUrl &&
-                                                    onPreviewImageClick ? (
-                                                        <button
-                                                            type="button"
-                                                            className="inline-flex cursor-pointer text-gray-400 hover:text-gray-900"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                onPreviewImageClick(
-                                                                    row,
-                                                                );
-                                                            }}
-                                                            aria-label="Preview image"
-                                                        >
-                                                            <ImageIcon className="size-4" />
-                                                        </button>
-                                                    ) : null}
                                                 </TableCell>
 
                                                 {/* Deliverables Section */}
