@@ -232,10 +232,9 @@ export default function InvoiceDetailSlideout({
                     tour={invoice.tour}
                     venue={getInvoiceVenueName(invoice, venues)}
                     market={invoice.market}
-                    onSend={() => console.log(`Send invoice: ${invoice}`)}
                     onMaximize={() => setIsMaximized((m) => !m)}
-                    onMore={() => console.log(`Moar clicked`)}
                     onClose={onClose}
+                    accountPayableEmail={formData.accountPayableEmail}
                     isMaximized={isMaximized}
                 />
 

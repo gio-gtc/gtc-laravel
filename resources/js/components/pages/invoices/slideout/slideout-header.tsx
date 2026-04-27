@@ -2,35 +2,41 @@ import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import NavOptionButton from '@/components/ui/slideout/nav-option-button';
 import Divider from '@/components/utils/divider';
 import { cn } from '@/lib/utils';
-import {
-    ArrowRightToLine,
-    ExpandIcon,
-    MoreHorizontal,
-    Send,
-    ShrinkIcon,
-} from 'lucide-react';
+import { ArrowRightToLine, ExpandIcon, Send, ShrinkIcon } from 'lucide-react';
 
 interface InvoiceSlideoutHeaderProps {
     tour: string;
     venue: string;
     market: string;
-    onSend: () => void;
     onMaximize: () => void;
-    onMore: () => void;
     onClose: () => void;
     isMaximized?: boolean;
+    accountPayableEmail: string | null;
 }
 
 export default function InvoiceSlideoutHeader({
     tour,
     venue,
     market,
-    onSend,
     onMaximize,
-    onMore,
     onClose,
     isMaximized = false,
+    accountPayableEmail,
 }: InvoiceSlideoutHeaderProps) {
+    const onSend = () => {
+        if (!accountPayableEmail) {
+            console.log('No Account Payable Email!');
+            return;
+        }
+
+        const recipient = `${accountPayableEmail}`;
+        const subject = `${tour} - ${venue} Invoice`;
+        const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${encodeURIComponent(subject)}`;
+
+        // Open in a new tab
+        window.open(gmailLink, '_blank');
+    };
+
     return (
         <SheetHeader className="relative gap-0 p-0">
             <div className="slide-out-container flex items-end justify-end shadow-lg">
@@ -40,7 +46,6 @@ export default function InvoiceSlideoutHeader({
                         onClick={onMaximize}
                         icon={isMaximized ? ShrinkIcon : ExpandIcon}
                     />
-                    <NavOptionButton onClick={onMore} icon={MoreHorizontal} />
                     <NavOptionButton
                         onClick={onClose}
                         icon={ArrowRightToLine}
