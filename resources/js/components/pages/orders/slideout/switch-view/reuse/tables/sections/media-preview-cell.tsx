@@ -25,7 +25,7 @@ export function MediaPreviewCell({
                     className="cursor-pointer text-gray-400 hover:text-gray-900"
                     onClick={() => onPreviewClick?.(0)}
                 >
-                    <AudioLines className="size-3.5" />
+                    <AudioLines className="size-3.5 stroke-3" />
                 </button>
             </div>
         );
@@ -38,14 +38,14 @@ export function MediaPreviewCell({
                 className="cursor-pointer hover:text-gray-900"
                 onClick={() => onPreviewClick?.(0)}
             >
-                <PlayIcon className="size-3.5" />
+                <PlayIcon className="size-3.5 stroke-3" />
             </button>
             <button
                 type="button"
                 className="cursor-pointer hover:text-gray-900"
                 onClick={() => onPreviewClick?.(1)}
             >
-                <Link className="size-3.5 rotate-45" />
+                <Link className="size-3.5 rotate-45 stroke-3" />
             </button>
         </div>
     );
