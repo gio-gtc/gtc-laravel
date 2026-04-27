@@ -12,6 +12,9 @@ return [
     | the message. All additional mailers can be configured within the
     | "mailers" array. Examples of each type of mailer are provided.
     |
+    | "log" does not deliver to a real inbox (it writes to application logs).
+    | To test in a mailbox UI, use MAIL_MAILER=smtp (e.g. Mailpit on 127.0.0.1:1025).
+    |
     */
 
     'default' => env('MAIL_MAILER', 'log'),

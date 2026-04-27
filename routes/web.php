@@ -22,7 +22,7 @@ Route::get('/demo/{uuid}/{assetId?}', [DemoController::class, 'show'])
     ->where('assetId', '[a-zA-Z0-9_-]+')
     ->name('demo.show');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 
     Route::get('orders', OrdersController::class)->name('orders');
