@@ -37,7 +37,7 @@ export default function Login({
                 resetOnSuccess={['password']}
                 className="flex flex-col gap-6"
             >
-                {({ processing, errors }) => (
+                {({ processing, errors, clearErrors }) => (
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
@@ -52,6 +52,7 @@ export default function Login({
                                     autoComplete="email"
                                     placeholder="email@example.com"
                                     className="border-white/25 !text-white focus-visible:border-white/40 focus-visible:ring-white/20"
+                                    onInput={() => clearErrors()}
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -78,6 +79,7 @@ export default function Login({
                                     autoComplete="current-password"
                                     placeholder="Password"
                                     className="border-white/25 !text-white focus-visible:border-white/40 focus-visible:ring-white/20"
+                                    onInput={() => clearErrors()}
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -105,6 +107,7 @@ export default function Login({
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
+                                onClick={() => clearErrors()}
                             >
                                 {processing && <Spinner />}
                                 Log in
