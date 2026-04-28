@@ -23,10 +23,7 @@ export default function Login({
     canRegister,
 }: LoginProps) {
     return (
-        <AuthVideoLayout
-            title="Log in to your account"
-            description="Enter your email and password below to log in"
-        >
+        <AuthVideoLayout title="Log in to your account">
             <Head title="Log in" />
 
             {status && (
@@ -104,7 +101,7 @@ export default function Login({
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full bg-white text-black hover:bg-white/90"
+                                className="w-full bg-white text-black hover:bg-white/90"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
