@@ -6,22 +6,15 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthVideoLayout from '@/layouts/auth/auth-video-layout';
 import { register } from '@/routes';
-import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
 import { CheckIcon } from 'lucide-react';
 
 interface LoginProps {
     status?: string;
-    canResetPassword: boolean;
-    canRegister: boolean;
 }
 
-export default function Login({
-    status,
-    canResetPassword,
-    canRegister,
-}: LoginProps) {
+export default function Login({ status }: LoginProps) {
     return (
         <AuthVideoLayout title="Log in to your account">
             <Head title="Log in" />
@@ -33,7 +26,8 @@ export default function Login({
             )}
 
             <Form
-                {...store.form()}
+                action="/login"
+                method="post"
                 resetOnSuccess={['password']}
                 className="flex flex-col gap-6"
             >
@@ -60,15 +54,13 @@ export default function Login({
                             <div className="grid gap-2">
                                 <div className="flex flex-col sm:flex-row sm:items-center">
                                     <Label htmlFor="password">Password</Label>
-                                    {canResetPassword && (
-                                        <TextLink
-                                            href={request()}
-                                            className="text-sm text-white/90 decoration-white/50 hover:text-white hover:decoration-white sm:ml-auto"
-                                            tabIndex={5}
-                                        >
-                                            Forgot password?
-                                        </TextLink>
-                                    )}
+                                    <TextLink
+                                        href={request()}
+                                        className="text-sm text-white/90 decoration-white/50 hover:text-white hover:decoration-white sm:ml-auto"
+                                        tabIndex={5}
+                                    >
+                                        Forgot password?
+                                    </TextLink>
                                 </div>
                                 <Input
                                     id="password"
@@ -114,18 +106,16 @@ export default function Login({
                             </Button>
                         </div>
 
-                        {canRegister && (
-                            <div className="text-center text-sm text-white/80">
-                                Don't have an account?{' '}
-                                <TextLink
-                                    href={register()}
-                                    tabIndex={5}
-                                    className="text-white/90 decoration-white/50 hover:text-white hover:decoration-white"
-                                >
-                                    Sign up
-                                </TextLink>
-                            </div>
-                        )}
+                        <div className="text-center text-sm text-white/80">
+                            Don't have an account?{' '}
+                            <TextLink
+                                href={register()}
+                                tabIndex={5}
+                                className="text-white/90 decoration-white/50 hover:text-white hover:decoration-white"
+                            >
+                                Sign up
+                            </TextLink>
+                        </div>
                     </>
                 )}
             </Form>
