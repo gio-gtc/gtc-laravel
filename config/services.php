@@ -40,4 +40,9 @@ return [
         'secret_key' => env('SUPABASE_SECRET_KEY', env('SUPABASE_SECRET_KEY')),
     ],
 
+    'api' => [
+        'base_url' => env('API_BASE_URL'),
+        'login_path' => env('API_LOGIN_PATH', 'api/login'),
+    ],
+
 ];

@@ -281,7 +281,7 @@ export default function MessageList({
                                             alt={senderName}
                                         />
                                         <AvatarFallback className="rounded-full bg-neutral-200 text-[10px] text-black">
-                                            {getInitials(senderName)}
+                                            {getInitials(sender)}
                                         </AvatarFallback>
                                     </Avatar>
                                 )}

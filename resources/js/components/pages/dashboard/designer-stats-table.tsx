@@ -18,7 +18,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { useInitials } from '@/hooks/use-initials';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
@@ -40,7 +39,6 @@ const ITEMS_PER_PAGE = 7;
 const defaultTrend = { direction: 'up' as const, percentage: 0 };
 
 function DesignerStatsTable() {
-    const getInitials = useInitials();
     const isMobile = useIsMobile();
     const usersWithFallback = useUsersWithFallback();
     const [sortColumn, setSortColumn] = useState<SortColumn | null>(null);

@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
-import { useInitials } from '@/hooks/use-initials';
 import { toggleRowSelectionOnRowClick } from '@/lib/row-select-toggle';
 import { cn } from '@/lib/utils';
 import type { LocalizedArtTableProps } from '@/types';
@@ -31,7 +30,6 @@ export default function LocalizedArtTable({
     onBulkEditAssignedDoubleClick,
 }: LocalizedArtTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
-    const getInitials = useInitials();
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>

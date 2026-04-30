@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import DatePickerInput from '@/components/utils/date-picker-input';
-import { useInitials } from '@/hooks/use-initials';
 import { type SharedData, type User } from '@/types';
 import { Form, usePage } from '@inertiajs/react';
 import { Camera, HelpCircle } from 'lucide-react';
@@ -49,7 +48,6 @@ export default function UserInfoModal({
     title: providedTitle,
 }: UserInfoModalProps) {
     const { auth } = usePage<SharedData>().props;
-    const getInitials = useInitials();
 
     // Use provided user or fall back to auth.user
     const user = providedUser ?? auth.user;

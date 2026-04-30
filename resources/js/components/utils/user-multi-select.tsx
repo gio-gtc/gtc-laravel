@@ -124,7 +124,7 @@ function UserMultiSelect({
                                             alt={user.name}
                                         />
                                         <AvatarFallback className="bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
-                                            {getInitials(user.name)}
+                                            {getInitials(user)}
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="flex-1">
