@@ -20,11 +20,11 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('/login', [BffLoginController::class, 'create'])->name('login')->middleware('guest');
-Route::post('/login', [BffLoginController::class, 'store'])->name('login.store')->middleware('guest');
+Route::get('/login', [BffLoginController::class, 'create'])->name('login')->middleware('bff.guest');
+Route::post('/login', [BffLoginController::class, 'store'])->name('login.store')->middleware('bff.guest');
 Route::post('/logout', [BffLogoutController::class, 'destroy'])->name('logout');
-Route::get('/register', [BffRegisterController::class, 'create'])->name('register')->middleware('guest');
-Route::post('/register', [BffRegisterController::class, 'store'])->middleware('guest');
+Route::get('/register', [BffRegisterController::class, 'create'])->name('register')->middleware('bff.guest');
+Route::post('/register', [BffRegisterController::class, 'store'])->middleware('bff.guest');
 
 Route::get('/demo/{uuid}/{assetId?}', [DemoController::class, 'show'])
     ->whereUuid('uuid')
