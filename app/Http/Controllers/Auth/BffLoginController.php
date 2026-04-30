@@ -29,17 +29,7 @@ class BffLoginController extends Controller
             'password' => 'required',
         ]);
 
-        $apiBase = rtrim((string) config('services.api.base_url'), '/');
-        $loginPath = trim((string) config('services.api.login_path', 'api/login'), '/');
-        $loginUrl = $apiBase.'/'.$loginPath;
-
-        if ($apiBase === '') {
-            throw ValidationException::withMessages([
-                'email' => 'Login service is not configured. Set API_BASE_URL in your .env file (see .env.example).',
-            ]);
-        }
-
-        $response = Http::acceptJson()->post($loginUrl, [
+        $response = Http::acceptJson()->post(env('API_BASE_URL') . '/api/login', [
             'email' => $request->email,
             'password' => $request->password,
         ]);

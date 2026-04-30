@@ -43,6 +43,7 @@ return [
     'api' => [
         'base_url' => env('API_BASE_URL'),
         'login_path' => env('API_LOGIN_PATH', 'api/login'),
+        'register_path' => env('API_REGISTER_PATH', 'api/register'),
     ],
 
 ];

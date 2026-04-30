@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ChannelMessageController;
 use App\Http\Controllers\Auth\BffLoginController;
 use App\Http\Controllers\Auth\BffLogoutController;
+use App\Http\Controllers\Auth\BffRegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DemoController;
 use App\Http\Controllers\InvoicesController;
@@ -22,6 +23,8 @@ Route::get('/', function () {
 Route::get('/login', [BffLoginController::class, 'create'])->name('login')->middleware('guest');
 Route::post('/login', [BffLoginController::class, 'store'])->name('login.store')->middleware('guest');
 Route::post('/logout', [BffLogoutController::class, 'destroy'])->name('logout');
+Route::get('/register', [BffRegisterController::class, 'create'])->name('register')->middleware('guest');
+Route::post('/register', [BffRegisterController::class, 'store'])->middleware('guest');
 
 Route::get('/demo/{uuid}/{assetId?}', [DemoController::class, 'show'])
     ->whereUuid('uuid')
