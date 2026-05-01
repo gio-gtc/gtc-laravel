@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ChannelMessageController;
 use App\Http\Controllers\Auth\BffLoginController;
 use App\Http\Controllers\Auth\BffLogoutController;
 use App\Http\Controllers\Auth\BffRegisterController;
+use App\Http\Controllers\Auth\BffForgotPasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DemoController;
 use App\Http\Controllers\InvoicesController;
@@ -24,10 +25,20 @@ Route::post('/logout', [BffLogoutController::class, 'destroy'])->name('logout');
 Route::get('/register', [BffRegisterController::class, 'create'])->name('register')->middleware('bff.guest');
 Route::post('/register', [BffRegisterController::class, 'store'])->middleware('bff.guest');
 
-Route::get('/demo/{uuid}/{assetId?}', [DemoController::class, 'show'])
-    ->whereUuid('uuid')
-    ->where('assetId', '[a-zA-Z0-9_-]+')
-    ->name('demo.show');
+Route::middleware('guest')->group(function () {
+    Route::get('/demo/{uuid}/{assetId?}', [DemoController::class, 'show'])
+        ->whereUuid('uuid')
+        ->where('assetId', '[a-zA-Z0-9_-]+')
+        ->name('demo.show');
+
+    // Show the React form
+    Route::get('/forgot-password', [BffForgotPasswordController::class, 'create'])
+        ->name('password.request');
+
+    // Handle the form submission (This is the one the test is failing to find!)
+    Route::post('/forgot-password', [BffForgotPasswordController::class, 'store'])
+    ->name('password.email');
+});
 
 
 Route::middleware([BffAuth::class])->group(function () {
