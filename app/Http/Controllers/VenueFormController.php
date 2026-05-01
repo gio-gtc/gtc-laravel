@@ -19,9 +19,13 @@ class VenueFormController extends Controller
      * Schema endpoint for the modal. Returns the resolved blocks + JSON Schema
      * the modal needs to render, plus the pre-signed upload scope so uploads
      * and the subsequent submission reconcile against the same cache entry.
+     *
+     * @param  string  $venueId  Catalog / mock venue id (see {@see Venue::$mock_venue_id}).
      */
-    public function show(Request $request, Venue $venue): JsonResponse
+    public function show(Request $request, string $venueId): JsonResponse
     {
+        $venue = Venue::query()->where('mock_venue_id', $venueId)->firstOrFail();
+
         $resolution = $this->resolver->resolve($venue, $request->boolean('omit_file_fields'));
 
         return response()->json([
@@ -34,14 +38,19 @@ class VenueFormController extends Controller
             ],
             'blocks' => $resolution->blocks,
             'jsonSchema' => $resolution->jsonSchema,
-            'submitAction' => route('venue.form.store', $venue),
+            'submitAction' => route('venue.form.store', ['venueId' => $venue->mock_venue_id]),
             'uploadAction' => route('uploads.store'),
             'scope' => 'session:'.session()->getId(),
         ]);
     }
 
-    public function store(Request $request, Venue $venue): JsonResponse
+    /**
+     * @param  string  $venueId  Catalog / mock venue id (see {@see Venue::$mock_venue_id}).
+     */
+    public function store(Request $request, string $venueId): JsonResponse
     {
+        $venue = Venue::query()->where('mock_venue_id', $venueId)->firstOrFail();
+
         $request->validate([
             'omit_file_fields' => ['sometimes', 'boolean'],
             'order_id' => ['nullable', 'integer'],

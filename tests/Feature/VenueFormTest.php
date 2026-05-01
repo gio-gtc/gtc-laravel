@@ -83,7 +83,7 @@ function seedFormFixture(): array
 
 it('returns the venue form JSON schema for authenticated users', function () {
     ['mockVenueId' => $mockVenueId] = seedFormFixture();
-    $this->actingAs(User::factory()->create());
+    $this->actingAsBff();
 
     $this->getJson("/venue-forms/{$mockVenueId}/schema")
         ->assertOk()
@@ -103,7 +103,7 @@ it('returns the venue form JSON schema for authenticated users', function () {
 it('records a submission with order_id and tour_venue_id on happy path', function () {
     ['mockVenueId' => $mockVenueId, 'venue' => $venue] = seedFormFixture();
     $user = User::factory()->create();
-    $this->actingAs($user);
+    $this->actingAsBff($user);
 
     $this->postJson("/venue-forms/{$mockVenueId}", [
         'order_id' => 42,
@@ -130,7 +130,7 @@ it('records a submission with order_id and tour_venue_id on happy path', functio
 
 it('rejects a rogue item key not present in the enabled set', function () {
     ['mockVenueId' => $mockVenueId] = seedFormFixture();
-    $this->actingAs(User::factory()->create());
+    $this->actingAsBff();
 
     $this->postJson("/venue-forms/{$mockVenueId}", [
         'answers' => [
@@ -144,7 +144,7 @@ it('rejects a rogue item key not present in the enabled set', function () {
 
 it('requires station_call_letters when broadcast_type is tv (requiredIf)', function () {
     ['mockVenueId' => $mockVenueId] = seedFormFixture();
-    $this->actingAs(User::factory()->create());
+    $this->actingAsBff();
 
     $this->postJson("/venue-forms/{$mockVenueId}", [
         'answers' => [
@@ -156,7 +156,7 @@ it('requires station_call_letters when broadcast_type is tv (requiredIf)', funct
 
 it('allows station_call_letters to be omitted when broadcast_type is not tv', function () {
     ['mockVenueId' => $mockVenueId] = seedFormFixture();
-    $this->actingAs(User::factory()->create());
+    $this->actingAsBff();
 
     $this->postJson("/venue-forms/{$mockVenueId}", [
         'answers' => [
@@ -168,7 +168,7 @@ it('allows station_call_letters to be omitted when broadcast_type is not tv', fu
 
 it('rejects a file descriptor with a path not issued by UploadController', function () {
     ['mockVenueId' => $mockVenueId] = seedFormFixture();
-    $this->actingAs(User::factory()->create());
+    $this->actingAsBff();
 
     $def = BlockDefinition::where('key', 'order_info')->first();
     $schema = $def->schema;
@@ -189,7 +189,7 @@ it('rejects a file descriptor with a path not issued by UploadController', funct
 
 it('strips file and attachments from schema and submits when omit_file_fields is set', function () {
     ['mockVenueId' => $mockVenueId, 'venue' => $venue] = seedFormFixture();
-    $this->actingAs(User::factory()->create());
+    $this->actingAsBff();
 
     $def = BlockDefinition::where('key', 'order_info')->first();
     $schema = $def->schema;
@@ -226,7 +226,7 @@ it('strips file and attachments from schema and submits when omit_file_fields is
 
 it('accepts file descriptor when path was issued by UploadController', function () {
     ['mockVenueId' => $mockVenueId] = seedFormFixture();
-    $this->actingAs(User::factory()->create());
+    $this->actingAsBff();
     $def = BlockDefinition::where('key', 'order_info')->first();
     $schema = $def->schema;
     $schema['fields'][] = ['key' => 'admat', 'label' => 'Admat', 'type' => 'file'];

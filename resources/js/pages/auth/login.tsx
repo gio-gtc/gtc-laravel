@@ -6,7 +6,6 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthVideoLayout from '@/layouts/auth/auth-video-layout';
 import { register } from '@/routes';
-import { request } from '@/routes/password';
 import { Form, Head } from '@inertiajs/react';
 import { CheckIcon } from 'lucide-react';
 
@@ -52,16 +51,7 @@ export default function Login({ status }: LoginProps) {
                             </div>
 
                             <div className="grid gap-2">
-                                <div className="flex flex-col sm:flex-row sm:items-center">
-                                    <Label htmlFor="password">Password</Label>
-                                    <TextLink
-                                        href={request()}
-                                        className="text-sm text-white/90 decoration-white/50 hover:text-white hover:decoration-white sm:ml-auto"
-                                        tabIndex={5}
-                                    >
-                                        Forgot password?
-                                    </TextLink>
-                                </div>
+                                <Label htmlFor="password">Password</Label>
                                 <Input
                                     id="password"
                                     type="password"
