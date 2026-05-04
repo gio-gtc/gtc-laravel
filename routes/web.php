@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\BffLoginController;
 use App\Http\Controllers\Auth\BffLogoutController;
 use App\Http\Controllers\Auth\BffRegisterController;
 use App\Http\Controllers\Auth\BffForgotPasswordController;
+use App\Http\Controllers\Auth\BffResetPasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DemoController;
 use App\Http\Controllers\InvoicesController;
@@ -34,10 +35,16 @@ Route::middleware('guest')->group(function () {
     // Show the React form
     Route::get('/forgot-password', [BffForgotPasswordController::class, 'create'])
         ->name('password.request');
-
     // Handle the form submission (This is the one the test is failing to find!)
     Route::post('/forgot-password', [BffForgotPasswordController::class, 'store'])
     ->name('password.email');
+
+    // The GET route (Shows the React form)
+    Route::get('/reset-password', [BffResetPasswordController::class, 'create'])
+        ->name('password.reset');
+    // The POST route (This is the one your test is failing to find!)
+    Route::post('/reset-password', [BffResetPasswordController::class, 'store'])
+        ->name('password.update');
 });
 
 

@@ -33,7 +33,7 @@ class BffForgotPasswordController extends Controller
         ]);
 
         // Forward the request to gtc-api
-        $response = Http::post(env('API_BASE_URL', 'http://127.0.0.1:8050') . '/api/forgot-password', [
+        $response = Http::post(config('services.api.base_url') . '/api/forgot-password', [
             'email' => $request->email,
         ]);
 

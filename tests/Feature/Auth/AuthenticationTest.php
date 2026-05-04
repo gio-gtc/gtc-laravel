@@ -9,7 +9,7 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
-    $base = rtrim(env('API_BASE_URL', 'http://127.0.0.1:8000'), '/');
+    $base = config('services.api.base_url');
 
     Http::fake([
         $base.'/api/login' => Http::response([
@@ -37,7 +37,7 @@ test('users can authenticate using the login screen', function () {
 });
 
 test('users can not authenticate with invalid password', function () {
-    $base = rtrim(env('API_BASE_URL', 'http://127.0.0.1:8000'), '/');
+    $base = config('services.api.base_url');
 
     Http::fake([
         $base.'/api/login' => Http::response(['message' => 'Unauthenticated.'], 401),

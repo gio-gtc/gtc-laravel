@@ -18,7 +18,7 @@ class BffRegisterController extends Controller
     public function store(Request $request)
     {
         // 1. Forward the data to the API Brain
-        $response = Http::acceptJson()->post(env('API_BASE_URL') . '/api/register', [
+        $response = Http::acceptJson()->post(config('services.api.base_url') . '/api/register', [
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,

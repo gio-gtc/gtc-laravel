@@ -29,7 +29,7 @@ class BffLoginController extends Controller
             'password' => 'required',
         ]);
 
-        $response = Http::acceptJson()->post(env('API_BASE_URL') . '/api/login', [
+        $response = Http::acceptJson()->post(config('services.api.base_url') . '/api/login', [
             'email' => $request->email,
             'password' => $request->password,
         ]);

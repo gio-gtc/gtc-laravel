@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Http;
 it('proxies registration data to the API and stores the new session token', function () {
     // 1. Fake the API successfully creating a user and returning a new token
     Http::fake([
-        config('services.api.url') . '/api/register' => Http::response([
+        config('services.api.base_url') . '/api/register' => Http::response([
             'access_token' => 'new-user-token-456',
             'roles' => [],
             'permissions' => [],
@@ -32,7 +32,7 @@ it('proxies registration data to the API and stores the new session token', func
 it('catches API registration validation errors and passes them to Inertia', function () {
     // 1. Fake the API rejecting the registration (e.g., email already exists)
     Http::fake([
-        config('services.api.url') . '/api/register' => Http::response([
+        config('services.api.base_url') . '/api/register' => Http::response([
             'message' => 'The given data was invalid.',
             'errors'  => [
                 'email' => ['The email has already been taken.']

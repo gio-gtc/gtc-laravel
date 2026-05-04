@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Http;
 it('proxies the forgot password request and flashes a success status to the session', function () {
     // 1. Fake the API successfully generating the token and queuing the email
     Http::fake([
-        env('API_BASE_URL', 'http://127.0.0.1:8050') . '/api/forgot-password'  => Http::response([
+        config('services.api.base_url') . '/api/forgot-password'  => Http::response([
             'status'  => 'success',
             'message' => 'We have emailed your password reset link.'
         ], 200)
@@ -27,7 +27,7 @@ it('proxies the forgot password request and flashes a success status to the sess
 it('catches API validation errors if the email is not found in the AWS database', function () {
     // 1. Fake the API rejecting the request because the email doesn't exist
     Http::fake([
-        env('API_BASE_URL', 'http://127.0.0.1:8050') . '/api/forgot-password' => Http::response([
+        config('services.api.base_url') . '/api/forgot-password' => Http::response([
             'message' => 'The given data was invalid.',
             'errors'  => [
                 'email' => ['We can not find a user with that email address.']
