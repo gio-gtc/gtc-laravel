@@ -8,7 +8,8 @@ import { Head, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 interface LoginProps {
-    status?: string;
+    status?: string | null;
+    error?: string | null;
     authFaceHint?: 'signup' | null;
 }
 
@@ -23,7 +24,7 @@ function needsSignupFace(errors: Record<string, unknown> | undefined): boolean {
     );
 }
 
-export default function Login({ status, authFaceHint }: LoginProps) {
+export default function Login({ status, error, authFaceHint }: LoginProps) {
     const errors = usePage<SharedData & { errors?: Record<string, unknown> }>()
         .props.errors;
 
@@ -38,11 +39,17 @@ export default function Login({ status, authFaceHint }: LoginProps) {
         <AuthVideoLayout>
             <Head title={face === 'login' ? 'Log in' : 'Register'} />
 
-            {status && (
+            {status ? (
                 <div className="mb-4 rounded-lg border border-white/15 bg-white/10 px-4 py-3 text-center text-sm font-medium text-white backdrop-blur">
                     {status}
                 </div>
-            )}
+            ) : null}
+
+            {error ? (
+                <div className="mb-4 rounded-lg border border-red-400/40 bg-red-950/40 px-4 py-3 text-center text-sm font-medium text-red-100 backdrop-blur">
+                    {error}
+                </div>
+            ) : null}
 
             <LoginSignupFlip
                 face={face}

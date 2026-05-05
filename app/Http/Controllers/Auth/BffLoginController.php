@@ -19,6 +19,8 @@ class BffLoginController extends Controller
 
         return Inertia::render('auth/login', [
             'authFaceHint' => $authFaceHint === 'signup' ? 'signup' : null,
+            'status' => $request->session()->pull('status'),
+            'error' => $request->session()->pull('error'),
         ]);
     }
 
@@ -32,7 +34,7 @@ class BffLoginController extends Controller
             'password' => 'required',
         ]);
 
-        $response = Http::acceptJson()->post(config('services.api.base_url') . '/api/login', [
+        $response = Http::acceptJson()->post(config('services.api.base_url').'/api/login', [
             'email' => $request->email,
             'password' => $request->password,
         ]);

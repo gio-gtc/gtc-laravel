@@ -1,8 +1,16 @@
+import {
+    authFlipInputClass,
+    authFlipLinkButtonClass,
+    authFlipLoginCardClass,
+} from '@/components/auth/auth-flip-classes';
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import AuthSimpleLayout from '@/layouts/auth/auth-simple-layout';
-import { Head, useForm } from '@inertiajs/react';
+import { Spinner } from '@/components/ui/spinner';
+import AuthVideoLayout from '@/layouts/auth/auth-video-layout';
+import { cn } from '@/lib/utils';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
 interface ResetPasswordProps {
@@ -11,7 +19,6 @@ interface ResetPasswordProps {
 }
 
 export default function ResetPassword({ token, email }: ResetPasswordProps) {
-    // 1. Initialize Inertia's useForm with the props passed from the email URL
     const { data, setData, post, processing, errors } = useForm({
         token: token || '',
         email: email || '',
@@ -19,84 +26,114 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
         password_confirmation: '',
     });
 
-    // 2. Submit handler
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-
-        // Use the literal string to avoid route name collisions
         post('/reset-password');
     };
 
+    const readOnlyEmailClass = cn(
+        authFlipInputClass,
+        'cursor-not-allowed bg-white/5 opacity-80',
+    );
+
     return (
-        <AuthSimpleLayout
-            title="Reset Password"
-            description="Please enter and confirm your new password below."
-        >
+        <AuthVideoLayout>
             <Head title="Reset Password" />
 
-            <form onSubmit={submit} className="mt-4 space-y-6">
-                {/* Read-only email field so the user knows which account is being reset */}
-                <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input
-                        id="email"
-                        type="email"
-                        name="email"
-                        value={data.email}
-                        readOnly
-                        className="cursor-not-allowed bg-muted opacity-70"
-                    />
-                    {errors.email && (
-                        <p className="text-sm text-red-600">{errors.email}</p>
-                    )}
+            <div className={authFlipLoginCardClass}>
+                <div className="space-y-2 text-center">
+                    <h1 className="text-xl font-semibold tracking-tight text-white">
+                        Reset password
+                    </h1>
+                    <p className="text-sm text-white/80">
+                        Enter and confirm your new password below.
+                    </p>
                 </div>
 
-                {/* New Password Field */}
-                <div className="space-y-2">
-                    <Label htmlFor="password">New Password</Label>
-                    <Input
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        onChange={(e) => setData('password', e.target.value)}
-                        required
-                        autoFocus
-                    />
-                    {errors.password && (
-                        <p className="text-sm text-red-600">
-                            {errors.password}
-                        </p>
-                    )}
+                <div className="mt-6">
+                    <form onSubmit={submit} className="flex flex-col gap-6">
+                        <div className="grid gap-6">
+                            <div className="grid gap-2">
+                                <Label htmlFor="reset-email">
+                                    Email address
+                                </Label>
+                                <Input
+                                    id="reset-email"
+                                    type="email"
+                                    name="email"
+                                    value={data.email}
+                                    readOnly
+                                    tabIndex={-1}
+                                    autoComplete="email"
+                                    className={readOnlyEmailClass}
+                                />
+                                <InputError message={errors.email} />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="reset-password">
+                                    New password
+                                </Label>
+                                <Input
+                                    id="reset-password"
+                                    type="password"
+                                    name="password"
+                                    value={data.password}
+                                    onChange={(e) =>
+                                        setData('password', e.target.value)
+                                    }
+                                    required
+                                    autoFocus
+                                    autoComplete="new-password"
+                                    placeholder="New password"
+                                    className={authFlipInputClass}
+                                />
+                                <InputError message={errors.password} />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="reset-password_confirmation">
+                                    Confirm password
+                                </Label>
+                                <Input
+                                    id="reset-password_confirmation"
+                                    type="password"
+                                    name="password_confirmation"
+                                    value={data.password_confirmation}
+                                    onChange={(e) =>
+                                        setData(
+                                            'password_confirmation',
+                                            e.target.value,
+                                        )
+                                    }
+                                    required
+                                    autoComplete="new-password"
+                                    placeholder="Confirm password"
+                                    className={authFlipInputClass}
+                                />
+                                <InputError
+                                    message={errors.password_confirmation}
+                                />
+                            </div>
+
+                            <Button
+                                type="submit"
+                                className="mt-2 w-full bg-white text-black hover:bg-white/90"
+                                disabled={processing}
+                            >
+                                {processing && <Spinner />}
+                                Reset password
+                            </Button>
+                        </div>
+                    </form>
                 </div>
 
-                {/* Password Confirmation Field */}
-                <div className="space-y-2">
-                    <Label htmlFor="password_confirmation">
-                        Confirm Password
-                    </Label>
-                    <Input
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        value={data.password_confirmation}
-                        onChange={(e) =>
-                            setData('password_confirmation', e.target.value)
-                        }
-                        required
-                    />
-                    {errors.password_confirmation && (
-                        <p className="text-sm text-red-600">
-                            {errors.password_confirmation}
-                        </p>
-                    )}
+                <div className="mt-6 text-center text-sm text-white/80">
+                    <Link href="/login" className={authFlipLinkButtonClass}>
+                        Back to log in
+                    </Link>
                 </div>
-
-                {/* Submit Button */}
-                <Button type="submit" className="w-full" disabled={processing}>
-                    {processing ? 'Resetting Password...' : 'Reset Password'}
-                </Button>
-            </form>
-        </AuthSimpleLayout>
+            </div>
+        </AuthVideoLayout>
     );
 }
