@@ -8,8 +8,8 @@ type ButtonType = React.ButtonHTMLAttributes<HTMLButtonElement>['type'];
 export interface ModalFooterActionsProps {
     onCancel: () => void;
     onConfirm?: () => void;
-    cancelLabel?: string;
-    confirmLabel?: string;
+    cancelLabel?: ReactNode;
+    confirmLabel?: ReactNode;
     cancelVariant?: ButtonVariant;
     confirmVariant?: ButtonVariant;
     cancelType?: ButtonType;
