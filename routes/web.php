@@ -20,31 +20,33 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-Route::get('/login', [BffLoginController::class, 'create'])->name('login')->middleware('bff.guest');
-Route::post('/login', [BffLoginController::class, 'store'])->name('login.store')->middleware('bff.guest');
 Route::post('/logout', [BffLogoutController::class, 'destroy'])->name('logout');
-Route::get('/register', [BffRegisterController::class, 'create'])->name('register')->middleware('bff.guest');
-Route::post('/register', [BffRegisterController::class, 'store'])->middleware('bff.guest');
 
 Route::middleware('guest')->group(function () {
     Route::get('/demo/{uuid}/{assetId?}', [DemoController::class, 'show'])
-        ->whereUuid('uuid')
-        ->where('assetId', '[a-zA-Z0-9_-]+')
-        ->name('demo.show');
-
+    ->whereUuid('uuid')
+    ->where('assetId', '[a-zA-Z0-9_-]+')
+    ->name('demo.show');
+    
+    Route::get('/login', [BffLoginController::class, 'create'])->name('login');
+    Route::post('/login', [BffLoginController::class, 'store'])->name('login.store');
+    
+    Route::get('/register', [BffRegisterController::class, 'create'])->name('register');
+    Route::post('/register', [BffRegisterController::class, 'store']);
+    
     // Show the React form
     Route::get('/forgot-password', [BffForgotPasswordController::class, 'create'])
         ->name('password.request');
     // Handle the form submission (This is the one the test is failing to find!)
     Route::post('/forgot-password', [BffForgotPasswordController::class, 'store'])
-    ->name('password.email');
+        ->name('password.email');
 
     // The GET route (Shows the React form)
     Route::get('/reset-password', [BffResetPasswordController::class, 'create'])
         ->name('password.reset');
     // The POST route (This is the one your test is failing to find!)
     Route::post('/reset-password', [BffResetPasswordController::class, 'store'])
-        ->name('password.update');
+        ->name('password.store');
 });
 
 

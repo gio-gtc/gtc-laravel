@@ -1,4 +1,5 @@
 import InputError from '@/components/input-error';
+import ForgotPasswordModal from '@/components/modals/forgot-password-modal';
 import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,12 +9,15 @@ import AuthVideoLayout from '@/layouts/auth/auth-video-layout';
 import { register } from '@/routes';
 import { Form, Head } from '@inertiajs/react';
 import { CheckIcon } from 'lucide-react';
+import { useState } from 'react';
 
 interface LoginProps {
     status?: string;
 }
 
 export default function Login({ status }: LoginProps) {
+    const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
+
     return (
         <AuthVideoLayout title="Log in to your account">
             <Head title="Log in" />
@@ -51,7 +55,18 @@ export default function Login({ status }: LoginProps) {
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
+                                <div className="flex flex-col sm:flex-row sm:items-center">
+                                    <Label htmlFor="password">Password</Label>
+                                    <button
+                                        type="button"
+                                        className="font-inherit border-0 bg-transparent p-0 text-sm text-white/90 underline decoration-white/50 decoration-from-font underline-offset-4 hover:text-white hover:decoration-white sm:ml-auto"
+                                        onClick={() =>
+                                            setIsForgotModalOpen(true)
+                                        }
+                                    >
+                                        Forgot password?
+                                    </button>
+                                </div>
                                 <Input
                                     id="password"
                                     type="password"
@@ -109,6 +124,11 @@ export default function Login({ status }: LoginProps) {
                     </>
                 )}
             </Form>
+
+            <ForgotPasswordModal
+                isOpen={isForgotModalOpen}
+                setIsOpen={setIsForgotModalOpen}
+            />
         </AuthVideoLayout>
     );
 }
