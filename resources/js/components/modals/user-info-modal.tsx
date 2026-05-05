@@ -9,7 +9,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { FieldLabel } from '@/components/ui/field-label';
 import { Textarea } from '@/components/ui/textarea';
 import DatePickerInput from '@/components/utils/date-picker-input';
 import { type SharedData, type User } from '@/types';
@@ -176,15 +176,13 @@ export default function UserInfoModal({
                                 <div className="grid gap-2">
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="grid gap-2">
-                                            <Label
+                                            <FieldLabel
                                                 className="xs-gray-700-weight-500"
                                                 htmlFor="first_name"
+                                                required
                                             >
-                                                First Name{' '}
-                                                <span className="text-destructive">
-                                                    *
-                                                </span>
-                                            </Label>
+                                                First Name
+                                            </FieldLabel>
                                             <Input
                                                 id="first_name"
                                                 name="first_name"
@@ -200,15 +198,13 @@ export default function UserInfoModal({
                                         </div>
 
                                         <div className="grid gap-2">
-                                            <Label
+                                            <FieldLabel
                                                 className="xs-gray-700-weight-500"
                                                 htmlFor="last_name"
+                                                required
                                             >
-                                                Last Name{' '}
-                                                <span className="text-destructive">
-                                                    *
-                                                </span>
-                                            </Label>
+                                                Last Name
+                                            </FieldLabel>
                                             <Input
                                                 id="last_name"
                                                 name="last_name"
@@ -226,15 +222,13 @@ export default function UserInfoModal({
 
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="grid gap-2">
-                                            <Label
+                                            <FieldLabel
                                                 className="xs-gray-700-weight-500"
                                                 htmlFor="organization"
+                                                required
                                             >
-                                                Organization{' '}
-                                                <span className="text-destructive">
-                                                    *
-                                                </span>
-                                            </Label>
+                                                Organization
+                                            </FieldLabel>
                                             <Input
                                                 id="organization"
                                                 name="organization"
@@ -271,15 +265,13 @@ export default function UserInfoModal({
 
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="grid gap-2">
-                                            <Label
+                                            <FieldLabel
                                                 className="xs-gray-700-weight-500"
                                                 htmlFor="email"
+                                                required
                                             >
-                                                Email{' '}
-                                                <span className="text-destructive">
-                                                    *
-                                                </span>
-                                            </Label>
+                                                Email
+                                            </FieldLabel>
                                             <Input
                                                 id="email"
                                                 name="email"
@@ -321,15 +313,13 @@ export default function UserInfoModal({
 
                                     <div className="grid gap-4 md:grid-cols-2">
                                         <div className="grid gap-2">
-                                            <Label
+                                            <FieldLabel
                                                 className="xs-gray-700-weight-500"
                                                 htmlFor="phone_number"
+                                                required
                                             >
-                                                Phone Number{' '}
-                                                <span className="text-destructive">
-                                                    *
-                                                </span>
-                                            </Label>
+                                                Phone Number
+                                            </FieldLabel>
                                             <Input
                                                 id="phone_number"
                                                 name="phone_number"

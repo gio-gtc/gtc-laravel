@@ -1,3 +1,4 @@
+import { ToastHost } from '@/components/toast-host';
 import { createInertiaApp } from '@inertiajs/react';
 import createServer from '@inertiajs/react/server';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
@@ -16,7 +17,12 @@ createServer((page) =>
                 import.meta.glob('./pages/**/*.tsx'),
             ),
         setup: ({ App, props }) => {
-            return <App {...props} />;
+            return (
+                <>
+                    <App {...props} />
+                    <ToastHost />
+                </>
+            );
         },
     }),
 );

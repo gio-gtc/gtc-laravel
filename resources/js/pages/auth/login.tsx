@@ -13,15 +13,21 @@ interface LoginProps {
     authFaceHint?: 'signup' | null;
 }
 
+const REQUEST_ACCESS_ERROR_KEYS = [
+    'first_name',
+    'last_name',
+    'email',
+    'company',
+    'job_title',
+    'phone',
+    'details',
+] as const;
+
 function needsSignupFace(errors: Record<string, unknown> | undefined): boolean {
     if (!errors) {
         return false;
     }
-    return (
-        'first_name' in errors ||
-        'last_name' in errors ||
-        'password_confirmation' in errors
-    );
+    return REQUEST_ACCESS_ERROR_KEYS.some((key) => key in errors);
 }
 
 export default function Login({ status, error, authFaceHint }: LoginProps) {
@@ -37,7 +43,9 @@ export default function Login({ status, error, authFaceHint }: LoginProps) {
 
     return (
         <AuthVideoLayout>
-            <Head title={face === 'login' ? 'Log in' : 'Register'} />
+            <Head
+                title={face === 'login' ? 'Log in' : 'Request access'}
+            />
 
             {status ? (
                 <div className="mb-4 rounded-lg border border-white/15 bg-white/10 px-4 py-3 text-center text-sm font-medium text-white backdrop-blur">

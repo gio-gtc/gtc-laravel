@@ -39,7 +39,7 @@ export default function LoginSignupFlip({
         <div className="[perspective:1000px]">
             <div
                 className={cn(
-                    'relative min-h-[44rem] [transform-style:preserve-3d] motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out',
+                    'relative min-h-[52rem] [transform-style:preserve-3d] motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out',
                     face === 'signup' && '[transform:rotateY(180deg)]',
                 )}
             >
@@ -66,7 +66,7 @@ export default function LoginSignupFlip({
                 <div
                     className={cn(
                         authFlipFaceShellClass,
-                        '[transform:rotateY(180deg)_translateZ(1px)]',
+                        '[transform:rotateY(180deg)_translateZ(1px)] overflow-y-auto',
                         face !== 'signup' && 'pointer-events-none',
                     )}
                     aria-hidden={face !== 'signup'}

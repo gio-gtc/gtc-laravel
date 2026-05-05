@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Input, InputVariants } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { FieldLabel } from '@/components/ui/field-label';
 import {
     Popover,
     PopoverContent,
@@ -226,9 +226,13 @@ export default function DatePickerInput({
                     <input type="hidden" name={name} value={value} />
                 ) : null}
                 {label ? (
-                    <Label htmlFor={id} className="pt-2">
+                    <FieldLabel
+                        htmlFor={id}
+                        className="pt-2"
+                        required={required}
+                    >
                         {label}
-                    </Label>
+                    </FieldLabel>
                 ) : null}
                 <div
                     className={cn(
@@ -280,9 +284,13 @@ export default function DatePickerInput({
         >
             {name ? <input type="hidden" name={name} value={value} /> : null}
             {label ? (
-                <Label htmlFor={id} className="pt-2">
+                <FieldLabel
+                    htmlFor={id}
+                    className="pt-2"
+                    required={required}
+                >
                     {label}
-                </Label>
+                </FieldLabel>
             ) : null}
             <div
                 className={cn(

@@ -111,7 +111,7 @@ export default function AuthLoginPanel({
 
                                 <Button
                                     type="submit"
-                                    className="w-full bg-white text-black hover:bg-white/90"
+                                    className="w-full"
                                     tabIndex={5}
                                     disabled={processing}
                                     data-test="login-button"
@@ -123,14 +123,14 @@ export default function AuthLoginPanel({
                             </div>
 
                             <div className="text-center text-sm text-white/80">
-                                Don&apos;t have an account?{' '}
+                                Need access?{' '}
                                 <button
                                     type="button"
                                     className={authFlipLinkButtonClass}
                                     tabIndex={6}
                                     onClick={onRequestSignup}
                                 >
-                                    Sign up
+                                    Request access
                                 </button>
                             </div>
                         </>

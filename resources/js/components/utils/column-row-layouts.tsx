@@ -1,4 +1,4 @@
-import { Label } from '@/components/ui/label';
+import { FieldLabel } from '@/components/ui/field-label';
 import { cn } from '@/lib/utils';
 
 export function ColumnedRowsParent({
@@ -55,20 +55,20 @@ export function ColumnedRowsChild({
             )}
         >
             {labelFor && labelContent ? (
-                <Label
-                    className={`${labelLocationClasses} sm:flex-1 ${labelClassName}`}
-                    htmlFor={labelFor}
-                >
-                    {labelContent}
-                    {required && (
-                        <span className="ml-0.5 text-destructive">*</span>
-                    )}
-                    {subLabelContent && (
+                <div className={cn('sm:flex-1', labelClassName)}>
+                    <FieldLabel
+                        className={labelLocationClasses}
+                        htmlFor={labelFor}
+                        required={required}
+                    >
+                        {labelContent}
+                    </FieldLabel>
+                    {subLabelContent ? (
                         <p className="mt-1 font-normal text-gray-600">
                             {subLabelContent}
                         </p>
-                    )}
-                </Label>
+                    ) : null}
+                </div>
             ) : (
                 ''
             )}

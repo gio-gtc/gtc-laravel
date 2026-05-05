@@ -1,6 +1,6 @@
 import { FileUploader } from '@/components/forms/file-uploader';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { FieldLabel } from '@/components/ui/field-label';
 import {
     Select,
     SelectContent,
@@ -73,12 +73,9 @@ function OrderInfoField({
 }: OrderInfoFieldProps) {
     const id = `field-${field.key}`;
     const label = (
-        <Label htmlFor={id}>
+        <FieldLabel htmlFor={id} required={!!field.required}>
             {field.label}
-            {field.required ? (
-                <span className="ml-0.5 text-destructive">*</span>
-            ) : null}
-        </Label>
+        </FieldLabel>
     );
     const errEl = error ? (
         <p className="text-xs text-destructive">
