@@ -7,6 +7,7 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Spinner } from '@/components/ui/spinner';
 import AuthVideoLayout from '@/layouts/auth/auth-video-layout';
 import { cn } from '@/lib/utils';
@@ -74,9 +75,8 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                                 <Label htmlFor="reset-password">
                                     New password
                                 </Label>
-                                <Input
+                                <PasswordInput
                                     id="reset-password"
-                                    type="password"
                                     name="password"
                                     value={data.password}
                                     onChange={(e) =>
@@ -87,6 +87,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                                     autoComplete="new-password"
                                     placeholder="New password"
                                     className={authFlipInputClass}
+                                    toggleButtonClassName="text-white/70 hover:bg-white/10 hover:text-white"
                                 />
                                 <InputError message={errors.password} />
                             </div>
@@ -95,9 +96,8 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                                 <Label htmlFor="reset-password_confirmation">
                                     Confirm password
                                 </Label>
-                                <Input
+                                <PasswordInput
                                     id="reset-password_confirmation"
-                                    type="password"
                                     name="password_confirmation"
                                     value={data.password_confirmation}
                                     onChange={(e) =>
@@ -110,6 +110,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                                     autoComplete="new-password"
                                     placeholder="Confirm password"
                                     className={authFlipInputClass}
+                                    toggleButtonClassName="text-white/70 hover:bg-white/10 hover:text-white"
                                 />
                                 <InputError
                                     message={errors.password_confirmation}

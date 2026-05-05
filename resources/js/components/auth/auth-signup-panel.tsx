@@ -6,6 +6,7 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Spinner } from '@/components/ui/spinner';
 import { Form } from '@inertiajs/react';
 import type { RefObject } from 'react';
@@ -105,15 +106,15 @@ export default function AuthSignupPanel({
                                     <Label htmlFor="signup-password">
                                         Password
                                     </Label>
-                                    <Input
+                                    <PasswordInput
                                         id="signup-password"
-                                        type="password"
                                         required
                                         tabIndex={4}
                                         autoComplete="new-password"
                                         name="password"
                                         placeholder="Password"
                                         className={authFlipInputClass}
+                                        toggleButtonClassName="text-white/70 hover:bg-white/10 hover:text-white"
                                         onInput={() => clearErrors()}
                                     />
                                     <InputError message={errors.password} />
@@ -123,15 +124,15 @@ export default function AuthSignupPanel({
                                     <Label htmlFor="signup-password_confirmation">
                                         Confirm password
                                     </Label>
-                                    <Input
+                                    <PasswordInput
                                         id="signup-password_confirmation"
-                                        type="password"
                                         required
                                         tabIndex={5}
                                         autoComplete="new-password"
                                         name="password_confirmation"
                                         placeholder="Confirm password"
                                         className={authFlipInputClass}
+                                        toggleButtonClassName="text-white/70 hover:bg-white/10 hover:text-white"
                                         onInput={() => clearErrors()}
                                     />
                                     <InputError

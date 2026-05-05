@@ -6,6 +6,7 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
 import { Form } from '@inertiajs/react';
@@ -77,15 +78,15 @@ export default function AuthLoginPanel({
                                             Forgot password?
                                         </button>
                                     </div>
-                                    <Input
+                                    <PasswordInput
                                         id="login-password"
-                                        type="password"
                                         name="password"
                                         required
                                         tabIndex={3}
                                         autoComplete="current-password"
                                         placeholder="Password"
                                         className={authFlipInputClass}
+                                        toggleButtonClassName="text-white/70 hover:bg-white/10 hover:text-white"
                                         onInput={() => clearErrors()}
                                     />
                                     <InputError message={errors.password} />
