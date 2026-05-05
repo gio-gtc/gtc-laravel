@@ -16,10 +16,10 @@ it('proxies registration data to the API and stores the new session token', func
 
     // 2. Submit the registration form
     $response = $this->post('/register', [
-        'name'                  => 'New User',
-        'email'                 => 'new@example.com',
-        'roles'                 => [],
-        'password'              => 'securepassword',
+        'first_name' => 'New',
+        'last_name' => 'User',
+        'email' => 'new@example.com',
+        'password' => 'securepassword',
         'password_confirmation' => 'securepassword',
     ]);
 
@@ -42,9 +42,10 @@ it('catches API registration validation errors and passes them to Inertia', func
 
     // 2. Submit the form
     $response = $this->post('/register', [
-        'name'                  => 'New User',
-        'email'                 => 'existing@example.com', // Triggers the fake API error
-        'password'              => 'securepassword',
+        'first_name' => 'New',
+        'last_name' => 'User',
+        'email' => 'existing@example.com',
+        'password' => 'securepassword',
         'password_confirmation' => 'securepassword',
     ]);
 

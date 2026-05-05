@@ -13,10 +13,13 @@ class BffLoginController extends Controller
     /**
      * Show the React Login Page
      */
-    public function create()
+    public function create(Request $request)
     {
-        // Make sure the casing matches your folder structure exactly!
-        return Inertia::render('auth/login');
+        $authFaceHint = $request->session()->pull('auth_face');
+
+        return Inertia::render('auth/login', [
+            'authFaceHint' => $authFaceHint === 'signup' ? 'signup' : null,
+        ]);
     }
 
     /**

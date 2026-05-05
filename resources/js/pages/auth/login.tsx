@@ -1,26 +1,42 @@
-import InputError from '@/components/input-error';
+import LoginSignupFlip, {
+    type AuthFace,
+} from '@/components/auth/login-signup-flip';
 import ForgotPasswordModal from '@/components/modals/forgot-password-modal';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
 import AuthVideoLayout from '@/layouts/auth/auth-video-layout';
-import { register } from '@/routes';
-import { Form, Head } from '@inertiajs/react';
-import { CheckIcon } from 'lucide-react';
+import type { SharedData } from '@/types';
+import { Head, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 interface LoginProps {
     status?: string;
+    authFaceHint?: 'signup' | null;
 }
 
-export default function Login({ status }: LoginProps) {
+function needsSignupFace(errors: Record<string, unknown> | undefined): boolean {
+    if (!errors) {
+        return false;
+    }
+    return (
+        'first_name' in errors ||
+        'last_name' in errors ||
+        'password_confirmation' in errors
+    );
+}
+
+export default function Login({ status, authFaceHint }: LoginProps) {
+    const errors = usePage<SharedData & { errors?: Record<string, unknown> }>()
+        .props.errors;
+
+    const [face, setFace] = useState<AuthFace>(() =>
+        authFaceHint === 'signup' || needsSignupFace(errors)
+            ? 'signup'
+            : 'login',
+    );
     const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
 
     return (
-        <AuthVideoLayout title="Log in to your account">
-            <Head title="Log in" />
+        <AuthVideoLayout>
+            <Head title={face === 'login' ? 'Log in' : 'Register'} />
 
             {status && (
                 <div className="mb-4 rounded-lg border border-white/15 bg-white/10 px-4 py-3 text-center text-sm font-medium text-white backdrop-blur">
@@ -28,102 +44,11 @@ export default function Login({ status }: LoginProps) {
                 </div>
             )}
 
-            <Form
-                action="/login"
-                method="post"
-                resetOnSuccess={['password']}
-                className="flex flex-col gap-6"
-            >
-                {({ processing, errors, clearErrors }) => (
-                    <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="email"
-                                    placeholder="email@example.com"
-                                    className="border-white/25 !text-white focus-visible:border-white/40 focus-visible:ring-white/20"
-                                    onInput={() => clearErrors()}
-                                />
-                                <InputError message={errors.email} />
-                            </div>
-
-                            <div className="grid gap-2">
-                                <div className="flex flex-col sm:flex-row sm:items-center">
-                                    <Label htmlFor="password">Password</Label>
-                                    <button
-                                        type="button"
-                                        className="font-inherit border-0 bg-transparent p-0 text-sm text-white/90 underline decoration-white/50 decoration-from-font underline-offset-4 hover:text-white hover:decoration-white sm:ml-auto"
-                                        onClick={() =>
-                                            setIsForgotModalOpen(true)
-                                        }
-                                    >
-                                        Forgot password?
-                                    </button>
-                                </div>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="current-password"
-                                    placeholder="Password"
-                                    className="border-white/25 !text-white focus-visible:border-white/40 focus-visible:ring-white/20"
-                                    onInput={() => clearErrors()}
-                                />
-                                <InputError message={errors.password} />
-                            </div>
-
-                            <label
-                                htmlFor="remember"
-                                className="relative flex w-full cursor-pointer items-center pr-8 text-sm text-white"
-                            >
-                                <input
-                                    id="remember"
-                                    type="checkbox"
-                                    name="remember"
-                                    tabIndex={3}
-                                    className="peer sr-only"
-                                />
-                                <span className="flex-1">Remember me</span>
-                                <span className="pointer-events-none absolute right-2 flex size-3.5 items-center justify-center text-white peer-checked:text-brand-gtc-red">
-                                    <CheckIcon className="size-4" />
-                                </span>
-                            </label>
-
-                            <Button
-                                type="submit"
-                                className="w-full bg-white text-black hover:bg-white/90"
-                                tabIndex={4}
-                                disabled={processing}
-                                data-test="login-button"
-                                onClick={() => clearErrors()}
-                            >
-                                {processing && <Spinner />}
-                                Log in
-                            </Button>
-                        </div>
-
-                        <div className="text-center text-sm text-white/80">
-                            Don't have an account?{' '}
-                            <TextLink
-                                href={register()}
-                                tabIndex={5}
-                                className="text-white/90 decoration-white/50 hover:text-white hover:decoration-white"
-                            >
-                                Sign up
-                            </TextLink>
-                        </div>
-                    </>
-                )}
-            </Form>
+            <LoginSignupFlip
+                face={face}
+                onFaceChange={setFace}
+                onOpenForgotPassword={() => setIsForgotModalOpen(true)}
+            />
 
             <ForgotPasswordModal
                 isOpen={isForgotModalOpen}

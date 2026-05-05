@@ -18,6 +18,8 @@ export default function AuthVideoLayout({
     videoSrc = '/videos/auth-login.mp4',
     posterSrc,
 }: PropsWithChildren<AuthVideoLayoutProps>) {
+    const showHeader = Boolean(title ?? description);
+
     return (
         <div className="relative min-h-svh overflow-hidden">
             <div
@@ -46,18 +48,28 @@ export default function AuthVideoLayout({
 
             <div className="relative z-10 flex min-h-svh items-center justify-center p-6 md:p-10">
                 <div className="flex w-full max-w-md flex-col items-center justify-center">
-                    <div className="w-full max-w-[350px] rounded-2xl border border-white/20 bg-white/10 px-6 py-8 text-white shadow-2xl backdrop-blur-sm">
-                        <div className="space-y-2 text-center">
-                            <h1 className="text-xl font-semibold tracking-tight text-white">
-                                {title}
-                            </h1>
+                    {showHeader ? (
+                        <div className="w-full max-w-[350px] rounded-2xl border border-white/20 bg-white/10 px-6 py-8 text-white shadow-2xl backdrop-blur-sm">
+                            <div className="space-y-2 text-center">
+                                {title ? (
+                                    <h1 className="text-xl font-semibold tracking-tight text-white">
+                                        {title}
+                                    </h1>
+                                ) : null}
 
-                            <p className="text-sm text-white/80">
-                                {description}
-                            </p>
+                                {description ? (
+                                    <p className="text-sm text-white/80">
+                                        {description}
+                                    </p>
+                                ) : null}
+                            </div>
+                            <div className="mt-6">{children}</div>
                         </div>
-                        <div className="mt-6">{children}</div>
-                    </div>
+                    ) : (
+                        <div className="w-full max-w-[350px] text-white">
+                            {children}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

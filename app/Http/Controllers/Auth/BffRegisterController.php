@@ -5,14 +5,12 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Validation\ValidationException;
-use Inertia\Inertia;
 
 class BffRegisterController extends Controller
 {
     public function create()
     {
-        return Inertia::render('auth/register'); 
+        return redirect()->route('login');
     }
 
     public function store(Request $request)
@@ -28,9 +26,12 @@ class BffRegisterController extends Controller
 
         // 2. If the API rejects it (e.g., email already exists, password too short)
         if ($response->failed()) {
-            throw ValidationException::withMessages($response->json('errors', [
-                'email' => 'Something went wrong during registration. Please try again.'
-            ]));
+            return redirect()
+                ->route('login')
+                ->withErrors($response->json('errors', [
+                    'email' => ['Something went wrong during registration. Please try again.'],
+                ]))
+                ->with('auth_face', 'signup');
         }
 
         // 3. Grab the successful JSON response from the API
