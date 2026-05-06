@@ -119,7 +119,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
 
                             <Button
                                 type="submit"
-                                className="mt-2 w-full bg-white text-black hover:bg-white/90"
+                                className="mt-2 w-full"
                                 disabled={processing}
                             >
                                 {processing && <Spinner />}
@@ -129,7 +129,7 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
                     </form>
                 </div>
 
-                <div className="mt-6 text-center text-sm text-white/80">
+                <div className="mt-3 text-center text-sm">
                     <Link href="/login" className={authFlipLinkButtonClass}>
                         Back to log in
                     </Link>

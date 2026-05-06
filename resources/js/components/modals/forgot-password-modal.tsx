@@ -12,6 +12,7 @@ import Divider from '@/components/utils/divider';
 import { ModalFooterActions } from '@/components/utils/modal-footer-actions';
 import { useForm } from '@inertiajs/react';
 import type { Dispatch, SetStateAction } from 'react';
+import { toast } from 'react-toastify';
 
 export interface ForgotPasswordModalProps {
     isOpen: boolean;
@@ -47,9 +48,29 @@ export default function ForgotPasswordModal({
                     onSubmit={(e) => {
                         e.preventDefault();
                         post('/forgot-password', {
-                            onSuccess: () => {
+                            preserveScroll: true,
+                            onSuccess: (page) => {
+                                const status = page.props.status;
+                                toast.success(
+                                    typeof status === 'string' && status
+                                        ? status
+                                        : 'If an account exists for that email, we sent a reset link.',
+                                );
                                 setIsOpen(false);
                                 reset();
+                            },
+                            onError: (errs) => {
+                                const raw = errs.email;
+                                const msg = Array.isArray(raw)
+                                    ? raw[0]
+                                    : typeof raw === 'string'
+                                      ? raw
+                                      : undefined;
+                                toast.error(
+                                    typeof msg === 'string' && msg
+                                        ? msg
+                                        : 'Something went wrong. Please try again.',
+                                );
                             },
                         });
                     }}

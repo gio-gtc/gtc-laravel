@@ -5,7 +5,8 @@ import ForgotPasswordModal from '@/components/modals/forgot-password-modal';
 import AuthVideoLayout from '@/layouts/auth/auth-video-layout';
 import type { SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 interface LoginProps {
     status?: string | null;
@@ -31,6 +32,7 @@ function needsSignupFace(errors: Record<string, unknown> | undefined): boolean {
 }
 
 export default function Login({ status, error, authFaceHint }: LoginProps) {
+    const { flash } = usePage().props as any;
     const errors = usePage<SharedData & { errors?: Record<string, unknown> }>()
         .props.errors;
 
@@ -40,6 +42,22 @@ export default function Login({ status, error, authFaceHint }: LoginProps) {
             : 'login',
     );
     const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (flash?.error) {
+                toast.error(flash.error, {
+                    toastId: 'flash-error',
+                });
+            }
+
+            if (flash?.success) {
+                toast.success(flash.success, {
+                    toastId: 'flash-success',
+                });
+            }
+        }, 100);
+    }, [flash]);
 
     return (
         <AuthVideoLayout

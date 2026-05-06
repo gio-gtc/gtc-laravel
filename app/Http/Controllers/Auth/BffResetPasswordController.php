@@ -61,7 +61,7 @@ class BffResetPasswordController extends Controller
         // If the API successfully hashed the new password
         if ($response->successful()) {
             // Redirect them to the login page with a green success banner!
-            return redirect()->route('login')->with('status', $response->json('message'));
+            return redirect()->route('login')->with('success', "Your password has been reset successfully!");
         }
 
         // If the API rejects it (e.g., token expired, password too weak)
