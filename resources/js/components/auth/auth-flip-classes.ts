@@ -15,4 +15,4 @@ export const authFlipFaceShellClass =
     'absolute inset-0 [-webkit-backface-visibility:hidden] [backface-visibility:hidden]';
 
 export const authFlipLinkButtonClass =
-    'font-inherit cursor-pointer border-0 bg-transparent p-0 text-sm text-white/90 underline decoration-white/50 decoration-from-font underline-offset-4 hover:text-white hover:decoration-white';
+    'font-inherit text-left cursor-pointer border-0 bg-transparent p-0 text-sm text-white/90 underline decoration-white/50 decoration-from-font underline-offset-4 hover:text-white hover:decoration-white';

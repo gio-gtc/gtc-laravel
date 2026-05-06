@@ -42,10 +42,12 @@ export default function Login({ status, error, authFaceHint }: LoginProps) {
     const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
 
     return (
-        <AuthVideoLayout>
-            <Head
-                title={face === 'login' ? 'Log in' : 'Request access'}
-            />
+        <AuthVideoLayout
+            contentMaxWidthClass={
+                face === 'signup' ? 'max-w-[350px] md:max-w-3xl' : undefined
+            }
+        >
+            <Head title={face === 'login' ? 'Log in' : 'Request access'} />
 
             {status ? (
                 <div className="mb-4 rounded-lg border border-white/15 bg-white/10 px-4 py-3 text-center text-sm font-medium text-white backdrop-blur">

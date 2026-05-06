@@ -62,7 +62,7 @@ export default function AuthLoginPanel({
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <div className="flex flex-col sm:flex-row sm:items-center">
+                                    <div className="flex flex-col justify-between gap-1 xs:flex-row xs:items-center">
                                         <Label htmlFor="login-password">
                                             Password
                                         </Label>
@@ -70,7 +70,6 @@ export default function AuthLoginPanel({
                                             type="button"
                                             className={cn(
                                                 authFlipLinkButtonClass,
-                                                'sm:ml-auto',
                                             )}
                                             tabIndex={2}
                                             onClick={onOpenForgotPassword}

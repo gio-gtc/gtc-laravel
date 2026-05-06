@@ -39,8 +39,10 @@ export default function LoginSignupFlip({
         <div className="[perspective:1000px]">
             <div
                 className={cn(
-                    'relative min-h-[52rem] [transform-style:preserve-3d] motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out',
-                    face === 'signup' && '[transform:rotateY(180deg)]',
+                    // min-height how to change the size of the form container
+                    'relative min-h-[443px] [transform-style:preserve-3d] motion-safe:transition-transform motion-safe:duration-500 motion-safe:ease-out',
+                    face === 'signup' &&
+                        'min-h-[999px] [transform:rotateY(180deg)] md:min-h-[648px]',
                 )}
             >
                 <div

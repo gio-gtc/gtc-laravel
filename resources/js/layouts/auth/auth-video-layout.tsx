@@ -1,4 +1,5 @@
 import AppLogoIcon from '@/components/app-logo-icon';
+import { cn } from '@/lib/utils';
 import { home } from '@/routes';
 import { Link } from '@inertiajs/react';
 import { type PropsWithChildren } from 'react';
@@ -9,6 +10,8 @@ interface AuthVideoLayoutProps {
     description?: string;
     videoSrc?: string;
     posterSrc?: string;
+    /** Max width for the centered auth column (shell + inner cards). Defaults preserve legacy narrow login width. */
+    contentMaxWidthClass?: string;
 }
 
 export default function AuthVideoLayout({
@@ -17,6 +20,7 @@ export default function AuthVideoLayout({
     description,
     videoSrc = '/videos/auth-login.mp4',
     posterSrc,
+    contentMaxWidthClass,
 }: PropsWithChildren<AuthVideoLayoutProps>) {
     const showHeader = Boolean(title ?? description);
 
@@ -46,10 +50,20 @@ export default function AuthVideoLayout({
                 <AppLogoIcon className="w-[130px] fill-current text-white" />
             </Link>
 
-            <div className="relative z-10 flex min-h-svh items-center justify-center p-6 md:p-10">
-                <div className="flex w-full max-w-md flex-col items-center justify-center">
+            <div className="relative z-10 flex min-h-svh items-center justify-center p-6 pt-17 md:p-10 md:pt-17">
+                <div
+                    className={cn(
+                        'flex w-full flex-col items-center justify-center',
+                        contentMaxWidthClass ?? 'max-w-md',
+                    )}
+                >
                     {showHeader ? (
-                        <div className="w-full max-w-[350px] rounded-2xl border border-white/20 bg-white/10 px-6 py-8 text-white shadow-2xl backdrop-blur-sm">
+                        <div
+                            className={cn(
+                                'w-full rounded-2xl border border-white/20 bg-white/10 px-6 py-8 text-white shadow-2xl backdrop-blur-sm',
+                                contentMaxWidthClass ?? 'max-w-[350px]',
+                            )}
+                        >
                             <div className="space-y-2 text-center">
                                 {title ? (
                                     <h1 className="text-xl font-semibold tracking-tight text-white">
@@ -66,7 +80,12 @@ export default function AuthVideoLayout({
                             <div className="mt-6">{children}</div>
                         </div>
                     ) : (
-                        <div className="w-full max-w-[350px] text-white">
+                        <div
+                            className={cn(
+                                'w-full text-white',
+                                contentMaxWidthClass ?? 'max-w-[350px]',
+                            )}
+                        >
                             {children}
                         </div>
                     )}

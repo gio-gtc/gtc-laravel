@@ -51,7 +51,7 @@ export default function AuthSignupPanel({
 
             <div className="mt-6">
                 <form
-                    className="flex flex-col gap-6"
+                    className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-x-6 md:gap-y-4"
                     onSubmit={(e) => {
                         e.preventDefault();
                         if (!e.currentTarget.reportValidity()) {
@@ -123,8 +123,7 @@ export default function AuthSignupPanel({
                         });
                     }}
                 >
-                    <div className="grid gap-6">
-                        <div className="grid gap-2">
+                    <div className="grid gap-2">
                             <FieldLabel htmlFor="signup-first_name" required>
                                 First Name
                             </FieldLabel>
@@ -257,7 +256,7 @@ export default function AuthSignupPanel({
                             <InputError message={errors.phone} />
                         </div>
 
-                        <div className="grid gap-2">
+                        <div className="grid gap-2 md:col-span-2">
                             <FieldLabel htmlFor="signup-details" required>
                                 Details
                             </FieldLabel>
@@ -279,7 +278,7 @@ export default function AuthSignupPanel({
 
                         <Button
                             type="submit"
-                            className="mt-2 inline-flex w-full items-center justify-center gap-2"
+                            className="inline-flex w-full items-center justify-center gap-2 md:col-span-2"
                             tabIndex={8}
                             disabled={processing}
                             data-test="request-access-button"
@@ -287,19 +286,18 @@ export default function AuthSignupPanel({
                             {processing && <Spinner />}
                             Submit Request
                         </Button>
-                    </div>
 
-                    <div className="text-center text-sm text-white/80">
-                        Already have an account?{' '}
-                        <button
-                            type="button"
-                            className={authFlipLinkButtonClass}
-                            tabIndex={9}
-                            onClick={onRequestLogin}
-                        >
-                            Log in
-                        </button>
-                    </div>
+                        <div className="text-center text-sm text-white/80 md:col-span-2">
+                            Already have an account?{' '}
+                            <button
+                                type="button"
+                                className={authFlipLinkButtonClass}
+                                tabIndex={9}
+                                onClick={onRequestLogin}
+                            >
+                                Log in
+                            </button>
+                        </div>
                 </form>
             </div>
         </>
