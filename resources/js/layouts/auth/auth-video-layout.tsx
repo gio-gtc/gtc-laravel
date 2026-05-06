@@ -25,7 +25,12 @@ export default function AuthVideoLayout({
     const showHeader = Boolean(title ?? description);
 
     return (
-        <div className="relative min-h-svh overflow-hidden">
+        <div
+            className={cn(
+                'relative min-h-svh overflow-hidden',
+                '[&_input]:selection:!bg-white [&_input]:selection:!text-black [&_textarea]:selection:!bg-white [&_textarea]:selection:!text-black',
+            )}
+        >
             <div
                 className="pointer-events-none absolute inset-0"
                 aria-hidden="true"
