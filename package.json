@@ -69,6 +69,7 @@
         "date-fns": "^4.1.0",
         "globals": "^15.14.0",
         "laravel-vite-plugin": "^2.0",
+        "libphonenumber-js": "^1.12.42",
         "lucide-react": "^0.475.0",
         "radix-ui": "^1.4.3",
         "react": "^19.2.0",

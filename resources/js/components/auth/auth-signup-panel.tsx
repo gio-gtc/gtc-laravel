@@ -6,10 +6,15 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { FieldLabel } from '@/components/ui/field-label';
 import { Input } from '@/components/ui/input';
+import {
+    PhoneInput,
+    tryParsePhoneE164,
+    type PhoneInputHandle,
+} from '@/components/ui/phone-input';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm } from '@inertiajs/react';
-import type { RefObject } from 'react';
+import { useRef, type RefObject } from 'react';
 import { flushSync } from 'react-dom';
 import { toast } from 'react-toastify';
 
@@ -41,6 +46,8 @@ export default function AuthSignupPanel({
         details: '',
     });
 
+    const phoneInputRef = useRef<PhoneInputHandle>(null);
+
     return (
         <>
             <div className="space-y-2 text-center">
@@ -60,13 +67,19 @@ export default function AuthSignupPanel({
 
                         clearErrors();
 
+                        const phoneDisplay =
+                            phoneInputRef.current?.getDisplayValue()?.trim() ??
+                            '';
+                        const phoneE164 =
+                            tryParsePhoneE164(phoneDisplay, 'US') ?? '';
+
                         const trimmed = {
                             first_name: data.first_name.trim(),
                             last_name: data.last_name.trim(),
                             email: data.email.trim(),
                             company: data.company.trim(),
                             job_title: data.job_title.trim(),
-                            phone: data.phone.trim(),
+                            phone: phoneE164,
                             details: data.details.trim(),
                         };
 
@@ -93,9 +106,15 @@ export default function AuthSignupPanel({
                             requiredErrors.job_title =
                                 'The job title field is required.';
                         }
-                        if (!trimmed.phone) {
+                        if (!phoneDisplay) {
                             requiredErrors.phone =
                                 'The phone field is required.';
+                        } else if (!phoneE164) {
+                            setError(
+                                'phone',
+                                'Enter a valid phone number. Include country code for international numbers (e.g. +44).',
+                            );
+                            return;
                         }
                         if (!trimmed.details) {
                             requiredErrors.details =
@@ -124,180 +143,173 @@ export default function AuthSignupPanel({
                     }}
                 >
                     <div className="grid gap-2">
-                            <FieldLabel htmlFor="signup-first_name" required>
-                                First Name
-                            </FieldLabel>
-                            <Input
-                                ref={firstNameInputRef}
-                                id="signup-first_name"
-                                type="text"
-                                required
-                                tabIndex={1}
-                                autoComplete="given-name"
-                                value={data.first_name}
-                                placeholder="First name"
-                                className={authFlipInputClass}
-                                onChange={(e) =>
-                                    setData('first_name', e.target.value)
-                                }
-                                onInput={() => clearErrors('first_name')}
-                            />
-                            <InputError
-                                message={errors.first_name}
-                                className="mt-2"
-                            />
-                        </div>
+                        <FieldLabel htmlFor="signup-first_name" required>
+                            First Name
+                        </FieldLabel>
+                        <Input
+                            ref={firstNameInputRef}
+                            id="signup-first_name"
+                            type="text"
+                            required
+                            tabIndex={1}
+                            autoComplete="given-name"
+                            value={data.first_name}
+                            placeholder="First name"
+                            className={authFlipInputClass}
+                            onChange={(e) =>
+                                setData('first_name', e.target.value)
+                            }
+                            onInput={() => clearErrors('first_name')}
+                        />
+                        <InputError
+                            message={errors.first_name}
+                            className="mt-2"
+                        />
+                    </div>
 
-                        <div className="grid gap-2">
-                            <FieldLabel htmlFor="signup-last_name" required>
-                                Last Name
-                            </FieldLabel>
-                            <Input
-                                id="signup-last_name"
-                                type="text"
-                                required
-                                tabIndex={2}
-                                autoComplete="family-name"
-                                value={data.last_name}
-                                placeholder="Last name"
-                                className={authFlipInputClass}
-                                onChange={(e) =>
-                                    setData('last_name', e.target.value)
-                                }
-                                onInput={() => clearErrors('last_name')}
-                            />
-                            <InputError
-                                message={errors.last_name}
-                                className="mt-2"
-                            />
-                        </div>
+                    <div className="grid gap-2">
+                        <FieldLabel htmlFor="signup-last_name" required>
+                            Last Name
+                        </FieldLabel>
+                        <Input
+                            id="signup-last_name"
+                            type="text"
+                            required
+                            tabIndex={2}
+                            autoComplete="family-name"
+                            value={data.last_name}
+                            placeholder="Last name"
+                            className={authFlipInputClass}
+                            onChange={(e) =>
+                                setData('last_name', e.target.value)
+                            }
+                            onInput={() => clearErrors('last_name')}
+                        />
+                        <InputError
+                            message={errors.last_name}
+                            className="mt-2"
+                        />
+                    </div>
 
-                        <div className="grid gap-2">
-                            <FieldLabel htmlFor="signup-email" required>
-                                Email Address
-                            </FieldLabel>
-                            <Input
-                                id="signup-email"
-                                type="email"
-                                required
-                                tabIndex={3}
-                                autoComplete="email"
-                                value={data.email}
-                                placeholder="email@example.com"
-                                className={authFlipInputClass}
-                                onChange={(e) =>
-                                    setData('email', e.target.value)
-                                }
-                                onInput={() => clearErrors('email')}
-                            />
-                            <InputError message={errors.email} />
-                        </div>
+                    <div className="grid gap-2">
+                        <FieldLabel htmlFor="signup-email" required>
+                            Email Address
+                        </FieldLabel>
+                        <Input
+                            id="signup-email"
+                            type="email"
+                            required
+                            tabIndex={3}
+                            autoComplete="email"
+                            value={data.email}
+                            placeholder="email@example.com"
+                            className={authFlipInputClass}
+                            onChange={(e) => setData('email', e.target.value)}
+                            onInput={() => clearErrors('email')}
+                        />
+                        <InputError message={errors.email} />
+                    </div>
 
-                        <div className="grid gap-2">
-                            <FieldLabel htmlFor="signup-company" required>
-                                Company
-                            </FieldLabel>
-                            <Input
-                                id="signup-company"
-                                type="text"
-                                required
-                                tabIndex={4}
-                                autoComplete="organization"
-                                value={data.company}
-                                placeholder="Company name"
-                                className={authFlipInputClass}
-                                onChange={(e) =>
-                                    setData('company', e.target.value)
-                                }
-                                onInput={() => clearErrors('company')}
-                            />
-                            <InputError message={errors.company} />
-                        </div>
+                    <div className="grid gap-2">
+                        <FieldLabel htmlFor="signup-company" required>
+                            Company
+                        </FieldLabel>
+                        <Input
+                            id="signup-company"
+                            type="text"
+                            required
+                            tabIndex={4}
+                            autoComplete="organization"
+                            value={data.company}
+                            placeholder="Company name"
+                            className={authFlipInputClass}
+                            onChange={(e) => setData('company', e.target.value)}
+                            onInput={() => clearErrors('company')}
+                        />
+                        <InputError message={errors.company} />
+                    </div>
 
-                        <div className="grid gap-2">
-                            <FieldLabel htmlFor="signup-job_title" required>
-                                Job Title
-                            </FieldLabel>
-                            <Input
-                                id="signup-job_title"
-                                type="text"
-                                required
-                                tabIndex={5}
-                                autoComplete="organization-title"
-                                value={data.job_title}
-                                placeholder="Job title"
-                                className={authFlipInputClass}
-                                onChange={(e) =>
-                                    setData('job_title', e.target.value)
-                                }
-                                onInput={() => clearErrors('job_title')}
-                            />
-                            <InputError message={errors.job_title} />
-                        </div>
+                    <div className="grid gap-2">
+                        <FieldLabel htmlFor="signup-job_title" required>
+                            Job Title
+                        </FieldLabel>
+                        <Input
+                            id="signup-job_title"
+                            type="text"
+                            required
+                            tabIndex={5}
+                            autoComplete="organization-title"
+                            value={data.job_title}
+                            placeholder="Job title"
+                            className={authFlipInputClass}
+                            onChange={(e) =>
+                                setData('job_title', e.target.value)
+                            }
+                            onInput={() => clearErrors('job_title')}
+                        />
+                        <InputError message={errors.job_title} />
+                    </div>
 
-                        <div className="grid gap-2">
-                            <FieldLabel htmlFor="signup-phone" required>
-                                Phone Number
-                            </FieldLabel>
-                            <Input
-                                id="signup-phone"
-                                type="text"
-                                required
-                                tabIndex={6}
-                                autoComplete="tel"
-                                value={data.phone}
-                                placeholder="Phone number"
-                                className={authFlipInputClass}
-                                onChange={(e) =>
-                                    setData('phone', e.target.value)
-                                }
-                                onInput={() => clearErrors('phone')}
-                            />
-                            <InputError message={errors.phone} />
-                        </div>
+                    <div className="grid gap-2">
+                        <FieldLabel htmlFor="signup-phone" required>
+                            Phone Number
+                        </FieldLabel>
+                        <PhoneInput
+                            ref={phoneInputRef}
+                            id="signup-phone"
+                            tabIndex={6}
+                            value={data.phone}
+                            onChange={(e164) => {
+                                setData('phone', e164);
+                                clearErrors('phone');
+                            }}
+                            className={authFlipInputClass}
+                            aria-invalid={Boolean(errors.phone)}
+                            variant="default"
+                        />
+                        <InputError message={errors.phone} />
+                    </div>
 
-                        <div className="grid gap-2 md:col-span-2">
-                            <FieldLabel htmlFor="signup-details" required>
-                                Details
-                            </FieldLabel>
-                            <Textarea
-                                id="signup-details"
-                                required
-                                tabIndex={7}
-                                rows={4}
-                                value={data.details}
-                                placeholder="Please briefly explain how you will use this access and why it's required for your role."
-                                className={authFlipInputClass}
-                                onChange={(e) =>
-                                    setData('details', e.target.value)
-                                }
-                                onInput={() => clearErrors('details')}
-                            />
-                            <InputError message={errors.details} />
-                        </div>
+                    <div className="grid gap-2 md:col-span-2">
+                        <FieldLabel htmlFor="signup-details" required>
+                            Details
+                        </FieldLabel>
+                        <Textarea
+                            id="signup-details"
+                            required
+                            tabIndex={7}
+                            rows={4}
+                            value={data.details}
+                            placeholder="Please briefly explain how you will use this access and why it's required for your role."
+                            className={authFlipInputClass}
+                            onChange={(e) => setData('details', e.target.value)}
+                            onInput={() => clearErrors('details')}
+                        />
+                        <InputError message={errors.details} />
+                    </div>
 
-                        <Button
-                            type="submit"
-                            className="inline-flex w-full items-center justify-center gap-2 md:col-span-2"
-                            tabIndex={8}
-                            disabled={processing}
-                            data-test="request-access-button"
+                    <Button
+                        type="submit"
+                        className="inline-flex w-full items-center justify-center gap-2 md:col-span-2"
+                        tabIndex={8}
+                        disabled={processing}
+                        data-test="request-access-button"
+                    >
+                        {processing && <Spinner />}
+                        Submit Request
+                    </Button>
+
+                    <div className="text-center text-sm text-white/80 md:col-span-2">
+                        Already have an account?{' '}
+                        <button
+                            type="button"
+                            className={authFlipLinkButtonClass}
+                            tabIndex={9}
+                            onClick={onRequestLogin}
                         >
-                            {processing && <Spinner />}
-                            Submit Request
-                        </Button>
-
-                        <div className="text-center text-sm text-white/80 md:col-span-2">
-                            Already have an account?{' '}
-                            <button
-                                type="button"
-                                className={authFlipLinkButtonClass}
-                                tabIndex={9}
-                                onClick={onRequestLogin}
-                            >
-                                Log in
-                            </button>
-                        </div>
+                            Log in
+                        </button>
+                    </div>
                 </form>
             </div>
         </>

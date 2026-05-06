@@ -8,16 +8,31 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { FieldLabel } from '@/components/ui/field-label';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+    PhoneInput,
+    tryParsePhoneE164,
+    type PhoneInputHandle,
+} from '@/components/ui/phone-input';
 import { Textarea } from '@/components/ui/textarea';
 import DatePickerInput from '@/components/utils/date-picker-input';
 import { type SharedData, type User } from '@/types';
 import { Form, usePage } from '@inertiajs/react';
+import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { Camera, HelpCircle } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { UserAvatar } from '../ui/user-avatar';
 import Divider from '../utils/divider';
+
+function phoneRawToE164(raw: string | undefined): string {
+    if (!raw) {
+        return '';
+    }
+    const parsed = parsePhoneNumberFromString(raw, 'US');
+    return parsed?.isValid() ? parsed.number : '';
+}
 
 function splitName(fullName: string) {
     const normalized = fullName.trim().replace(/\s+/g, ' ');
@@ -93,7 +108,7 @@ export default function UserInfoModal({
         };
     }, [user, isCreateMode]);
 
-    const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
+    const [, setPhotoPreviewUrl] = useState<string | null>(null);
     const [outOfOfficeEnabled, setOutOfOfficeEnabled] = useState<boolean>(
         defaults.out_of_office,
     );
@@ -104,8 +119,22 @@ export default function UserInfoModal({
         defaults.out_of_office_end_date,
     );
 
+    const phoneInputRef = useRef<PhoneInputHandle>(null);
+    const [phoneE164, setPhoneE164] = useState(() =>
+        phoneRawToE164(defaults.phone_number),
+    );
+
     return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+        <Dialog
+            open={isOpen}
+            onOpenChange={(open) => {
+                if (open) {
+                    setPhoneE164(phoneRawToE164(defaults.phone_number));
+                } else {
+                    onClose();
+                }
+            }}
+        >
             <DialogContent className="sm:max-w-[716px]">
                 <DialogHeader>
                     <DialogTitle>{modalTitle}</DialogTitle>
@@ -113,6 +142,14 @@ export default function UserInfoModal({
                 <Divider />
                 <Form
                     {...ProfileController.update.form()}
+                    transform={(data) => ({
+                        ...data,
+                        phone_number:
+                            tryParsePhoneE164(
+                                phoneInputRef.current?.getDisplayValue() ?? '',
+                                'US',
+                            ) ?? '',
+                    })}
                     options={{
                         preserveScroll: true,
                     }}
@@ -320,14 +357,15 @@ export default function UserInfoModal({
                                             >
                                                 Phone Number
                                             </FieldLabel>
-                                            <Input
+                                            <PhoneInput
+                                                ref={phoneInputRef}
                                                 id="phone_number"
-                                                name="phone_number"
-                                                defaultValue={
-                                                    defaults.phone_number
-                                                }
+                                                value={phoneE164}
+                                                onChange={setPhoneE164}
                                                 autoComplete="tel"
-                                                placeholder="Phone number"
+                                                aria-invalid={Boolean(
+                                                    errors.phone_number,
+                                                )}
                                             />
                                             <InputError
                                                 message={errors.phone_number}
