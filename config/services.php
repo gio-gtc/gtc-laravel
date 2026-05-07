@@ -43,7 +43,6 @@ return [
     'api' => [
         'base_url' => rtrim(env('API_BASE_URL', 'http://127.0.0.1:8050'), '/'),
         'login_path' => env('API_LOGIN_PATH', 'api/login'),
-        'register_path' => env('API_REGISTER_PATH', 'api/register'),
         'request_access_path' => env('API_REQUEST_ACCESS_PATH', 'api/request-access'),
     ],
 

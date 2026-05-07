@@ -4,7 +4,6 @@ use App\Http\Controllers\Api\ChannelMessageController;
 use App\Http\Controllers\Auth\BffForgotPasswordController;
 use App\Http\Controllers\Auth\BffLoginController;
 use App\Http\Controllers\Auth\BffLogoutController;
-use App\Http\Controllers\Auth\BffRegisterController;
 use App\Http\Controllers\Auth\BffRequestAccessController;
 use App\Http\Controllers\Auth\BffResetPasswordController;
 use App\Http\Controllers\DashboardController;
@@ -32,7 +31,6 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [BffLoginController::class, 'create'])->name('login');
     Route::post('/login', [BffLoginController::class, 'store'])->name('login.store');
 
-    Route::get('/register', [BffRegisterController::class, 'create'])->name('register');
     Route::post('/request-access', [BffRequestAccessController::class, 'store'])
         ->name('request-access.store');
 
