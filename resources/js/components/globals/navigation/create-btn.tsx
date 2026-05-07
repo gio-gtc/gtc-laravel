@@ -28,7 +28,7 @@ const CREATE_CONTACT_DEEP_LINK_KEYS = [
     'email',
     'organisation',
     'job_title',
-    'phone',
+    'phone_number',
 ] as const;
 
 export const CreateBtn = () => {
@@ -48,6 +48,7 @@ export const CreateBtn = () => {
     const [isTourModalOpen, setIsTourModalOpen] = useState(false);
     const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
     const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+    const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
 
     useEffect(() => {
         const queryIndex = pageUrl.indexOf('?');
@@ -66,7 +67,7 @@ export const CreateBtn = () => {
             email: params.get('email') ?? '',
             organisation: params.get('organisation') ?? '',
             job_title: params.get('job_title') ?? '',
-            phone: params.get('phone') ?? '',
+            phone: params.get('phone_number') ?? '',
         };
 
         console.log('Deep Link Data:', data);

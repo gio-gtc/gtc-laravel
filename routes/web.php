@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\BffLoginController;
 use App\Http\Controllers\Auth\BffLogoutController;
 use App\Http\Controllers\Auth\BffRequestAccessController;
 use App\Http\Controllers\Auth\BffResetPasswordController;
+use App\Http\Controllers\Auth\UserOnboardingProxyController;
+use App\Http\Controllers\ContactInviteProxyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DemoController;
 use App\Http\Controllers\InvoicesController;
@@ -47,6 +49,11 @@ Route::middleware('guest')->group(function () {
     // The POST route (This is the one your test is failing to find!)
     Route::post('/reset-password', [BffResetPasswordController::class, 'store'])
         ->name('password.store');
+
+    Route::get('/set-password', [UserOnboardingProxyController::class, 'showSetPassword'])
+        ->name('set-password.show');
+    Route::post('/set-password', [UserOnboardingProxyController::class, 'setPassword'])
+        ->name('set-password.store');
 });
 
 Route::middleware([BffAuth::class])->group(function () {
@@ -62,6 +69,12 @@ Route::middleware([BffAuth::class])->group(function () {
     Route::post('/venue-forms/{venueId}', [VenueFormController::class, 'store'])->name('venue.form.store');
 
     Route::post('/uploads', [UploadController::class, 'store'])->name('uploads.store');
+
+    Route::post('/admin/users/invite', [UserOnboardingProxyController::class, 'invite'])
+        ->name('admin.users.invite');
+
+    Route::post('/contacts/invite', [ContactInviteProxyController::class, 'store'])
+        ->name('contacts.invite');
 
     Route::prefix('api')->group(function () {
         Route::patch('channels/{channelId}/messages/{id}', [ChannelMessageController::class, 'update']);

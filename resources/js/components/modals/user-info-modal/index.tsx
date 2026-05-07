@@ -1,5 +1,4 @@
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
-import InputError from '@/components/input-error';
 import { UserInfoOutOfOfficeFields } from '@/components/modals/user-info-modal/out-of-office-fields';
 import { UserInfoTextField } from '@/components/modals/user-info-modal/text-field';
 import {
@@ -28,10 +27,25 @@ import { type SharedData, type User } from '@/types';
 import { Form, usePage } from '@inertiajs/react';
 import { Camera, HelpCircle } from 'lucide-react';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import { UserAvatar } from '../../ui/user-avatar';
 import Divider from '../../utils/divider';
 
 export type { CreateContactPrefill };
+
+function firstContactValidationToastMessage(
+    errs: Record<string, string | string[]>,
+): string | undefined {
+    for (const value of Object.values(errs)) {
+        if (Array.isArray(value) && value.length > 0 && value[0]) {
+            return value[0];
+        }
+        if (typeof value === 'string' && value !== '') {
+            return value;
+        }
+    }
+    return undefined;
+}
 
 type UserInfoModalMode = 'edit' | 'create';
 
@@ -79,6 +93,7 @@ export default function UserInfoModal({
     createPrefill = null,
 }: UserInfoModalProps) {
     const { auth } = usePage<SharedData>().props;
+    const profileFormProps = ProfileController.update.form();
 
     const user = providedUser ?? auth.user;
     const isCreateMode = mode === 'create';
@@ -138,22 +153,61 @@ export default function UserInfoModal({
                     <DialogTitle>{modalTitle}</DialogTitle>
                 </DialogHeader>
                 <Divider />
-                {/* TODO: When gtc-api exposes a dedicated create-contact endpoint, switch Form action/method by `mode` instead of always using profile update. */}
+
+                {/* Create posts to BFF/API contact invite; edit uses session profile (Laravel auth — not used in BFF-only login). */}
                 <Form
                     key={createFormKey}
-                    {...ProfileController.update.form()}
-                    transform={(data) => ({
-                        ...data,
-                        phone_number:
-                            tryParsePhoneE164(
-                                phoneInputRef.current?.getDisplayValue() ?? '',
-                                'US',
-                            ) ?? '',
-                    })}
+                    {...(isCreateMode
+                        ? {
+                              action: '/contacts/invite',
+                              method: 'post' as const,
+                          }
+                        : profileFormProps)}
+                    transform={(data) => {
+                        if (isCreateMode) {
+                            const next = {
+                                ...(data as Record<string, unknown>),
+                            };
+                            delete next.photo;
+                            return {
+                                ...next,
+                                phone_number:
+                                    tryParsePhoneE164(
+                                        phoneInputRef.current?.getDisplayValue() ??
+                                            '',
+                                        'US',
+                                    ) ?? '',
+                            };
+                        }
+                        return {
+                            ...data,
+                            phone_number:
+                                tryParsePhoneE164(
+                                    phoneInputRef.current?.getDisplayValue() ??
+                                        '',
+                                    'US',
+                                ) ?? '',
+                        };
+                    }}
                     options={{
                         preserveScroll: true,
                     }}
-                    onSuccess={onClose}
+                    onSuccess={() => {
+                        if (isCreateMode) {
+                            toast.success('Invitation email sent.');
+                        }
+                        onClose();
+                    }}
+                    onError={(errors) => {
+                        if (isCreateMode) {
+                            const msg =
+                                firstContactValidationToastMessage(errors);
+                            toast.error(
+                                msg ??
+                                    'Unable to send the invitation. Please check the form.',
+                            );
+                        }
+                    }}
                     className="space-y-4"
                 >
                     {({ processing, errors }) => (
@@ -209,8 +263,6 @@ export default function UserInfoModal({
                                                 }}
                                             />
                                         </div>
-
-                                        <InputError message={errors.photo} />
                                     </span>
                                 </div>
 
@@ -301,9 +353,6 @@ export default function UserInfoModal({
                                                     errors.phone_number,
                                                 )}
                                             />
-                                            <InputError
-                                                message={errors.phone_number}
-                                            />
                                         </div>
 
                                         <div className="grid gap-2">
@@ -347,7 +396,6 @@ export default function UserInfoModal({
                                     placeholder="Enter a description..."
                                     className="min-h-28"
                                 />
-                                <InputError message={errors.about_me} />
                             </div>
 
                             {isProfileEdit && (

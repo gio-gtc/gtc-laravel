@@ -42,7 +42,7 @@ export default function AuthSignupPanel({
         email: '',
         organisation: '',
         job_title: '',
-        phone: '',
+        phone_number: '',
         details: '',
     });
 
@@ -111,7 +111,7 @@ export default function AuthSignupPanel({
                                 'The phone field is required.';
                         } else if (!phoneE164) {
                             setError(
-                                'phone',
+                                'phone_number',
                                 'Enter a valid phone number. Include country code for international numbers (e.g. +44).',
                             );
                             return;
@@ -219,7 +219,7 @@ export default function AuthSignupPanel({
                             type="text"
                             required
                             tabIndex={4}
-                            autoComplete="organization"
+                            autoComplete="organisation"
                             value={data.organisation}
                             placeholder="Organisation name"
                             className={authFlipInputClass}
@@ -240,7 +240,7 @@ export default function AuthSignupPanel({
                             type="text"
                             required
                             tabIndex={5}
-                            autoComplete="organization-title"
+                            autoComplete="organisation-title"
                             value={data.job_title}
                             placeholder="Job title"
                             className={authFlipInputClass}
@@ -260,16 +260,16 @@ export default function AuthSignupPanel({
                             ref={phoneInputRef}
                             id="signup-phone"
                             tabIndex={6}
-                            value={data.phone}
+                            value={data.phone_number}
                             onChange={(e164) => {
-                                setData('phone', e164);
-                                clearErrors('phone');
+                                setData('phone_number', e164);
+                                clearErrors('phone_number');
                             }}
                             className={authFlipInputClass}
-                            aria-invalid={Boolean(errors.phone)}
+                            aria-invalid={Boolean(errors.phone_number)}
                             variant="default"
                         />
-                        <InputError message={errors.phone} />
+                        <InputError message={errors.phone_number} />
                     </div>
 
                     <div className="grid gap-2 md:col-span-2">

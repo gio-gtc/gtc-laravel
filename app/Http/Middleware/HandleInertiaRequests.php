@@ -38,7 +38,6 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-
         $users = $request->user()
             ? User::query()
                 ->get()

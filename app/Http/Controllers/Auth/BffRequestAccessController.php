@@ -18,7 +18,7 @@ class BffRequestAccessController extends Controller
             'email' => 'required|email|max:255',
             'organisation' => 'required|string|max:255',
             'job_title' => 'required|string|max:255',
-            'phone' => 'required|string|max:50',
+            'phone_number' => 'required|string|max:50',
             'details' => 'required|string|max:10000',
         ]);
 

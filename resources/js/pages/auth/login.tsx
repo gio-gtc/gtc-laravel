@@ -20,7 +20,7 @@ const REQUEST_ACCESS_ERROR_KEYS = [
     'email',
     'organisation',
     'job_title',
-    'phone',
+    'phone_number',
     'details',
 ] as const;
 

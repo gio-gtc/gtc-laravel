@@ -13,7 +13,7 @@ it('proxies request access to the API and redirects to login without a session t
         'email' => 'jane@example.com',
         'organisation' => 'Acme Inc',
         'job_title' => 'Buyer',
-        'phone' => '+15555550100',
+        'phone_number' => '+15555550100',
         'details' => 'Need access to place venue orders.',
     ]);
 
@@ -36,7 +36,7 @@ it('passes API validation errors back to Inertia', function () {
         'email' => 'taken@example.com',
         'organisation' => 'Acme Inc',
         'job_title' => 'Buyer',
-        'phone' => '+15555550100',
+        'phone_number' => '+15555550100',
         'details' => 'Need access.',
     ]);
 
