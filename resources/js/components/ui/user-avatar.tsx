@@ -6,16 +6,25 @@ import { type User } from '@/types';
 interface UserAvatarProps {
     user: User;
     className?: string;
+    /** When set (e.g. local file preview), shown instead of `user.avatar`. */
+    imageOverride?: string | null;
 }
 
-export function UserAvatar({ user, className }: UserAvatarProps) {
+export function UserAvatar({
+    user,
+    className,
+    imageOverride,
+}: UserAvatarProps) {
     const getInitials = useInitials();
+    const imageSrc = imageOverride ?? user.avatar ?? undefined;
 
     return (
         <Avatar
             className={cn('size-[24px] border-1 border-background', className)}
         >
-            {user.avatar && <AvatarImage src={user.avatar} alt={user.name} />}
+            {imageSrc ? (
+                <AvatarImage src={imageSrc} alt={user.name} />
+            ) : null}
             <AvatarFallback className="bg-neutral-200 text-[9px] text-black">
                 {getInitials(user)}
             </AvatarFallback>
