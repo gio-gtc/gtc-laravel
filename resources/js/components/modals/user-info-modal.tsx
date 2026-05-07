@@ -47,12 +47,22 @@ function splitName(fullName: string) {
     };
 }
 
+export type CreateContactPrefill = Partial<{
+    first_name: string;
+    last_name: string;
+    email: string;
+    organisation: string;
+    job_title: string;
+    phone_number: string;
+}>;
+
 interface UserInfoModalProps {
     isOpen: boolean;
     onClose: () => void;
     user?: User;
     mode?: 'edit' | 'create';
     title?: string;
+    createPrefill?: CreateContactPrefill | null;
 }
 
 export default function UserInfoModal({
@@ -61,6 +71,7 @@ export default function UserInfoModal({
     user: providedUser,
     mode = 'edit',
     title: providedTitle,
+    createPrefill = null,
 }: UserInfoModalProps) {
     const { auth } = usePage<SharedData>().props;
 
@@ -75,6 +86,7 @@ export default function UserInfoModal({
             return {
                 first_name: '',
                 last_name: '',
+                email: '',
                 organisation: '',
                 job_title: '',
                 department: '',
@@ -84,6 +96,7 @@ export default function UserInfoModal({
                 out_of_office_start_date: '',
                 out_of_office_end_date: '',
                 permissions_level: '',
+                ...(createPrefill ?? {}),
             };
         }
 
@@ -93,6 +106,7 @@ export default function UserInfoModal({
             first_name:
                 (user.first_name as string | undefined) ?? fallback.first,
             last_name: (user.last_name as string | undefined) ?? fallback.last,
+            email: user.email ?? '',
             organisation: (user.organisation as string | undefined) ?? '',
             job_title: (user.job_title as string | undefined) ?? '',
             department: (user.department as string | undefined) ?? '',
@@ -106,7 +120,7 @@ export default function UserInfoModal({
             permissions_level:
                 (user.permissions_level as string | undefined) ?? 'Admin',
         };
-    }, [user, isCreateMode]);
+    }, [user, isCreateMode, createPrefill]);
 
     const [, setPhotoPreviewUrl] = useState<string | null>(null);
     const [outOfOfficeEnabled, setOutOfOfficeEnabled] = useState<boolean>(
@@ -141,6 +155,11 @@ export default function UserInfoModal({
                 </DialogHeader>
                 <Divider />
                 <Form
+                    key={
+                        isCreateMode
+                            ? `create-contact-${isOpen}-${JSON.stringify(createPrefill ?? {})}`
+                            : undefined
+                    }
                     {...ProfileController.update.form()}
                     transform={(data) => ({
                         ...data,
@@ -313,11 +332,7 @@ export default function UserInfoModal({
                                                 id="email"
                                                 name="email"
                                                 type="email"
-                                                defaultValue={
-                                                    isCreateMode
-                                                        ? ''
-                                                        : user.email
-                                                }
+                                                defaultValue={defaults.email}
                                                 autoComplete="email"
                                                 placeholder="Email"
                                                 required

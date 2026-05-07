@@ -1,7 +1,9 @@
 import InvoiceOrOrderModal from '@/components/globals/navigation/invoice-or-order-modal';
 import OrganisationModal from '@/components/globals/navigation/organisation-modal';
 import TourModal from '@/components/globals/navigation/tour-modal';
-import UserInfoModal from '@/components/modals/user-info-modal';
+import UserInfoModal, {
+    type CreateContactPrefill,
+} from '@/components/modals/user-info-modal';
 import {
     Menubar,
     MenubarContent,
@@ -15,10 +17,22 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { usePage } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+const CREATE_CONTACT_DEEP_LINK_KEYS = [
+    'action',
+    'first_name',
+    'last_name',
+    'email',
+    'organisation',
+    'job_title',
+    'phone',
+] as const;
 
 export const CreateBtn = () => {
+    const { url: pageUrl } = usePage();
     const { isMobile, state } = useSidebar();
     const notCollapsedOrMobile = state !== 'collapsed' || isMobile;
     const centerIcon = notCollapsedOrMobile ? '' : 'justify-center';
@@ -29,9 +43,57 @@ export const CreateBtn = () => {
     const [isOrganisationModalOpen, setIsOrganisationModalOpen] =
         useState(false);
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+    const [contactPrefill, setContactPrefill] =
+        useState<CreateContactPrefill | null>(null);
     const [isTourModalOpen, setIsTourModalOpen] = useState(false);
     const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
     const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+
+    useEffect(() => {
+        const queryIndex = pageUrl.indexOf('?');
+        const params =
+            queryIndex >= 0
+                ? new URLSearchParams(pageUrl.slice(queryIndex + 1))
+                : new URLSearchParams();
+
+        if (params.get('action') !== 'create_contact') {
+            return;
+        }
+
+        const data = {
+            first_name: params.get('first_name') ?? '',
+            last_name: params.get('last_name') ?? '',
+            email: params.get('email') ?? '',
+            organisation: params.get('organisation') ?? '',
+            job_title: params.get('job_title') ?? '',
+            phone: params.get('phone') ?? '',
+        };
+
+        console.log('Deep Link Data:', data);
+
+        const nextPrefill: CreateContactPrefill = {
+            first_name: data.first_name,
+            last_name: data.last_name,
+            email: data.email,
+            organisation: data.organisation,
+            job_title: data.job_title,
+            phone_number: data.phone,
+        };
+
+        setContactPrefill(nextPrefill);
+        setIsContactModalOpen(true);
+
+        const url = new URL(window.location.href);
+        for (const key of CREATE_CONTACT_DEEP_LINK_KEYS) {
+            url.searchParams.delete(key);
+        }
+        const nextSearch = url.searchParams.toString();
+        const next =
+            url.pathname + (nextSearch ? `?${nextSearch}` : '') + url.hash;
+
+        // Updates the visible URL only; Inertia page.url updates on the next navigation.
+        window.history.replaceState(window.history.state, '', next);
+    }, [pageUrl]);
 
     return (
         <>
@@ -60,7 +122,10 @@ export const CreateBtn = () => {
                             onOrganisationClick={() =>
                                 setIsOrganisationModalOpen(true)
                             }
-                            onContactClick={() => setIsContactModalOpen(true)}
+                            onContactClick={() => {
+                                setContactPrefill(null);
+                                setIsContactModalOpen(true);
+                            }}
                             onTourClick={() => setIsTourModalOpen(true)}
                             onOrderClick={() => setIsOrderModalOpen(true)}
                             onInvoiceClick={() => setIsInvoiceModalOpen(true)}
@@ -80,8 +145,12 @@ export const CreateBtn = () => {
             />
             <UserInfoModal
                 isOpen={isContactModalOpen}
-                onClose={() => setIsContactModalOpen(false)}
+                onClose={() => {
+                    setContactPrefill(null);
+                    setIsContactModalOpen(false);
+                }}
                 mode="create"
+                createPrefill={contactPrefill}
             />
             <TourModal
                 isOpen={isTourModalOpen}
