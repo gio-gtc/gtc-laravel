@@ -22,7 +22,7 @@ import { type SharedData, type User } from '@/types';
 import { Form, usePage } from '@inertiajs/react';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { Camera, HelpCircle } from 'lucide-react';
-import { useMemo, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { UserAvatar } from '../ui/user-avatar';
 import Divider from '../utils/divider';
 
@@ -138,13 +138,18 @@ export default function UserInfoModal({
         phoneRawToE164(defaults.phone_number),
     );
 
+    useLayoutEffect(() => {
+        if (!isOpen) {
+            return;
+        }
+        setPhoneE164(phoneRawToE164(defaults.phone_number));
+    }, [isOpen, defaults.phone_number]);
+
     return (
         <Dialog
             open={isOpen}
             onOpenChange={(open) => {
-                if (open) {
-                    setPhoneE164(phoneRawToE164(defaults.phone_number));
-                } else {
+                if (!open) {
                     onClose();
                 }
             }}
