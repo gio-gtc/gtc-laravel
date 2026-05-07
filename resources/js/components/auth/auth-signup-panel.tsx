@@ -40,7 +40,7 @@ export default function AuthSignupPanel({
         first_name: '',
         last_name: '',
         email: '',
-        company: '',
+        organisation: '',
         job_title: '',
         phone: '',
         details: '',
@@ -77,7 +77,7 @@ export default function AuthSignupPanel({
                             first_name: data.first_name.trim(),
                             last_name: data.last_name.trim(),
                             email: data.email.trim(),
-                            company: data.company.trim(),
+                            organisation: data.organisation.trim(),
                             job_title: data.job_title.trim(),
                             phone: phoneE164,
                             details: data.details.trim(),
@@ -98,9 +98,9 @@ export default function AuthSignupPanel({
                             requiredErrors.email =
                                 'The email field is required.';
                         }
-                        if (!trimmed.company) {
-                            requiredErrors.company =
-                                'The company field is required.';
+                        if (!trimmed.organisation) {
+                            requiredErrors.organisation =
+                                'The organisation field is required.';
                         }
                         if (!trimmed.job_title) {
                             requiredErrors.job_title =
@@ -211,22 +211,24 @@ export default function AuthSignupPanel({
                     </div>
 
                     <div className="grid gap-2">
-                        <FieldLabel htmlFor="signup-company" required>
-                            Company
+                        <FieldLabel htmlFor="signup-organisation" required>
+                            Organisation
                         </FieldLabel>
                         <Input
-                            id="signup-company"
+                            id="signup-organisation"
                             type="text"
                             required
                             tabIndex={4}
                             autoComplete="organization"
-                            value={data.company}
-                            placeholder="Company name"
+                            value={data.organisation}
+                            placeholder="Organisation name"
                             className={authFlipInputClass}
-                            onChange={(e) => setData('company', e.target.value)}
-                            onInput={() => clearErrors('company')}
+                            onChange={(e) =>
+                                setData('organisation', e.target.value)
+                            }
+                            onInput={() => clearErrors('organisation')}
                         />
-                        <InputError message={errors.company} />
+                        <InputError message={errors.organisation} />
                     </div>
 
                     <div className="grid gap-2">

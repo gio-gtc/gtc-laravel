@@ -22,7 +22,7 @@ class ProfileUpdateRequest extends FormRequest
             'name' => ['required_without_all:first_name,last_name', 'string', 'max:255'],
             'first_name' => ['nullable', 'string', 'max:255', 'required_with:last_name'],
             'last_name' => ['nullable', 'string', 'max:255', 'required_with:first_name'],
-            'organization' => ['nullable', 'string', 'max:255'],
+            'organisation' => ['nullable', 'string', 'max:255'],
             'job_title' => ['nullable', 'string', 'max:255'],
             'department' => ['nullable', 'string', 'max:255'],
             'phone_number' => ['nullable', 'string', 'max:50'],

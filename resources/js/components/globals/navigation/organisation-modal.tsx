@@ -1,5 +1,4 @@
 import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -26,15 +25,15 @@ import InputAdditions from '@/components/utils/input-additions';
 import { User } from 'lucide-react';
 import { useState } from 'react';
 
-interface OrganizationModalProps {
+interface OrganisationModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-export default function OrganizationModal({
+export default function OrganisationModal({
     isOpen,
     onClose,
-}: OrganizationModalProps) {
+}: OrganisationModalProps) {
     const [apEmails, setApEmails] = useState<string[]>(['']);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -48,38 +47,38 @@ export default function OrganizationModal({
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="overflow-y-auto sm:max-w-[800px]">
                 <DialogHeader>
-                    <DialogTitle>Organization Information</DialogTitle>
+                    <DialogTitle>Organisation Information</DialogTitle>
                 </DialogHeader>
 
                 <Divider />
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* Organization Information Section */}
+                    {/* Organisation Information Section */}
                     <ColumnedRowsParent>
                         <ColumnedRowsChild
-                            labelFor="organization_name"
-                            labelContent="Organization Name"
+                            labelFor="organisation_name"
+                            labelContent="Organisation Name"
                             childrenContainerClasses="modal-child-container"
                             required
                         >
                             <Input
-                                id="organization_name"
-                                name="organization_name"
-                                placeholder="Enter Organization Name"
+                                id="organisation_name"
+                                name="organisation_name"
+                                placeholder="Enter Organisation Name"
                                 required
                             />
                             <InputError message={undefined} />
                         </ColumnedRowsChild>
 
                         <ColumnedRowsChild
-                            labelFor="organization_type"
-                            labelContent="Organization Type"
+                            labelFor="organisation_type"
+                            labelContent="Organisation Type"
                             childrenContainerClasses="modal-child-container"
                             required
                         >
-                            <Select name="organization_type" required>
+                            <Select name="organisation_type" required>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Select Organization Type" />
+                                    <SelectValue placeholder="Select Organisation Type" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="corporation">

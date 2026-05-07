@@ -1,16 +1,16 @@
-import { Company, Invoice } from '@/types';
+import { Invoice, Organisation } from '@/types';
 
 /**
- * Gets address data from invoice if available, otherwise falls back to company address.
+ * Gets address data from invoice if available, otherwise falls back to organisation address.
  * Returns an object with billing_address, city, state, zip, and country_id.
  *
  * @param invoice - The invoice object (must be non-null)
- * @param company - The company object (must be non-null)
+ * @param organisation - The organisation object (must be non-null)
  * @returns Address data object with all fields as strings (empty strings if no data available)
  */
 export function getInvoiceAddress(
     invoice: Invoice,
-    company: Company,
+    organisation: Organisation,
 ): {
     billing_address: string;
     city: string;
@@ -36,13 +36,13 @@ export function getInvoiceAddress(
         };
     }
 
-    // Fallback to company address
+    // Fallback to organisation address
     return {
-        billing_address: company.billing_address || '',
-        city: company.city || '',
-        state: company.state || '',
-        zip: company.zip || '',
-        country_id: company.country_id?.toString() || '',
+        billing_address: organisation.billing_address || '',
+        city: organisation.city || '',
+        state: organisation.state || '',
+        zip: organisation.zip || '',
+        country_id: organisation.country_id?.toString() || '',
     };
 }
 

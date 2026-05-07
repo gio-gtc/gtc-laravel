@@ -80,7 +80,7 @@ export interface User {
     two_factor_enabled?: boolean;
     first_name?: string | null;
     last_name?: string | null;
-    organization?: string | null;
+    organisation?: string | null;
     job_title?: string | null;
     department?: string | null;
     phone_number?: string | null;
@@ -89,7 +89,7 @@ export interface User {
     out_of_office_start_date?: string | null;
     out_of_office_end_date?: string | null;
     profile_photo_path?: string | null;
-    company_id: number;
+    organisation_id: number;
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
@@ -101,7 +101,7 @@ export interface Country {
     code: string;
 }
 
-export interface Company {
+export interface Organisation {
     id: number;
     name: string;
     billing_address: string;
@@ -134,7 +134,7 @@ export interface Invoice {
     showDate: string;
     isDeleted: boolean;
     user_id: number;
-    company_id: number;
+    organisation_id: number;
     held: number;
     release_date: string | null;
     payment_due?: string;

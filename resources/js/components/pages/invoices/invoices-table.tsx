@@ -13,7 +13,7 @@ import {
 import { getDaysRemaining } from '@/helper-functions/format-time';
 import { cn } from '@/lib/utils';
 import {
-    type Company,
+    type Organisation,
     type Country,
     type Invoice,
     type SharedData,
@@ -24,13 +24,15 @@ import { useState } from 'react';
 
 function getInvoiceCountryCode(
     invoice: Invoice,
-    companies: Company[],
+    organisations: Organisation[],
     countries: Country[],
 ): 'US' | 'International' {
-    const company = companies.find((c) => c.id === invoice.company_id);
-    if (!company) return 'International';
+    const organisation = organisations.find(
+        (o) => o.id === invoice.organisation_id,
+    );
+    if (!organisation) return 'International';
 
-    const addressData = getInvoiceAddress(invoice, company);
+    const addressData = getInvoiceAddress(invoice, organisation);
     const countryId = addressData.country_id
         ? parseInt(addressData.country_id, 10)
         : null;
@@ -44,7 +46,7 @@ function getInvoiceCountryCode(
 function InvoicesTable() {
     const { props } = usePage<SharedData & InvoicesPageProps>();
     const invoicesData = props.invoices;
-    const companiesData = props.companies;
+    const organisationsData = props.organisations;
     const countriesData = props.countries;
     const venuesData = props.venues;
     const invoiceItemsData = props.invoice_items;
@@ -120,7 +122,7 @@ function InvoicesTable() {
         filteredData = filteredData.filter((invoice) => {
             const countryCode = getInvoiceCountryCode(
                 invoice,
-                companiesData,
+                organisationsData,
                 countriesData,
             );
             if (countryFilter.us && countryFilter.international) {
@@ -312,7 +314,7 @@ function InvoicesTable() {
                     invoice={selectedInvoice}
                     isOpen={invoiceSlideoutOpen}
                     onClose={() => setSelectedInvoice(null)}
-                    companies={companiesData}
+                    organisations={organisationsData}
                     countries={countriesData}
                     venues={venuesData}
                     invoiceItems={invoiceItemsData}

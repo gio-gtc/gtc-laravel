@@ -50,7 +50,7 @@ final class DemoCatalog
     {
         return [
             'invoices' => config('mockdata.invoices', []),
-            'companies' => config('mockdata.companies', []),
+            'organisations' => config('mockdata.organisations', []),
             'countries' => config('mockdata.countries', []),
             'venues' => config('mockdata.venues', []),
             'invoice_items' => config('mockdata.invoice_items', []),

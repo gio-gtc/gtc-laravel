@@ -208,7 +208,7 @@ export default function AddVenueModal({
                             onChange={(e) =>
                                 setLocalDeliverables(e.target.value)
                             }
-                            placeholder="email@company.com"
+                            placeholder="email@example.com"
                             disabled={isEditMode}
                             readOnly={isEditMode}
                             className={isEditMode ? 'bg-muted' : ''}

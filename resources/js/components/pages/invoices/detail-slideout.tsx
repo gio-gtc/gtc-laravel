@@ -8,7 +8,7 @@ import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
 import {
-    type Company,
+    type Organisation,
     type Country,
     type Invoice,
     type InvoiceItem,
@@ -27,7 +27,7 @@ interface InvoiceDetailSlideoutProps {
     invoice: Invoice | null;
     isOpen: boolean;
     onClose: () => void;
-    companies: Company[];
+    organisations: Organisation[];
     countries: Country[];
     venues: Venue[];
     invoiceItems: InvoiceItem[];
@@ -37,22 +37,22 @@ export default function InvoiceDetailSlideout({
     invoice,
     isOpen,
     onClose,
-    companies,
+    organisations,
     countries,
     venues,
     invoiceItems: invoiceItemsCatalog,
 }: InvoiceDetailSlideoutProps) {
     const usersWithFallback = useUsersWithFallback();
 
-    // Look up company data (before hooks to avoid hook order issues)
-    const company = invoice
-        ? companies.find((c) => c.id === invoice.company_id)
+    // Look up organisation data (before hooks to avoid hook order issues)
+    const organisation = invoice
+        ? organisations.find((o) => o.id === invoice.organisation_id)
         : null;
 
-    // Get address data: use invoice address if filled, otherwise use company address
+    // Get address data: use invoice address if filled, otherwise use organisation address
     const addressData =
-        invoice && company
-            ? getInvoiceAddress(invoice, company)
+        invoice && organisation
+            ? getInvoiceAddress(invoice, organisation)
             : {
                   billing_address: '',
                   city: '',
@@ -62,7 +62,7 @@ export default function InvoiceDetailSlideout({
               };
 
     const [formData, setFormData] = useState({
-        name: company?.name || '',
+        name: organisation?.name || '',
         billing_address: addressData.billing_address,
         city: addressData.city,
         state: addressData.state,
@@ -71,7 +71,7 @@ export default function InvoiceDetailSlideout({
         release_date: invoice?.release_date || '',
         payment_due: invoice?.payment_due || '',
         clientReference: invoice?.clientReference || '',
-        accountPayableEmail: company?.pay_email || '',
+        accountPayableEmail: organisation?.pay_email || '',
         additionalEmails: [''] as string[],
     });
 
@@ -86,20 +86,23 @@ export default function InvoiceDetailSlideout({
     useEffect(() => {
         if (!invoice) return;
 
-        const currentCompany = companies.find(
-            (c) => c.id === invoice.company_id,
+        const currentOrganisation = organisations.find(
+            (o) => o.id === invoice.organisation_id,
         );
 
-        if (!currentCompany) {
+        if (!currentOrganisation) {
             console.error(
-                `Company not found for invoice ${invoice.id} with company_id ${invoice.company_id}`,
+                `Organisation not found for invoice ${invoice.id} with organisation_id ${invoice.organisation_id}`,
             );
             return;
         }
 
-        const currentAddressData = getInvoiceAddress(invoice, currentCompany);
+        const currentAddressData = getInvoiceAddress(
+            invoice,
+            currentOrganisation,
+        );
         setFormData({
-            name: currentCompany.name || '',
+            name: currentOrganisation.name || '',
             billing_address: currentAddressData.billing_address,
             city: currentAddressData.city,
             state: currentAddressData.state,
@@ -108,10 +111,10 @@ export default function InvoiceDetailSlideout({
             release_date: invoice.release_date || '',
             payment_due: invoice.payment_due || '',
             clientReference: invoice.clientReference || '',
-            accountPayableEmail: currentCompany.pay_email || '',
+            accountPayableEmail: currentOrganisation.pay_email || '',
             additionalEmails: [''],
         });
-    }, [invoice, companies]);
+    }, [invoice, organisations]);
 
     // Get filtered invoice items for the current invoice
     const invoiceItems = useMemo(() => {
@@ -161,8 +164,8 @@ export default function InvoiceDetailSlideout({
         removeItem(itemId);
     };
 
-    // Early return if invoice or company doesn't exist - AFTER all hooks are called
-    if (!invoice || !company) {
+    // Early return if invoice or organisation doesn't exist - AFTER all hooks are called
+    if (!invoice || !organisation) {
         return null;
     }
 

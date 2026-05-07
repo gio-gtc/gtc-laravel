@@ -18,7 +18,7 @@ const REQUEST_ACCESS_ERROR_KEYS = [
     'first_name',
     'last_name',
     'email',
-    'company',
+    'organisation',
     'job_title',
     'phone',
     'details',

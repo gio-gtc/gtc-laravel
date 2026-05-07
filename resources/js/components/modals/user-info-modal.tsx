@@ -75,7 +75,7 @@ export default function UserInfoModal({
             return {
                 first_name: '',
                 last_name: '',
-                organization: '',
+                organisation: '',
                 job_title: '',
                 department: '',
                 phone_number: '',
@@ -93,7 +93,7 @@ export default function UserInfoModal({
             first_name:
                 (user.first_name as string | undefined) ?? fallback.first,
             last_name: (user.last_name as string | undefined) ?? fallback.last,
-            organization: (user.organization as string | undefined) ?? '',
+            organisation: (user.organisation as string | undefined) ?? '',
             job_title: (user.job_title as string | undefined) ?? '',
             department: (user.department as string | undefined) ?? '',
             phone_number: (user.phone_number as string | undefined) ?? '',
@@ -261,21 +261,21 @@ export default function UserInfoModal({
                                         <div className="grid gap-2">
                                             <FieldLabel
                                                 className="xs-gray-700-weight-500"
-                                                htmlFor="organization"
+                                                htmlFor="organisation"
                                                 required
                                             >
-                                                Organization
+                                                Organisation
                                             </FieldLabel>
                                             <Input
-                                                id="organization"
-                                                name="organization"
+                                                id="organisation"
+                                                name="organisation"
                                                 defaultValue={
-                                                    defaults.organization
+                                                    defaults.organisation
                                                 }
-                                                placeholder="Organization"
+                                                placeholder="Organisation"
                                             />
                                             <InputError
-                                                message={errors.organization}
+                                                message={errors.organisation}
                                             />
                                         </div>
 

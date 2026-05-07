@@ -42,7 +42,7 @@ class HandleInertiaRequests extends Middleware
         $users = $request->user()
             ? User::query()
                 ->get()
-                ->map(fn (User $user) => array_merge($user->toArray(), ['company_id' => 0]))
+                ->map(fn (User $user) => array_merge($user->toArray(), ['organisation_id' => 0]))
                 ->values()
                 ->all()
             : [];
@@ -107,7 +107,9 @@ class HandleInertiaRequests extends Middleware
             'email' => $email,
             'avatar' => $avatar,
             'email_verified_at' => $raw['email_verified_at'] ?? null,
-            'company_id' => is_numeric($raw['company_id'] ?? null) ? (int) $raw['company_id'] : 0,
+            'organisation_id' => is_numeric($raw['organisation_id'] ?? null)
+                ? (int) $raw['organisation_id']
+                : 0,
             'created_at' => (string) ($raw['created_at'] ?? ''),
             'updated_at' => (string) ($raw['updated_at'] ?? ''),
         ]);

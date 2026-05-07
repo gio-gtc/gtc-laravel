@@ -30,7 +30,7 @@ function InputAdditions({
             id={`ar_email_${index}`}
             name={`ar_email_${index}`}
             type="email"
-            placeholder="email@company.com"
+            placeholder="email@example.com"
             variant={variant}
             required={index === 0}
             value={email}

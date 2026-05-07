@@ -37,7 +37,7 @@ export default function InvoiceAddressForm({
         <ColumnedRowsParent>
             <ColumnedRowsChild
                 labelFor="name"
-                labelContent="Company Name"
+                labelContent="Organisation Name"
                 labelLocation="other"
             >
                 <Input

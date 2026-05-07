@@ -1,5 +1,5 @@
 import InvoiceOrOrderModal from '@/components/globals/navigation/invoice-or-order-modal';
-import OrganizationModal from '@/components/globals/navigation/organization-modal';
+import OrganisationModal from '@/components/globals/navigation/organisation-modal';
 import TourModal from '@/components/globals/navigation/tour-modal';
 import UserInfoModal from '@/components/modals/user-info-modal';
 import {
@@ -26,7 +26,7 @@ export const CreateBtn = () => {
     const hiddenBackhground = notCollapsedOrMobile
         ? 'bg-sidebar-accent focus:bg-sidebar-accent border border-transparent focus:border-transparent focus:text-white data-[state=open]:border-gray-300 data-[state=open]:text-white'
         : 'focus:bg-transparent data-[state=open]:bg-brand-gtc-red/20 p-1';
-    const [isOrganizationModalOpen, setIsOrganizationModalOpen] =
+    const [isOrganisationModalOpen, setIsOrganisationModalOpen] =
         useState(false);
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
     const [isTourModalOpen, setIsTourModalOpen] = useState(false);
@@ -57,8 +57,8 @@ export const CreateBtn = () => {
                             </TooltipTrigger>
                         </MenubarTrigger>
                         <CreateDropdown
-                            onOrganizationClick={() =>
-                                setIsOrganizationModalOpen(true)
+                            onOrganisationClick={() =>
+                                setIsOrganisationModalOpen(true)
                             }
                             onContactClick={() => setIsContactModalOpen(true)}
                             onTourClick={() => setIsTourModalOpen(true)}
@@ -74,9 +74,9 @@ export const CreateBtn = () => {
                     children={<span>Create</span>}
                 />
             </Tooltip>
-            <OrganizationModal
-                isOpen={isOrganizationModalOpen}
-                onClose={() => setIsOrganizationModalOpen(false)}
+            <OrganisationModal
+                isOpen={isOrganisationModalOpen}
+                onClose={() => setIsOrganisationModalOpen(false)}
             />
             <UserInfoModal
                 isOpen={isContactModalOpen}
@@ -102,13 +102,13 @@ export const CreateBtn = () => {
 };
 
 const CreateDropdown = ({
-    onOrganizationClick,
+    onOrganisationClick,
     onContactClick,
     onTourClick,
     onOrderClick,
     onInvoiceClick,
 }: {
-    onOrganizationClick: () => void;
+    onOrganisationClick: () => void;
     onContactClick: () => void;
     onTourClick: () => void;
     onOrderClick: () => void;
@@ -116,8 +116,8 @@ const CreateDropdown = ({
 }) => {
     return (
         <MenubarContent>
-            <MenubarItem onClick={onOrganizationClick}>
-                Organization
+            <MenubarItem onClick={onOrganisationClick}>
+                Organisation
             </MenubarItem>
             <MenubarItem onClick={onContactClick}>Contact</MenubarItem>
             <MenubarItem onClick={onTourClick}>Tour</MenubarItem>

@@ -98,7 +98,7 @@ export default function InvoiceDetailsForm({
                     id="accountPayableEmail"
                     type="email"
                     variant="invoiceSlideout"
-                    placeholder="email@company.com"
+                    placeholder="email@example.com"
                     value={formData.accountPayableEmail}
                     onChange={(e) =>
                         onChange('accountPayableEmail', e.target.value)

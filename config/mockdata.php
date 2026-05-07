@@ -8,7 +8,7 @@ $toursVenuesPath = __DIR__.'/mockdata/generated/toursVenues.json';
 $venueItemsPath = __DIR__.'/mockdata/generated/venueItems.json';
 $venuesPath = __DIR__.'/mockdata/generated/venues.json';
 $countriesPath = __DIR__.'/mockdata/generated/countries.json';
-$companiesPath = __DIR__.'/mockdata/generated/companies.json';
+$organisationsPath = __DIR__.'/mockdata/generated/organisations.json';
 $invoicesPath = __DIR__.'/mockdata/generated/invoices.json';
 
 
@@ -36,8 +36,8 @@ $venues = json_decode(file_get_contents($venuesPath), true, 512, JSON_THROW_ON_E
 /** @var array<int, array<string, mixed>> $countries */
 $countries = json_decode(file_get_contents($countriesPath), true, 512, JSON_THROW_ON_ERROR);
 
-/** @var array<int, array<string, mixed>> $companies */
-$companies = json_decode(file_get_contents($companiesPath), true, 512, JSON_THROW_ON_ERROR);
+/** @var array<string, mixed> $organisationsDecoded */
+$organisationsData = json_decode(file_get_contents($organisationsPath), true, 512, JSON_THROW_ON_ERROR);
 
 /** @var array<int, array<string, mixed>> $invoices */
 $invoices = json_decode(file_get_contents($invoicesPath), true, 512, JSON_THROW_ON_ERROR);
@@ -52,6 +52,6 @@ return array_merge(
     $venueItems,
     $venues,
     $countries,
-    $companies,
+    $organisationsData,
     $invoices
 );

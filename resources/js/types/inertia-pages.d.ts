@@ -1,5 +1,5 @@
 import type {
-    Company,
+    Organisation,
     Country,
     Invoice,
     InvoiceItem,
@@ -66,7 +66,7 @@ export interface OrdersCatalogValue extends OrdersPageProps {
 
 export interface InvoicesPageProps {
     invoices: Invoice[];
-    companies: Company[];
+    organisations: Organisation[];
     countries: Country[];
     venues: Venue[];
     invoice_items: InvoiceItem[];
