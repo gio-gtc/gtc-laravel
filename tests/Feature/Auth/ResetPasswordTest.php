@@ -26,15 +26,15 @@ it('proxies the reset password submission and redirects to login on success', fu
 
     // 3. Assert the BFF sends them to the login page with a green success banner
     $response->assertRedirect('/login');
-    $response->assertSessionHas('status', 'Your password has been reset.');
+    $response->assertSessionHas('success', 'Your password has been reset successfully!');
 
     // 4. Next visit to login surfaces the message as page props (flash consumed once)
     $this->get(route('login'))
         ->assertOk()
-        ->assertSee('Your password has been reset.', false);
+        ->assertSee('Your password has been reset successfully!', false);
 
     $this->get(route('login'))
-        ->assertDontSee('Your password has been reset.');
+        ->assertDontSee('Your password has been reset successfully!');
 });
 
 // --- TEST 2: The Validation/Token Failure ---

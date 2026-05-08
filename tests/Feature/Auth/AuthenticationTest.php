@@ -2,6 +2,17 @@
 
 use Illuminate\Support\Facades\Http;
 
+test('authenticated BFF sessions are redirected from login to dashboard', function () {
+    $response = $this->withSession([
+        'api_token' => 'existing-token',
+        'user' => ['id' => 1, 'email' => 'a@b.test'],
+        'roles' => [],
+        'permissions' => [],
+    ])->get(route('login'));
+
+    $response->assertRedirect(route('dashboard', absolute: false));
+});
+
 test('login screen can be rendered', function () {
     $response = $this->get(route('login'));
 

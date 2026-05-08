@@ -17,8 +17,14 @@ class BffLoginController extends Controller
     {
         $authFaceHint = $request->session()->pull('auth_face');
 
+        $status = $request->session()->pull('status');
+        $successBanner = $request->session()->pull('success');
+        $error = $request->session()->pull('error');
+
         return Inertia::render('auth/login', [
             'authFaceHint' => $authFaceHint === 'signup' ? 'signup' : null,
+            'status' => $status ?? $successBanner,
+            'error' => $error,
         ]);
     }
 

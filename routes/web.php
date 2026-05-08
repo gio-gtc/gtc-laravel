@@ -24,7 +24,7 @@ Route::get('/', function () {
 
 Route::post('/logout', [BffLogoutController::class, 'destroy'])->name('logout');
 
-Route::middleware('guest')->group(function () {
+Route::middleware('bff.guest')->group(function () {
     Route::get('/demo/{uuid}/{assetId?}', [DemoController::class, 'show'])
         ->whereUuid('uuid')
         ->where('assetId', '[a-zA-Z0-9_-]+')
