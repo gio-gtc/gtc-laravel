@@ -2,25 +2,26 @@
 
 namespace Tests;
 
-use App\Models\User;
+use Illuminate\Auth\GenericUser;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
     /**
-     * BffAuth-protected routes need api_token in session; keep Laravel guard in sync for code paths that use $request->user().
+     * Mock the BFF session state without touching a database.
      */
-    protected function actingAsBff(?User $user = null): static
+    protected function actingAsBff(array $overrides = []): static
     {
-        $user ??= User::factory()->create();
+        $userData = array_merge([
+            'id' => 1,
+            'first_name' => 'Test',
+            'last_name' => 'User',
+            'email' => 'test@example.com',
+        ], $overrides);
 
-        return $this->actingAs($user)->withSession([
+        return $this->withSession([
             'api_token' => 'test-bff-token',
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-            ],
+            'user' => $userData,
             'roles' => [],
             'permissions' => [],
         ]);
