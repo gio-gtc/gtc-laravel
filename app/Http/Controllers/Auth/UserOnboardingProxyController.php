@@ -12,53 +12,6 @@ use Inertia\Response;
 
 class UserOnboardingProxyController extends Controller
 {
-    public function invite(Request $request): RedirectResponse
-    {
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'organisation' => 'required|string|max:255',
-        ]);
-
-        $apiUrl = config('services.api.base_url').'/api/users/invite';
-
-        $response = Http::withToken($request->session()->get('api_token'))
-            ->acceptJson()
-            ->post($apiUrl, $validated);
-
-        
-
-        if ($response->status() === 422) {
-            $errors = $response->json('errors');
-        
-            // If the API complained specifically about the email, flash the error toast
-            if (isset($errors['email'])) {
-                return back()->with('error', 'A user with this email already exists.');
-            }
-            
-            // If it's a different validation error, pass it back to the form
-            throw \Illuminate\Validation\ValidationException::withMessages($errors);
-        }
-
-        if ($response->status() === 401) {
-            return back()->with('error', 'API Authentication failed. Please log in again.');
-        }
-
-        if ($response->successful()) {
-            return back()->with('success', 'User invited successfully.');
-        }
-
-        dd([
-            'status' => $response->status(),
-            'error_body' => $response->json() ?? $response->body()
-        ]);
-
-        throw ValidationException::withMessages([
-            'email' => ['Unable to send the invitation right now. Please try again later.'],
-        ]);
-    }
-
     public function showSetPassword(Request $request): Response|RedirectResponse
     {
         $token = $request->query('token');

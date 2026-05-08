@@ -70,9 +70,6 @@ Route::middleware([BffAuth::class])->group(function () {
 
     Route::post('/uploads', [UploadController::class, 'store'])->name('uploads.store');
 
-    Route::post('/admin/users/invite', [UserOnboardingProxyController::class, 'invite'])
-        ->name('admin.users.invite');
-
     Route::post('/contacts/invite', [ContactInviteProxyController::class, 'store'])
         ->name('contacts.invite');
 

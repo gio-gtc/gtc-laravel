@@ -48,7 +48,6 @@ export const CreateBtn = () => {
     const [isTourModalOpen, setIsTourModalOpen] = useState(false);
     const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
     const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
-    const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false);
 
     useEffect(() => {
         const queryIndex = pageUrl.indexOf('?');
