@@ -1,8 +1,10 @@
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import { UserInfoFormFields } from '@/components/modals/user-info-modal/form-fields';
 import { UserInfoOutOfOfficeFields } from '@/components/modals/user-info-modal/out-of-office-fields';
-import { UserInfoTextField } from '@/components/modals/user-info-modal/text-field';
 import {
     buildUserInfoFormDefaults,
+    buildUserInfoFormTransformPayload,
+    firstContactValidationToastMessage,
     phoneRawToE164,
     type CreateContactPrefill,
 } from '@/components/modals/user-info-modal/utils';
@@ -14,38 +16,25 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { FieldLabel } from '@/components/ui/field-label';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
-    PhoneInput,
     tryParsePhoneE164,
     type PhoneInputHandle,
 } from '@/components/ui/phone-input';
-import { Textarea } from '@/components/ui/textarea';
 import { type SharedData, type User } from '@/types';
+import type { FormDataConvertible } from '@inertiajs/core';
 import { Form, usePage } from '@inertiajs/react';
-import { Camera, HelpCircle } from 'lucide-react';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+    useCallback,
+    useEffect,
+    useLayoutEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { toast } from 'react-toastify';
-import { UserAvatar } from '../../ui/user-avatar';
 import Divider from '../../utils/divider';
 
 export type { CreateContactPrefill };
-
-function firstContactValidationToastMessage(
-    errs: Record<string, string | string[]>,
-): string | undefined {
-    for (const value of Object.values(errs)) {
-        if (Array.isArray(value) && value.length > 0 && value[0]) {
-            return value[0];
-        }
-        if (typeof value === 'string' && value !== '') {
-            return value;
-        }
-    }
-    return undefined;
-}
 
 type UserInfoModalMode = 'edit' | 'create';
 
@@ -75,6 +64,11 @@ const MODE_LABELS: Record<
     },
 };
 
+const INVITE_FORM = {
+    action: '/contacts/invite',
+    method: 'post' as const,
+};
+
 interface UserInfoModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -93,7 +87,7 @@ export default function UserInfoModal({
     createPrefill = null,
 }: UserInfoModalProps) {
     const { auth } = usePage<SharedData>().props;
-    const profileFormProps = ProfileController.update.form();
+    const editFormProps = ProfileController.update.form();
 
     const user = providedUser ?? auth.user;
     const isCreateMode = mode === 'create';
@@ -103,6 +97,8 @@ export default function UserInfoModal({
     const createFormKey = isCreateMode
         ? `create-contact-${isOpen}-${JSON.stringify(createPrefill ?? {})}`
         : undefined;
+
+    const formTargetProps = isCreateMode ? INVITE_FORM : editFormProps;
 
     const userSyncKey = useMemo(
         () => `${mode}-${user.id}-${user.email}`,
@@ -139,6 +135,41 @@ export default function UserInfoModal({
         setPhoneE164(phoneRawToE164(defaults.phone_number));
     }, [isOpen, userSyncKey, defaults.phone_number]);
 
+    const transformFormData = useCallback(
+        (data: Record<string, FormDataConvertible>) => {
+            const phoneNumber =
+                tryParsePhoneE164(
+                    phoneInputRef.current?.getDisplayValue() ?? '',
+                    'US',
+                ) ?? '';
+            return buildUserInfoFormTransformPayload(data, {
+                isCreateMode,
+                phoneNumber,
+            });
+        },
+        [isCreateMode],
+    );
+
+    const handleFormSuccess = useCallback(() => {
+        if (isCreateMode) {
+            toast.success('Invitation email sent.');
+        }
+        onClose();
+    }, [isCreateMode, onClose]);
+
+    const handleFormError = useCallback(
+        (errors: Record<string, string | string[]>) => {
+            if (!isCreateMode) {
+                return;
+            }
+            const msg = firstContactValidationToastMessage(errors);
+            toast.error(
+                msg ?? 'Unable to send the invitation. Please check the form.',
+            );
+        },
+        [isCreateMode],
+    );
+
     return (
         <Dialog
             open={isOpen}
@@ -157,246 +188,31 @@ export default function UserInfoModal({
                 {/* Create posts to BFF/API contact invite; edit uses session profile (Laravel auth — not used in BFF-only login). */}
                 <Form
                     key={createFormKey}
-                    {...(isCreateMode
-                        ? {
-                              action: '/contacts/invite',
-                              method: 'post' as const,
-                          }
-                        : profileFormProps)}
-                    transform={(data) => {
-                        if (isCreateMode) {
-                            const next = {
-                                ...(data as Record<string, unknown>),
-                            };
-                            delete next.photo;
-                            return {
-                                ...next,
-                                phone_number:
-                                    tryParsePhoneE164(
-                                        phoneInputRef.current?.getDisplayValue() ??
-                                            '',
-                                        'US',
-                                    ) ?? '',
-                            };
-                        }
-                        return {
-                            ...data,
-                            phone_number:
-                                tryParsePhoneE164(
-                                    phoneInputRef.current?.getDisplayValue() ??
-                                        '',
-                                    'US',
-                                ) ?? '',
-                        };
-                    }}
+                    {...formTargetProps}
+                    transform={transformFormData}
                     options={{
                         preserveScroll: true,
                     }}
-                    onSuccess={() => {
-                        if (isCreateMode) {
-                            toast.success('Invitation email sent.');
-                        }
-                        onClose();
-                    }}
-                    onError={(errors) => {
-                        if (isCreateMode) {
-                            const msg =
-                                firstContactValidationToastMessage(errors);
-                            toast.error(
-                                msg ??
-                                    'Unable to send the invitation. Please check the form.',
-                            );
-                        }
-                    }}
+                    onSuccess={handleFormSuccess}
+                    onError={handleFormError}
                     className="space-y-4"
                 >
                     {({ processing, errors }) => (
                         <>
-                            <div className="grid gap-2">
-                                <div className="space-y-4">
-                                    <span className="inline-block text-center">
-                                        <Label className="xs-gray-400-weight-400">
-                                            {modeLabels.photoLabel}
-                                        </Label>
-
-                                        <div className="relative w-fit">
-                                            <UserAvatar
-                                                user={user}
-                                                imageOverride={photoPreviewUrl}
-                                                className="size-[88px] rounded-full border border-gray-100 p-0.5"
-                                            />
-
-                                            <label
-                                                htmlFor="photo"
-                                                className="absolute right-0 bottom-0 inline-flex cursor-pointer items-center justify-center rounded-full border bg-background p-1 text-gray-500 shadow-sm hover:bg-muted"
-                                                title={
-                                                    modeLabels.photoUploadTitle
-                                                }
-                                            >
-                                                <Camera className="size-3" />
-                                            </label>
-
-                                            <input
-                                                id="photo"
-                                                name="photo"
-                                                type="file"
-                                                accept="image/*"
-                                                className="sr-only"
-                                                onChange={(e) => {
-                                                    const file =
-                                                        e.currentTarget
-                                                            .files?.[0];
-                                                    if (!file) return;
-
-                                                    setPhotoPreviewUrl(
-                                                        (prev) => {
-                                                            if (prev) {
-                                                                URL.revokeObjectURL(
-                                                                    prev,
-                                                                );
-                                                            }
-                                                            return URL.createObjectURL(
-                                                                file,
-                                                            );
-                                                        },
-                                                    );
-                                                }}
-                                            />
-                                        </div>
-                                    </span>
-                                </div>
-
-                                <div className="grid gap-2">
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <UserInfoTextField
-                                            id="first_name"
-                                            name="first_name"
-                                            label="First Name"
-                                            defaultValue={defaults.first_name}
-                                            error={errors.first_name}
-                                            required
-                                            autoComplete="given-name"
-                                            placeholder="First name"
-                                        />
-                                        <UserInfoTextField
-                                            id="last_name"
-                                            name="last_name"
-                                            label="Last Name"
-                                            defaultValue={defaults.last_name}
-                                            error={errors.last_name}
-                                            required
-                                            autoComplete="family-name"
-                                            placeholder="Last name"
-                                        />
-                                    </div>
-
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <UserInfoTextField
-                                            id="organisation"
-                                            name="organisation"
-                                            label="Organisation"
-                                            defaultValue={defaults.organisation}
-                                            error={errors.organisation}
-                                            required
-                                            placeholder="Organisation"
-                                        />
-                                        <UserInfoTextField
-                                            id="job_title"
-                                            name="job_title"
-                                            label="Job Title"
-                                            defaultValue={defaults.job_title}
-                                            error={errors.job_title}
-                                            labelVariant="plain"
-                                            placeholder="Job title"
-                                        />
-                                    </div>
-
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <UserInfoTextField
-                                            id="email"
-                                            name="email"
-                                            label="Email"
-                                            type="email"
-                                            defaultValue={defaults.email}
-                                            error={errors.email}
-                                            required
-                                            autoComplete="email"
-                                            placeholder="Email"
-                                        />
-                                        <UserInfoTextField
-                                            id="department"
-                                            name="department"
-                                            label="Department or Team"
-                                            defaultValue={defaults.department}
-                                            error={errors.department}
-                                            labelVariant="plain"
-                                            placeholder="Department or Team"
-                                        />
-                                    </div>
-
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <div className="grid gap-2">
-                                            <FieldLabel
-                                                className="xs-gray-700-weight-500"
-                                                htmlFor="phone_number"
-                                                required
-                                            >
-                                                Phone Number
-                                            </FieldLabel>
-                                            <PhoneInput
-                                                ref={phoneInputRef}
-                                                id="phone_number"
-                                                value={phoneE164}
-                                                onChange={setPhoneE164}
-                                                autoComplete="tel"
-                                                aria-invalid={Boolean(
-                                                    errors.phone_number,
-                                                )}
-                                            />
-                                        </div>
-
-                                        <div className="grid gap-2">
-                                            <div className="flex items-center gap-2">
-                                                <Label
-                                                    htmlFor="permissions_level"
-                                                    className="text-xs font-medium text-gray-400"
-                                                >
-                                                    Permissions Level
-                                                </Label>
-                                                <HelpCircle className="size-3 text-gray-400" />
-                                            </div>
-                                            <Input
-                                                id="permissions_level"
-                                                name="permissions_level"
-                                                defaultValue={
-                                                    defaults.permissions_level
-                                                }
-                                                disabled={isProfileEdit}
-                                                readOnly={isProfileEdit}
-                                                placeholder={
-                                                    modeLabels.permissionsPlaceholder
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label
-                                    className="xs-gray-700-weight-500"
-                                    htmlFor="about_me"
-                                >
-                                    About Me
-                                </Label>
-                                <Textarea
-                                    id="about_me"
-                                    name="about_me"
-                                    defaultValue={defaults.about_me}
-                                    placeholder="Enter a description..."
-                                    className="min-h-28"
-                                />
-                            </div>
+                            <UserInfoFormFields
+                                user={user}
+                                defaults={defaults}
+                                errors={errors}
+                                photoLabel={modeLabels.photoLabel}
+                                photoUploadTitle={modeLabels.photoUploadTitle}
+                                photoPreviewUrl={photoPreviewUrl}
+                                setPhotoPreviewUrl={setPhotoPreviewUrl}
+                                phoneInputRef={phoneInputRef}
+                                phoneE164={phoneE164}
+                                setPhoneE164={setPhoneE164}
+                                isProfileEdit={isProfileEdit}
+                                modeLabels={modeLabels}
+                            />
 
                             {isProfileEdit && (
                                 <UserInfoOutOfOfficeFields

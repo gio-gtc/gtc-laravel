@@ -1,5 +1,6 @@
-import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import type { User } from '@/types';
+import type { FormDataConvertible } from '@inertiajs/core';
+import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 
 export type CreateContactPrefill = Partial<{
     first_name: string;
@@ -85,4 +86,30 @@ export function buildUserInfoFormDefaults(
         out_of_office_end_date: user.out_of_office_end_date ?? '',
         permissions_level: user.permissions_level ?? 'Admin',
     };
+}
+
+export function firstContactValidationToastMessage(
+    errs: Record<string, string | string[]>,
+): string | undefined {
+    for (const value of Object.values(errs)) {
+        if (Array.isArray(value) && value.length > 0 && value[0]) {
+            return value[0];
+        }
+        if (typeof value === 'string' && value !== '') {
+            return value;
+        }
+    }
+    return undefined;
+}
+
+/** Merge submit `data` with E164 phone; create invite omits file `photo` from the payload. */
+export function buildUserInfoFormTransformPayload(
+    data: Record<string, FormDataConvertible>,
+    options: { isCreateMode: boolean; phoneNumber: string },
+): Record<string, FormDataConvertible> {
+    const record = { ...data };
+    if (options.isCreateMode) {
+        delete record.photo;
+    }
+    return { ...record, phone_number: options.phoneNumber };
 }
