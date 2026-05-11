@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Settings\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -22,74 +21,49 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user's profile settings.
+     * Forward the profile update to the gtc-api as a thin BFF proxy.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $user = $request->user();
-        $validated = $request->validated();
-
-        $user->fill($validated);
-
-        // If the request uses split first/last name, keep "name" in sync
-        // (the rest of the UI expects auth.user.name to exist).
-        if (
-            array_key_exists('first_name', $validated) ||
-            array_key_exists('last_name', $validated)
-        ) {
-            $first = trim((string) ($validated['first_name'] ?? $user->first_name ?? ''));
-            $last = trim((string) ($validated['last_name'] ?? $user->last_name ?? ''));
-            $fullName = trim("{$first} {$last}");
-
-            if ($fullName !== '') {
-                $user->name = $fullName;
-            }
-        }
-
-        if (array_key_exists('out_of_office', $validated) && ! $validated['out_of_office']) {
-            $user->out_of_office_start_date = null;
-            $user->out_of_office_end_date = null;
-        }
-
-        if ($request->hasFile('photo')) {
-            $photo = $request->file('photo');
-
-            if ($photo) {
-                if ($user->profile_photo_path) {
-                    Storage::disk('public')->delete($user->profile_photo_path);
-                }
-
-                $user->profile_photo_path = $photo->storePublicly('avatars', 'public');
-            }
-        }
-
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
-
-        $user->save();
-
-        return to_route('profile.edit');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'password' => ['required', 'current_password'],
+        $validated = $request->validate([
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'phone_number' => ['nullable', 'string', 'max:50'],
+            'job_title' => ['nullable', 'string', 'max:255'],
+            'organisation_id' => ['nullable', 'integer'],
+            'department' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $user = $request->user();
+        $apiUrl = config('services.api.base_url').'/api/profile';
 
-        Auth::logout();
+        $response = Http::withToken($request->session()->get('api_token'))
+            ->acceptJson()
+            ->put($apiUrl, $validated);
 
-        $user->delete();
+        if ($response->successful()) {
+            $user = $response->json('user');
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+            if (is_array($user)) {
+                $request->session()->put('user', $user);
+            }
 
-        return redirect('/');
+            return back()->with('success', 'Profile updated.');
+        }
+
+        if ($response->status() === 422) {
+            throw ValidationException::withMessages(
+                collect($response->json('errors', []))
+                    ->map(fn ($messages) => is_array($messages) ? $messages : [$messages])
+                    ->all()
+            );
+        }
+
+        $message = $response->json('message');
+
+        return back()->with(
+            'error',
+            is_string($message) && $message !== '' ? $message : 'Unable to update profile.'
+        );
     }
 }

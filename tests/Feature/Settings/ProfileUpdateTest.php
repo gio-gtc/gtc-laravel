@@ -1,0 +1,67 @@
+<?php
+
+use Illuminate\Support\Facades\Http;
+
+it('proxies profile update to the API and redirects back on success', function () {
+    $apiUrl = config('services.api.base_url').'/api/profile';
+
+    Http::fake([
+        $apiUrl => Http::response(['message' => 'Profile updated.'], 200),
+    ]);
+
+    $response = $this->actingAsBff()
+        ->from('/settings/profile')
+        ->put('/settings/profile', [
+            'first_name' => 'Jane',
+            'last_name' => 'Doe',
+            'email' => 'jane@example.com',
+            'phone_number' => '+15551234567',
+            'job_title' => 'Engineer',
+            'organisation_id' => 42,
+            'department' => 'Engineering',
+        ]);
+
+    $response->assertRedirect('/settings/profile');
+    $response->assertSessionHas('success', 'Profile updated.');
+
+    Http::assertSent(function ($request) use ($apiUrl) {
+        return $request->method() === 'PUT'
+            && $request->url() === $apiUrl
+            && $request->hasHeader('Authorization', 'Bearer test-bff-token')
+            && $request['first_name'] === 'Jane'
+            && $request['last_name'] === 'Doe'
+            && $request['email'] === 'jane@example.com'
+            && $request['phone_number'] === '+15551234567'
+            && $request['job_title'] === 'Engineer'
+            && $request['organisation_id'] === 42
+            && $request['department'] === 'Engineering';
+    });
+});
+
+it('maps API 422 validation errors back to the form', function () {
+    $apiUrl = config('services.api.base_url').'/api/profile';
+
+    Http::fake([
+        $apiUrl => Http::response([
+            'message' => 'The given data was invalid.',
+            'errors' => ['email' => ['Email already in use.']],
+        ], 422),
+    ]);
+
+    $this->actingAsBff()
+        ->from('/settings/profile')
+        ->put('/settings/profile', [
+            'first_name' => 'Jane',
+            'last_name' => 'Doe',
+            'email' => 'taken@example.com',
+        ])
+        ->assertInvalid(['email' => 'Email already in use.']);
+});
+
+it('redirects unauthenticated requests to login', function () {
+    $this->put('/settings/profile', [
+        'first_name' => 'Jane',
+        'last_name' => 'Doe',
+        'email' => 'jane@example.com',
+    ])->assertRedirect('/login');
+});

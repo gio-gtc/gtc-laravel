@@ -34,6 +34,8 @@ import {
 import { toast } from 'react-toastify';
 import Divider from '../../utils/divider';
 
+type FlashShape = { success?: string | null; error?: string | null };
+
 export type { CreateContactPrefill };
 
 type UserInfoModalMode = 'edit' | 'create';
@@ -86,7 +88,13 @@ export default function UserInfoModal({
     title: providedTitle,
     createPrefill = null,
 }: UserInfoModalProps) {
-    const { auth } = usePage<SharedData>().props;
+    const { auth, flash } = usePage<SharedData & { flash?: FlashShape }>()
+        .props;
+    const flashRef = useRef<FlashShape | undefined>(flash);
+    useLayoutEffect(() => {
+        flashRef.current = flash;
+    }, [flash]);
+
     const editFormProps = ProfileController.update.form();
 
     const user = providedUser ?? auth.user;
@@ -153,18 +161,35 @@ export default function UserInfoModal({
     const handleFormSuccess = useCallback(() => {
         if (isCreateMode) {
             toast.success('Invitation email sent.');
+            onClose();
+            return;
         }
+
+        // Edit mode: the BFF redirects back with a flash message.
+        // Surface either the API error message or the success confirmation.
+        const latestFlash = flashRef.current;
+        if (latestFlash?.error) {
+            toast.error(latestFlash.error);
+            return;
+        }
+        toast.success(latestFlash?.success ?? 'Profile updated.');
         onClose();
     }, [isCreateMode, onClose]);
 
     const handleFormError = useCallback(
         (errors: Record<string, string | string[]>) => {
-            if (!isCreateMode) {
+            const msg = firstContactValidationToastMessage(errors);
+
+            if (isCreateMode) {
+                toast.error(
+                    msg ??
+                        'Unable to send the invitation. Please check the form.',
+                );
                 return;
             }
-            const msg = firstContactValidationToastMessage(errors);
+
             toast.error(
-                msg ?? 'Unable to send the invitation. Please check the form.',
+                msg ?? 'Unable to update your profile. Please check the form.',
             );
         },
         [isCreateMode],
