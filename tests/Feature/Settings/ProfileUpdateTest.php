@@ -54,8 +54,37 @@ it('maps API 422 validation errors back to the form', function () {
             'first_name' => 'Jane',
             'last_name' => 'Doe',
             'email' => 'taken@example.com',
+            'phone_number' => '+15551234567',
         ])
         ->assertInvalid(['email' => 'Email already in use.']);
+});
+
+it('rejects an empty phone_number with 422', function () {
+    $this->actingAsBff()
+        ->from('/settings/profile')
+        ->put('/settings/profile', [
+            'first_name' => 'Jane',
+            'last_name' => 'Doe',
+            'email' => 'jane@example.com',
+            'phone_number' => '',
+        ])
+        ->assertInvalid(['phone_number']);
+
+    Http::assertNothingSent();
+});
+
+it('rejects a phone_number that is not E.164', function () {
+    $this->actingAsBff()
+        ->from('/settings/profile')
+        ->put('/settings/profile', [
+            'first_name' => 'Jane',
+            'last_name' => 'Doe',
+            'email' => 'jane@example.com',
+            'phone_number' => '555',
+        ])
+        ->assertInvalid(['phone_number']);
+
+    Http::assertNothingSent();
 });
 
 it('redirects unauthenticated requests to login', function () {

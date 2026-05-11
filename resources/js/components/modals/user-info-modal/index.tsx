@@ -5,7 +5,6 @@ import {
     buildUserInfoFormDefaults,
     buildUserInfoFormTransformPayload,
     firstContactValidationToastMessage,
-    phoneRawToE164,
     type CreateContactPrefill,
 } from '@/components/modals/user-info-modal/utils';
 import { Button } from '@/components/ui/button';
@@ -16,10 +15,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import {
-    tryParsePhoneE164,
-    type PhoneInputHandle,
-} from '@/components/ui/phone-input';
+import { type PhoneNumberFieldHandle } from '@/components/ui/phone-number-field';
 import { type SharedData, type User } from '@/types';
 import type { FormDataConvertible } from '@inertiajs/core';
 import { Form, usePage } from '@inertiajs/react';
@@ -30,6 +26,7 @@ import {
     useMemo,
     useRef,
     useState,
+    type FormEvent,
 } from 'react';
 import { toast } from 'react-toastify';
 import Divider from '../../utils/divider';
@@ -131,25 +128,34 @@ export default function UserInfoModal({
         }
     }, [isOpen]);
 
-    const phoneInputRef = useRef<PhoneInputHandle>(null);
-    const [phoneE164, setPhoneE164] = useState(() =>
-        phoneRawToE164(defaults.phone_number),
-    );
+    const phoneFieldRef = useRef<PhoneNumberFieldHandle>(null);
+    const phoneSyncKey = `${isOpen}-${userSyncKey}`;
+
+    const validityProbeRef = useRef<HTMLInputElement>(null);
+    const [phoneValid, setPhoneValid] = useState(false);
+    const [formValid, setFormValid] = useState(false);
 
     useLayoutEffect(() => {
         if (!isOpen) {
             return;
         }
-        setPhoneE164(phoneRawToE164(defaults.phone_number));
-    }, [isOpen, userSyncKey, defaults.phone_number]);
+        // `input.form` reaches the parent <form>; checkValidity() reflects HTML5
+        // required state across every named field rendered inside it.
+        setFormValid(
+            validityProbeRef.current?.form?.checkValidity() ?? false,
+        );
+    }, [isOpen, userSyncKey, phoneValid]);
+
+    const handleFormInput = useCallback(
+        (event: FormEvent<HTMLFormElement>) => {
+            setFormValid(event.currentTarget.checkValidity());
+        },
+        [],
+    );
 
     const transformFormData = useCallback(
         (data: Record<string, FormDataConvertible>) => {
-            const phoneNumber =
-                tryParsePhoneE164(
-                    phoneInputRef.current?.getDisplayValue() ?? '',
-                    'US',
-                ) ?? '';
+            const phoneNumber = phoneFieldRef.current?.getValue() ?? null;
             return buildUserInfoFormTransformPayload(data, {
                 isCreateMode,
                 phoneNumber,
@@ -220,10 +226,16 @@ export default function UserInfoModal({
                     }}
                     onSuccess={handleFormSuccess}
                     onError={handleFormError}
+                    onInput={handleFormInput}
                     className="space-y-4"
                 >
                     {({ processing, errors }) => (
                         <>
+                            <input
+                                ref={validityProbeRef}
+                                type="hidden"
+                                aria-hidden="true"
+                            />
                             <UserInfoFormFields
                                 user={user}
                                 defaults={defaults}
@@ -232,9 +244,10 @@ export default function UserInfoModal({
                                 photoUploadTitle={modeLabels.photoUploadTitle}
                                 photoPreviewUrl={photoPreviewUrl}
                                 setPhotoPreviewUrl={setPhotoPreviewUrl}
-                                phoneInputRef={phoneInputRef}
-                                phoneE164={phoneE164}
-                                setPhoneE164={setPhoneE164}
+                                phoneFieldRef={phoneFieldRef}
+                                phoneRawDefault={defaults.phone_number}
+                                phoneSyncKey={phoneSyncKey}
+                                onPhoneValidChange={setPhoneValid}
                                 isProfileEdit={isProfileEdit}
                                 modeLabels={modeLabels}
                             />
@@ -270,7 +283,12 @@ export default function UserInfoModal({
                                 >
                                     Cancel
                                 </Button>
-                                <Button type="submit" disabled={processing}>
+                                <Button
+                                    type="submit"
+                                    disabled={
+                                        processing || !formValid || !phoneValid
+                                    }
+                                >
                                     {modeLabels.submitLabel}
                                 </Button>
                             </DialogFooter>

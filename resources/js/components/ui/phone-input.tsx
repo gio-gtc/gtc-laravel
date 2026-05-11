@@ -32,6 +32,7 @@ export type PhoneInputProps = {
     id: string;
     value: string;
     onChange: (e164: string) => void;
+    onValidChange?: (isValid: boolean) => void;
     defaultCountry?: CountryCode;
     disabled?: boolean;
     variant?: InputVariants;
@@ -81,6 +82,7 @@ const PhoneInput = React.forwardRef<PhoneInputHandle, PhoneInputProps>(
             id,
             value,
             onChange,
+            onValidChange,
             defaultCountry = 'US',
             disabled,
             variant,
@@ -101,6 +103,12 @@ const PhoneInput = React.forwardRef<PhoneInputHandle, PhoneInputProps>(
         React.useEffect(() => {
             setDisplayValue(e164ToDisplay(value));
         }, [value]);
+
+        React.useEffect(() => {
+            onValidChange?.(
+                tryParsePhoneE164(displayValue, defaultCountry) !== null,
+            );
+        }, [displayValue, defaultCountry, onValidChange]);
 
         React.useImperativeHandle(ref, () => ({
             getDisplayValue: () => displayValue,

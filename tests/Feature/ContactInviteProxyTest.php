@@ -68,11 +68,42 @@ it('maps contact already exists from API validation', function () {
             'last_name' => 'Lee',
             'email' => 'dupe@example.com',
             'organisation' => 'Org Ltd',
+            'phone_number' => '+15551234567',
         ]);
 
     $response->assertInvalid([
         'email' => 'A user with this email already exists.',
     ]);
+});
+
+it('rejects an empty phone_number with 422', function () {
+    $this->withSession(bffSessionForContactInvite())
+        ->from('/dashboard')
+        ->post('/contacts/invite', [
+            'first_name' => 'Pat',
+            'last_name' => 'Lee',
+            'email' => 'pat@example.com',
+            'organisation' => 'Org Ltd',
+            'phone_number' => '',
+        ])
+        ->assertInvalid(['phone_number']);
+
+    Http::assertNothingSent();
+});
+
+it('rejects a phone_number that is not E.164', function () {
+    $this->withSession(bffSessionForContactInvite())
+        ->from('/dashboard')
+        ->post('/contacts/invite', [
+            'first_name' => 'Pat',
+            'last_name' => 'Lee',
+            'email' => 'pat@example.com',
+            'organisation' => 'Org Ltd',
+            'phone_number' => '555',
+        ])
+        ->assertInvalid(['phone_number']);
+
+    Http::assertNothingSent();
 });
 
 it('redirects to login when not authenticated with BFF token', function () {

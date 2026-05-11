@@ -4,7 +4,10 @@ import type { UserInfoFormDefaults } from '@/components/modals/user-info-modal/u
 import { FieldLabel } from '@/components/ui/field-label';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { PhoneInput, type PhoneInputHandle } from '@/components/ui/phone-input';
+import {
+    PhoneNumberField,
+    type PhoneNumberFieldHandle,
+} from '@/components/ui/phone-number-field';
 import { Textarea } from '@/components/ui/textarea';
 import type { User } from '@/types';
 import { HelpCircle } from 'lucide-react';
@@ -35,9 +38,10 @@ interface UserInfoFormFieldsProps {
     photoUploadTitle: string;
     photoPreviewUrl: string | null;
     setPhotoPreviewUrl: Dispatch<SetStateAction<string | null>>;
-    phoneInputRef: RefObject<PhoneInputHandle | null>;
-    phoneE164: string;
-    setPhoneE164: Dispatch<SetStateAction<string>>;
+    phoneFieldRef: RefObject<PhoneNumberFieldHandle | null>;
+    phoneRawDefault?: string | null;
+    phoneSyncKey?: string | number;
+    onPhoneValidChange?: (isValid: boolean) => void;
     isProfileEdit: boolean;
     modeLabels: ModeLabelsSlice;
 }
@@ -50,9 +54,10 @@ export function UserInfoFormFields({
     photoUploadTitle,
     photoPreviewUrl,
     setPhotoPreviewUrl,
-    phoneInputRef,
-    phoneE164,
-    setPhoneE164,
+    phoneFieldRef,
+    phoneRawDefault,
+    phoneSyncKey,
+    onPhoneValidChange,
     isProfileEdit,
     modeLabels,
 }: UserInfoFormFieldsProps) {
@@ -148,13 +153,15 @@ export function UserInfoFormFields({
                             >
                                 Phone Number
                             </FieldLabel>
-                            <PhoneInput
-                                ref={phoneInputRef}
+                            <PhoneNumberField
+                                ref={phoneFieldRef}
                                 id="phone_number"
-                                value={phoneE164}
-                                onChange={setPhoneE164}
+                                rawDefault={phoneRawDefault}
+                                syncKey={phoneSyncKey}
                                 autoComplete="tel"
                                 aria-invalid={Boolean(errors.phone_number)}
+                                nativeRequired
+                                onValidChange={onPhoneValidChange}
                             />
                         </div>
 

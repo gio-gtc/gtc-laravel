@@ -19,7 +19,7 @@ class ContactInviteProxyController extends Controller
             'organisation' => 'required|string|max:255',
             'job_title' => 'nullable|string|max:255',
             'department' => 'nullable|string|max:255',
-            'phone_number' => 'nullable|string|max:50',
+            'phone_number' => ['required', 'string', 'regex:/^\+[1-9]\d{7,14}$/', 'max:50'],
             'about_me' => 'nullable|string|max:2000',
             'permissions_level' => 'nullable|string|max:255',
         ]);

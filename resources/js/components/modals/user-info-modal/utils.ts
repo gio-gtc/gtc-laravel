@@ -1,6 +1,5 @@
 import type { User } from '@/types';
 import type { FormDataConvertible } from '@inertiajs/core';
-import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 
 export type CreateContactPrefill = Partial<{
     first_name: string;
@@ -10,14 +9,6 @@ export type CreateContactPrefill = Partial<{
     job_title: string;
     phone_number: string;
 }>;
-
-export function phoneRawToE164(raw: string | undefined): string {
-    if (!raw) {
-        return '';
-    }
-    const parsed = parsePhoneNumberFromString(raw, 'US');
-    return parsed?.isValid() ? parsed.number : '';
-}
 
 export function splitName(fullName: string) {
     const normalized = fullName.trim().replace(/\s+/g, ' ');
@@ -105,7 +96,7 @@ export function firstContactValidationToastMessage(
 /** Merge submit `data` with E164 phone; create invite omits file `photo` from the payload. */
 export function buildUserInfoFormTransformPayload(
     data: Record<string, FormDataConvertible>,
-    options: { isCreateMode: boolean; phoneNumber: string },
+    options: { isCreateMode: boolean; phoneNumber: string | null },
 ): Record<string, FormDataConvertible> {
     const record = { ...data };
     if (options.isCreateMode) {

@@ -29,7 +29,7 @@ class ProfileController extends Controller
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
-            'phone_number' => ['nullable', 'string', 'max:50'],
+            'phone_number' => ['required', 'string', 'regex:/^\+[1-9]\d{7,14}$/', 'max:50'],
             'job_title' => ['nullable', 'string', 'max:255'],
             'organisation_id' => ['nullable', 'integer'],
             'department' => ['nullable', 'string', 'max:255'],
