@@ -18,7 +18,7 @@ export type UserInfoModalFormErrors = Partial<
     Record<
         | 'first_name'
         | 'last_name'
-        | 'organisation'
+        | 'organisation_id'
         | 'job_title'
         | 'email'
         | 'department'
@@ -93,11 +93,15 @@ export function UserInfoFormFields({
 
                     <div className="grid gap-4 md:grid-cols-2">
                         <UserInfoTextField
-                            id="organisation"
-                            name="organisation"
+                            id="organisation_id"
+                            name="organisation_id"
                             label="Organisation"
-                            defaultValue={defaults.organisation}
-                            error={errors.organisation}
+                            defaultValue={
+                                defaults.organisation_id
+                                    ? String(defaults.organisation_id)
+                                    : ''
+                            }
+                            error={errors.organisation_id}
                             required
                             placeholder="Organisation"
                         />

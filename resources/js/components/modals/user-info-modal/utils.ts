@@ -36,7 +36,7 @@ export type UserInfoFormDefaults = {
     first_name: string;
     last_name: string;
     email: string;
-    organisation: string;
+    organisation_id: number | null;
     job_title: string;
     department: string;
     phone_number: string;
@@ -57,7 +57,7 @@ export function buildUserInfoFormDefaults(
             first_name: '',
             last_name: '',
             email: '',
-            organisation: '',
+            organisation_id: null,
             job_title: '',
             department: '',
             phone_number: '',
@@ -76,7 +76,7 @@ export function buildUserInfoFormDefaults(
         first_name: user.first_name ?? fallback.first,
         last_name: user.last_name ?? fallback.last,
         email: user.email ?? '',
-        organisation: user.organisation ?? '',
+        organisation_id: user.organisation_id ?? '',
         job_title: user.job_title ?? '',
         department: user.department ?? '',
         phone_number: user.phone_number ?? '',

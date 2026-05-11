@@ -1,6 +1,3 @@
-import { InertiaLinkProps } from '@inertiajs/react';
-import { LucideIcon } from 'lucide-react';
-import type { KeyboardEvent } from 'react';
 import type {
     AllAudioCuts,
     AllBroadcastCuts,
@@ -11,6 +8,9 @@ import type {
     VenueItemArtPackageType,
     VenueItemSocialCardHolder,
 } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
+import { InertiaLinkProps } from '@inertiajs/react';
+import { LucideIcon } from 'lucide-react';
+import type { KeyboardEvent } from 'react';
 
 export interface VenueTableCellEditing {
     onCellChange: (
@@ -80,7 +80,6 @@ export interface User {
     two_factor_enabled?: boolean;
     first_name?: string | null;
     last_name?: string | null;
-    organisation?: string | null;
     job_title?: string | null;
     department?: string | null;
     phone_number?: string | null;
