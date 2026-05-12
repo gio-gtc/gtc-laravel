@@ -60,6 +60,24 @@ class BffLoginController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard');
+        return redirect($this->landingRouteFor($data['roles'] ?? []));
+    }
+
+    /**
+     * Pick the post-login landing URL based on the API-supplied roles.
+     *
+     * @param  array<int, string>  $roles
+     */
+    private function landingRouteFor(array $roles): string
+    {
+        if (in_array('Super Admin', $roles, true)) {
+            return route('dashboard');
+        }
+
+        if (in_array('Client', $roles, true)) {
+            return route('orders');
+        }
+
+        return route('orders', ['filter' => 'my-tasks']);
     }
 }

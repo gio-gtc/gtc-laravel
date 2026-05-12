@@ -39,6 +39,9 @@ export interface VenueTableCellEditing {
 
 export interface Auth {
     user: User;
+    roles: string[];
+    permissions: string[];
+    token: string | null;
 }
 
 export interface BreadcrumbItem {
