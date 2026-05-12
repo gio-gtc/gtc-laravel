@@ -55,7 +55,7 @@ export function UserInfoOutOfOfficeFields({
     ]);
 
     return (
-        <div className="space-y-3">
+        <div className="mb-0 space-y-3">
             <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <input

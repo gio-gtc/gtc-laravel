@@ -1,6 +1,7 @@
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import { UserInfoFormFields } from '@/components/modals/user-info-modal/form-fields';
 import { UserInfoOutOfOfficeFields } from '@/components/modals/user-info-modal/out-of-office-fields';
+import { UserInfoPasswordChangeFields } from '@/components/modals/user-info-modal/password-change-fields';
 import {
     buildUserInfoFormDefaults,
     buildUserInfoFormTransformPayload,
@@ -259,24 +260,29 @@ export default function UserInfoModal({
                             />
 
                             {isProfileEdit && (
-                                <UserInfoOutOfOfficeFields
-                                    isOpen={isOpen}
-                                    syncKey={userSyncKey}
-                                    initial={{
-                                        out_of_office: defaults.out_of_office,
-                                        out_of_office_start_date:
-                                            defaults.out_of_office_start_date,
-                                        out_of_office_end_date:
-                                            defaults.out_of_office_end_date,
-                                    }}
-                                    errors={{
-                                        out_of_office: errors.out_of_office,
-                                        out_of_office_start_date:
-                                            errors.out_of_office_start_date,
-                                        out_of_office_end_date:
-                                            errors.out_of_office_end_date,
-                                    }}
-                                />
+                                <>
+                                    <UserInfoOutOfOfficeFields
+                                        isOpen={isOpen}
+                                        syncKey={userSyncKey}
+                                        initial={{
+                                            out_of_office:
+                                                defaults.out_of_office,
+                                            out_of_office_start_date:
+                                                defaults.out_of_office_start_date,
+                                            out_of_office_end_date:
+                                                defaults.out_of_office_end_date,
+                                        }}
+                                        errors={{
+                                            out_of_office:
+                                                errors.out_of_office,
+                                            out_of_office_start_date:
+                                                errors.out_of_office_start_date,
+                                            out_of_office_end_date:
+                                                errors.out_of_office_end_date,
+                                        }}
+                                    />
+                                    <UserInfoPasswordChangeFields />
+                                </>
                             )}
 
                             <Divider />
