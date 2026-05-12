@@ -6,7 +6,14 @@ it('proxies profile update to the API and redirects back on success', function (
     $apiUrl = config('services.api.base_url').'/api/profile';
 
     Http::fake([
-        $apiUrl => Http::response(['message' => 'Profile updated.'], 200),
+        $apiUrl => Http::response([
+            'message' => 'Profile updated.',
+            'user' => [
+                'id' => 1,
+                'email' => 'jane@example.com',
+                'pending_email' => null,
+            ],
+        ], 200),
     ]);
 
     $response = $this->actingAsBff()
@@ -36,6 +43,49 @@ it('proxies profile update to the API and redirects back on success', function (
             && $request['organisation_id'] === 42
             && $request['department'] === 'Engineering';
     });
+});
+
+it('flashes the API pending-email message and stores pending_email when the email changes', function () {
+    $apiUrl = config('services.api.base_url').'/api/profile';
+    $pendingMessage = 'Profile updated. Please check your new inbox to verify your updated email address.';
+
+    Http::fake([
+        $apiUrl => Http::response([
+            'message' => $pendingMessage,
+            'user' => [
+                'id' => 1,
+                'email' => 'jane@example.com',
+                'pending_email' => 'jane+new@example.com',
+            ],
+        ], 200),
+    ]);
+
+    $response = $this->actingAsBff()
+        ->from('/settings/profile')
+        ->put('/settings/profile', [
+            'first_name' => 'Jane',
+            'last_name' => 'Doe',
+            'email' => 'jane+new@example.com',
+            'phone_number' => '+15551234567',
+            'job_title' => 'Engineer',
+            'organisation_id' => 42,
+            'department' => 'Engineering',
+        ]);
+
+    $response->assertRedirect('/settings/profile');
+    $response->assertSessionHas('success', $pendingMessage);
+
+    $sessionUser = session('user');
+    expect($sessionUser)->toBeArray();
+    expect($sessionUser['pending_email'])->toBe('jane+new@example.com');
+});
+
+it('redirects to the dashboard with a success flash when email_verified=true', function () {
+    $response = $this->actingAsBff()
+        ->get('/settings/profile?email_verified=true');
+
+    $response->assertRedirect(route('dashboard'));
+    $response->assertSessionHas('success', 'Your email has been successfully updated!');
 });
 
 it('maps API 422 validation errors back to the form', function () {

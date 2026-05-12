@@ -9,8 +9,13 @@ import {
     type PhoneNumberFieldHandle,
 } from '@/components/ui/phone-number-field';
 import { Textarea } from '@/components/ui/textarea';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import type { User } from '@/types';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, MailCheck } from 'lucide-react';
 import type { Dispatch, RefObject, SetStateAction } from 'react';
 
 type ModeLabelsSlice = {
@@ -132,6 +137,24 @@ export function UserInfoFormFields({
                             required
                             autoComplete="email"
                             placeholder="Email"
+                            labelSuffix={
+                                user.pending_email ? (
+                                    <Tooltip>
+                                        <TooltipTrigger
+                                            type="button"
+                                            aria-label={`Pending verification: ${user.pending_email}`}
+                                            data-test="pending-email-notice"
+                                            className="inline-flex cursor-help rounded-sm text-amber-500 transition-colors hover:text-amber-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-1"
+                                        >
+                                            <MailCheck className="size-3.5" />
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            Pending verification:{' '}
+                                            {user.pending_email}
+                                        </TooltipContent>
+                                    </Tooltip>
+                                ) : null
+                            }
                         />
                         <UserInfoTextField
                             id="department"

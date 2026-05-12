@@ -14,9 +14,19 @@ class ProfileController extends Controller
 {
     /**
      * Show the user's profile settings page.
+     *
+     * When the API redirects back with ?email_verified=true after the user
+     * confirms a new email, translate that into a flash + dashboard redirect
+     * so the toast surfaces on a page that actually exists in React.
      */
-    public function edit(Request $request): Response
+    public function edit(Request $request): Response|RedirectResponse
     {
+        if ($request->boolean('email_verified')) {
+            return redirect()
+                ->route('dashboard')
+                ->with('success', 'Your email has been successfully updated!');
+        }
+
         return Inertia::render('settings/profile');
     }
 
@@ -48,7 +58,12 @@ class ProfileController extends Controller
                 $request->session()->put('user', $user);
             }
 
-            return back()->with('success', 'Profile updated.');
+            $apiMessage = $response->json('message');
+
+            return back()->with(
+                'success',
+                is_string($apiMessage) && $apiMessage !== '' ? $apiMessage : 'Profile updated.',
+            );
         }
 
         if ($response->status() === 422) {

@@ -171,14 +171,20 @@ export default function UserInfoModal({
             return;
         }
 
-        // Edit mode: the BFF redirects back with a flash message.
-        // Surface either the API error message or the success confirmation.
+        // Edit mode: the BFF redirects back with a flash message. The global
+        // app-layout listener already surfaces flash toasts; we reuse the same
+        // toastIds here so we don't double-toast, and only fall back to a
+        // generic confirmation when no flash message was carried over.
         const latestFlash = flashRef.current;
         if (latestFlash?.error) {
-            toast.error(latestFlash.error);
+            toast.error(latestFlash.error, { toastId: 'flash-error' });
             return;
         }
-        toast.success(latestFlash?.success ?? 'Profile updated.');
+        if (latestFlash?.success) {
+            toast.success(latestFlash.success, { toastId: 'flash-success' });
+        } else {
+            toast.success('Profile updated.');
+        }
         onClose();
     }, [isCreateMode, onClose]);
 
