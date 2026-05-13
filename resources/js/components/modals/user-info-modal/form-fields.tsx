@@ -144,7 +144,7 @@ export function UserInfoFormFields({
                                             type="button"
                                             aria-label={`Pending verification: ${user.pending_email}`}
                                             data-test="pending-email-notice"
-                                            className="inline-flex cursor-help rounded-sm text-amber-500 transition-colors hover:text-amber-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-1"
+                                            className="inline-flex cursor-help rounded-sm text-amber-500 transition-colors hover:text-amber-600 focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-1 focus-visible:outline-none"
                                         >
                                             <MailCheck className="size-3.5" />
                                         </TooltipTrigger>
@@ -191,7 +191,7 @@ export function UserInfoFormFields({
                         <div className="grid gap-2">
                             <div className="flex items-center gap-2">
                                 <Label
-                                    htmlFor="permissions_level"
+                                    htmlFor="role"
                                     className="text-xs font-medium text-gray-400"
                                 >
                                     Permissions Level
@@ -199,9 +199,9 @@ export function UserInfoFormFields({
                                 <HelpCircle className="size-3 text-gray-400" />
                             </div>
                             <Input
-                                id="permissions_level"
-                                name="permissions_level"
-                                defaultValue={defaults.permissions_level}
+                                id="role"
+                                name="role"
+                                defaultValue={defaults.role}
                                 disabled={isProfileEdit}
                                 readOnly={isProfileEdit}
                                 placeholder={modeLabels.permissionsPlaceholder}

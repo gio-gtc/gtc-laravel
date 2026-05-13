@@ -35,7 +35,7 @@ it('proxies contact invite to the API and redirects back on success', function (
             'department' => 'Ops',
             'phone_number' => '+15551234567',
             'about_me' => 'Hi',
-            'permissions_level' => 'standard',
+            'role' => 'Admin',
         ]);
 
     $response->assertRedirect('/dashboard');

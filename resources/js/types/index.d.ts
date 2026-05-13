@@ -91,7 +91,7 @@ export interface User {
     out_of_office?: boolean;
     out_of_office_start_date?: string | null;
     out_of_office_end_date?: string | null;
-    permissions_level?: string | null;
+    role?: string | null;
     profile_photo_path?: string | null;
     organisation_id: number;
     created_at: string;

@@ -30,7 +30,7 @@ test('users can authenticate using the login screen', function () {
                 'name' => 'Test User',
                 'email' => 'test@example.com',
             ],
-            'roles' => [],
+            'roles' => ['Super Admin'],
             'permissions' => [],
         ], 200),
     ]);

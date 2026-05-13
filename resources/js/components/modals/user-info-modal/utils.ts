@@ -35,7 +35,7 @@ export type UserInfoFormDefaults = {
     out_of_office: boolean;
     out_of_office_start_date: string;
     out_of_office_end_date: string;
-    permissions_level: string;
+    role: string;
 };
 
 export function buildUserInfoFormDefaults(
@@ -56,7 +56,7 @@ export function buildUserInfoFormDefaults(
             out_of_office: false,
             out_of_office_start_date: '',
             out_of_office_end_date: '',
-            permissions_level: '',
+            role: '',
             ...(createPrefill ?? {}),
         };
     }
@@ -75,7 +75,7 @@ export function buildUserInfoFormDefaults(
         out_of_office: Boolean(user.out_of_office),
         out_of_office_start_date: user.out_of_office_start_date ?? '',
         out_of_office_end_date: user.out_of_office_end_date ?? '',
-        permissions_level: user.permissions_level ?? 'Admin',
+        role: user.role,
     };
 }
 

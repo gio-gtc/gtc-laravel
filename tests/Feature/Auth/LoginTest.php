@@ -27,7 +27,7 @@ it('proxies login credentials to the API and stores the session token', function
         config('services.api.base_url').'/api/login' => Http::response([
             'access_token' => 'fake-sanctum-token-123',
             'user' => ['id' => 1, 'name' => 'Test User'],
-            'roles' => [],
+            'roles' => ['Super Admin'],
             'permissions' => [],
         ], 200),
     ]);
@@ -43,6 +43,42 @@ it('proxies login credentials to the API and stores the session token', function
 
     // Assert the BFF saved the token to the local session (adjust 'api_token' to match your actual session key)
     $response->assertSessionHas('api_token', 'fake-sanctum-token-123');
+});
+
+it('redirects Clients to the orders index after login', function () {
+    Http::fake([
+        config('services.api.base_url').'/api/login' => Http::response([
+            'access_token' => 'fake-sanctum-token-123',
+            'user' => ['id' => 2, 'name' => 'Client User'],
+            'roles' => ['Client'],
+            'permissions' => [],
+        ], 200),
+    ]);
+
+    $response = $this->post('/login', [
+        'email' => 'client@example.com',
+        'password' => 'password',
+    ]);
+
+    $response->assertRedirect(route('orders', absolute: false));
+});
+
+it('redirects users without a privileged role to the my-tasks order filter', function () {
+    Http::fake([
+        config('services.api.base_url').'/api/login' => Http::response([
+            'access_token' => 'fake-sanctum-token-123',
+            'user' => ['id' => 3, 'name' => 'Staff User'],
+            'roles' => ['Operator'],
+            'permissions' => [],
+        ], 200),
+    ]);
+
+    $response = $this->post('/login', [
+        'email' => 'staff@example.com',
+        'password' => 'password',
+    ]);
+
+    $response->assertRedirect(route('orders', ['filter' => 'my-tasks'], absolute: false));
 });
 
 // --- TEST 2: The Validation Failure ---
