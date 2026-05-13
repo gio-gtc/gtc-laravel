@@ -135,6 +135,13 @@ export default function UserInfoModal({
     const validityProbeRef = useRef<HTMLInputElement>(null);
     const [phoneValid, setPhoneValid] = useState(false);
     const [formValid, setFormValid] = useState(false);
+    const [createRoleFilled, setCreateRoleFilled] = useState(false);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setCreateRoleFilled(false);
+        }
+    }, [isOpen]);
 
     useLayoutEffect(() => {
         if (!isOpen) {
@@ -142,17 +149,12 @@ export default function UserInfoModal({
         }
         // `input.form` reaches the parent <form>; checkValidity() reflects HTML5
         // required state across every named field rendered inside it.
-        setFormValid(
-            validityProbeRef.current?.form?.checkValidity() ?? false,
-        );
+        setFormValid(validityProbeRef.current?.form?.checkValidity() ?? false);
     }, [isOpen, userSyncKey, phoneValid]);
 
-    const handleFormInput = useCallback(
-        (event: FormEvent<HTMLFormElement>) => {
-            setFormValid(event.currentTarget.checkValidity());
-        },
-        [],
-    );
+    const handleFormInput = useCallback((event: FormEvent<HTMLFormElement>) => {
+        setFormValid(event.currentTarget.checkValidity());
+    }, []);
 
     const transformFormData = useCallback(
         (data: Record<string, FormDataConvertible>) => {
@@ -166,25 +168,17 @@ export default function UserInfoModal({
     );
 
     const handleFormSuccess = useCallback(() => {
-        if (isCreateMode) {
-            toast.success('Invitation email sent.');
-            onClose();
-            return;
-        }
-
-        // Edit mode: the BFF redirects back with a flash message. The global
-        // app-layout listener already surfaces flash toasts; we reuse the same
-        // toastIds here so we don't double-toast, and only fall back to a
-        // generic confirmation when no flash message was carried over.
         const latestFlash = flashRef.current;
-        if (latestFlash?.error) {
-            toast.error(latestFlash.error, { toastId: 'flash-error' });
-            return;
-        }
-        if (latestFlash?.success) {
-            toast.success(latestFlash.success, { toastId: 'flash-success' });
-        } else {
-            toast.success('Profile updated.');
+        if (latestFlash?.success || latestFlash?.error) {
+            if (latestFlash.success) {
+                toast.success(latestFlash.success, {
+                    toastId: 'user-modal-flash-success',
+                });
+            } else if (latestFlash.error) {
+                toast.error(latestFlash.error, {
+                    toastId: 'user-modal-flash-error',
+                });
+            }
         }
         onClose();
     }, [isCreateMode, onClose]);
@@ -255,6 +249,11 @@ export default function UserInfoModal({
                                 phoneRawDefault={defaults.phone_number}
                                 phoneSyncKey={phoneSyncKey}
                                 onPhoneValidChange={setPhoneValid}
+                                onCreateRoleFilledChange={
+                                    isCreateMode
+                                        ? setCreateRoleFilled
+                                        : undefined
+                                }
                                 isProfileEdit={isProfileEdit}
                                 modeLabels={modeLabels}
                             />
@@ -273,8 +272,7 @@ export default function UserInfoModal({
                                                 defaults.out_of_office_end_date,
                                         }}
                                         errors={{
-                                            out_of_office:
-                                                errors.out_of_office,
+                                            out_of_office: errors.out_of_office,
                                             out_of_office_start_date:
                                                 errors.out_of_office_start_date,
                                             out_of_office_end_date:
@@ -298,7 +296,10 @@ export default function UserInfoModal({
                                 <Button
                                     type="submit"
                                     disabled={
-                                        processing || !formValid || !phoneValid
+                                        processing ||
+                                        !formValid ||
+                                        !phoneValid ||
+                                        (isCreateMode && !createRoleFilled)
                                     }
                                 >
                                     {modeLabels.submitLabel}

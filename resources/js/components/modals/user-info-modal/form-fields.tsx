@@ -1,3 +1,4 @@
+import InputError from '@/components/input-error';
 import { UserInfoPhotoSection } from '@/components/modals/user-info-modal/photo-section';
 import { UserInfoTextField } from '@/components/modals/user-info-modal/text-field';
 import type { UserInfoFormDefaults } from '@/components/modals/user-info-modal/utils';
@@ -8,15 +9,30 @@ import {
     PhoneNumberField,
     type PhoneNumberFieldHandle,
 } from '@/components/ui/phone-number-field';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
     Tooltip,
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import type { User } from '@/types';
+import type { SharedData, User } from '@/types';
+import { usePage } from '@inertiajs/react';
 import { HelpCircle, MailCheck } from 'lucide-react';
-import type { Dispatch, RefObject, SetStateAction } from 'react';
+import {
+    useEffect,
+    useRef,
+    useState,
+    type Dispatch,
+    type RefObject,
+    type SetStateAction,
+} from 'react';
 
 type ModeLabelsSlice = {
     permissionsPlaceholder: string | undefined;
@@ -30,7 +46,8 @@ export type UserInfoModalFormErrors = Partial<
         | 'job_title'
         | 'email'
         | 'department'
-        | 'phone_number',
+        | 'phone_number'
+        | 'role',
         string
     >
 >;
@@ -47,6 +64,8 @@ interface UserInfoFormFieldsProps {
     phoneRawDefault?: string | null;
     phoneSyncKey?: string | number;
     onPhoneValidChange?: (isValid: boolean) => void;
+    /** Create mode only: notified when user has chosen a non-empty role. */
+    onCreateRoleFilledChange?: (filled: boolean) => void;
     isProfileEdit: boolean;
     modeLabels: ModeLabelsSlice;
 }
@@ -63,9 +82,28 @@ export function UserInfoFormFields({
     phoneRawDefault,
     phoneSyncKey,
     onPhoneValidChange,
+    onCreateRoleFilledChange,
     isProfileEdit,
     modeLabels,
 }: UserInfoFormFieldsProps) {
+    const { availableRoles = [] } = usePage<SharedData>().props;
+    const [selectedRole, setSelectedRole] = useState<string>('');
+    const roleAnchorRef = useRef<HTMLDivElement>(null);
+
+    const editRoleDisplay =
+        user.roles?.[0] ?? defaults.role ?? 'No Role Assigned';
+
+    useEffect(() => {
+        if (isProfileEdit) return;
+        onCreateRoleFilledChange?.(selectedRole !== '');
+    }, [isProfileEdit, selectedRole, onCreateRoleFilledChange]);
+
+    const handleRoleChange = (value: string) => {
+        setSelectedRole(value);
+        const form = roleAnchorRef.current?.closest('form');
+        form?.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+
     return (
         <>
             <div className="grid gap-2">
@@ -189,23 +227,85 @@ export function UserInfoFormFields({
                         </div>
 
                         <div className="grid gap-2">
-                            <div className="flex items-center gap-2">
-                                <Label
-                                    htmlFor="role"
-                                    className="text-xs font-medium text-gray-400"
-                                >
-                                    Permissions Level
-                                </Label>
+                            <div className="flex items-center gap-0.5">
+                                {isProfileEdit ? (
+                                    <Label
+                                        htmlFor="role"
+                                        className="text-xs font-medium text-gray-400"
+                                    >
+                                        Permissions Level
+                                    </Label>
+                                ) : (
+                                    <FieldLabel
+                                        htmlFor="role"
+                                        className="xs-gray-700-weight-500"
+                                        required
+                                    >
+                                        Permissions Level
+                                    </FieldLabel>
+                                )}
                                 <HelpCircle className="size-3 text-gray-400" />
                             </div>
-                            <Input
-                                id="role"
-                                name="role"
-                                defaultValue={defaults.role}
-                                disabled={isProfileEdit}
-                                readOnly={isProfileEdit}
-                                placeholder={modeLabels.permissionsPlaceholder}
-                            />
+                            {isProfileEdit ? (
+                                <Input
+                                    id="role"
+                                    value={editRoleDisplay}
+                                    disabled
+                                    readOnly
+                                    placeholder={
+                                        modeLabels.permissionsPlaceholder
+                                    }
+                                />
+                            ) : (
+                                <>
+                                    <div ref={roleAnchorRef}>
+                                        {/* Role: Radix name= sync can submit first option while UI shows placeholder; use hidden input bound to state. */}
+                                        <input
+                                            type="hidden"
+                                            name="role"
+                                            value={selectedRole}
+                                            onChange={() => {}}
+                                        />
+                                        <Select
+                                            value={
+                                                selectedRole === ''
+                                                    ? undefined
+                                                    : selectedRole
+                                            }
+                                            onValueChange={handleRoleChange}
+                                        >
+                                            <SelectTrigger
+                                                id="role"
+                                                aria-invalid={Boolean(
+                                                    errors.role,
+                                                )}
+                                                aria-required
+                                                data-test="role-select-trigger"
+                                            >
+                                                <SelectValue
+                                                    placeholder={
+                                                        modeLabels.permissionsPlaceholder ??
+                                                        'Select a Role...'
+                                                    }
+                                                />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {availableRoles.map(
+                                                    (roleName) => (
+                                                        <SelectItem
+                                                            key={roleName}
+                                                            value={roleName}
+                                                        >
+                                                            {roleName}
+                                                        </SelectItem>
+                                                    ),
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <InputError message={errors.role} />
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

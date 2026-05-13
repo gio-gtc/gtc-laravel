@@ -30,7 +30,7 @@ it('proxies contact invite to the API and redirects back on success', function (
             'first_name' => 'Pat',
             'last_name' => 'Lee',
             'email' => 'pat@example.com',
-            'organisation' => 'Org Ltd',
+            'organisation_id' => 1,
             'job_title' => 'PM',
             'department' => 'Ops',
             'phone_number' => '+15551234567',
@@ -44,8 +44,24 @@ it('proxies contact invite to the API and redirects back on success', function (
     Http::assertSent(function ($request) use ($apiUrl) {
         return $request->url() === $apiUrl
             && $request->hasHeader('Authorization', 'Bearer test-bff-token')
-            && $request['email'] === 'pat@example.com';
+            && $request['email'] === 'pat@example.com'
+            && $request['organisation_id'] === 1
+            && $request['role'] === 'Admin';
     });
+});
+
+it('requires role and organisation_id when inviting a contact', function () {
+    $this->withSession(bffSessionForContactInvite())
+        ->from('/dashboard')
+        ->post('/contacts/invite', [
+            'first_name' => 'Pat',
+            'last_name' => 'Lee',
+            'email' => 'pat@example.com',
+            'phone_number' => '+15551234567',
+        ])
+        ->assertInvalid(['organisation_id', 'role']);
+
+    Http::assertNothingSent();
 });
 
 it('maps contact already exists from API validation', function () {
@@ -67,8 +83,9 @@ it('maps contact already exists from API validation', function () {
             'first_name' => 'Pat',
             'last_name' => 'Lee',
             'email' => 'dupe@example.com',
-            'organisation' => 'Org Ltd',
+            'organisation_id' => 1,
             'phone_number' => '+15551234567',
+            'role' => 'Admin',
         ]);
 
     $response->assertInvalid([
@@ -83,8 +100,9 @@ it('rejects an empty phone_number with 422', function () {
             'first_name' => 'Pat',
             'last_name' => 'Lee',
             'email' => 'pat@example.com',
-            'organisation' => 'Org Ltd',
+            'organisation_id' => 1,
             'phone_number' => '',
+            'role' => 'Admin',
         ])
         ->assertInvalid(['phone_number']);
 
@@ -98,8 +116,9 @@ it('rejects a phone_number that is not E.164', function () {
             'first_name' => 'Pat',
             'last_name' => 'Lee',
             'email' => 'pat@example.com',
-            'organisation' => 'Org Ltd',
+            'organisation_id' => 1,
             'phone_number' => '555',
+            'role' => 'Admin',
         ])
         ->assertInvalid(['phone_number']);
 
@@ -111,6 +130,7 @@ it('redirects to login when not authenticated with BFF token', function () {
         'first_name' => 'A',
         'last_name' => 'B',
         'email' => 'a@b.test',
-        'organisation' => 'C',
+        'organisation_id' => 1,
+        'role' => 'Admin',
     ])->assertRedirect('/login');
 });

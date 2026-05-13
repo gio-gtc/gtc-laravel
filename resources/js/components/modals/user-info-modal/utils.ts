@@ -10,19 +10,6 @@ export type CreateContactPrefill = Partial<{
     phone_number: string;
 }>;
 
-export function splitName(fullName: string) {
-    const normalized = fullName.trim().replace(/\s+/g, ' ');
-    if (!normalized) return { first: '', last: '' };
-
-    const parts = normalized.split(' ');
-    if (parts.length === 1) return { first: parts[0], last: '' };
-
-    return {
-        first: parts[0],
-        last: parts.slice(1).join(' '),
-    };
-}
-
 export type UserInfoFormDefaults = {
     first_name: string;
     last_name: string;
@@ -61,11 +48,9 @@ export function buildUserInfoFormDefaults(
         };
     }
 
-    const fallback = splitName(user.name ?? '');
-
     return {
-        first_name: user.first_name ?? fallback.first,
-        last_name: user.last_name ?? fallback.last,
+        first_name: user.first_name ?? '',
+        last_name: user.last_name ?? '',
         email: user.email ?? '',
         organisation_id: user.organisation_id ?? '',
         job_title: user.job_title ?? '',
@@ -75,7 +60,7 @@ export function buildUserInfoFormDefaults(
         out_of_office: Boolean(user.out_of_office),
         out_of_office_start_date: user.out_of_office_start_date ?? '',
         out_of_office_end_date: user.out_of_office_end_date ?? '',
-        role: user.role,
+        role: user.roles?.[0] ?? user.role ?? '',
     };
 }
 
@@ -93,7 +78,6 @@ export function firstContactValidationToastMessage(
     return undefined;
 }
 
-/** Merge submit `data` with E164 phone; create invite omits file `photo` from the payload. */
 export function buildUserInfoFormTransformPayload(
     data: Record<string, FormDataConvertible>,
     options: { isCreateMode: boolean; phoneNumber: string | null },
@@ -101,6 +85,8 @@ export function buildUserInfoFormTransformPayload(
     const record = { ...data };
     if (options.isCreateMode) {
         delete record.photo;
+    } else {
+        delete record.role;
     }
     return { ...record, phone_number: options.phoneNumber };
 }

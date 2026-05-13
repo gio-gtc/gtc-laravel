@@ -2,10 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
 use App\Support\DemoCatalog;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -38,13 +39,7 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $users = $request->user()
-            ? User::query()
-                ->get()
-                ->map(fn (User $user) => array_merge($user->toArray(), ['organisation_id' => 0]))
-                ->values()
-                ->all()
-            : [];
+        $users = [];
 
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
@@ -74,6 +69,31 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
+            'availableRoles' => function () use ($request, $bffAuthenticated) {
+                if (! $bffAuthenticated) {
+                    return [];
+                }
+
+                return Cache::remember(
+                    'bff:available-roles',
+                    now()->addMinutes(5),
+                    function () use ($request) {
+                        $res = Http::withToken($request->session()->get('api_token'))
+                            ->acceptJson()
+                            ->get(config('services.api.base_url').'/api/roles');
+
+                        if (! $res->successful()) {
+                            return [];
+                        }
+
+                        $roles = $res->json('roles');
+
+                        return is_array($roles)
+                            ? array_values(array_filter($roles, 'is_string'))
+                            : [];
+                    },
+                );
+            },
         ]);
     }
 

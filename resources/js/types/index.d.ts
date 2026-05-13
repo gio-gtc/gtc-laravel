@@ -70,6 +70,8 @@ export interface SharedData {
     users?: User[];
     /** Demo catalog users from config (merged with DB users in useUsersWithFallback). */
     demoUsers?: User[];
+    /** Spatie role names shared globally for the create-contact dropdown (cached BFF-side). */
+    availableRoles?: string[];
     sidebarOpen: boolean;
     [key: string]: unknown;
 }
@@ -92,6 +94,7 @@ export interface User {
     out_of_office_start_date?: string | null;
     out_of_office_end_date?: string | null;
     role?: string | null;
+    roles?: string[] | null;
     profile_photo_path?: string | null;
     organisation_id: number;
     created_at: string;

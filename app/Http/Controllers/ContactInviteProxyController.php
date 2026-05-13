@@ -16,12 +16,12 @@ class ContactInviteProxyController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'organisation' => 'required|string|max:255',
+            'organisation_id' => 'required|integer',
             'job_title' => 'nullable|string|max:255',
             'department' => 'nullable|string|max:255',
             'phone_number' => ['required', 'string', 'regex:/^\+[1-9]\d{7,14}$/', 'max:50'],
             'about_me' => 'nullable|string|max:2000',
-            'role' => 'nullable|string|max:255',
+            'role' => 'required|string|max:255',
         ]);
 
         $response = Http::withToken($request->session()->get('api_token'))
