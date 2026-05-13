@@ -90,8 +90,7 @@ export function UserInfoFormFields({
     const [selectedRole, setSelectedRole] = useState<string>('');
     const roleAnchorRef = useRef<HTMLDivElement>(null);
 
-    const editRoleDisplay =
-        user.roles?.[0] ?? defaults.role ?? 'No Role Assigned';
+    const editRoleDisplay = user.role;
 
     useEffect(() => {
         if (isProfileEdit) return;

@@ -17,7 +17,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { type PhoneNumberFieldHandle } from '@/components/ui/phone-number-field';
-import { type SharedData, type User } from '@/types';
+import { type SharedData } from '@/types';
 import type { FormDataConvertible } from '@inertiajs/core';
 import { Form, usePage } from '@inertiajs/react';
 import {
@@ -72,7 +72,6 @@ const INVITE_FORM = {
 interface UserInfoModalProps {
     isOpen: boolean;
     onClose: () => void;
-    user?: User;
     mode?: UserInfoModalMode;
     title?: string;
     createPrefill?: CreateContactPrefill | null;
@@ -81,7 +80,6 @@ interface UserInfoModalProps {
 export default function UserInfoModal({
     isOpen,
     onClose,
-    user: providedUser,
     mode = 'edit',
     title: providedTitle,
     createPrefill = null,
@@ -94,8 +92,7 @@ export default function UserInfoModal({
     }, [flash]);
 
     const editFormProps = ProfileController.update.form();
-
-    const user = providedUser ?? auth.user;
+    const user = { ...auth.user, role: auth.roles[0] };
     const isCreateMode = mode === 'create';
     const isProfileEdit = mode === 'edit';
     const modeLabels = MODE_LABELS[mode];
