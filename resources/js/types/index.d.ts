@@ -70,8 +70,13 @@ export interface SharedData {
     users?: User[];
     /** Demo catalog users from config (merged with DB users in useUsersWithFallback). */
     demoUsers?: User[];
-    /** Spatie role names shared globally for the create-contact dropdown (cached BFF-side). */
-    availableRoles?: string[];
+    /** Cached reference dropdown data + selectable role names (gtc-api, BFF). */
+    ApiReferenceData: {
+        org_types: OrganisationType[];
+        countries: Country[];
+        currency_codes: string[];
+        roles: string[];
+    };
     sidebarOpen: boolean;
     [key: string]: unknown;
 }

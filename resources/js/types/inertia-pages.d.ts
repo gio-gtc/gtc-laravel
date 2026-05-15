@@ -1,9 +1,10 @@
 import type {
-    Organisation,
     Country,
     Invoice,
     InvoiceItem,
     Order,
+    Organisation,
+    SharedData,
     Tour,
     TourVenue,
     TourVenueStatusRow,
@@ -16,6 +17,23 @@ import type {
     VenueItemStatus,
     VenueItemsRow,
 } from './index';
+
+export type SharedProps = SharedData;
+
+export interface Country {
+    id: number;
+    name: string;
+    currency_code: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
+export interface OrganisationType {
+    id: number;
+    name: string;
+    created_at?: string;
+    updated_at?: string;
+}
 
 export type SalesChartPoint = { name: string; value: number };
 

@@ -86,7 +86,9 @@ export function UserInfoFormFields({
     isProfileEdit,
     modeLabels,
 }: UserInfoFormFieldsProps) {
-    const { availableRoles = [] } = usePage<SharedData>().props;
+    const {
+        ApiReferenceData: { roles: roleSelectOptions = [] },
+    } = usePage<SharedData>().props;
     const [selectedRole, setSelectedRole] = useState<string>('');
     const roleAnchorRef = useRef<HTMLDivElement>(null);
 
@@ -289,7 +291,7 @@ export function UserInfoFormFields({
                                                 />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {availableRoles.map(
+                                                {roleSelectOptions.map(
                                                     (roleName) => (
                                                         <SelectItem
                                                             key={roleName}

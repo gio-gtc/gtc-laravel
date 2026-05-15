@@ -12,6 +12,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DemoController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\VenueFormController;
 use App\Http\Middleware\BffAuth;
@@ -61,18 +62,18 @@ Route::middleware([BffAuth::class])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
     Route::get('orders', OrdersController::class)->name('orders');
     Route::get('invoices', InvoicesController::class)->name('invoices');
-
-    // NOTE ON VENUES: We changed {venue:mock_venue_id} to {venueId}.
-    // Route Model Binding requires a database to auto-fetch the record.
-    // Since the database is gone, we just pass the ID string to the controller instead.
     Route::get('/venue-forms/{venueId}/schema', [VenueFormController::class, 'show'])->name('venue.form.show');
     Route::post('/venue-forms/{venueId}', [VenueFormController::class, 'store'])->name('venue.form.store');
-
     Route::post('/uploads', [UploadController::class, 'store'])->name('uploads.store');
 
+
+    // VVV New gtc-api proxy routes
+    Route::post('/organisations', [OrganisationController::class, 'store'])
+        ->name('organisations.store');
     Route::post('/contacts/invite', [ContactInviteProxyController::class, 'store'])
         ->name('contacts.invite');
 
+    // VVV Supabase Chat Routes
     Route::prefix('api')->group(function () {
         Route::patch('channels/{channelId}/messages/{id}', [ChannelMessageController::class, 'update']);
         Route::delete('channels/{channelId}/messages/{id}', [ChannelMessageController::class, 'destroy']);
