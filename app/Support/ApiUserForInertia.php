@@ -37,6 +37,7 @@ final class ApiUserForInertia
             'organisation_id' => is_numeric($raw['organisation_id'] ?? null)
                 ? (int) $raw['organisation_id']
                 : 0,
+            'organisation_name' => self::organisationDisplayName($raw),
             'created_at' => (string) ($raw['created_at'] ?? ''),
             'updated_at' => (string) ($raw['updated_at'] ?? ''),
         ]);
@@ -53,6 +54,33 @@ final class ApiUserForInertia
     public static function forDemoCatalogRow(array $user): array
     {
         return self::withFirstLastFromNameWhenMissing($user);
+    }
+
+    /**
+     * Display label for the user's organisation (nested relation or flat field from API).
+     *
+     * @param  array<string, mixed>  $raw
+     */
+    private static function organisationDisplayName(array $raw): ?string
+    {
+        $flat = $raw['organisation_name'] ?? null;
+        if (is_string($flat)) {
+            $trimmed = trim($flat);
+
+            return $trimmed !== '' ? $trimmed : null;
+        }
+
+        $organisation = $raw['organisation'] ?? null;
+        if (is_array($organisation)) {
+            $fromNested = $organisation['name'] ?? null;
+            if (is_string($fromNested)) {
+                $trimmed = trim($fromNested);
+
+                return $trimmed !== '' ? $trimmed : null;
+            }
+        }
+
+        return null;
     }
 
     /**

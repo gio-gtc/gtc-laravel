@@ -16,6 +16,8 @@ use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\VenueFormController;
 use App\Http\Middleware\BffAuth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -66,10 +68,22 @@ Route::middleware([BffAuth::class])->group(function () {
     Route::post('/venue-forms/{venueId}', [VenueFormController::class, 'store'])->name('venue.form.store');
     Route::post('/uploads', [UploadController::class, 'store'])->name('uploads.store');
 
-
     // VVV New gtc-api proxy routes
     Route::post('/organisations', [OrganisationController::class, 'store'])
         ->name('organisations.store');
+
+    Route::get('/api/search/organisations', function (Request $request) {
+        $token = $request->session()->get('api_token');
+        $apiUrl = config('services.api.base_url').'/api/organisations';
+
+        // Forward the search query to gtc-api
+        $response = Http::withToken($token)
+            ->acceptJson()
+            ->get($apiUrl, ['search' => $request->query('search')]);
+
+        return $response->successful() ? $response->json() : ['organisations' => []];
+    })->name('search.organisations');
+
     Route::post('/contacts/invite', [ContactInviteProxyController::class, 'store'])
         ->name('contacts.invite');
 

@@ -102,6 +102,7 @@ export interface User {
     roles?: string[] | null;
     profile_photo_path?: string | null;
     organisation_id: number;
+    organisation_name?: string | null;
     created_at: string;
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...

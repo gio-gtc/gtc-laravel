@@ -133,10 +133,13 @@ export default function UserInfoModal({
     const [phoneValid, setPhoneValid] = useState(false);
     const [formValid, setFormValid] = useState(false);
     const [createRoleFilled, setCreateRoleFilled] = useState(false);
+    /** True when OrganisationAsyncField has a picked organisation_id (hidden input non-empty). Create + profile edit (hidden inputs skip HTML5 required). */
+    const [organisationCommitted, setOrganisationCommitted] = useState(false);
 
     useEffect(() => {
         if (!isOpen) {
             setCreateRoleFilled(false);
+            setOrganisationCommitted(false);
         }
     }, [isOpen]);
 
@@ -152,6 +155,22 @@ export default function UserInfoModal({
     const handleFormInput = useCallback((event: FormEvent<HTMLFormElement>) => {
         setFormValid(event.currentTarget.checkValidity());
     }, []);
+
+    /** Hidden organisation_id cannot use HTML5 required; role uses hidden input on create — gate submit explicitly. */
+    const cannotSubmit =
+        !formValid ||
+        !phoneValid ||
+        !organisationCommitted ||
+        (isCreateMode && !createRoleFilled);
+
+    const handleFormSubmit = useCallback(
+        (event: FormEvent<HTMLFormElement>) => {
+            if (cannotSubmit) {
+                event.preventDefault();
+            }
+        },
+        [cannotSubmit],
+    );
 
     const transformFormData = useCallback(
         (data: Record<string, FormDataConvertible>) => {
@@ -224,6 +243,7 @@ export default function UserInfoModal({
                     }}
                     onSuccess={handleFormSuccess}
                     onError={handleFormError}
+                    onSubmit={handleFormSubmit}
                     onInput={handleFormInput}
                     className="space-y-4"
                 >
@@ -250,6 +270,9 @@ export default function UserInfoModal({
                                     isCreateMode
                                         ? setCreateRoleFilled
                                         : undefined
+                                }
+                                onOrganisationCommittedChange={
+                                    setOrganisationCommitted
                                 }
                                 isProfileEdit={isProfileEdit}
                                 modeLabels={modeLabels}
@@ -292,12 +315,7 @@ export default function UserInfoModal({
                                 </Button>
                                 <Button
                                     type="submit"
-                                    disabled={
-                                        processing ||
-                                        !formValid ||
-                                        !phoneValid ||
-                                        (isCreateMode && !createRoleFilled)
-                                    }
+                                    disabled={processing || cannotSubmit}
                                 >
                                     {modeLabels.submitLabel}
                                 </Button>

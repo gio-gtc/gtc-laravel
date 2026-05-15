@@ -1,4 +1,5 @@
 import InputError from '@/components/input-error';
+import { OrganisationAsyncField } from '@/components/modals/user-info-modal/organisation-async-field';
 import { UserInfoPhotoSection } from '@/components/modals/user-info-modal/photo-section';
 import { UserInfoTextField } from '@/components/modals/user-info-modal/text-field';
 import type { UserInfoFormDefaults } from '@/components/modals/user-info-modal/utils';
@@ -66,6 +67,8 @@ interface UserInfoFormFieldsProps {
     onPhoneValidChange?: (isValid: boolean) => void;
     /** Create mode only: notified when user has chosen a non-empty role. */
     onCreateRoleFilledChange?: (filled: boolean) => void;
+    /** Notified when the organisation combobox has a committed id (create + profile edit). */
+    onOrganisationCommittedChange?: (committed: boolean) => void;
     isProfileEdit: boolean;
     modeLabels: ModeLabelsSlice;
 }
@@ -83,6 +86,7 @@ export function UserInfoFormFields({
     phoneSyncKey,
     onPhoneValidChange,
     onCreateRoleFilledChange,
+    onOrganisationCommittedChange,
     isProfileEdit,
     modeLabels,
 }: UserInfoFormFieldsProps) {
@@ -141,18 +145,15 @@ export function UserInfoFormFields({
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2">
-                        <UserInfoTextField
-                            id="organisation_id"
-                            name="organisation_id"
-                            label="Organisation"
-                            defaultValue={
-                                defaults.organisation_id
-                                    ? String(defaults.organisation_id)
-                                    : ''
-                            }
+                        <OrganisationAsyncField
+                            syncKey={phoneSyncKey ?? ''}
+                            initialOrganisationId={defaults.organisation_id}
+                            initialOrganisationName={defaults.organisation_name}
                             error={errors.organisation_id}
                             required
-                            placeholder="Organisation"
+                            onOrganisationCommittedChange={
+                                onOrganisationCommittedChange
+                            }
                         />
                         <UserInfoTextField
                             id="job_title"
