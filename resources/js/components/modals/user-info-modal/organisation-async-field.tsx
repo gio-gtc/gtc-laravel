@@ -64,6 +64,8 @@ async function fetchOrganisations(
     return Array.isArray(data.organisations) ? data.organisations : [];
 }
 
+export type AppliedOrganisationPayload = { id: number; name: string };
+
 export type OrganisationAsyncFieldProps = {
     /** Bumps when the modal reopens / defaults change so selection resets. */
     syncKey: string | number;
@@ -75,6 +77,9 @@ export type OrganisationAsyncFieldProps = {
     /** When set, last row opens create-organisation flow (e.g. parent modal). */
     onAddNewOrganisation?: () => void;
     addNewOrganisationLabel?: string;
+    /** Bump rev after flash-driven create (parent passes payload + incremented rev). */
+    appliedOrganisation?: AppliedOrganisationPayload | null;
+    appliedOrganisationRev?: number;
 };
 
 export function OrganisationAsyncField({
@@ -86,6 +91,8 @@ export function OrganisationAsyncField({
     onOrganisationCommittedChange,
     onAddNewOrganisation,
     addNewOrganisationLabel = 'Add new organisation',
+    appliedOrganisation = null,
+    appliedOrganisationRev = 0,
 }: OrganisationAsyncFieldProps) {
     const reactId = useId();
     const optionIdPrefix = `org-async-${reactId.replace(/:/g, '')}`;
@@ -291,6 +298,29 @@ export function OrganisationAsyncField({
             ?.closest('form')
             ?.dispatchEvent(new Event('input', { bubbles: true }));
     };
+
+    /** Profile/create modal: apply organisation from flash after Create Organisation succeeds. */
+    useEffect(() => {
+        if (appliedOrganisationRev < 1 || !appliedOrganisation) {
+            return;
+        }
+        const id = appliedOrganisation.id;
+        const label = appliedOrganisation.name.trim();
+        if (!Number.isFinite(id) || id <= 0 || label === '') {
+            return;
+        }
+        abortRef.current?.abort();
+        abortRef.current = null;
+        setSelectedId(id);
+        setSelectedLabel(label);
+        setSearchQuery('');
+        setOrganisations([]);
+        setOpen(false);
+        setLoading(false);
+        setHighlightedIndex(null);
+        setResolvePending(false);
+        bubbleFormInput();
+    }, [appliedOrganisationRev, appliedOrganisation]);
 
     const handleOpenChange = (next: boolean) => {
         if (!next) {

@@ -1,6 +1,10 @@
 import type { FormDataConvertible } from '@inertiajs/core';
 
-export type FlashShape = { success?: string | null; error?: string | null };
+export type FlashShape = {
+    success?: string | null;
+    error?: string | null;
+    new_organisation?: { id: number; name: string } | null;
+};
 
 /** Matches `routes/web.php` `organisations.store` — POST `/organisations`. */
 export const ORGANISATIONS_STORE_FORM = {

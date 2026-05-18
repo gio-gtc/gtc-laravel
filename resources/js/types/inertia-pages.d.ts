@@ -20,6 +20,13 @@ import type {
 
 export type SharedProps = SharedData;
 
+/** Shared Inertia flash props (see HandleInertiaRequests `flash` share). */
+export type FlashPayload = {
+    success?: string | null;
+    error?: string | null;
+    new_organisation?: { id: number; name: string } | null;
+};
+
 export interface Country {
     id: number;
     name: string;

@@ -17,6 +17,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { type PhoneNumberFieldHandle } from '@/components/ui/phone-number-field';
+import type { FlashPayload } from '@/types/inertia-pages';
 import { type SharedData } from '@/types';
 import type { FormDataConvertible } from '@inertiajs/core';
 import { Form, usePage } from '@inertiajs/react';
@@ -32,8 +33,6 @@ import {
 import { toast } from 'react-toastify';
 import OrganisationModal from '@/components/globals/navigation/organisation-modal';
 import Divider from '../../utils/divider';
-
-type FlashShape = { success?: string | null; error?: string | null };
 
 export type { CreateContactPrefill };
 
@@ -85,12 +84,8 @@ export default function UserInfoModal({
     title: providedTitle,
     createPrefill = null,
 }: UserInfoModalProps) {
-    const { auth, flash } = usePage<SharedData & { flash?: FlashShape }>()
+    const { auth, flash } = usePage<SharedData & { flash?: FlashPayload }>()
         .props;
-    const flashRef = useRef<FlashShape | undefined>(flash);
-    useLayoutEffect(() => {
-        flashRef.current = flash;
-    }, [flash]);
 
     const editFormProps = ProfileController.update.form();
     const user = { ...auth.user, role: auth.roles[0] };
@@ -138,6 +133,12 @@ export default function UserInfoModal({
     const [organisationCommitted, setOrganisationCommitted] = useState(false);
     const [isOrganisationCreateModalOpen, setIsOrganisationCreateModalOpen] =
         useState(false);
+    const [appliedOrganisationPayload, setAppliedOrganisationPayload] =
+        useState<{ id: number; name: string } | null>(null);
+    const [appliedOrganisationRev, setAppliedOrganisationRev] = useState(0);
+    const lastHandledNewOrgFlashRef = useRef<string | null>(null);
+    /** True after combobox "Add new organisation"; avoids applying unrelated flash while profile modal is open. */
+    const expectingNewOrgFlashRef = useRef(false);
 
     useEffect(() => {
         if (!isOpen) {
@@ -145,6 +146,33 @@ export default function UserInfoModal({
             setOrganisationCommitted(false);
         }
     }, [isOpen]);
+
+    /** Fallback when flash arrives after navigation (prefer synchronous path via OrganisationModal `onOrganisationCreated`). */
+    useEffect(() => {
+        if (!isOpen || !expectingNewOrgFlashRef.current) {
+            return;
+        }
+        const raw = flash?.new_organisation;
+        if (!raw || typeof raw !== 'object') {
+            return;
+        }
+        const id = Number(raw.id);
+        const name =
+            typeof raw.name === 'string'
+                ? raw.name.trim()
+                : String(raw.name ?? '').trim();
+        if (!Number.isFinite(id) || id <= 0 || name === '') {
+            return;
+        }
+        const signature = `${id}:${name}`;
+        if (lastHandledNewOrgFlashRef.current === signature) {
+            return;
+        }
+        lastHandledNewOrgFlashRef.current = signature;
+        expectingNewOrgFlashRef.current = false;
+        setAppliedOrganisationPayload({ id, name });
+        setAppliedOrganisationRev((r) => r + 1);
+    }, [isOpen, flash?.new_organisation]);
 
     useLayoutEffect(() => {
         if (!isOpen) {
@@ -187,23 +215,29 @@ export default function UserInfoModal({
     );
 
     const handleFormSuccess = useCallback(() => {
-        const latestFlash = flashRef.current;
-        if (latestFlash?.success || latestFlash?.error) {
-            if (latestFlash.success) {
-                toast.success(latestFlash.success, {
-                    toastId: 'user-modal-flash-success',
-                });
-            } else if (latestFlash.error) {
-                toast.error(latestFlash.error, {
-                    toastId: 'user-modal-flash-error',
-                });
-            }
-        }
+        // Server flash toasts run from app-layout (avoids stale flash vs visit timing).
         onClose();
-    }, [isCreateMode, onClose]);
+    }, [onClose]);
 
     const handleAddNewOrganisation = useCallback(() => {
+        expectingNewOrgFlashRef.current = true;
         setIsOrganisationCreateModalOpen(true);
+    }, []);
+
+    const handleOrganisationCreatedFromModal = useCallback(
+        (organisation: { id: number; name: string }) => {
+            const sig = `${organisation.id}:${organisation.name}`;
+            lastHandledNewOrgFlashRef.current = sig;
+            expectingNewOrgFlashRef.current = false;
+            setAppliedOrganisationPayload(organisation);
+            setAppliedOrganisationRev((r) => r + 1);
+        },
+        [],
+    );
+
+    const handleOrganisationModalClose = useCallback(() => {
+        expectingNewOrgFlashRef.current = false;
+        setIsOrganisationCreateModalOpen(false);
     }, []);
 
     const handleFormError = useCallback(
@@ -285,6 +319,10 @@ export default function UserInfoModal({
                                     onAddNewOrganisation={
                                         handleAddNewOrganisation
                                     }
+                                    appliedOrganisation={appliedOrganisationPayload}
+                                    appliedOrganisationRev={
+                                        appliedOrganisationRev
+                                    }
                                     isProfileEdit={isProfileEdit}
                                     modeLabels={modeLabels}
                                 />
@@ -341,7 +379,8 @@ export default function UserInfoModal({
             </Dialog>
             <OrganisationModal
                 isOpen={isOrganisationCreateModalOpen}
-                onClose={() => setIsOrganisationCreateModalOpen(false)}
+                onClose={handleOrganisationModalClose}
+                onOrganisationCreated={handleOrganisationCreatedFromModal}
             />
         </>
     );

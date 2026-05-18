@@ -23,6 +23,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import type { AppliedOrganisationPayload } from '@/components/modals/user-info-modal/organisation-async-field';
 import type { SharedData, User } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { HelpCircle, MailCheck } from 'lucide-react';
@@ -72,6 +73,8 @@ interface UserInfoFormFieldsProps {
     /** Opens create-organisation flow from combobox "Add new" row (optional). */
     onAddNewOrganisation?: () => void;
     addNewOrganisationLabel?: string;
+    appliedOrganisation?: AppliedOrganisationPayload | null;
+    appliedOrganisationRev?: number;
     isProfileEdit: boolean;
     modeLabels: ModeLabelsSlice;
 }
@@ -92,6 +95,8 @@ export function UserInfoFormFields({
     onOrganisationCommittedChange,
     onAddNewOrganisation,
     addNewOrganisationLabel,
+    appliedOrganisation,
+    appliedOrganisationRev,
     isProfileEdit,
     modeLabels,
 }: UserInfoFormFieldsProps) {
@@ -161,6 +166,8 @@ export function UserInfoFormFields({
                             }
                             onAddNewOrganisation={onAddNewOrganisation}
                             addNewOrganisationLabel={addNewOrganisationLabel}
+                            appliedOrganisation={appliedOrganisation}
+                            appliedOrganisationRev={appliedOrganisationRev}
                         />
                         <UserInfoTextField
                             id="job_title"

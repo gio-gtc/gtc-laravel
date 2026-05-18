@@ -41,11 +41,14 @@ import {
 interface OrganisationModalProps {
     isOpen: boolean;
     onClose: () => void;
+    /** After successful POST when flash includes `new_organisation` (before `onClose`). */
+    onOrganisationCreated?: (organisation: { id: number; name: string }) => void;
 }
 
 export default function OrganisationModal({
     isOpen,
     onClose,
+    onOrganisationCreated,
 }: OrganisationModalProps) {
     const { ApiReferenceData } = usePage<SharedData>().props;
 
@@ -108,10 +111,35 @@ export default function OrganisationModal({
                 return;
             }
 
+            const successFlash =
+                typeof flash?.success === 'string' && flash.success.trim() !== ''
+                    ? flash.success.trim()
+                    : null;
+
+            const rawNew = flash?.new_organisation;
+            if (
+                rawNew &&
+                typeof rawNew === 'object' &&
+                successFlash !== null &&
+                errorFlash === null
+            ) {
+                const id = Number(
+                    (rawNew as { id?: unknown }).id,
+                );
+                const nameRaw = (rawNew as { name?: unknown }).name;
+                const name =
+                    typeof nameRaw === 'string'
+                        ? nameRaw.trim()
+                        : String(nameRaw ?? '').trim();
+                if (Number.isFinite(id) && id > 0 && name !== '') {
+                    onOrganisationCreated?.({ id, name });
+                }
+            }
+
             resetLocalSuccess();
             onClose();
         },
-        [resetLocalSuccess, onClose],
+        [resetLocalSuccess, onClose, onOrganisationCreated],
     );
 
     const handleOrganisationError = useCallback((errors: Errors) => {
