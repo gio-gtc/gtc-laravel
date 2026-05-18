@@ -18,8 +18,23 @@ import {
 import { CheckIcon, ChevronDown, X } from 'lucide-react';
 import * as React from 'react';
 
+export type ComboboxOption =
+    | string
+    | {
+          value: string;
+          label: string;
+      };
+
+export function normalizeComboboxOptions(
+    options: readonly ComboboxOption[],
+): { value: string; label: string }[] {
+    return options.map((o) =>
+        typeof o === 'string' ? { value: o, label: o } : o,
+    );
+}
+
 export interface MultiSelectComboboxProps {
-    options: readonly string[];
+    options: readonly ComboboxOption[];
     value: string[];
     onValueChange: (value: string[]) => void;
     /** `single`: at most one option; picking replaces selection, picking again clears. */
@@ -29,6 +44,7 @@ export interface MultiSelectComboboxProps {
     removeSearch?: boolean;
     className?: string;
     triggerClassName?: string;
+    badgeClassName?: string;
     maxBadges?: number;
     id?: string;
 }
@@ -43,35 +59,55 @@ export function MultiSelectCombobox({
     removeSearch = true,
     className,
     triggerClassName,
+    badgeClassName,
     maxBadges = 1,
     id,
 }: MultiSelectComboboxProps) {
     const [open, setOpen] = React.useState(false);
     const [search, setSearch] = React.useState('');
 
-    const toggleOption = (option: string) => {
+    const normalizedOptions = React.useMemo(
+        () => normalizeComboboxOptions(options),
+        [options],
+    );
+
+    const labelByValue = React.useMemo(() => {
+        const map = new Map<string, string>();
+        for (const o of normalizedOptions) {
+            map.set(o.value, o.label);
+        }
+        return map;
+    }, [normalizedOptions]);
+
+    const toggleOption = (optionValue: string) => {
         if (mode === 'single') {
-            const isSelected = value.includes(option);
-            onValueChange(isSelected ? [] : [option]);
+            const isSelected = value.includes(optionValue);
+            onValueChange(isSelected ? [] : [optionValue]);
             setOpen(false);
             return;
         }
-        const isSelected = value.includes(option);
+        const isSelected = value.includes(optionValue);
         onValueChange(
-            isSelected ? value.filter((v) => v !== option) : [...value, option],
+            isSelected
+                ? value.filter((v) => v !== optionValue)
+                : [...value, optionValue],
         );
     };
 
-    const removeOption = (e: React.MouseEvent, option: string) => {
+    const removeOption = (e: React.MouseEvent, optionValue: string) => {
         e.stopPropagation();
-        onValueChange(value.filter((v) => v !== option));
+        onValueChange(value.filter((v) => v !== optionValue));
     };
 
     const filteredOptions = React.useMemo(() => {
-        if (!search) return [...options];
+        if (!search) return normalizedOptions;
         const q = search.toLowerCase();
-        return options.filter((opt) => opt.toLowerCase().includes(q));
-    }, [options, search]);
+        return normalizedOptions.filter(
+            (opt) =>
+                opt.label.toLowerCase().includes(q) ||
+                opt.value.toLowerCase().includes(q),
+        );
+    }, [normalizedOptions, search]);
 
     return (
         <>
@@ -87,27 +123,32 @@ export function MultiSelectCombobox({
                             triggerClassName,
                         )}
                     >
-                        <div className="flex min-w-0 flex-1 flex-col flex-wrap gap-1 overflow-y-auto">
+                        <div className="flex min-w-0 flex-1 flex-row flex-wrap gap-1 overflow-y-auto">
                             {value.length === 0 ? (
                                 <span className="text-muted-foreground">
                                     {placeholder}
                                 </span>
                             ) : (
                                 value.slice(0, maxBadges).map((v) => {
+                                    const display = labelByValue.get(v) ?? v;
+
                                     return (
                                         <Badge
                                             key={v}
                                             variant="secondary"
-                                            className="shrink-0 gap-0.5 px-1.5 py-0 text-xs font-normal"
+                                            className={cn(
+                                                'shrink-0 gap-0.5 px-1.5 py-0 text-xs font-normal',
+                                                badgeClassName,
+                                            )}
                                         >
-                                            {v}
+                                            {display}
                                             <button
                                                 type="button"
                                                 onClick={(e) =>
                                                     removeOption(e, v)
                                                 }
-                                                className="ml-0.5 rounded-full p-0.5 hover:bg-muted"
-                                                aria-label={`Remove ${v}`}
+                                                className="ml-0.5 cursor-pointer rounded-full p-0.5 hover:bg-muted"
+                                                aria-label={`Remove ${display}`}
                                             >
                                                 <X className="size-3" />
                                             </button>
@@ -138,13 +179,20 @@ export function MultiSelectCombobox({
                             <CommandEmpty>{emptyMessage}</CommandEmpty>
                             <CommandGroup>
                                 {filteredOptions.map((option) => {
-                                    const isSelected = value.includes(option);
+                                    const isSelected = value.includes(
+                                        option.value,
+                                    );
+
                                     return (
                                         <CommandItem
-                                            key={option}
-                                            value={option}
+                                            key={option.value}
+                                            value={option.value}
+                                            keywords={[
+                                                option.value,
+                                                option.label,
+                                            ]}
                                             onSelect={() =>
-                                                toggleOption(option)
+                                                toggleOption(option.value)
                                             }
                                             className="relative flex cursor-pointer items-center rounded-md p-1.5 py-0.5 pr-8 hover:bg-gray-200 [&:not(:last-child)]:mb-2"
                                             aria-selected={isSelected}
@@ -155,7 +203,7 @@ export function MultiSelectCombobox({
                                                 </span>
                                             )}
                                             <span className="w-[500px]">
-                                                {option}
+                                                {option.label}
                                             </span>
                                         </CommandItem>
                                     );

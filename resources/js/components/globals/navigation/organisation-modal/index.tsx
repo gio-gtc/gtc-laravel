@@ -1,3 +1,4 @@
+import { MultiSelectCombobox } from '@/components/ui/combobox';
 import {
     Dialog,
     DialogContent,
@@ -42,7 +43,10 @@ interface OrganisationModalProps {
     isOpen: boolean;
     onClose: () => void;
     /** After successful POST when flash includes `new_organisation` (before `onClose`). */
-    onOrganisationCreated?: (organisation: { id: number; name: string }) => void;
+    onOrganisationCreated?: (organisation: {
+        id: number;
+        name: string;
+    }) => void;
 }
 
 export default function OrganisationModal({
@@ -85,12 +89,14 @@ export default function OrganisationModal({
         [dropdowns.countries],
     );
 
-    const organisationTypeSingle = organisationFields.types[0];
-
-    const selectedOrgType =
-        organisationTypeSingle && organisationTypeSingle !== ''
-            ? organisationTypeSingle
-            : undefined;
+    const organisationTypeOptions = useMemo(
+        () =>
+            organisationTypeRows.map((row) => ({
+                value: refRowValue(row),
+                label: refRowLabel(row),
+            })),
+        [organisationTypeRows],
+    );
 
     const resetLocalSuccess = useCallback(() => {
         setOrganisationFields(
@@ -112,7 +118,8 @@ export default function OrganisationModal({
             }
 
             const successFlash =
-                typeof flash?.success === 'string' && flash.success.trim() !== ''
+                typeof flash?.success === 'string' &&
+                flash.success.trim() !== ''
                     ? flash.success.trim()
                     : null;
 
@@ -123,9 +130,7 @@ export default function OrganisationModal({
                 successFlash !== null &&
                 errorFlash === null
             ) {
-                const id = Number(
-                    (rawNew as { id?: unknown }).id,
-                );
+                const id = Number((rawNew as { id?: unknown }).id);
                 const nameRaw = (rawNew as { name?: unknown }).name;
                 const name =
                     typeof nameRaw === 'string'
@@ -203,49 +208,23 @@ export default function OrganisationModal({
                                     childrenContainerClasses="modal-child-container"
                                     required
                                 >
-                                    <Select
-                                        required
-                                        value={selectedOrgType}
-                                        onValueChange={(value) =>
+                                    <MultiSelectCombobox
+                                        id="types"
+                                        mode="multi"
+                                        maxBadges={2}
+                                        options={organisationTypeOptions}
+                                        value={organisationFields.types}
+                                        onValueChange={(typesNext) =>
                                             setOrganisationFields((prev) => ({
                                                 ...prev,
-                                                types: value ? [value] : [],
+                                                types: typesNext,
                                             }))
                                         }
-                                    >
-                                        <SelectTrigger id="types">
-                                            <SelectValue placeholder="Select Organisation Type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {organisationTypeRows.length ===
-                                            0 ? (
-                                                <SelectItem
-                                                    value="__none"
-                                                    disabled
-                                                >
-                                                    No organisation types
-                                                    available
-                                                </SelectItem>
-                                            ) : (
-                                                organisationTypeRows.map(
-                                                    (row) => {
-                                                        const val =
-                                                            refRowValue(row);
-                                                        return (
-                                                            <SelectItem
-                                                                key={val}
-                                                                value={val}
-                                                            >
-                                                                {refRowLabel(
-                                                                    row,
-                                                                )}
-                                                            </SelectItem>
-                                                        );
-                                                    },
-                                                )
-                                            )}
-                                        </SelectContent>
-                                    </Select>
+                                        placeholder="Select organisation type(s)"
+                                        emptyMessage="No organisation types available"
+                                        triggerClassName="md-gray-900-weight-400 h-[44px] hover:bg-transparent hover:text-inherit [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:text-muted-foreground"
+                                        badgeClassName="px-1.5 py-0.5 text-sm"
+                                    />
                                 </ColumnedRowsChild>
                             </ColumnedRowsParent>
 
@@ -295,6 +274,7 @@ export default function OrganisationModal({
                                             name="state"
                                             placeholder="State"
                                             required
+                                            maxLength={2}
                                             className="flex-1"
                                             value={organisationFields.state}
                                             onChange={(e) =>
@@ -311,6 +291,7 @@ export default function OrganisationModal({
                                             name="zip"
                                             placeholder="ZIP"
                                             required
+                                            maxLength={5}
                                             className="flex-1"
                                             value={organisationFields.zip}
                                             onChange={(e) =>
@@ -518,7 +499,10 @@ export default function OrganisationModal({
                                 onCancel={onClose}
                                 confirmLabel="Save"
                                 cancelDisabled={processing}
-                                confirmDisabled={processing}
+                                confirmDisabled={
+                                    processing ||
+                                    organisationFields.types.length === 0
+                                }
                             />
                         </>
                     )}

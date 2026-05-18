@@ -53,7 +53,7 @@ function InputAdditions({
                         onClick={addInput}
                         className="absolute top-1/2 right-3 -translate-y-1/2 text-destructive hover:text-destructive/80"
                     >
-                        <PlusCircle className="h-4 w-4" />
+                        <PlusCircle className="h-4 w-4 cursor-pointer" />
                     </button>
                 )}
                 {inputList.length > 1 && index !== inputList.length - 1 && (
@@ -62,7 +62,7 @@ function InputAdditions({
                         onClick={() => removeInput(index)}
                         className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                     >
-                        <XCircle className="h-4 w-4" />
+                        <XCircle className="h-4 w-4 cursor-pointer" />
                     </button>
                 )}
             </InputWithLeadingIcon>
