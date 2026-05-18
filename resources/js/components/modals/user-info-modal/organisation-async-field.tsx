@@ -6,6 +6,7 @@ import {
     PopoverAnchor,
     PopoverContent,
 } from '@/components/ui/popover';
+import Divider from '@/components/utils/divider';
 import { getCsrfHeaders } from '@/lib/forms/csrf';
 import { cn } from '@/lib/utils';
 import {
@@ -15,11 +16,13 @@ import {
     CommandItem,
     CommandList,
 } from 'cmdk';
-import { CheckIcon } from 'lucide-react';
+import { CheckIcon, PlusCircle } from 'lucide-react';
 import {
     useCallback,
     useEffect,
+    useId,
     useLayoutEffect,
+    useMemo,
     useRef,
     useState,
 } from 'react';
@@ -29,6 +32,8 @@ type OrgOption = { id: number; name: string };
 type OrganisationsSearchResponse = {
     organisations?: OrgOption[];
 };
+
+const ADD_NEW_VALUE = '__add_new__';
 
 function parseOrganisationId(
     value: number | string | null | undefined,
@@ -67,6 +72,9 @@ export type OrganisationAsyncFieldProps = {
     error?: string;
     required?: boolean;
     onOrganisationCommittedChange?: (committed: boolean) => void;
+    /** When set, last row opens create-organisation flow (e.g. parent modal). */
+    onAddNewOrganisation?: () => void;
+    addNewOrganisationLabel?: string;
 };
 
 export function OrganisationAsyncField({
@@ -76,7 +84,12 @@ export function OrganisationAsyncField({
     error,
     required,
     onOrganisationCommittedChange,
+    onAddNewOrganisation,
+    addNewOrganisationLabel = 'Add new organisation',
 }: OrganisationAsyncFieldProps) {
+    const reactId = useId();
+    const optionIdPrefix = `org-async-${reactId.replace(/:/g, '')}`;
+
     const rootRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -95,7 +108,11 @@ export function OrganisationAsyncField({
         const hasName = Boolean(initialOrganisationName?.trim());
         return id !== null && !hasName;
     });
-    const [popoverContentWidth, setPopoverContentWidth] = useState<number | null>(
+    const [popoverContentWidth, setPopoverContentWidth] = useState<
+        number | null
+    >(null);
+    /** Keyboard roving highlight; null means no row highlighted (Enter does nothing). */
+    const [highlightedIndex, setHighlightedIndex] = useState<number | null>(
         null,
     );
 
@@ -107,6 +124,12 @@ export function OrganisationAsyncField({
 
     const abortRef = useRef<AbortController | null>(null);
 
+    const showAddNewRow = Boolean(onAddNewOrganisation) && !loading;
+    const optionCount = useMemo(
+        () => organisations.length + (showAddNewRow ? 1 : 0),
+        [organisations.length, showAddNewRow],
+    );
+
     useEffect(() => {
         const id = parseOrganisationId(initialOrganisationId);
         const hasName = Boolean(initialOrganisationName?.trim());
@@ -117,6 +140,7 @@ export function OrganisationAsyncField({
         setOrganisations([]);
         setOpen(false);
         setLoading(false);
+        setHighlightedIndex(null);
         setResolvePending(id !== null && !hasName);
     }, [syncKey, initialOrganisationId, initialOrganisationName]);
 
@@ -165,6 +189,23 @@ export function OrganisationAsyncField({
         onOrganisationCommittedChange?.(selectedId !== null);
     }, [selectedId, onOrganisationCommittedChange]);
 
+    useEffect(() => {
+        setHighlightedIndex(null);
+    }, [searchQuery]);
+
+    useEffect(() => {
+        if (!open) {
+            setHighlightedIndex(null);
+            return;
+        }
+        setHighlightedIndex((prev) => {
+            if (prev === null || optionCount === 0) {
+                return null;
+            }
+            return Math.min(prev, optionCount - 1);
+        });
+    }, [open, optionCount, organisations]);
+
     useLayoutEffect(() => {
         if (!open) {
             setPopoverContentWidth(null);
@@ -187,6 +228,19 @@ export function OrganisationAsyncField({
         ro.observe(el);
         return () => ro.disconnect();
     }, [open]);
+
+    useEffect(() => {
+        if (highlightedIndex === null || !open) {
+            return;
+        }
+        const id =
+            highlightedIndex < organisations.length
+                ? `${optionIdPrefix}-opt-${organisations[highlightedIndex]!.id}`
+                : `${optionIdPrefix}-opt-add-new`;
+        window.requestAnimationFrame(() => {
+            document.getElementById(id)?.scrollIntoView({ block: 'nearest' });
+        });
+    }, [highlightedIndex, open, organisations, optionIdPrefix]);
 
     const runSearch = useCallback(
         async (search: string, signal: AbortSignal) => {
@@ -244,6 +298,7 @@ export function OrganisationAsyncField({
             abortRef.current = null;
             setOrganisations([]);
             setLoading(false);
+            setHighlightedIndex(null);
             if (
                 selectedId === null &&
                 snapshotRef.current.id !== null &&
@@ -258,6 +313,38 @@ export function OrganisationAsyncField({
         setOpen(next);
     };
 
+    const pickOrganisation = useCallback((org: OrgOption) => {
+        setSelectedId(org.id);
+        setSelectedLabel(org.name);
+        setSearchQuery(org.name);
+        setOpen(false);
+        setHighlightedIndex(null);
+        bubbleFormInput();
+        inputRef.current?.blur();
+    }, []);
+
+    const runAddNewOrganisation = useCallback(() => {
+        onAddNewOrganisation?.();
+        setOpen(false);
+        setHighlightedIndex(null);
+        setSearchQuery('');
+        inputRef.current?.blur();
+    }, [onAddNewOrganisation]);
+
+    const pickByListIndex = useCallback(
+        (index: number) => {
+            if (index < 0 || index >= optionCount) {
+                return;
+            }
+            if (index < organisations.length) {
+                pickOrganisation(organisations[index]!);
+                return;
+            }
+            runAddNewOrganisation();
+        },
+        [optionCount, organisations, pickOrganisation, runAddNewOrganisation],
+    );
+
     const handleInputFocus = () => {
         snapshotRef.current = {
             id: selectedId,
@@ -270,12 +357,59 @@ export function OrganisationAsyncField({
         setSearchQuery(v);
         setSelectedId(null);
         setSelectedLabel('');
+        setHighlightedIndex(null);
         bubbleFormInput();
         const nonEmpty = v.trim() !== '';
         setOpen(nonEmpty);
         if (!nonEmpty) {
             setOrganisations([]);
             setLoading(false);
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (!open || optionCount === 0) {
+            if (e.key === 'Escape' && open) {
+                e.preventDefault();
+                handleOpenChange(false);
+            }
+            return;
+        }
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setHighlightedIndex((prev) => {
+                if (prev === null) {
+                    return 0;
+                }
+                return prev >= optionCount - 1 ? 0 : prev + 1;
+            });
+            return;
+        }
+
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setHighlightedIndex((prev) => {
+                if (prev === null) {
+                    return optionCount - 1;
+                }
+                return prev <= 0 ? optionCount - 1 : prev - 1;
+            });
+            return;
+        }
+
+        if (e.key === 'Enter') {
+            if (highlightedIndex === null) {
+                return;
+            }
+            e.preventDefault();
+            pickByListIndex(highlightedIndex);
+            return;
+        }
+
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            handleOpenChange(false);
         }
     };
 
@@ -297,12 +431,22 @@ export function OrganisationAsyncField({
     const emptyMessage = loading ? 'Searching…' : 'No organisations found.';
 
     const inputPlaceholder =
-        resolvePending &&
-        !open &&
-        searchQuery === '' &&
-        selectedLabel === ''
+        resolvePending && !open && searchQuery === '' && selectedLabel === ''
             ? 'Loading organisation…'
             : 'Search organisations…';
+
+    const activeDescendantId =
+        highlightedIndex !== null &&
+        open &&
+        optionCount > 0 &&
+        highlightedIndex >= 0
+            ? highlightedIndex < organisations.length
+                ? `${optionIdPrefix}-opt-${organisations[highlightedIndex]?.id}`
+                : `${optionIdPrefix}-opt-add-new`
+            : undefined;
+
+    /** Shown while loading or when there are no results and no "Add new" row. */
+    const emptyVisible = organisations.length === 0 && !showAddNewRow;
 
     return (
         <div ref={rootRef} className="grid gap-2">
@@ -327,9 +471,12 @@ export function OrganisationAsyncField({
                             type="text"
                             role="combobox"
                             aria-expanded={open}
+                            aria-activedescendant={activeDescendantId}
                             aria-busy={resolvePending}
                             aria-autocomplete="list"
-                            aria-controls={open ? 'organisation-async-listbox' : undefined}
+                            aria-controls={
+                                open ? 'organisation-async-listbox' : undefined
+                            }
                             aria-invalid={Boolean(error)}
                             aria-required={required}
                             autoComplete="off"
@@ -338,6 +485,7 @@ export function OrganisationAsyncField({
                             onFocus={handleInputFocus}
                             onBlur={handleInputBlur}
                             onChange={handleInputChange}
+                            onKeyDown={handleKeyDown}
                             placeholder={inputPlaceholder}
                             className={cn(
                                 'cursor-text pr-9',
@@ -369,24 +517,32 @@ export function OrganisationAsyncField({
                 >
                     <Command shouldFilter={false} className="max-h-72 p-2">
                         <CommandList>
-                            <CommandEmpty>{emptyMessage}</CommandEmpty>
+                            {emptyVisible ? (
+                                <CommandEmpty>{emptyMessage}</CommandEmpty>
+                            ) : null}
                             <CommandGroup>
-                                {organisations.map((org) => {
+                                {organisations.map((org, index) => {
                                     const isSelected = selectedId === org.id;
+                                    const optionId = `${optionIdPrefix}-opt-${org.id}`;
+                                    const isKeyboardActive =
+                                        highlightedIndex === index;
                                     return (
                                         <CommandItem
                                             key={org.id}
+                                            id={optionId}
                                             value={`${org.id}-${org.name}`}
                                             role="option"
+                                            onMouseEnter={() =>
+                                                setHighlightedIndex(index)
+                                            }
                                             onSelect={() => {
-                                                setSelectedId(org.id);
-                                                setSelectedLabel(org.name);
-                                                setSearchQuery(org.name);
-                                                setOpen(false);
-                                                bubbleFormInput();
-                                                inputRef.current?.blur();
+                                                pickOrganisation(org);
                                             }}
-                                            className="relative flex cursor-pointer items-center rounded-md p-1.5 py-0.5 pr-8 hover:bg-gray-200 [&:not(:last-child)]:mb-2"
+                                            className={cn(
+                                                'relative flex cursor-pointer items-center rounded-md p-1.5 py-0.5 pr-8 hover:bg-gray-200 [&:not(:last-child)]:mb-2',
+                                                isKeyboardActive &&
+                                                    'bg-accent text-accent-foreground',
+                                            )}
                                             aria-selected={isSelected}
                                         >
                                             {isSelected && (
@@ -400,6 +556,36 @@ export function OrganisationAsyncField({
                                         </CommandItem>
                                     );
                                 })}
+                                {showAddNewRow ? (
+                                    <>
+                                        <Divider />
+                                        <CommandItem
+                                            id={`${optionIdPrefix}-opt-add-new`}
+                                            value={ADD_NEW_VALUE}
+                                            role="option"
+                                            onMouseEnter={() =>
+                                                setHighlightedIndex(
+                                                    organisations.length,
+                                                )
+                                            }
+                                            onSelect={() => {
+                                                runAddNewOrganisation();
+                                            }}
+                                            className={cn(
+                                                'relative mt-1 flex cursor-pointer items-center rounded-lg p-0.5',
+                                                highlightedIndex ===
+                                                    organisations.length &&
+                                                    'bg-accent text-accent-foreground',
+                                            )}
+                                            aria-selected={false}
+                                        >
+                                            <span className="flex min-w-0 items-center gap-1 truncate">
+                                                <PlusCircle className="h-3 w-3 text-brand-gtc-red" />
+                                                {addNewOrganisationLabel}
+                                            </span>
+                                        </CommandItem>
+                                    </>
+                                ) : null}
                             </CommandGroup>
                         </CommandList>
                     </Command>

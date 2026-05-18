@@ -30,6 +30,7 @@ import {
     type FormEvent,
 } from 'react';
 import { toast } from 'react-toastify';
+import OrganisationModal from '@/components/globals/navigation/organisation-modal';
 import Divider from '../../utils/divider';
 
 type FlashShape = { success?: string | null; error?: string | null };
@@ -135,6 +136,8 @@ export default function UserInfoModal({
     const [createRoleFilled, setCreateRoleFilled] = useState(false);
     /** True when OrganisationAsyncField has a picked organisation_id (hidden input non-empty). Create + profile edit (hidden inputs skip HTML5 required). */
     const [organisationCommitted, setOrganisationCommitted] = useState(false);
+    const [isOrganisationCreateModalOpen, setIsOrganisationCreateModalOpen] =
+        useState(false);
 
     useEffect(() => {
         if (!isOpen) {
@@ -199,6 +202,10 @@ export default function UserInfoModal({
         onClose();
     }, [isCreateMode, onClose]);
 
+    const handleAddNewOrganisation = useCallback(() => {
+        setIsOrganisationCreateModalOpen(true);
+    }, []);
+
     const handleFormError = useCallback(
         (errors: Record<string, string | string[]>) => {
             const msg = firstContactValidationToastMessage(errors);
@@ -219,111 +226,123 @@ export default function UserInfoModal({
     );
 
     return (
-        <Dialog
-            open={isOpen}
-            onOpenChange={(open) => {
-                if (!open) {
-                    onClose();
-                }
-            }}
-        >
-            <DialogContent className="sm:max-w-[716px]">
-                <DialogHeader>
-                    <DialogTitle>{modalTitle}</DialogTitle>
-                </DialogHeader>
-                <Divider />
+        <>
+            <Dialog
+                open={isOpen}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        onClose();
+                    }
+                }}
+            >
+                <DialogContent className="sm:max-w-[716px]">
+                    <DialogHeader>
+                        <DialogTitle>{modalTitle}</DialogTitle>
+                    </DialogHeader>
+                    <Divider />
 
-                {/* Create posts to BFF/API contact invite; edit uses session profile (Laravel auth — not used in BFF-only login). */}
-                <Form
-                    key={createFormKey}
-                    {...formTargetProps}
-                    transform={transformFormData}
-                    options={{
-                        preserveScroll: true,
-                    }}
-                    onSuccess={handleFormSuccess}
-                    onError={handleFormError}
-                    onSubmit={handleFormSubmit}
-                    onInput={handleFormInput}
-                    className="space-y-4"
-                >
-                    {({ processing, errors }) => (
-                        <>
-                            <input
-                                ref={validityProbeRef}
-                                type="hidden"
-                                aria-hidden="true"
-                            />
-                            <UserInfoFormFields
-                                user={user}
-                                defaults={defaults}
-                                errors={errors}
-                                photoLabel={modeLabels.photoLabel}
-                                photoUploadTitle={modeLabels.photoUploadTitle}
-                                photoPreviewUrl={photoPreviewUrl}
-                                setPhotoPreviewUrl={setPhotoPreviewUrl}
-                                phoneFieldRef={phoneFieldRef}
-                                phoneRawDefault={defaults.phone_number}
-                                phoneSyncKey={phoneSyncKey}
-                                onPhoneValidChange={setPhoneValid}
-                                onCreateRoleFilledChange={
-                                    isCreateMode
-                                        ? setCreateRoleFilled
-                                        : undefined
-                                }
-                                onOrganisationCommittedChange={
-                                    setOrganisationCommitted
-                                }
-                                isProfileEdit={isProfileEdit}
-                                modeLabels={modeLabels}
-                            />
+                    {/* Create posts to BFF/API contact invite; edit uses session profile (Laravel auth — not used in BFF-only login). */}
+                    <Form
+                        key={createFormKey}
+                        {...formTargetProps}
+                        transform={transformFormData}
+                        options={{
+                            preserveScroll: true,
+                        }}
+                        onSuccess={handleFormSuccess}
+                        onError={handleFormError}
+                        onSubmit={handleFormSubmit}
+                        onInput={handleFormInput}
+                        className="space-y-4"
+                    >
+                        {({ processing, errors }) => (
+                            <>
+                                <input
+                                    ref={validityProbeRef}
+                                    type="hidden"
+                                    aria-hidden="true"
+                                />
+                                <UserInfoFormFields
+                                    user={user}
+                                    defaults={defaults}
+                                    errors={errors}
+                                    photoLabel={modeLabels.photoLabel}
+                                    photoUploadTitle={modeLabels.photoUploadTitle}
+                                    photoPreviewUrl={photoPreviewUrl}
+                                    setPhotoPreviewUrl={setPhotoPreviewUrl}
+                                    phoneFieldRef={phoneFieldRef}
+                                    phoneRawDefault={defaults.phone_number}
+                                    phoneSyncKey={phoneSyncKey}
+                                    onPhoneValidChange={setPhoneValid}
+                                    onCreateRoleFilledChange={
+                                        isCreateMode
+                                            ? setCreateRoleFilled
+                                            : undefined
+                                    }
+                                    onOrganisationCommittedChange={
+                                        setOrganisationCommitted
+                                    }
+                                    onAddNewOrganisation={
+                                        handleAddNewOrganisation
+                                    }
+                                    isProfileEdit={isProfileEdit}
+                                    modeLabels={modeLabels}
+                                />
 
-                            {isProfileEdit && (
-                                <>
-                                    <UserInfoOutOfOfficeFields
-                                        isOpen={isOpen}
-                                        syncKey={userSyncKey}
-                                        initial={{
-                                            out_of_office:
-                                                defaults.out_of_office,
-                                            out_of_office_start_date:
-                                                defaults.out_of_office_start_date,
-                                            out_of_office_end_date:
-                                                defaults.out_of_office_end_date,
-                                        }}
-                                        errors={{
-                                            out_of_office: errors.out_of_office,
-                                            out_of_office_start_date:
-                                                errors.out_of_office_start_date,
-                                            out_of_office_end_date:
-                                                errors.out_of_office_end_date,
-                                        }}
-                                    />
-                                    <UserInfoPasswordChangeFields />
-                                </>
-                            )}
+                                {isProfileEdit && (
+                                    <>
+                                        <UserInfoOutOfOfficeFields
+                                            isOpen={isOpen}
+                                            syncKey={userSyncKey}
+                                            initial={{
+                                                out_of_office:
+                                                    defaults.out_of_office,
+                                                out_of_office_start_date:
+                                                    defaults.out_of_office_start_date,
+                                                out_of_office_end_date:
+                                                    defaults.out_of_office_end_date,
+                                            }}
+                                            errors={{
+                                                out_of_office:
+                                                    errors.out_of_office,
+                                                out_of_office_start_date:
+                                                    errors.out_of_office_start_date,
+                                                out_of_office_end_date:
+                                                    errors.out_of_office_end_date,
+                                            }}
+                                        />
+                                        <UserInfoPasswordChangeFields />
+                                    </>
+                                )}
 
-                            <Divider />
-                            <DialogFooter className="gap-3 sm:gap-2">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={onClose}
-                                    disabled={processing}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={processing || cannotSubmit}
-                                >
-                                    {modeLabels.submitLabel}
-                                </Button>
-                            </DialogFooter>
-                        </>
-                    )}
-                </Form>
-            </DialogContent>
-        </Dialog>
+                                <Divider />
+                                <DialogFooter className="gap-3 sm:gap-2">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={onClose}
+                                        disabled={processing}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        type="submit"
+                                        disabled={
+                                            processing || cannotSubmit
+                                        }
+                                    >
+                                        {modeLabels.submitLabel}
+                                    </Button>
+                                </DialogFooter>
+                            </>
+                        )}
+                    </Form>
+                </DialogContent>
+            </Dialog>
+            <OrganisationModal
+                isOpen={isOrganisationCreateModalOpen}
+                onClose={() => setIsOrganisationCreateModalOpen(false)}
+            />
+        </>
     );
 }

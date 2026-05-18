@@ -69,6 +69,9 @@ interface UserInfoFormFieldsProps {
     onCreateRoleFilledChange?: (filled: boolean) => void;
     /** Notified when the organisation combobox has a committed id (create + profile edit). */
     onOrganisationCommittedChange?: (committed: boolean) => void;
+    /** Opens create-organisation flow from combobox "Add new" row (optional). */
+    onAddNewOrganisation?: () => void;
+    addNewOrganisationLabel?: string;
     isProfileEdit: boolean;
     modeLabels: ModeLabelsSlice;
 }
@@ -87,6 +90,8 @@ export function UserInfoFormFields({
     onPhoneValidChange,
     onCreateRoleFilledChange,
     onOrganisationCommittedChange,
+    onAddNewOrganisation,
+    addNewOrganisationLabel,
     isProfileEdit,
     modeLabels,
 }: UserInfoFormFieldsProps) {
@@ -154,6 +159,8 @@ export function UserInfoFormFields({
                             onOrganisationCommittedChange={
                                 onOrganisationCommittedChange
                             }
+                            onAddNewOrganisation={onAddNewOrganisation}
+                            addNewOrganisationLabel={addNewOrganisationLabel}
                         />
                         <UserInfoTextField
                             id="job_title"
