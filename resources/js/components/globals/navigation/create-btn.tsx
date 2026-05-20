@@ -69,8 +69,6 @@ export const CreateBtn = () => {
             phone: params.get('phone_number') ?? '',
         };
 
-        console.log('Deep Link Data:', data);
-
         const nextPrefill: CreateContactPrefill = {
             first_name: data.first_name,
             last_name: data.last_name,

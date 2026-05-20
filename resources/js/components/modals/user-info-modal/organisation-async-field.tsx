@@ -99,6 +99,7 @@ export function OrganisationAsyncField({
 
     const rootRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const inputFocusedRef = useRef(false);
 
     const [open, setOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -122,6 +123,12 @@ export function OrganisationAsyncField({
     const [highlightedIndex, setHighlightedIndex] = useState<number | null>(
         null,
     );
+    /** Deep-link name before id is resolved; cleared once matched or user edits. */
+    const [unresolvedPrefillName, setUnresolvedPrefillName] = useState('');
+    const [prefillCheckStatus, setPrefillCheckStatus] = useState<
+        'idle' | 'checking' | 'matched' | 'unmatched'
+    >('idle');
+    const [prefillError, setPrefillError] = useState<string | undefined>();
 
     /** Snapshot at focus-open so closing without a pick can restore a valid org. */
     const snapshotRef = useRef<{ id: number | null; label: string }>({
@@ -141,8 +148,12 @@ export function OrganisationAsyncField({
         const id = parseOrganisationId(initialOrganisationId);
         const hasName = Boolean(initialOrganisationName?.trim());
 
+        const nameTrimmed = initialOrganisationName?.trim() ?? '';
         setSelectedId(id);
-        setSelectedLabel(initialOrganisationName?.trim() ?? '');
+        setSelectedLabel(id !== null ? nameTrimmed : '');
+        setUnresolvedPrefillName(id === null && nameTrimmed !== '' ? nameTrimmed : '');
+        setPrefillCheckStatus('idle');
+        setPrefillError(undefined);
         setSearchQuery('');
         setOrganisations([]);
         setOpen(false);
@@ -185,6 +196,57 @@ export function OrganisationAsyncField({
             } finally {
                 if (!controller.signal.aborted) {
                     setResolvePending(false);
+                }
+            }
+        })();
+
+        return () => controller.abort();
+    }, [syncKey, initialOrganisationId, initialOrganisationName]);
+
+    /** Prefill / deep link: pick organisation id when only a name was provided. */
+    useEffect(() => {
+        const id = parseOrganisationId(initialOrganisationId);
+        const name = initialOrganisationName?.trim() ?? '';
+        if (id !== null || name === '') {
+            return;
+        }
+
+        const controller = new AbortController();
+        setPrefillCheckStatus('checking');
+        setPrefillError(undefined);
+
+        void (async () => {
+            try {
+                const list = await fetchOrganisations(name, controller.signal);
+                if (controller.signal.aborted) {
+                    return;
+                }
+                const lower = name.toLowerCase();
+                const match = list.find(
+                    (o) => o.name.trim().toLowerCase() === lower,
+                );
+                if (controller.signal.aborted) {
+                    return;
+                }
+                if (match) {
+                    setSelectedId(match.id);
+                    setSelectedLabel(match.name);
+                    setUnresolvedPrefillName('');
+                    setPrefillCheckStatus('matched');
+                    setPrefillError(undefined);
+                    bubbleFormInput();
+                    return;
+                }
+                setPrefillCheckStatus('unmatched');
+                setPrefillError(
+                    'No matching organisation found. Search and select one from the list.',
+                );
+            } catch {
+                if (!controller.signal.aborted) {
+                    setPrefillCheckStatus('unmatched');
+                    setPrefillError(
+                        'Could not verify organisation. Search and select one from the list.',
+                    );
                 }
             }
         })();
@@ -323,6 +385,9 @@ export function OrganisationAsyncField({
     }, [appliedOrganisationRev, appliedOrganisation]);
 
     const handleOpenChange = (next: boolean) => {
+        if (next && !inputFocusedRef.current) {
+            return;
+        }
         if (!next) {
             abortRef.current?.abort();
             abortRef.current = null;
@@ -346,6 +411,9 @@ export function OrganisationAsyncField({
     const pickOrganisation = useCallback((org: OrgOption) => {
         setSelectedId(org.id);
         setSelectedLabel(org.name);
+        setUnresolvedPrefillName('');
+        setPrefillCheckStatus('matched');
+        setPrefillError(undefined);
         setSearchQuery(org.name);
         setOpen(false);
         setHighlightedIndex(null);
@@ -376,6 +444,7 @@ export function OrganisationAsyncField({
     );
 
     const handleInputFocus = () => {
+        inputFocusedRef.current = true;
         snapshotRef.current = {
             id: selectedId,
             label: selectedLabel,
@@ -387,10 +456,13 @@ export function OrganisationAsyncField({
         setSearchQuery(v);
         setSelectedId(null);
         setSelectedLabel('');
+        setUnresolvedPrefillName('');
+        setPrefillCheckStatus('idle');
+        setPrefillError(undefined);
         setHighlightedIndex(null);
         bubbleFormInput();
         const nonEmpty = v.trim() !== '';
-        setOpen(nonEmpty);
+        setOpen(nonEmpty && inputFocusedRef.current);
         if (!nonEmpty) {
             setOrganisations([]);
             setLoading(false);
@@ -450,20 +522,28 @@ export function OrganisationAsyncField({
                 active !== inputRef.current &&
                 !active?.closest('[data-slot="popover-content"]')
             ) {
+                inputFocusedRef.current = false;
+                setOpen(false);
                 setOrganisations([]);
                 setLoading(false);
             }
         }, 0);
     };
 
-    const inputDisplayValue = open ? searchQuery : selectedLabel;
+    const inputDisplayValue = open
+        ? searchQuery
+        : selectedLabel || unresolvedPrefillName;
 
     const emptyMessage = loading ? 'Searching…' : 'No organisations found.';
 
     const inputPlaceholder =
-        resolvePending && !open && searchQuery === '' && selectedLabel === ''
-            ? 'Loading organisation…'
-            : 'Search organisations…';
+        prefillCheckStatus === 'checking'
+            ? 'Checking organisation…'
+            : resolvePending && !open && searchQuery === '' && selectedLabel === ''
+              ? 'Loading organisation…'
+              : 'Search organisations…';
+
+    const displayError = error ?? prefillError;
 
     const activeDescendantId =
         highlightedIndex !== null &&
@@ -507,7 +587,7 @@ export function OrganisationAsyncField({
                             aria-controls={
                                 open ? 'organisation-async-listbox' : undefined
                             }
-                            aria-invalid={Boolean(error)}
+                            aria-invalid={Boolean(displayError)}
                             aria-required={required}
                             autoComplete="off"
                             data-test="organisation-async-trigger"
@@ -621,7 +701,7 @@ export function OrganisationAsyncField({
                     </Command>
                 </PopoverContent>
             </Popover>
-            <InputError message={error} />
+            <InputError message={displayError} />
         </div>
     );
 }

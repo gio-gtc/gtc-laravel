@@ -189,7 +189,8 @@ export function UserInfoFormFields({
                             defaultValue={defaults.email}
                             error={errors.email}
                             required
-                            autoComplete="email"
+                            /* Create contact = another person’s address; avoid "email" hint so browsers skip signed-in autofill. */
+                            autoComplete={isProfileEdit ? 'email' : 'off'}
                             placeholder="Email"
                             labelSuffix={
                                 user.pending_email ? (

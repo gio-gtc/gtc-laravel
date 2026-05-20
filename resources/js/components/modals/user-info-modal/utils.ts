@@ -32,12 +32,18 @@ export function buildUserInfoFormDefaults(
     createPrefill: CreateContactPrefill | null | undefined,
 ): UserInfoFormDefaults {
     if (isCreateMode) {
-        return {
+        const pre = createPrefill ?? {};
+        const { organisation: organisationPrefill, ...restPrefill } = pre;
+        const orgTrimmed =
+            typeof organisationPrefill === 'string'
+                ? organisationPrefill.trim()
+                : '';
+        const merged: UserInfoFormDefaults = {
             first_name: '',
             last_name: '',
             email: '',
             organisation_id: null,
-            organisation_name: null,
+            organisation_name: orgTrimmed !== '' ? orgTrimmed : null,
             job_title: '',
             department: '',
             phone_number: '',
@@ -46,8 +52,9 @@ export function buildUserInfoFormDefaults(
             out_of_office_start_date: '',
             out_of_office_end_date: '',
             role: '',
-            ...(createPrefill ?? {}),
+            ...restPrefill,
         };
+        return merged;
     }
 
     return {
