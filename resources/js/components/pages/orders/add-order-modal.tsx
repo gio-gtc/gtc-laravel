@@ -125,7 +125,7 @@ export default function AddVenueModal({
                             </span>
                         )}
 
-                        {isEditMode ? 'Edit Venue Info' : 'Add Venue'}
+                        {isEditMode ? 'Edit Order Info' : 'Add Order'}
                     </DialogTitle>
                 </DialogHeader>
 
@@ -222,7 +222,7 @@ export default function AddVenueModal({
                         Cancel
                     </Button>
                     <Button onClick={handleSave}>
-                        {isEditMode ? 'Save' : 'Add Venue'}
+                        {isEditMode ? 'Save' : 'Add Order'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

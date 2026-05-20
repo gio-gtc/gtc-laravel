@@ -3,7 +3,7 @@ import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
 import { type Tour, type TourVenue, type Venue } from '@/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import AddVenueModal from '../add-venue-modal';
+import AddOrderModal from '../add-order-modal';
 import SwitchView from './switch-view';
 import AttachFileOrDropboxModal, {
     type AttachFileModalContext,
@@ -200,7 +200,7 @@ export default function VenueDetailSlideout({
                     context={attachModalContext}
                 />
 
-                <AddVenueModal
+                <AddOrderModal
                     isOpen={isEditVenueModalOpen}
                     onClose={() => setIsEditVenueModalOpen(false)}
                     orderId={order.id}

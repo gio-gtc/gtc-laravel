@@ -14,7 +14,7 @@ export type GroupedOrderData = {
 
 interface OrdersTableHeaderActionsProps {
     selectedVenueCount: number;
-    onAddVenueClick: () => void;
+    onAddOrderClick: () => void;
     filters: OrdersFilterState;
     onFilterChange: (filters: OrdersFilterState) => void;
     searchQuery: string;
@@ -26,7 +26,7 @@ interface OrdersTableHeaderActionsProps {
 
 export default function OrdersTableHeaderActions({
     selectedVenueCount,
-    onAddVenueClick,
+    onAddOrderClick,
     filters,
     onFilterChange,
     searchQuery,
@@ -42,9 +42,9 @@ export default function OrdersTableHeaderActions({
                     variant="outline"
                     size={'md'}
                     disabled={selectedVenueCount === 0}
-                    onClick={onAddVenueClick}
+                    onClick={onAddOrderClick}
                 >
-                    Add Venue
+                    Add Order
                 </Button>
             </div>
             <div className="flex items-center gap-1">

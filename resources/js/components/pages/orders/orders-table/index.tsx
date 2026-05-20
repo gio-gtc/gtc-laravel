@@ -35,7 +35,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import AddVenueModal from '../add-venue-modal';
+import AddOrderModal from '../add-order-modal';
 import OrdersTableHeaderActions, {
     type GroupedOrderData,
 } from '../orders-table-header-actions';
@@ -62,7 +62,7 @@ function OrdersTable() {
     );
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedVenueIds, setSelectedVenueIds] = useState<number[]>([]);
-    const [isAddVenueModalOpen, setIsAddVenueModalOpen] = useState(false);
+    const [isAddOrderModalOpen, setIsAddOrderModalOpen] = useState(false);
     const [selectedSlideout, setSelectedSlideout] = useState<{
         order: Tour;
         venueItem: {
@@ -457,7 +457,7 @@ function OrdersTable() {
         <div className="table-content-max-width space-y-4">
             <OrdersTableHeaderActions
                 selectedVenueCount={selectedVenueIds.length}
-                onAddVenueClick={() => setIsAddVenueModalOpen(true)}
+                onAddOrderClick={() => setIsAddOrderModalOpen(true)}
                 filters={filters}
                 onFilterChange={handleFilterChange}
                 searchQuery={searchQuery}
@@ -610,9 +610,9 @@ function OrdersTable() {
             </div>
 
             {/* Add Venue Modal */}
-            <AddVenueModal
-                isOpen={isAddVenueModalOpen}
-                onClose={() => setIsAddVenueModalOpen(false)}
+            <AddOrderModal
+                isOpen={isAddOrderModalOpen}
+                onClose={() => setIsAddOrderModalOpen(false)}
                 orderId={selectedOrder?.id || 0}
                 order={selectedOrder}
             />
