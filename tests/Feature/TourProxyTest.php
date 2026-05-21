@@ -142,6 +142,75 @@ it('proxies tour create with null voice_over_id when voice over is unset', funct
     });
 });
 
+it('proxies tour create with null voice_over_id when voice over is omitted', function () {
+    Http::fake([
+        toursStoreApiUrl() => Http::response(['id' => 101], 201),
+    ]);
+
+    $this->actingAsBff()
+        ->from(route('dashboard'))
+        ->post(route('tours.store'), [
+            'name' => 'Omitted Voice Tour',
+            'start_date' => '2026-06-01',
+            'gtc_department' => '2',
+            'gtc_representative' => '10',
+        ])
+        ->assertRedirect(route('dashboard', absolute: false));
+
+    Http::assertSent(function ($request) {
+        return $request->url() === toursStoreApiUrl()
+            && array_key_exists('voice_over_id', $request->data())
+            && $request['voice_over_id'] === null;
+    });
+});
+
+it('proxies tour create with null voice_over_id when voice over is empty', function () {
+    Http::fake([
+        toursStoreApiUrl() => Http::response(['id' => 102], 201),
+    ]);
+
+    $this->actingAsBff()
+        ->from(route('dashboard'))
+        ->post(route('tours.store'), [
+            'name' => 'Empty Voice Tour',
+            'start_date' => '2026-06-01',
+            'gtc_department' => '2',
+            'gtc_representative' => '10',
+            'voice_over' => '',
+        ])
+        ->assertRedirect(route('dashboard', absolute: false));
+
+    Http::assertSent(function ($request) {
+        return $request->url() === toursStoreApiUrl()
+            && array_key_exists('voice_over_id', $request->data())
+            && $request['voice_over_id'] === null;
+    });
+});
+
+it('maps voice_over_id API validation errors to the voice_over form field', function () {
+    Http::fake([
+        toursStoreApiUrl() => Http::response([
+            'message' => 'The given data was invalid.',
+            'errors' => [
+                'voice_over_id' => ['The selected voice over id is invalid.'],
+            ],
+        ], 422),
+    ]);
+
+    $this->actingAsBff()
+        ->from(route('dashboard'))
+        ->post(route('tours.store'), [
+            'name' => 'Summer Tour',
+            'start_date' => '2026-06-01',
+            'gtc_department' => '2',
+            'gtc_representative' => '10',
+            'voice_over' => '999',
+        ])
+        ->assertInvalid([
+            'voice_over' => 'The selected voice over id is invalid.',
+        ]);
+});
+
 it('maps upstream 422 errors into Laravel validation messages', function () {
     Http::fake([
         toursStoreApiUrl() => Http::response([
