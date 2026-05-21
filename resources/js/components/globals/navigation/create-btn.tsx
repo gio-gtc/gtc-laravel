@@ -126,8 +126,6 @@ export const CreateBtn = () => {
                             }}
                             onTourClick={() => {
                                 router.reload({
-                                    preserveState: true,
-                                    preserveScroll: true,
                                     only: [
                                         'departments',
                                         'gtcReps',
