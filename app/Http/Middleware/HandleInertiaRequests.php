@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Support\ApiReferenceData;
 use App\Support\ApiUserForInertia;
 use App\Support\DemoCatalog;
+use App\Support\TourFormData;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -60,6 +61,15 @@ class HandleInertiaRequests extends Middleware
             'users' => $users,
             'ApiReferenceData' => function () use ($request): array {
                 return ApiReferenceData::rememberForSession($request);
+            },
+            'departments' => function () use ($request): array {
+                return TourFormData::rememberForSession($request)['departments'] ?? [];
+            },
+            'gtcReps' => function () use ($request): array {
+                return TourFormData::rememberForSession($request)['gtcReps'] ?? [];
+            },
+            'voiceOvers' => function () use ($request): array {
+                return TourFormData::rememberForSession($request)['voiceOvers'] ?? [];
             },
             'demoUsers' => $request->user() || $bffAuthenticated
                 ? array_map(

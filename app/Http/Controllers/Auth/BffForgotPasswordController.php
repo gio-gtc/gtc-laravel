@@ -51,12 +51,6 @@ class BffForgotPasswordController extends Controller
             ]);
         }
 
-        dd([
-            'HTTP_STATUS' => $response->status(),
-            'API_RESPONSE_BODY' => $response->json() ?? $response->body(),
-            'REQUESTED_URL' => config('services.api.base_url') . '/api/forgot-password'
-        ]);
-
         // Catch-all for API downtime (500 errors)
         throw ValidationException::withMessages([
             'email' => ['The authentication service is currently unavailable. Please try again later.'],

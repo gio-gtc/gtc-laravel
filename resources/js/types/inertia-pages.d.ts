@@ -98,3 +98,30 @@ export interface InvoicesPageProps {
 }
 
 export type DemoUser = User;
+
+/** User row for tour modal rep / voice-over dropdowns (gtc-api). */
+export type TourFormUser = {
+    id: number;
+    first_name?: string | null;
+    last_name?: string | null;
+    organisation_id?: number;
+    organisation?: {
+        organisation_type?: {
+            id?: number;
+        };
+    };
+    [key: string]: unknown;
+};
+
+export type TourFormDepartment = {
+    id: number;
+    name?: string;
+    [key: string]: unknown;
+};
+
+/** Lazy shared props from HandleInertiaRequests (create-tour modal). */
+export type TourFormPageProps = {
+    departments?: TourFormDepartment[];
+    gtcReps?: TourFormUser[];
+    voiceOvers?: TourFormUser[];
+};

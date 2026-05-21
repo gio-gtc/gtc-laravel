@@ -15,6 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -25,31 +26,108 @@ import DatePickerInput from '@/components/utils/date-picker-input';
 import Divider from '@/components/utils/divider';
 import DollarInput from '@/components/utils/dollar-input';
 import { ModalFooterActions } from '@/components/utils/modal-footer-actions';
+import { store as toursStore } from '@/routes/tours';
+import { type SharedData } from '@/types';
+import {
+    type TourFormDepartment,
+    type TourFormPageProps,
+    type TourFormUser,
+    type FlashPayload,
+} from '@/types/inertia-pages';
+import { useForm, usePage } from '@inertiajs/react';
+import type { Page } from '@inertiajs/core';
 import { Mail } from 'lucide-react';
-import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 interface TourModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-export default function TourModal({ isOpen, onClose }: TourModalProps) {
-    const [holdAllInvoices, setHoldAllInvoices] = useState(false);
-    const [liveOnOrderingSystem, setLiveOnOrderingSystem] = useState(false);
-    const [requireClientApproval, setRequireClientApproval] = useState(false);
-    const [startDate, setStartDate] = useState('');
-    const [expireOnSaleNowCuts, setExpireOnSaleNowCuts] = useState('');
+/** Internal Radix value only — maps to `voice_over: null` in form state. */
+const VOICE_OVER_UNSET = '__voice_over_unset__';
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        // TODO: Connect to backend when ready
-        console.log('Tour form submitted');
+const initialTourForm = {
+    name: '',
+    start_date: '',
+    expire_on_sale_now_cuts: '',
+    voice_over: null as string | null,
+    hold_all_invoices: false,
+    live_on_ordering_system: false,
+    require_client_approval: false,
+    client_approval_email: '',
+    tour_sponsor: '',
+    special_instructions: '',
+    tv_first_cut: '',
+    tv_second_cut: '',
+    radio_single_duration: '',
+    radio_dual_duration: '',
+    key_art: '',
+    gtc_department: '',
+    gtc_representative: '',
+};
+
+function formatUserDisplayName(user: TourFormUser): string {
+    return `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
+}
+
+function departmentLabel(department: TourFormDepartment): string {
+    return department.name?.trim() || `Department ${department.id}`;
+}
+
+export default function TourModal({ isOpen, onClose }: TourModalProps) {
+    const {
+        departments = [],
+        gtcReps = [],
+        voiceOvers = [],
+    } = usePage<SharedData & TourFormPageProps>().props;
+
+    const { data, setData, post, processing, errors, reset } =
+        useForm(initialTourForm);
+
+    const handleClose = () => {
+        reset();
         onClose();
     };
 
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        post(toursStore.url(), {
+            preserveScroll: true,
+            onSuccess: (page: Page) => {
+                const flash = page.props.flash as FlashPayload | undefined;
+                const errorFlash =
+                    typeof flash?.error === 'string' &&
+                    flash.error.trim() !== ''
+                        ? flash.error.trim()
+                        : null;
+
+                if (errorFlash !== null) {
+                    // Session flash error toast is surfaced by app-layout; stay open.
+                    return;
+                }
+
+                reset();
+                onClose();
+            },
+            onError: () => {
+                toast.error(
+                    'Please fix the highlighted fields and try again.',
+                    { toastId: 'tour-modal-validation-error' },
+                );
+            },
+        });
+    };
+
     return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            {/* <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[988px]"> */}
+        <Dialog
+            open={isOpen}
+            onOpenChange={(open) => {
+                if (!open) {
+                    handleClose();
+                }
+            }}
+        >
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[800px]">
                 <DialogHeader>
                     <DialogTitle>Add Tour</DialogTitle>
@@ -58,17 +136,21 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <ColumnedRowsParent>
                         <ColumnedRowsChild
-                            labelFor="tour_name"
+                            labelFor="name"
                             labelContent="Tour Name"
                             required
                         >
                             <Input
-                                id="tour_name"
-                                name="tour_name"
+                                id="name"
+                                name="name"
                                 placeholder="Tour Name"
+                                value={data.name}
+                                onChange={(e) =>
+                                    setData('name', e.target.value)
+                                }
                                 required
                             />
-                            <InputError message={undefined} />
+                            <InputError message={errors.name} />
                         </ColumnedRowsChild>
 
                         <ColumnedRowsChild
@@ -79,11 +161,13 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                             <DatePickerInput
                                 id="start_date"
                                 className="max-w-[150px]"
-                                value={startDate}
-                                onChange={(value) => setStartDate(value)}
+                                value={data.start_date}
+                                onChange={(value) =>
+                                    setData('start_date', value)
+                                }
                                 required
                             />
-                            <InputError message={undefined} />
+                            <InputError message={errors.start_date} />
                         </ColumnedRowsChild>
 
                         <ColumnedRowsChild
@@ -93,16 +177,17 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                             <DatePickerInput
                                 id="expire_on_sale_now_cuts"
                                 className="max-w-[150px]"
-                                value={expireOnSaleNowCuts}
+                                value={data.expire_on_sale_now_cuts}
                                 onChange={(value) =>
-                                    setExpireOnSaleNowCuts(value)
+                                    setData('expire_on_sale_now_cuts', value)
                                 }
                             />
-                            <InputError message={undefined} />
+                            <InputError
+                                message={errors.expire_on_sale_now_cuts}
+                            />
                         </ColumnedRowsChild>
                     </ColumnedRowsParent>
 
-                    {/* Tour Options Section */}
                     <div className="flex flex-1 flex-col gap-2 sm:flex-row">
                         <Label className="sm:flex-1">Tour Options</Label>
                         <div className="flex flex-2 flex-col gap-3">
@@ -110,32 +195,45 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 <span className="xs-gray-700-weight-500">
                                     Voice Over
                                 </span>
-                                <Select name="voice_over">
+                                <Select
+                                    value={
+                                        data.voice_over ?? VOICE_OVER_UNSET
+                                    }
+                                    onValueChange={(value) =>
+                                        setData(
+                                            'voice_over',
+                                            value === VOICE_OVER_UNSET
+                                                ? null
+                                                : value,
+                                        )
+                                    }
+                                >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Voice Over" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="gilbert_gottfried">
-                                            Gilbert Gottfried
+                                        <SelectItem value={VOICE_OVER_UNSET}>
+                                            --- Select Option ---
                                         </SelectItem>
-                                        <SelectItem value="none">
-                                            None
-                                        </SelectItem>
-                                        <SelectItem value="option_1">
-                                            Option 1
-                                        </SelectItem>
-                                        <SelectItem value="option_2">
-                                            Option 2
-                                        </SelectItem>
+                                        {voiceOvers.map((user) => (
+                                            <SelectItem
+                                                key={user.id}
+                                                value={String(user.id)}
+                                            >
+                                                {formatUserDisplayName(user)}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
-                                <InputError message={undefined} />
+                                <InputError message={errors.voice_over} />
                             </div>
                             <div className="flex gap-1">
                                 <Switch
                                     id="hold_all_invoices"
-                                    checked={holdAllInvoices}
-                                    onCheckedChange={setHoldAllInvoices}
+                                    checked={data.hold_all_invoices}
+                                    onCheckedChange={(checked) =>
+                                        setData('hold_all_invoices', checked)
+                                    }
                                 />
                                 <Label
                                     htmlFor="hold_all_invoices"
@@ -143,14 +241,21 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 >
                                     Hold All Invoices
                                 </Label>
-                                <InputError message={undefined} />
+                                <InputError
+                                    message={errors.hold_all_invoices}
+                                />
                             </div>
 
                             <div className="flex gap-1">
                                 <Switch
                                     id="live_on_ordering_system"
-                                    checked={liveOnOrderingSystem}
-                                    onCheckedChange={setLiveOnOrderingSystem}
+                                    checked={data.live_on_ordering_system}
+                                    onCheckedChange={(checked) =>
+                                        setData(
+                                            'live_on_ordering_system',
+                                            checked,
+                                        )
+                                    }
                                 />
                                 <Label
                                     htmlFor="live_on_ordering_system"
@@ -158,14 +263,21 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 >
                                     Live On Ordering System
                                 </Label>
-                                <InputError message={undefined} />
+                                <InputError
+                                    message={errors.live_on_ordering_system}
+                                />
                             </div>
 
                             <div className="flex gap-1">
                                 <Switch
                                     id="require_client_approval"
-                                    checked={requireClientApproval}
-                                    onCheckedChange={setRequireClientApproval}
+                                    checked={data.require_client_approval}
+                                    onCheckedChange={(checked) =>
+                                        setData(
+                                            'require_client_approval',
+                                            checked,
+                                        )
+                                    }
                                 />
                                 <Label
                                     htmlFor="require_client_approval"
@@ -173,12 +285,14 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 >
                                     Require Client Approval
                                 </Label>
-                                <InputError message={undefined} />
+                                <InputError
+                                    message={errors.require_client_approval}
+                                />
                             </div>
                         </div>
                     </div>
 
-                    {requireClientApproval && (
+                    {data.require_client_approval && (
                         <ColumnedRowsParent>
                             <ColumnedRowsChild
                                 labelFor="client_approval_email"
@@ -191,9 +305,18 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                     name="client_approval_email"
                                     type="email"
                                     placeholder="Client Approval Email"
+                                    value={data.client_approval_email}
+                                    onChange={(e) =>
+                                        setData(
+                                            'client_approval_email',
+                                            e.target.value,
+                                        )
+                                    }
                                     required
                                 />
-                                <InputError message={undefined} />
+                                <InputError
+                                    message={errors.client_approval_email}
+                                />
                             </ColumnedRowsChild>
                         </ColumnedRowsParent>
                     )}
@@ -207,8 +330,12 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 id="tour_sponsor"
                                 name="tour_sponsor"
                                 placeholder="Tour Sponsor"
+                                value={data.tour_sponsor}
+                                onChange={(e) =>
+                                    setData('tour_sponsor', e.target.value)
+                                }
                             />
-                            <InputError message={undefined} />
+                            <InputError message={errors.tour_sponsor} />
                         </ColumnedRowsChild>
 
                         <ColumnedRowsChild
@@ -220,45 +347,71 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                                 name="special_instructions"
                                 placeholder="Special Instructions"
                                 className="min-h-28"
+                                value={data.special_instructions}
+                                onChange={(e) =>
+                                    setData(
+                                        'special_instructions',
+                                        e.target.value,
+                                    )
+                                }
                             />
-                            <InputError message={undefined} />
+                            <InputError message={errors.special_instructions} />
                         </ColumnedRowsChild>
                     </ColumnedRowsParent>
 
-                    {/* Pricing Section */}
                     <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
                         <Label className="sm:flex-1">Price</Label>
 
                         <div className="relative flex flex-2 flex-col gap-2">
                             <div className="flex max-w-[300px] flex-col justify-between gap-2">
                                 <PriceInput
-                                    title={'TV First Cut'}
-                                    id={'tv_first_cut'}
-                                    error={undefined}
+                                    title="TV First Cut"
+                                    id="tv_first_cut"
+                                    value={data.tv_first_cut}
+                                    onChangeValue={(value) =>
+                                        setData('tv_first_cut', value)
+                                    }
+                                    error={errors.tv_first_cut}
                                 />
 
                                 <PriceInput
-                                    title={'TV Second Cut'}
-                                    id={'tv_second_cut'}
-                                    error={undefined}
+                                    title="TV Second Cut"
+                                    id="tv_second_cut"
+                                    value={data.tv_second_cut}
+                                    onChangeValue={(value) =>
+                                        setData('tv_second_cut', value)
+                                    }
+                                    error={errors.tv_second_cut}
                                 />
 
                                 <PriceInput
-                                    title={'Radio Single Duration'}
-                                    id={'radio_single_duration'}
-                                    error={undefined}
+                                    title="Radio Single Duration"
+                                    id="radio_single_duration"
+                                    value={data.radio_single_duration}
+                                    onChangeValue={(value) =>
+                                        setData('radio_single_duration', value)
+                                    }
+                                    error={errors.radio_single_duration}
                                 />
 
                                 <PriceInput
-                                    title={'Radio Dual Duration'}
-                                    id={'radio_dual_duration'}
-                                    error={undefined}
+                                    title="Radio Dual Duration"
+                                    id="radio_dual_duration"
+                                    value={data.radio_dual_duration}
+                                    onChangeValue={(value) =>
+                                        setData('radio_dual_duration', value)
+                                    }
+                                    error={errors.radio_dual_duration}
                                 />
 
                                 <PriceInput
-                                    title={'Key Art'}
-                                    id={'key_art'}
-                                    error={undefined}
+                                    title="Key Art"
+                                    id="key_art"
+                                    value={data.key_art}
+                                    onChangeValue={(value) =>
+                                        setData('key_art', value)
+                                    }
+                                    error={errors.key_art}
                                 />
                             </div>
                         </div>
@@ -270,23 +423,28 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                             labelContent="GTC Department"
                             required
                         >
-                            <Select name="gtc_department" required>
+                            <Select
+                                value={data.gtc_department || undefined}
+                                onValueChange={(value) =>
+                                    setData('gtc_department', value)
+                                }
+                                required
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="GTC Department" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="russel_treacy">
-                                        Russel Treacy
-                                    </SelectItem>
-                                    <SelectItem value="department_1">
-                                        Department 1
-                                    </SelectItem>
-                                    <SelectItem value="department_2">
-                                        Department 2
-                                    </SelectItem>
+                                    {departments.map((department) => (
+                                        <SelectItem
+                                            key={department.id}
+                                            value={String(department.id)}
+                                        >
+                                            {departmentLabel(department)}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
-                            <InputError message={undefined} />
+                            <InputError message={errors.gtc_department} />
                         </ColumnedRowsChild>
 
                         <ColumnedRowsChild
@@ -294,30 +452,42 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                             labelContent="GTC Represenitive"
                             required
                         >
-                            <Select name="gtc_representative" required>
+                            <Select
+                                value={data.gtc_representative || undefined}
+                                onValueChange={(value) =>
+                                    setData('gtc_representative', value)
+                                }
+                                required
+                            >
                                 <SelectTrigger>
                                     <SelectValue placeholder="GTC Represenitive" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="jordan_fenn">
-                                        Jordan Fenn
-                                    </SelectItem>
-                                    <SelectItem value="representative_1">
-                                        Representative 1
-                                    </SelectItem>
-                                    <SelectItem value="representative_2">
-                                        Representative 2
-                                    </SelectItem>
+                                    {gtcReps.map((user) => (
+                                        <SelectItem
+                                            key={user.id}
+                                            value={String(user.id)}
+                                        >
+                                            {formatUserDisplayName(user)}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
-                            <InputError message={undefined} />
+                            <InputError message={errors.gtc_representative} />
                         </ColumnedRowsChild>
                     </ColumnedRowsParent>
 
                     <Divider />
                     <ModalFooterActions
-                        onCancel={onClose}
-                        confirmLabel="Save Tour"
+                        onCancel={handleClose}
+                        confirmLabel={
+                            <>
+                                {processing && <Spinner />}
+                                Save Tour
+                            </>
+                        }
+                        confirmDisabled={processing}
+                        confirmClassName="inline-flex items-center gap-2"
                     />
                 </form>
             </DialogContent>
@@ -328,10 +498,14 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
 function PriceInput({
     title,
     id,
+    value,
+    onChangeValue,
     error,
 }: {
     title: string;
     id: string;
+    value: string;
+    onChangeValue: (value: string) => void;
     error: string | undefined;
 }) {
     return (
@@ -340,7 +514,12 @@ function PriceInput({
                 <Label htmlFor={id} className="sm-black-weight-400">
                     {title}
                 </Label>
-                <DollarInput id={id} containerClassNames="max-w-20" />
+                <DollarInput
+                    id={id}
+                    containerClassNames="max-w-20"
+                    value={value}
+                    onChangeValue={onChangeValue}
+                />
             </div>
             <InputError message={error} />
         </>

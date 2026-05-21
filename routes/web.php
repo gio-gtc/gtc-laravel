@@ -13,6 +13,7 @@ use App\Http\Controllers\DemoController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\OrdersController;
 use App\Http\Controllers\OrganisationController;
+use App\Http\Controllers\TourController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\VenueFormController;
 use App\Http\Middleware\BffAuth;
@@ -86,6 +87,8 @@ Route::middleware([BffAuth::class])->group(function () {
 
     Route::post('/contacts/invite', [ContactInviteProxyController::class, 'store'])
         ->name('contacts.invite');
+
+    Route::post('/tours', [TourController::class, 'store'])->name('tours.store');
 
     // VVV Supabase Chat Routes
     Route::prefix('api')->group(function () {

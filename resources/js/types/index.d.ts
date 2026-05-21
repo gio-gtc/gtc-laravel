@@ -77,6 +77,20 @@ export interface SharedData {
         currency_codes: string[];
         roles: string[];
     };
+    /** Lazy shared tour modal dropdowns (gtc-api, BFF). */
+    departments?: Array<{ id: number; name?: string; [key: string]: unknown }>;
+    gtcReps?: Array<{
+        id: number;
+        first_name?: string | null;
+        last_name?: string | null;
+        [key: string]: unknown;
+    }>;
+    voiceOvers?: Array<{
+        id: number;
+        first_name?: string | null;
+        last_name?: string | null;
+        [key: string]: unknown;
+    }>;
     sidebarOpen: boolean;
     [key: string]: unknown;
 }

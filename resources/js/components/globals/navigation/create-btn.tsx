@@ -17,7 +17,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -124,7 +124,18 @@ export const CreateBtn = () => {
                                 setContactPrefill(null);
                                 setIsContactModalOpen(true);
                             }}
-                            onTourClick={() => setIsTourModalOpen(true)}
+                            onTourClick={() => {
+                                router.reload({
+                                    preserveState: true,
+                                    preserveScroll: true,
+                                    only: [
+                                        'departments',
+                                        'gtcReps',
+                                        'voiceOvers',
+                                    ],
+                                    onFinish: () => setIsTourModalOpen(true),
+                                });
+                            }}
                             onOrderClick={() => setIsOrderModalOpen(true)}
                             onInvoiceClick={() => setIsInvoiceModalOpen(true)}
                         />

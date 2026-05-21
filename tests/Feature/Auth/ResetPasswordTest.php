@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Http;
 
 // --- TEST 1: The Happy Path ---
 it('proxies the reset password submission and redirects to login on success', function () {
-    // dd('TEST URL:', config('services.api.base_url'));
     // Safely format the URL
     $apiUrl = config('services.api.base_url').'/api/reset-password';
 
@@ -39,7 +38,6 @@ it('proxies the reset password submission and redirects to login on success', fu
 
 // --- TEST 2: The Validation/Token Failure ---
 it('catches API errors if the token is invalid or expired', function () {
-    // dd('TEST URL:', config('services.api.base_url'));
     $apiUrl = config('services.api.base_url').'/api/reset-password';
 
     // 1. Fake the API rejecting the request (e.g., token expired or doesn't match the database)

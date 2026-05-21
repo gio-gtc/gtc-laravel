@@ -43,11 +43,6 @@ class ContactInviteProxyController extends Controller
             ]);
         }
 
-        dd([
-            'status' => $response->status(),
-            'error_body' => $response->json() ?? $response->body()
-        ]);
-
         throw ValidationException::withMessages([
             'email' => ['Unable to send the invitation right now. Please try again later.'],
         ]);
