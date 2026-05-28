@@ -14,6 +14,7 @@ import {
 import DatePickerInput from '@/components/utils/date-picker-input';
 import Divider from '@/components/utils/divider';
 import { type Tour, type TourVenue, type Venue } from '@/types';
+import { type VenueSearchOption } from '@/types/orders-api';
 import { useEffect, useState } from 'react';
 import VenueAutocomplete from './venue-autocomplete';
 
@@ -48,7 +49,8 @@ export default function AddOrderModal({
     mode = 'add',
     venueItem = null,
 }: AddOrderModalProps) {
-    const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
+    const [selectedVenue, setSelectedVenue] =
+        useState<VenueSearchOption | null>(null);
     const [showStartDate, setShowStartDate] = useState<string | null>(null);
     const [showEndDate, setShowEndDate] = useState<string | null>(null);
     const [dueDate, setDueDate] = useState<string>();

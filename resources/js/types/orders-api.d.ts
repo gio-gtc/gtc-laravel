@@ -50,6 +50,13 @@ export interface ApiOrderVenue {
     country_id?: number | null;
 }
 
+/** Slim venue row from GET /api/venues (via BFF /api/search/venues). */
+export type VenueSearchOption = ApiOrderVenue;
+
+export interface VenuesSearchResponse {
+    venues?: VenueSearchOption[];
+}
+
 export interface ApiOrderTour {
     id: number;
     name: string;

@@ -85,6 +85,17 @@ Route::middleware([BffAuth::class])->group(function () {
         return $response->successful() ? $response->json() : ['organisations' => []];
     })->name('search.organisations');
 
+    Route::get('/api/search/venues', function (Request $request) {
+        $token = $request->session()->get('api_token');
+        $apiUrl = config('services.api.base_url').'/api/venues';
+
+        $response = Http::withToken($token)
+            ->acceptJson()
+            ->get($apiUrl, ['search' => $request->query('search')]);
+
+        return $response->successful() ? $response->json() : ['venues' => []];
+    })->name('search.venues');
+
     Route::post('/contacts/invite', [ContactInviteProxyController::class, 'store'])
         ->name('contacts.invite');
 
