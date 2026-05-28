@@ -1,8 +1,12 @@
 import type {
+    ApiOrder,
+    GroupedOrders,
+    OrderStatusOption,
+} from './orders-api';
+import type {
     Country,
     Invoice,
     InvoiceItem,
-    Order,
     Organisation,
     SharedData,
     Tour,
@@ -74,7 +78,10 @@ export interface OrdersPageProps {
     tour_venue_stops: TourVenue[];
     tour_venue_demos: TourVenue[];
     venues: Venue[];
-    orders: Order[];
+    orders: ApiOrder[];
+    grouped_orders: GroupedOrders[];
+    order_status_options: OrderStatusOption[];
+    _legacy_orders: import('./index').Order[];
     venue_items: VenueItemsRow[];
     venue_item_assigned: VenueItemAssigned[];
     venue_item_notes: VenueItemNote[];

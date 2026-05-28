@@ -17,28 +17,37 @@ import { type Tour, type TourVenue, type Venue } from '@/types';
 import { useEffect, useState } from 'react';
 import VenueAutocomplete from './venue-autocomplete';
 
+export type AddOrderModalTour = {
+    id: number;
+    name: string;
+};
+
 interface VenueItem {
     orderVenue: TourVenue;
     venue: Venue | null;
 }
 
-interface AddVenueModalProps {
+interface AddOrderModalProps {
     isOpen: boolean;
     onClose: () => void;
-    orderId: number;
-    order: Tour | null;
+    /** Tour context for add mode (from API table selection). */
+    tour?: AddOrderModalTour | null;
+    /** Legacy slideout edit mode. */
+    orderId?: number;
+    order?: Tour | null;
     mode?: 'add' | 'edit';
     venueItem?: VenueItem | null;
 }
 
-export default function AddVenueModal({
+export default function AddOrderModal({
     isOpen,
     onClose,
-    orderId,
-    order,
+    tour = null,
+    orderId = 0,
+    order = null,
     mode = 'add',
     venueItem = null,
-}: AddVenueModalProps) {
+}: AddOrderModalProps) {
     const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
     const [showStartDate, setShowStartDate] = useState<string | null>(null);
     const [showEndDate, setShowEndDate] = useState<string | null>(null);
@@ -46,8 +55,8 @@ export default function AddVenueModal({
     const [localDeliverables, setLocalDeliverables] = useState<string>('');
 
     const isEditMode = mode === 'edit' && venueItem != null;
+    const displayName = tour?.name ?? order?.name ?? '';
 
-    // Initialize form when modal opens
     useEffect(() => {
         if (!isOpen) return;
 
@@ -67,7 +76,6 @@ export default function AddVenueModal({
         }
     }, [isOpen, order, isEditMode, venueItem]);
 
-    // Reset form when modal closes
     useEffect(() => {
         if (!isOpen) {
             setSelectedVenue(null);
@@ -78,37 +86,9 @@ export default function AddVenueModal({
     }, [isOpen]);
 
     const handleSave = () => {
-        if (!showStartDate || !showEndDate) {
-            alert('Please select show dates');
+        if (isEditMode) {
+            onClose();
             return;
-        }
-
-        if (isEditMode && venueItem) {
-            // TODO: Implement actual save logic with API call
-            console.log('Updating venue show dates:', {
-                tour_venue_id: venueItem.orderVenue.id,
-                startDate: showStartDate,
-                endDate: showEndDate,
-            });
-        } else {
-            if (!selectedVenue) {
-                alert('Please select a venue');
-                return;
-            }
-            if (!dueDate) {
-                alert('Please select a due date');
-                return;
-            }
-            // TODO: Implement actual save logic with API call
-            console.log('Adding venue to order:', {
-                orderId,
-                venueId: selectedVenue.id,
-                venueName: selectedVenue.name,
-                startDate: showStartDate,
-                endDate: showEndDate,
-                dueDate,
-                localDeliverables,
-            });
         }
 
         onClose();
@@ -119,9 +99,9 @@ export default function AddVenueModal({
             <DialogContent className="w-[95vw] overflow-y-auto sm:max-w-[890px]">
                 <DialogHeader>
                     <DialogTitle>
-                        {order && (
+                        {displayName && (
                             <span className="lg-gray-700-weight-600 block pb-1">
-                                {order.name}
+                                {displayName}
                             </span>
                         )}
 
@@ -131,7 +111,6 @@ export default function AddVenueModal({
 
                 <Divider />
                 <ColumnedRowsParent>
-                    {/* Venue Name - Autocomplete or read-only */}
                     <ColumnedRowsChild
                         labelFor="venue-name"
                         labelContent="Venue Name"
@@ -159,7 +138,6 @@ export default function AddVenueModal({
                         )}
                     </ColumnedRowsChild>
 
-                    {/* Show Dates - Date Range */}
                     <ColumnedRowsChild
                         labelFor="show-dates"
                         labelContent="Show Dates"
@@ -181,7 +159,6 @@ export default function AddVenueModal({
                         />
                     </ColumnedRowsChild>
 
-                    {/* Due Date */}
                     <ColumnedRowsChild
                         labelFor="due-date"
                         labelContent="Due Date"
@@ -196,7 +173,6 @@ export default function AddVenueModal({
                         />
                     </ColumnedRowsChild>
 
-                    {/* Local Deliverables */}
                     <ColumnedRowsChild
                         labelFor="local-deliverables"
                         labelContent="Local Deliverables"

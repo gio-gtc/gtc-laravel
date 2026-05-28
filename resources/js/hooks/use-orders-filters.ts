@@ -1,61 +1,74 @@
-import { type TourVenueStatusValue } from '@/types';
+import { sanitizeFilterUserIds } from '@/lib/orders/orders-filter-users';
+import type { OrderItemStatus } from '@/types/orders-api';
+import type { User } from '@/types';
 import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'gtc-orders-filters';
 
 function normalizeStoredStatuses(
     raw: unknown,
-    validTourVenueStatusIds: number[],
-): TourVenueStatusValue[] {
+    validStatuses: OrderItemStatus[],
+): OrderItemStatus[] {
     if (!Array.isArray(raw)) return [];
     return raw.filter(
-        (s): s is TourVenueStatusValue =>
-            typeof s === 'number' && validTourVenueStatusIds.includes(s),
+        (s): s is OrderItemStatus =>
+            typeof s === 'string' && validStatuses.includes(s as OrderItemStatus),
     );
 }
 
 export type OrdersFilterState = {
     clientIds: number[];
     collaboratorIds: number[];
-    myClients: boolean;
     myCollaborators: boolean;
-    statuses: TourVenueStatusValue[];
+    statuses: OrderItemStatus[];
     country: { us: boolean; international: boolean };
 };
 
 export const DEFAULT_FILTERS: OrdersFilterState = {
     clientIds: [],
     collaboratorIds: [],
-    myClients: false,
     myCollaborators: false,
     statuses: [],
     country: { us: true, international: true },
 };
 
-function loadFilters(validTourVenueStatusIds: number[]): OrdersFilterState {
+type LoadFiltersOptions = {
+    validStatuses: OrderItemStatus[];
+    clientUsers: User[];
+    collaboratorUsers: User[];
+};
+
+function loadFilters(options: LoadFiltersOptions): OrdersFilterState {
     if (typeof window === 'undefined') return DEFAULT_FILTERS;
     try {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (!stored) return DEFAULT_FILTERS;
         const parsed = JSON.parse(stored) as Partial<OrdersFilterState>;
+
+        const rawClientIds = Array.isArray(parsed.clientIds)
+            ? parsed.clientIds.filter((id) => typeof id === 'number')
+            : DEFAULT_FILTERS.clientIds;
+        const rawCollaboratorIds = Array.isArray(parsed.collaboratorIds)
+            ? parsed.collaboratorIds.filter((id) => typeof id === 'number')
+            : DEFAULT_FILTERS.collaboratorIds;
+
+        const { clientIds, collaboratorIds } = sanitizeFilterUserIds(
+            rawClientIds,
+            rawCollaboratorIds,
+            options.clientUsers,
+            options.collaboratorUsers,
+        );
+
         return {
-            clientIds: Array.isArray(parsed.clientIds)
-                ? parsed.clientIds.filter((id) => typeof id === 'number')
-                : DEFAULT_FILTERS.clientIds,
-            collaboratorIds: Array.isArray(parsed.collaboratorIds)
-                ? parsed.collaboratorIds.filter((id) => typeof id === 'number')
-                : DEFAULT_FILTERS.collaboratorIds,
-            myClients:
-                typeof parsed.myClients === 'boolean'
-                    ? parsed.myClients
-                    : DEFAULT_FILTERS.myClients,
+            clientIds,
+            collaboratorIds,
             myCollaborators:
                 typeof parsed.myCollaborators === 'boolean'
                     ? parsed.myCollaborators
                     : DEFAULT_FILTERS.myCollaborators,
             statuses: normalizeStoredStatuses(
                 parsed.statuses,
-                validTourVenueStatusIds,
+                options.validStatuses,
             ),
             country:
                 parsed.country &&
@@ -78,9 +91,17 @@ function saveFilters(state: OrdersFilterState): void {
     }
 }
 
-export function useOrdersFilters(validTourVenueStatusIds: number[]) {
+export function useOrdersFilters(
+    validStatuses: OrderItemStatus[],
+    clientUsers: User[],
+    collaboratorUsers: User[],
+) {
     const [filters, setFilters] = useState<OrdersFilterState>(() =>
-        loadFilters(validTourVenueStatusIds),
+        loadFilters({
+            validStatuses,
+            clientUsers,
+            collaboratorUsers,
+        }),
     );
 
     useEffect(() => {

@@ -8,14 +8,15 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import {
-    getUniqueAssignedUsersForTourVenue,
-    type OrdersVenueLineCatalog,
-} from '@/components/utils/venue-items';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
+import { useOrdersFilterUsers } from '@/hooks/use-orders-filter-users';
 import { useOrdersFilters } from '@/hooks/use-orders-filters';
-import { useRecentOrders } from '@/hooks/use-recent-orders';
-import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
+import {
+    getAssigneesForOrder,
+    orderMatchesClientFilter,
+    orderMatchesCollaboratorFilter,
+    resolveClientForOrder,
+} from '@/lib/orders/order-assignees';
 import { cn, resolveUrl } from '@/lib/utils';
 import { orders } from '@/routes';
 import {
@@ -26,42 +27,44 @@ import {
     type Venue,
 } from '@/types';
 import { type OrdersPageProps } from '@/types/inertia-pages';
+import type { ApiOrder, GroupedOrders, OrderItemStatus } from '@/types/orders-api';
 import { router, usePage } from '@inertiajs/react';
 import {
     Fragment,
-    startTransition,
     useCallback,
     useEffect,
     useMemo,
     useState,
 } from 'react';
-import AddOrderModal from '../add-order-modal';
-import OrdersTableHeaderActions, {
-    type GroupedOrderData,
-} from '../orders-table-header-actions';
+import AddOrderModal, {
+    type AddOrderModalTour,
+} from '../add-order-modal';
+import OrdersTableHeaderActions from '../orders-table-header-actions';
 import VenueDetailSlideout from '../slideout';
+import { getVisibleOrderDemoContext } from './orders-table-group-helpers';
 import OrdersTableDemoRow from './orders-table-demo-row';
-import {
-    getVisibleOrderDemoContext,
-    sortVenueStopsByCreatedDesc,
-} from './orders-table-group-helpers';
-import OrdersTableVenueRow from './orders-table-venue-row';
+import OrdersTableOrderRow from './orders-table-order-row';
+
+const USA_COUNTRY_ID = 1;
 
 function OrdersTable() {
     const page = usePage<SharedData & OrdersPageProps>();
     const { auth } = page.props;
     const catalog = useOrdersCatalog();
-    const tourVenueStatusIds = useMemo(
-        () => catalog.tour_venue_status.map((r) => r.id),
-        [catalog.tour_venue_status],
+    const { clientUsers, collaboratorUsers } = useOrdersFilterUsers();
+    const validStatusValues = useMemo(
+        () =>
+            catalog.order_status_options.map((o) => o.value) as OrderItemStatus[],
+        [catalog.order_status_options],
     );
-    const [filters, setFilters] = useOrdersFilters(tourVenueStatusIds);
-    const { addRecentOrder } = useRecentOrders();
-    const [expandedOrders, setExpandedOrders] = useState<Set<number>>(
-        new Set(),
+    const [filters, setFilters] = useOrdersFilters(
+        validStatusValues,
+        clientUsers,
+        collaboratorUsers,
     );
+    const [expandedTours, setExpandedTours] = useState<Set<number>>(new Set());
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedVenueIds, setSelectedVenueIds] = useState<number[]>([]);
+    const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
     const [isAddOrderModalOpen, setIsAddOrderModalOpen] = useState(false);
     const [selectedSlideout, setSelectedSlideout] = useState<{
         order: Tour;
@@ -70,88 +73,16 @@ function OrdersTable() {
             venue: Venue | null;
         } | null;
     } | null>(null);
-    const usersWithFallback = useUsersWithFallback();
 
     const slideoutOpen = useContainedSheetOpen(selectedSlideout !== null);
 
-    const venueLineCatalog = useMemo((): OrdersVenueLineCatalog => {
-        return {
-            venue_items: catalog.venue_items,
-            venue_item_assigned: catalog.venue_item_assigned,
-            venue_item_status: catalog.venue_item_status,
-        };
-    }, [
-        catalog.venue_items,
-        catalog.venue_item_assigned,
-        catalog.venue_item_status,
-    ]);
+    const groupedData = catalog.grouped_orders;
 
-    const allTourVenues = useMemo(
-        () => [...catalog.tour_venue_stops, ...catalog.tour_venue_demos],
-        [catalog.tour_venue_stops, catalog.tour_venue_demos],
+    const getOrderAssignees = useCallback(
+        (order: ApiOrder): User[] =>
+            getAssigneesForOrder(order, collaboratorUsers),
+        [collaboratorUsers],
     );
-
-    // Transform data: merge venue stops + optional tour demo (same per-tour order as flat tourVenueData).
-    const groupedData = useMemo<GroupedOrderData[]>(() => {
-        return catalog.tours
-            .map((order) => {
-                const stopItems = catalog.tour_venue_stops
-                    .filter((ov) => ov.tour_id === order.id)
-                    .map((ov) => ({
-                        orderVenue: ov,
-                        venue: catalog.venues.find(
-                            (v) => v.id === ov.venue_id,
-                        ) as Venue | null,
-                    }));
-                const demo = catalog.tour_venue_demos.find(
-                    (d) => d.tour_id === order.id,
-                );
-                const demoItem = demo
-                    ? [{ orderVenue: demo, venue: null as Venue | null }]
-                    : [];
-                const venues = [...stopItems, ...demoItem].filter(
-                    (item) => item.venue !== undefined || item.venue === null,
-                );
-                return { order, venues };
-            })
-            .sort((a, b) => {
-                const aTime = new Date(a.order.created_at).getTime();
-                const bTime = new Date(b.order.created_at).getTime();
-                return bTime - aTime; // descending (newest first)
-            });
-    }, [
-        catalog.tours,
-        catalog.tour_venue_stops,
-        catalog.tour_venue_demos,
-        catalog.venues,
-    ]);
-
-    const getTourVenueAssignees = useMemo(() => {
-        return (tourVenueId: number): User[] =>
-            getUniqueAssignedUsersForTourVenue(
-                tourVenueId,
-                usersWithFallback,
-                venueLineCatalog,
-            );
-    }, [usersWithFallback, venueLineCatalog]);
-
-    // Helper function to get client user by ID
-    const getClientUser = useMemo(() => {
-        return (clientId: number): User | undefined => {
-            return usersWithFallback.find((user) => user.id === clientId);
-        };
-    }, [usersWithFallback]);
-
-    // Record venue to recent list when slideout is opened (including demo)
-    useEffect(() => {
-        if (selectedSlideout?.venueItem) {
-            addRecentOrder({
-                tourVenueId: selectedSlideout.venueItem.orderVenue.id,
-                tourName: selectedSlideout.order.name,
-                venueName: selectedSlideout.venueItem.venue?.name ?? 'Demo',
-            });
-        }
-    }, [selectedSlideout, addRecentOrder]);
 
     // Sync URL filter param to myCollaborators (e.g. ?filter=my-tasks)
     useEffect(() => {
@@ -168,7 +99,6 @@ function OrdersTable() {
         );
     }, [page.url, setFilters]);
 
-    // Sync myCollaborators filter changes to URL (filters → URL)
     const handleFilterChange = useCallback(
         (newFilters: typeof filters) => {
             setFilters(newFilters);
@@ -192,168 +122,111 @@ function OrdersTable() {
         [filters.myCollaborators, page.url, setFilters],
     );
 
-    // Open venue slideout from URL param (e.g. from Recent Orders sidebar link)
-    useEffect(() => {
-        const url = page.url;
-        const queryIndex = url.indexOf('?');
-        if (queryIndex === -1) return;
-        const params = new URLSearchParams(url.slice(queryIndex));
-        const openVenueId = params.get('openVenue');
-        if (!openVenueId) return;
+    const filteredGroupedData = useMemo((): GroupedOrders[] => {
+        let searchFiltered: GroupedOrders[];
 
-        const tourVenueId = parseInt(openVenueId, 10);
-        if (Number.isNaN(tourVenueId)) return;
-
-        for (const group of groupedData) {
-            const venueItem = group.venues.find(
-                (v) => v.orderVenue.id === tourVenueId,
-            );
-            if (venueItem) {
-                startTransition(() => {
-                    setSelectedSlideout({
-                        order: group.order,
-                        venueItem: {
-                            orderVenue: venueItem.orderVenue,
-                            venue: venueItem.venue,
-                        },
-                    });
-                });
-                // Preserve filter param (e.g. my-tasks) when clearing openVenue
-                const params = new URLSearchParams(
-                    queryIndex >= 0 ? url.slice(queryIndex) : '',
-                );
-                params.delete('openVenue');
-                const baseUrl = resolveUrl(orders());
-                const visitUrl = params.toString()
-                    ? `${baseUrl}?${params.toString()}`
-                    : baseUrl;
-                router.visit(visitUrl, {
-                    replace: true,
-                    preserveState: true,
-                });
-                break;
-            }
-        }
-    }, [page.url, groupedData]);
-
-    // Filter grouped data by search query, then by advanced filters
-    const filteredGroupedData = useMemo(() => {
-        // Step 1: Search filter
-        let searchFiltered: GroupedOrderData[];
         if (!searchQuery.trim()) {
             searchFiltered = groupedData;
         } else {
             const query = searchQuery.toLowerCase().trim();
-            const venueMatchesSearch = (venueItem: {
-                orderVenue: TourVenue;
-                venue: Venue | null;
-            }) => {
-                if (venueItem.venue == null) {
-                    const client = getClientUser(venueItem.orderVenue.client);
-                    const assignees = getTourVenueAssignees(
-                        venueItem.orderVenue.id,
+
+            const orderMatchesSearch = (order: ApiOrder): boolean => {
+                if (order.is_demo) {
+                    const assignees = getAssigneesForOrder(
+                        order,
+                        collaboratorUsers,
                     );
                     return (
                         'demo'.includes(query) ||
-                        (client?.name?.toLowerCase().includes(query) ??
-                            false) ||
-                        assignees.some((c) =>
-                            c.name.toLowerCase().includes(query),
+                        assignees.some((a) =>
+                            a.name.toLowerCase().includes(query),
                         )
                     );
                 }
-                const region = `${venueItem.venue.city}, ${venueItem.venue.state}`;
-                const client = getClientUser(venueItem.orderVenue.client);
-                const assignees = getTourVenueAssignees(
-                    venueItem.orderVenue.id,
+
+                const venue = order.venue;
+                const region = venue
+                    ? `${venue.city ?? ''}, ${venue.state ?? ''}`
+                    : '';
+                const clientName =
+                    resolveClientForOrder(order, clientUsers)?.name
+                        ?.toLowerCase() ?? '';
+                const assignees = getAssigneesForOrder(
+                    order,
+                    collaboratorUsers,
                 );
+
                 return (
                     region.toLowerCase().includes(query) ||
-                    venueItem.venue.name.toLowerCase().includes(query) ||
-                    (client?.name?.toLowerCase().includes(query) ?? false) ||
-                    assignees.some((c) => c.name.toLowerCase().includes(query))
+                    (venue?.name?.toLowerCase().includes(query) ?? false) ||
+                    clientName.includes(query) ||
+                    assignees.some((a) => a.name.toLowerCase().includes(query))
                 );
             };
+
             const hasTourMatch = groupedData.some((g) =>
-                g.order.name.toLowerCase().includes(query),
+                g.tour.name.toLowerCase().includes(query),
             );
+
             if (hasTourMatch) {
                 searchFiltered = groupedData.filter((g) =>
-                    g.order.name.toLowerCase().includes(query),
+                    g.tour.name.toLowerCase().includes(query),
                 );
             } else {
                 searchFiltered = groupedData
-                    .filter((g) => g.venues.some(venueMatchesSearch))
+                    .filter((g) => g.orders.some(orderMatchesSearch))
                     .map((g) => ({
                         ...g,
-                        venues: g.venues.filter(venueMatchesSearch),
+                        orders: g.orders.filter(orderMatchesSearch),
                     }));
             }
         }
 
-        // Step 2: Apply advanced filters (client, collaborator, status, country)
-        const hasClientFilter =
-            filters.clientIds.length > 0 || filters.myClients;
+        const hasClientFilter = filters.clientIds.length > 0;
         const hasCollaboratorFilter =
             filters.collaboratorIds.length > 0 || filters.myCollaborators;
         const hasStatusFilter = filters.statuses.length > 0;
         const hasCountryFilter =
             !filters.country.us || !filters.country.international;
 
-        const venueMatchesAdvancedFilters = (venueItem: {
-            orderVenue: TourVenue;
-            venue: Venue | null;
-        }): boolean => {
-            const isDemo = venueItem.venue == null;
+        const orderMatchesAdvancedFilters = (order: ApiOrder): boolean => {
+            if (order.is_demo) {
+                if (hasClientFilter || hasCountryFilter) return false;
+            } else {
+                if (
+                    hasClientFilter &&
+                    !orderMatchesClientFilter(order, filters.clientIds)
+                ) {
+                    return false;
+                }
 
-            // Client filter (when myClients, ignore clientIds per plan)
-            if (hasClientFilter) {
-                if (filters.myClients) {
-                    if (venueItem.orderVenue.client !== auth.user.id)
-                        return false;
-                } else {
-                    if (
-                        !filters.clientIds.includes(venueItem.orderVenue.client)
-                    )
-                        return false;
+                if (hasCountryFilter && order.venue) {
+                    const isUS = order.venue.country_id === USA_COUNTRY_ID;
+                    const usMatch = filters.country.us && isUS;
+                    const internationalMatch =
+                        filters.country.international && !isUS;
+                    if (!usMatch && !internationalMatch) return false;
                 }
             }
 
             if (hasCollaboratorFilter) {
-                const assignees = getTourVenueAssignees(
-                    venueItem.orderVenue.id,
-                );
-                if (filters.myCollaborators) {
-                    if (!assignees.some((c) => c.id === auth.user.id))
-                        return false;
-                } else {
-                    if (
-                        !assignees.some((c) =>
-                            filters.collaboratorIds.includes(c.id),
-                        )
+                if (
+                    !orderMatchesCollaboratorFilter(
+                        order,
+                        collaboratorUsers,
+                        {
+                            myCollaborators: filters.myCollaborators,
+                            collaboratorIds: filters.collaboratorIds,
+                            authUserId: auth.user.id,
+                        },
                     )
-                        return false;
+                ) {
+                    return false;
                 }
             }
 
-            // Status filter: match if any selected status appears on the venue
-            if (hasStatusFilter) {
-                if (
-                    !filters.statuses.some((s) =>
-                        venueItem.orderVenue.status?.includes(s),
-                    )
-                )
-                    return false;
-            }
-
-            // Country filter (demo has no venue, exclude when country filter active)
-            if (hasCountryFilter) {
-                if (isDemo) return false;
-                const isUS = venueItem.venue!.country_id === 1;
-                const usMatch = filters.country.us && isUS;
-                const internationalMatch =
-                    filters.country.international && !isUS;
-                if (!usMatch && !internationalMatch) return false;
+            if (hasStatusFilter && !filters.statuses.includes(order.status)) {
+                return false;
             }
 
             return true;
@@ -369,30 +242,29 @@ function OrdersTable() {
         }
 
         return searchFiltered
-            .filter((g) => g.venues.some(venueMatchesAdvancedFilters))
+            .filter((g) => g.orders.some(orderMatchesAdvancedFilters))
             .map((g) => ({
                 ...g,
-                venues: g.venues.filter(venueMatchesAdvancedFilters),
+                orders: g.orders.filter(orderMatchesAdvancedFilters),
             }));
     }, [
         groupedData,
         searchQuery,
         filters,
         auth.user.id,
-        getClientUser,
-        getTourVenueAssignees,
+        clientUsers,
+        collaboratorUsers,
     ]);
 
-    const hasVenueLevelFilter =
+    const hasOrderLevelFilter =
         filters.statuses.length > 0 ||
         !filters.country.us ||
         !filters.country.international;
 
-    const hasClientFilter = filters.clientIds.length > 0 || filters.myClients;
+    const hasClientFilter = filters.clientIds.length > 0;
     const hasCollaboratorFilter =
         filters.collaboratorIds.length > 0 || filters.myCollaborators;
 
-    // Helper function to format date (short format: "Nov 8")
     const formatDate = (dateString: string): string => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', {
@@ -401,73 +273,63 @@ function OrdersTable() {
         });
     };
 
-    // Toggle order expansion
-    const toggleOrderExpansion = (orderId: number) => {
-        setExpandedOrders((prev) => {
+    const toggleTourExpansion = (tourId: number) => {
+        setExpandedTours((prev) => {
             const newSet = new Set(prev);
-            const isCurrentlyExpanded = newSet.has(orderId);
+            const isCurrentlyExpanded = newSet.has(tourId);
 
             if (isCurrentlyExpanded) {
-                // Collapsing: clear selections for this order group
-                newSet.delete(orderId);
-                setSelectedVenueIds((prevSelected) => {
-                    // Get all venue IDs for this order
-                    const venueIdsForOrder = allTourVenues
-                        .filter((ov) => ov.tour_id === orderId)
-                        .map((ov) => ov.id);
-                    // Remove any selected venues that belong to this order
+                newSet.delete(tourId);
+                setSelectedOrderIds((prevSelected) => {
+                    const orderIdsForTour = groupedData
+                        .find((g) => g.tour.id === tourId)
+                        ?.orders.map((o) => o.id) ?? [];
                     return prevSelected.filter(
-                        (id) => !venueIdsForOrder.includes(id),
+                        (id) => !orderIdsForTour.includes(id),
                     );
                 });
             } else {
-                // Expanding: just add to expanded set
-                newSet.add(orderId);
+                newSet.add(tourId);
             }
             return newSet;
         });
     };
 
-    // Handle venue row selection (single selection across entire table)
-    const handleVenueRowClick = (orderVenueId: number) => {
-        setSelectedVenueIds((prev) => {
-            // Toggle off if this venue was already selected
-            if (prev.includes(orderVenueId)) {
+    const handleOrderRowClick = (orderId: number) => {
+        setSelectedOrderIds((prev) => {
+            if (prev.includes(orderId)) {
                 return [];
             }
-            // Single selection: replace with just this venue
-            return [orderVenueId];
+            return [orderId];
         });
     };
 
-    // Get selected order from first selected venue
-    const selectedOrder = useMemo(() => {
-        if (selectedVenueIds.length === 0) return null;
-        const firstSelectedVenue = allTourVenues.find(
-            (ov) => ov.id === selectedVenueIds[0],
-        );
-        if (!firstSelectedVenue) return null;
-        return (
-            catalog.tours.find((o) => o.id === firstSelectedVenue.tour_id) ||
-            null
-        );
-    }, [selectedVenueIds, allTourVenues, catalog.tours]);
+    const selectedTourForModal = useMemo((): AddOrderModalTour | null => {
+        if (selectedOrderIds.length === 0) return null;
+        const orderId = selectedOrderIds[0];
+        for (const group of groupedData) {
+            const order = group.orders.find((o) => o.id === orderId);
+            if (order) {
+                return { id: group.tour.id, name: group.tour.name };
+            }
+        }
+        return null;
+    }, [selectedOrderIds, groupedData]);
 
     return (
         <div className="table-content-max-width space-y-4">
             <OrdersTableHeaderActions
-                selectedVenueCount={selectedVenueIds.length}
+                selectedOrderCount={selectedOrderIds.length}
                 onAddOrderClick={() => setIsAddOrderModalOpen(true)}
                 filters={filters}
                 onFilterChange={handleFilterChange}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
                 groupedData={groupedData}
-                getClientUser={getClientUser}
-                getTourVenueAssignees={getTourVenueAssignees}
+                clientUsers={clientUsers}
+                getOrderAssignees={getOrderAssignees}
             />
 
-            {/* Table */}
             <div className="border-t">
                 <Table>
                     <TableHeader>
@@ -495,38 +357,35 @@ function OrdersTable() {
                     <TableBody>
                         {filteredGroupedData.length > 0 ? (
                             filteredGroupedData.map((group) => {
-                                const isExpanded = expandedOrders.has(
-                                    group.order.id,
+                                const isExpanded = expandedTours.has(
+                                    group.tour.id,
                                 );
                                 const demoCtx =
-                                    isExpanded && !hasVenueLevelFilter
+                                    isExpanded && !hasOrderLevelFilter
                                         ? getVisibleOrderDemoContext(group, {
-                                              hasVenueLevelFilter,
+                                              hasOrderLevelFilter,
                                               hasClientFilter,
                                               hasCollaboratorFilter,
                                               filters,
                                               authUserId: auth.user.id,
                                               searchQuery,
-                                              getClientUser,
-                                              getTourVenueAssignees,
+                                              collaboratorRoster:
+                                                  collaboratorUsers,
                                           })
                                         : null;
-                                const venueStops = sortVenueStopsByCreatedDesc(
-                                    group.venues.filter(
-                                        (v) => v.venue !== null,
-                                    ),
+                                const liveOrders = group.orders.filter(
+                                    (o) => !o.is_demo,
                                 );
 
                                 return (
                                     <Fragment
-                                        key={`order-group-${group.order.id}`}
+                                        key={`order-group-${group.tour.id}`}
                                     >
-                                        {/* Order Group Header */}
                                         <TableRow
                                             className="cursor-pointer text-lg font-semibold hover:bg-muted/50"
                                             onClick={() =>
-                                                toggleOrderExpansion(
-                                                    group.order.id,
+                                                toggleTourExpansion(
+                                                    group.tour.id,
                                                 )
                                             }
                                         >
@@ -543,7 +402,7 @@ function OrdersTable() {
                                                         )}
                                                     />
                                                     <span className="text-gray-700">
-                                                        {group.order.name}
+                                                        {group.tour.name}
                                                     </span>
                                                 </div>
                                             </TableCell>
@@ -551,49 +410,31 @@ function OrdersTable() {
 
                                         {demoCtx && (
                                             <OrdersTableDemoRow
-                                                order={group.order}
-                                                demoItem={demoCtx.demoItem}
-                                                owner={demoCtx.owner}
-                                                assignees={demoCtx.assignees}
-                                                onOpenSlideout={
-                                                    setSelectedSlideout
+                                                demoOrder={demoCtx.demoOrder}
+                                                collaboratorRoster={
+                                                    collaboratorUsers
                                                 }
                                             />
                                         )}
 
                                         {isExpanded &&
-                                            venueStops.map((venueItem) => {
-                                                const venueIsSelected =
-                                                    selectedVenueIds.includes(
-                                                        venueItem.orderVenue.id,
-                                                    );
-                                                const client = getClientUser(
-                                                    venueItem.orderVenue.client,
-                                                );
-                                                const assignees =
-                                                    getTourVenueAssignees(
-                                                        venueItem.orderVenue.id,
-                                                    );
-                                                return (
-                                                    <OrdersTableVenueRow
-                                                        key={`venue-${venueItem.orderVenue.id}`}
-                                                        order={group.order}
-                                                        venueItem={venueItem}
-                                                        venueIsSelected={
-                                                            venueIsSelected
-                                                        }
-                                                        client={client}
-                                                        assignees={assignees}
-                                                        formatDate={formatDate}
-                                                        onVenueRowClick={
-                                                            handleVenueRowClick
-                                                        }
-                                                        onOpenSlideout={
-                                                            setSelectedSlideout
-                                                        }
-                                                    />
-                                                );
-                                            })}
+                                            liveOrders.map((order) => (
+                                                <OrdersTableOrderRow
+                                                    key={`order-${order.id}`}
+                                                    order={order}
+                                                    orderIsSelected={selectedOrderIds.includes(
+                                                        order.id,
+                                                    )}
+                                                    clientRoster={clientUsers}
+                                                    collaboratorRoster={
+                                                        collaboratorUsers
+                                                    }
+                                                    formatDate={formatDate}
+                                                    onOrderRowClick={
+                                                        handleOrderRowClick
+                                                    }
+                                                />
+                                            ))}
                                     </Fragment>
                                 );
                             })
@@ -602,22 +443,19 @@ function OrdersTable() {
                                 <TableCell
                                     colSpan={6}
                                     className="h-24 text-center"
-                                ></TableCell>
+                                />
                             </TableRow>
                         )}
                     </TableBody>
                 </Table>
             </div>
 
-            {/* Add Venue Modal */}
             <AddOrderModal
                 isOpen={isAddOrderModalOpen}
                 onClose={() => setIsAddOrderModalOpen(false)}
-                orderId={selectedOrder?.id || 0}
-                order={selectedOrder}
+                tour={selectedTourForModal}
             />
 
-            {/* Venue / Demo Detail Slideout */}
             <VenueDetailSlideout
                 venueItem={selectedSlideout?.venueItem ?? null}
                 order={selectedSlideout?.order ?? null}

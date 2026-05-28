@@ -1,7 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { resolveClientForOrder } from '@/lib/orders/order-assignees';
 import { cn } from '@/lib/utils';
-import { type Tour, type TourVenue, type User, type Venue } from '@/types';
+import type { ApiOrder, GroupedOrders } from '@/types/orders-api';
+import type { User } from '@/types';
 import { Search, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -18,20 +20,12 @@ export type SuggestionItem = {
     label: string;
 };
 
-type GroupedOrderData = {
-    order: Tour;
-    venues: Array<{
-        orderVenue: TourVenue;
-        venue: Venue | null;
-    }>;
-};
-
 interface OrdersSearchFilterProps {
     searchQuery: string;
     onSearchChange: (query: string) => void;
-    groupedData: GroupedOrderData[];
-    getClientUser: (clientId: number) => User | undefined;
-    getTourVenueAssignees: (tourVenueId: number) => User[];
+    groupedData: GroupedOrders[];
+    clientUsers: User[];
+    getOrderAssignees: (order: ApiOrder) => User[];
     expandedWidth?: string;
     transitionDuration?: number;
     className?: string;
@@ -49,8 +43,8 @@ export default function OrdersSearchFilter({
     searchQuery,
     onSearchChange,
     groupedData,
-    getClientUser,
-    getTourVenueAssignees,
+    clientUsers,
+    getOrderAssignees,
     expandedWidth = 'w-64',
     transitionDuration = 300,
     className,
@@ -60,16 +54,13 @@ export default function OrdersSearchFilter({
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
-    const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Build unique suggestions from grouped data
     const allSuggestions = useMemo<SuggestionItem[]>(() => {
         const seen = new Set<string>();
         const items: SuggestionItem[] = [];
 
         for (const group of groupedData) {
-            // Tour names
-            const tourName = group.order.name;
+            const tourName = group.tour.name;
             if (tourName && !seen.has(`tour:${tourName}`)) {
                 seen.add(`tour:${tourName}`);
                 items.push({
@@ -79,32 +70,8 @@ export default function OrdersSearchFilter({
                 });
             }
 
-            for (const { orderVenue, venue } of group.venues) {
-                const isDemo = venue == null;
-
-                // Regions (city, state) - skip for demo
-                if (!isDemo) {
-                    const region = `${venue.city}, ${venue.state}`;
-                    if (region && !seen.has(`region:${region}`)) {
-                        seen.add(`region:${region}`);
-                        items.push({
-                            type: 'region',
-                            value: region,
-                            label: `${TYPE_LABELS.region}: ${region}`,
-                        });
-                    }
-
-                    // Venue names
-                    if (venue.name && !seen.has(`venue:${venue.name}`)) {
-                        seen.add(`venue:${venue.name}`);
-                        items.push({
-                            type: 'venue',
-                            value: venue.name,
-                            label: `${TYPE_LABELS.venue}: ${venue.name}`,
-                        });
-                    }
-                } else {
-                    // Demo - add "Demo" as venue suggestion
+            for (const order of group.orders) {
+                if (order.is_demo) {
                     if (!seen.has('venue:Demo')) {
                         seen.add('venue:Demo');
                         items.push({
@@ -113,10 +80,46 @@ export default function OrdersSearchFilter({
                             label: `${TYPE_LABELS.venue}: Demo`,
                         });
                     }
+                    const assignees = getOrderAssignees(order);
+                    for (const collab of assignees) {
+                        if (
+                            collab.name &&
+                            !seen.has(`collaborator:${collab.name}`)
+                        ) {
+                            seen.add(`collaborator:${collab.name}`);
+                            items.push({
+                                type: 'collaborator',
+                                value: collab.name,
+                                label: `${TYPE_LABELS.collaborator}: ${collab.name}`,
+                            });
+                        }
+                    }
+                    continue;
                 }
 
-                // Clients
-                const client = getClientUser(orderVenue.client);
+                const venue = order.venue;
+                if (venue) {
+                    const region = `${venue.city ?? ''}, ${venue.state ?? ''}`;
+                    if (region.trim() && !seen.has(`region:${region}`)) {
+                        seen.add(`region:${region}`);
+                        items.push({
+                            type: 'region',
+                            value: region,
+                            label: `${TYPE_LABELS.region}: ${region}`,
+                        });
+                    }
+
+                    if (venue.name && !seen.has(`venue:${venue.name}`)) {
+                        seen.add(`venue:${venue.name}`);
+                        items.push({
+                            type: 'venue',
+                            value: venue.name,
+                            label: `${TYPE_LABELS.venue}: ${venue.name}`,
+                        });
+                    }
+                }
+
+                const client = resolveClientForOrder(order, clientUsers);
                 if (client?.name && !seen.has(`client:${client.name}`)) {
                     seen.add(`client:${client.name}`);
                     items.push({
@@ -126,7 +129,7 @@ export default function OrdersSearchFilter({
                     });
                 }
 
-                const assignees = getTourVenueAssignees(orderVenue.id);
+                const assignees = getOrderAssignees(order);
                 for (const collab of assignees) {
                     if (
                         collab.name &&
@@ -144,9 +147,8 @@ export default function OrdersSearchFilter({
         }
 
         return items;
-    }, [groupedData, getClientUser, getTourVenueAssignees]);
+    }, [groupedData, clientUsers, getOrderAssignees]);
 
-    // Filter suggestions by search query
     const filteredSuggestions = useMemo(() => {
         if (!searchQuery.trim()) return allSuggestions;
         const query = searchQuery.toLowerCase().trim();
@@ -155,7 +157,6 @@ export default function OrdersSearchFilter({
         );
     }, [allSuggestions, searchQuery]);
 
-    // Handle smooth open/close transitions
     useEffect(() => {
         if (isSearchExpanded) {
             setShowSearchContent(true);
@@ -169,7 +170,6 @@ export default function OrdersSearchFilter({
         }
     }, [isSearchExpanded, transitionDuration]);
 
-    // Show dropdown when expanded, has query, and has suggestions
     useEffect(() => {
         setIsDropdownOpen(
             isSearchExpanded &&
@@ -280,10 +280,7 @@ export default function OrdersSearchFilter({
                         <X className="size-3.5" />
                     </Button>
                     {isDropdownOpen && (
-                        <div
-                            ref={dropdownRef}
-                            className="absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-auto rounded-md border bg-popover shadow-md"
-                        >
+                        <div className="absolute top-full right-0 left-0 z-50 mt-1 max-h-60 overflow-auto rounded-md border bg-popover shadow-md">
                             {filteredSuggestions.map((suggestion, index) => (
                                 <button
                                     key={`${suggestion.type}-${suggestion.value}`}

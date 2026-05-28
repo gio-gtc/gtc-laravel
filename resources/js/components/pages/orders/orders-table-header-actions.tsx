@@ -1,39 +1,34 @@
 import { Button } from '@/components/ui/button';
 import { type OrdersFilterState } from '@/hooks/use-orders-filters';
-import { type Tour, type TourVenue, type User, type Venue } from '@/types';
+import type { ApiOrder, GroupedOrders } from '@/types/orders-api';
+import type { User } from '@/types';
 import OrdersAdvancedFilters from './orders-advanced-filters';
 import OrdersSearchFilter from './orders-search-filter';
 
-export type GroupedOrderData = {
-    order: Tour;
-    venues: Array<{
-        orderVenue: TourVenue;
-        venue: Venue | null;
-    }>;
-};
+export type { GroupedOrders };
 
 interface OrdersTableHeaderActionsProps {
-    selectedVenueCount: number;
+    selectedOrderCount: number;
     onAddOrderClick: () => void;
     filters: OrdersFilterState;
     onFilterChange: (filters: OrdersFilterState) => void;
     searchQuery: string;
     onSearchChange: (query: string) => void;
-    groupedData: GroupedOrderData[];
-    getClientUser: (clientId: number) => User | undefined;
-    getTourVenueAssignees: (tourVenueId: number) => User[];
+    groupedData: GroupedOrders[];
+    clientUsers: User[];
+    getOrderAssignees: (order: ApiOrder) => User[];
 }
 
 export default function OrdersTableHeaderActions({
-    selectedVenueCount,
+    selectedOrderCount,
     onAddOrderClick,
     filters,
     onFilterChange,
     searchQuery,
     onSearchChange,
     groupedData,
-    getClientUser,
-    getTourVenueAssignees,
+    clientUsers,
+    getOrderAssignees,
 }: OrdersTableHeaderActionsProps) {
     return (
         <div className="flex items-center justify-between gap-1 overflow-y-auto">
@@ -41,7 +36,7 @@ export default function OrdersTableHeaderActions({
                 <Button
                     variant="outline"
                     size={'md'}
-                    disabled={selectedVenueCount === 0}
+                    disabled={selectedOrderCount === 0}
                     onClick={onAddOrderClick}
                 >
                     Add Order
@@ -56,8 +51,8 @@ export default function OrdersTableHeaderActions({
                     searchQuery={searchQuery}
                     onSearchChange={onSearchChange}
                     groupedData={groupedData}
-                    getClientUser={getClientUser}
-                    getTourVenueAssignees={getTourVenueAssignees}
+                    clientUsers={clientUsers}
+                    getOrderAssignees={getOrderAssignees}
                 />
             </div>
         </div>

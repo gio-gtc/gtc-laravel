@@ -7,13 +7,13 @@ import {
 import Divider from '@/components/utils/divider';
 import FilterUserGroupSection from '@/components/utils/filter-user-group-section';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
+import { useOrdersFilterUsers } from '@/hooks/use-orders-filter-users';
 import {
     type OrdersFilterState,
     DEFAULT_FILTERS,
 } from '@/hooks/use-orders-filters';
-import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { cn } from '@/lib/utils';
-import { type TourVenueStatusValue } from '@/types';
+import type { OrderItemStatus } from '@/types/orders-api';
 import { usePage } from '@inertiajs/react';
 import { Filter, X } from 'lucide-react';
 import { useMemo } from 'react';
@@ -31,23 +31,23 @@ export default function OrdersAdvancedFilters({
     const searchParams = new URL(url, window.location.origin).searchParams;
     const isMyTasksFilterActive = searchParams.get('filter') === 'my-tasks';
 
-    const { tour_venue_status: tourVenueStatusRows } = useOrdersCatalog();
-    const usersWithFallback = useUsersWithFallback();
+    const { order_status_options: orderStatusOptions } = useOrdersCatalog();
+    const { clientUsers, collaboratorUsers } = useOrdersFilterUsers();
 
     const selectedClients = useMemo(
-        () => usersWithFallback.filter((u) => filter.clientIds.includes(u.id)),
-        [usersWithFallback, filter.clientIds],
+        () => clientUsers.filter((u) => filter.clientIds.includes(u.id)),
+        [clientUsers, filter.clientIds],
     );
     const selectedCollaborators = useMemo(
         () =>
-            usersWithFallback.filter((u) =>
+            collaboratorUsers.filter((u) =>
                 filter.collaboratorIds.includes(u.id),
             ),
-        [usersWithFallback, filter.collaboratorIds],
+        [collaboratorUsers, filter.collaboratorIds],
     );
 
     const hasActiveFilters = useMemo(() => {
-        const clientActive = filter.clientIds.length > 0 || filter.myClients;
+        const clientActive = filter.clientIds.length > 0;
         const collaboratorActive =
             filter.collaboratorIds.length > 0 || filter.myCollaborators;
         const statusActive = filter.statuses.length > 0;
@@ -62,7 +62,7 @@ export default function OrdersAdvancedFilters({
         onFilterChange(DEFAULT_FILTERS);
     };
 
-    const toggleStatus = (status: TourVenueStatusValue) => {
+    const toggleStatus = (status: OrderItemStatus) => {
         const isSelected = filter.statuses.includes(status);
         onFilterChange({
             ...filter,
@@ -92,13 +92,6 @@ export default function OrdersAdvancedFilters({
                 <div className="space-y-4">
                     <FilterUserGroupSection
                         title="Clients"
-                        myChecked={filter.myClients}
-                        onMyChange={(checked) =>
-                            onFilterChange({
-                                ...filter,
-                                myClients: checked,
-                            })
-                        }
                         selectedUsers={selectedClients}
                         onUsersChange={(users) =>
                             onFilterChange({
@@ -106,7 +99,7 @@ export default function OrdersAdvancedFilters({
                                 clientIds: users.map((u) => u.id),
                             })
                         }
-                        availableUsers={usersWithFallback.filter(
+                        availableUsers={clientUsers.filter(
                             (u) => !filter.clientIds.includes(u.id),
                         )}
                     />
@@ -128,26 +121,25 @@ export default function OrdersAdvancedFilters({
                                     collaboratorIds: users.map((u) => u.id),
                                 })
                             }
-                            availableUsers={usersWithFallback.filter(
+                            availableUsers={collaboratorUsers.filter(
                                 (u) => !filter.collaboratorIds.includes(u.id),
                             )}
                         />
                     )}
 
-                    {/* Status Section */}
                     <div className="space-y-2">
                         <p className="text-sm font-medium">Status</p>
                         <div className="flex flex-wrap gap-2">
-                            {tourVenueStatusRows.map((opt) => (
+                            {orderStatusOptions.map((opt) => (
                                 <Button
-                                    key={opt.id}
+                                    key={opt.value}
                                     variant={
-                                        filter.statuses.includes(opt.id)
+                                        filter.statuses.includes(opt.value)
                                             ? 'default'
                                             : 'secondary'
                                     }
                                     size="sm"
-                                    onClick={() => toggleStatus(opt.id)}
+                                    onClick={() => toggleStatus(opt.value)}
                                 >
                                     {opt.label}
                                 </Button>
@@ -155,7 +147,6 @@ export default function OrdersAdvancedFilters({
                         </div>
                     </div>
 
-                    {/* Country Section */}
                     <div className="space-y-2">
                         <p className="text-sm font-medium">Country</p>
                         <div className="flex flex-col gap-2 sm:flex-row">

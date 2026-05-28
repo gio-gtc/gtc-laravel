@@ -105,11 +105,11 @@ function LocalArtView({
 
     const resolvedOrderId = useMemo(() => {
         if (!venueItem) return null;
-        const match = catalog.orders.find(
+        const match = (catalog._legacy_orders ?? []).find(
             (o) => o.tour_venue_id === venueItem.orderVenue.id,
         );
         return match?.id ?? null;
-    }, [catalog.orders, venueItem]);
+    }, [catalog._legacy_orders, venueItem]);
 
     /**
      * /venue-forms/{mock_venue_id} must match the catalog venue id in DB (see VenueSeeder).
