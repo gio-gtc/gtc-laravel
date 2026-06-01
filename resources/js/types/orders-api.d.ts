@@ -104,8 +104,11 @@ export interface ApiOrderTour {
 
 export interface ApiOrderClient {
     id: number;
-    name: string;
     email: string;
+    /** Legacy/summary label when API denormalizes a display name. */
+    name?: string | null;
+    first_name?: string | null;
+    last_name?: string | null;
 }
 
 /** Order row from gtc-api GET /api/orders (BFF adds collaborators). */

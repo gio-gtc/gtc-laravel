@@ -22,9 +22,7 @@ export function UserAvatar({
         <Avatar
             className={cn('size-[24px] border-1 border-background', className)}
         >
-            {imageSrc ? (
-                <AvatarImage src={imageSrc} alt={user.name} />
-            ) : null}
+            {imageSrc ? <AvatarImage src={imageSrc} alt={user.name} /> : null}
             <AvatarFallback className="bg-neutral-200 text-[9px] text-black">
                 {getInitials(user)}
             </AvatarFallback>

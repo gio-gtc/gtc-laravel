@@ -31,7 +31,9 @@ final class OrderStoreController extends Controller
                 ->with('error', 'Your session has expired. Please sign in again.');
         }
 
-        $result = $client->post('/api/orders', self::mapApiPayload($validated, $isStaff, $sessionUserId));
+        $apiPayload = self::mapApiPayload($validated, $isStaff, $sessionUserId);
+
+        $result = $client->post('/api/orders', $apiPayload);
 
         if ($result['ok']) {
             return redirect()
@@ -65,7 +67,7 @@ final class OrderStoreController extends Controller
         ];
 
         if ($isStaff) {
-            $rules['ordered_by_id'] = ['required', 'integer'];
+            $rules['ordered_by_id'] = ['required', 'integer', 'min:1'];
         } else {
             $rules['ordered_by_id'] = ['prohibited'];
         }
@@ -114,9 +116,27 @@ final class OrderStoreController extends Controller
             return false;
         }
 
+        $orgId = self::sessionUserOrganisationId($user);
+
+        return $orgId !== null && $orgId === self::GTC_STAFF_ORGANISATION_ID;
+    }
+
+    /**
+     * @param  array<string, mixed>  $user
+     */
+    private static function sessionUserOrganisationId(array $user): ?int
+    {
+        $organisation = $user['organisation'] ?? null;
+        if (is_array($organisation)) {
+            $nestedId = $organisation['id'] ?? null;
+            if (is_numeric($nestedId)) {
+                return (int) $nestedId;
+            }
+        }
+
         $orgId = $user['organisation_id'] ?? null;
 
-        return is_numeric($orgId) && (int) $orgId === self::GTC_STAFF_ORGANISATION_ID;
+        return is_numeric($orgId) ? (int) $orgId : null;
     }
 
     private static function sessionUserId(Request $request): ?int

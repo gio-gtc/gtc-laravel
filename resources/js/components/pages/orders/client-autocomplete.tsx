@@ -207,7 +207,7 @@ export default function ClientAutocomplete({
                                 <div className="font-medium">
                                     {clientDisplayLabel(client)}
                                 </div>
-                                <div className="text-sm text-muted-foreground">
+                                <div className="text-sm">
                                     {clientSecondaryLabel(client)}
                                 </div>
                             </button>

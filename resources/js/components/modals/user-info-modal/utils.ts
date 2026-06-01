@@ -62,11 +62,11 @@ export function buildUserInfoFormDefaults(
         last_name: user.last_name ?? '',
         email: user.email ?? '',
         organisation_id:
-            typeof user.organisation_id === 'number' &&
-            user.organisation_id > 0
-                ? user.organisation_id
+            typeof user.organisation?.id === 'number' &&
+            user.organisation.id > 0
+                ? user.organisation.id
                 : null,
-        organisation_name: user.organisation_name ?? null,
+        organisation_name: user.organisation?.name ?? null,
         job_title: user.job_title ?? '',
         department: user.department ?? '',
         phone_number: user.phone_number ?? '',

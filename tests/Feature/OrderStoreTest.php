@@ -7,6 +7,30 @@ function ordersStoreApiUrl(): string
     return rtrim((string) config('services.api.base_url'), '/').'/api/orders';
 }
 
+/**
+ * @param  array<string, mixed>  $overrides
+ * @return array<string, mixed>
+ */
+function bffStaffSessionUser(array $overrides = []): array
+{
+    return array_merge([
+        'id' => 10,
+        'organisation' => ['id' => 1, 'name' => 'GTC'],
+    ], $overrides);
+}
+
+/**
+ * @param  array<string, mixed>  $overrides
+ * @return array<string, mixed>
+ */
+function bffClientSessionUser(array $overrides = []): array
+{
+    return array_merge([
+        'id' => 42,
+        'organisation' => ['id' => 5, 'name' => 'Client Org'],
+    ], $overrides);
+}
+
 it('proxies staff create order to gtc-api with mapped payload', function () {
     Http::fake([
         ordersStoreApiUrl() => Http::response([
@@ -14,7 +38,7 @@ it('proxies staff create order to gtc-api with mapped payload', function () {
         ], 201),
     ]);
 
-    $this->actingAsBff(['organisation_id' => 1, 'id' => 10])
+    $this->actingAsBff(bffStaffSessionUser())
         ->post(route('orders.store'), [
             'tour_id' => 12,
             'venue_id' => 84,
@@ -50,7 +74,7 @@ it('sets ordered_by_id from session for client users', function () {
         ordersStoreApiUrl() => Http::response(['data' => ['id' => 100]], 201),
     ]);
 
-    $this->actingAsBff(['organisation_id' => 5, 'id' => 42])
+    $this->actingAsBff(bffClientSessionUser())
         ->post(route('orders.store'), [
             'tour_id' => 3,
             'venue_id' => 10,
@@ -64,10 +88,26 @@ it('sets ordered_by_id from session for client users', function () {
         && ($request->data()['ordered_by_id'] ?? null) === 42);
 });
 
+it('rejects ordered_by_id for client users', function () {
+    Http::fake();
+
+    $this->actingAsBff(bffClientSessionUser())
+        ->post(route('orders.store'), [
+            'tour_id' => 3,
+            'venue_id' => 10,
+            'due_date' => '2026-11-01',
+            'show_date' => '2026-11-01',
+            'ordered_by_id' => 99,
+        ])
+        ->assertSessionHasErrors('ordered_by_id');
+
+    Http::assertNothingSent();
+});
+
 it('requires ordered_by_id for staff', function () {
     Http::fake();
 
-    $this->actingAsBff(['organisation_id' => 1])
+    $this->actingAsBff(bffStaffSessionUser(['id' => 10]))
         ->post(route('orders.store'), [
             'tour_id' => 1,
             'venue_id' => 2,
@@ -89,7 +129,7 @@ it('forwards api validation errors to the form', function () {
         ], 422),
     ]);
 
-    $this->actingAsBff(['organisation_id' => 1, 'id' => 10])
+    $this->actingAsBff(bffStaffSessionUser())
         ->post(route('orders.store'), [
             'tour_id' => 1,
             'venue_id' => 999,

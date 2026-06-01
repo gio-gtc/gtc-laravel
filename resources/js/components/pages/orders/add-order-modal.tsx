@@ -14,7 +14,7 @@ import {
 } from '@/components/utils/column-row-layouts';
 import DatePickerInput from '@/components/utils/date-picker-input';
 import Divider from '@/components/utils/divider';
-import { GTC_INTERNAL_ORG_ID } from '@/lib/orders/orders-filter-users';
+import { isCollaboratorUser } from '@/lib/orders/orders-filter-users';
 import { store as ordersStore } from '@/routes/orders';
 import {
     type SharedData,
@@ -64,8 +64,7 @@ export default function AddOrderModal({
     venueItem = null,
 }: AddOrderModalProps) {
     const { auth } = usePage<SharedData>().props;
-    const isStaff =
-        auth.user != null && auth.user.organisation.id === GTC_INTERNAL_ORG_ID;
+    const isStaff = auth.user != null && isCollaboratorUser(auth.user);
 
     const [selectedVenue, setSelectedVenue] =
         useState<VenueSearchOption | null>(null);
@@ -92,18 +91,6 @@ export default function AddOrderModal({
         local_deliverable_email: '',
         ordered_by_id: 0,
     });
-
-    useEffect(() => {
-        transform((formData) => {
-            if (isStaff) {
-                return formData;
-            }
-
-            const { ordered_by_id: _removed, ...rest } = formData;
-
-            return rest;
-        });
-    }, [isStaff, transform]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -161,10 +148,6 @@ export default function AddOrderModal({
         setData('venue_id', selectedVenue?.id ?? 0);
     }, [selectedVenue, setData]);
 
-    useEffect(() => {
-        setData('ordered_by_id', selectedClient?.id ?? 0);
-    }, [selectedClient, setData]);
-
     const canSubmit = useMemo(() => {
         if (isEditMode) return true;
         if (!tour?.id || data.tour_id <= 0) return false;
@@ -190,6 +173,19 @@ export default function AddOrderModal({
         }
 
         if (!canSubmit) return;
+
+        transform(() => {
+            return {
+                tour_id: data.tour_id,
+                venue_id: selectedVenue?.id ?? data.venue_id,
+                due_date: data.due_date,
+                show_date: data.show_date,
+                local_deliverable_email: data.local_deliverable_email,
+                ...(isStaff && selectedClient?.id
+                    ? { ordered_by_id: selectedClient.id }
+                    : {}),
+            };
+        });
 
         post(ordersStore.url(), {
             preserveScroll: true,

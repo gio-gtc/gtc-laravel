@@ -1,10 +1,10 @@
-import { useCallback } from 'react';
 import type { User } from '@/types';
+import { useCallback } from 'react';
 
 export type InitialsInput =
     | null
     | undefined
-    | Pick<User, 'first_name' | 'last_name'>;
+    | Pick<User, 'first_name' | 'last_name' | 'name'>;
 
 function initialsFromParts(
     firstRaw: string | null | undefined,
@@ -36,6 +36,17 @@ export function useInitials() {
             return '?';
         }
 
-        return initialsFromParts(input.first_name, input.last_name);
+        const direct = initialsFromParts(input.first_name, input.last_name);
+        if (direct !== '?') {
+            return direct;
+        }
+
+        const name = input.name?.trim();
+        if (name) {
+            const tokens = name.split(/\s+/).filter(Boolean);
+            return initialsFromParts(tokens[0], tokens.slice(1).join(' '));
+        }
+
+        return '?';
     }, []);
 }

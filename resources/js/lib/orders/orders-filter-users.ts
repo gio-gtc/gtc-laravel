@@ -1,15 +1,20 @@
-import type { ApiOrder, OrderAssignee } from '@/types/orders-api';
+import type { ApiOrder, ApiOrderClient, OrderAssignee } from '@/types/orders-api';
 import type { User } from '@/types';
+import {
+    GTC_INTERNAL_ORG_ID,
+    isExternalClientUser,
+    isGtcStaffUser,
+    normalizeUserOrganisationShape,
+} from '@/lib/user-organisation';
 
-/** GTC internal org — collaborators (staff) use this organisation_id. */
-export const GTC_INTERNAL_ORG_ID = 1;
+export { GTC_INTERNAL_ORG_ID };
 
 export function isCollaboratorUser(user: User): boolean {
-    return user.organisation_id === GTC_INTERNAL_ORG_ID;
+    return isGtcStaffUser(user);
 }
 
 export function isClientUser(user: User): boolean {
-    return user.organisation_id !== GTC_INTERNAL_ORG_ID;
+    return isExternalClientUser(user);
 }
 
 export function filterClientUsers(users: User[]): User[] {
@@ -28,6 +33,37 @@ export function resolveUserById(
     return roster.find((u) => u.id === id);
 }
 
+export function apiOrderClientToUser(client: ApiOrderClient): User {
+    const first_name =
+        typeof client.first_name === 'string' ? client.first_name.trim() : '';
+    const last_name =
+        typeof client.last_name === 'string' ? client.last_name.trim() : '';
+    const email = typeof client.email === 'string' ? client.email.trim() : '';
+    const fromParts = [first_name, last_name].filter(Boolean).join(' ');
+    const fromName =
+        typeof client.name === 'string' ? client.name.trim() : '';
+    const displayName = fromParts || fromName || email || `User ${client.id}`;
+
+    let resolvedFirst = first_name;
+    let resolvedLast = last_name;
+    if (!resolvedFirst && !resolvedLast) {
+        const tokens = displayName.split(/\s+/).filter(Boolean);
+        resolvedFirst = tokens[0] ?? '';
+        resolvedLast = tokens.slice(1).join(' ');
+    }
+
+    return normalizeUserOrganisationShape({
+        id: client.id,
+        name: displayName,
+        email,
+        email_verified_at: null,
+        role: '',
+        first_name: resolvedFirst,
+        last_name: resolvedLast,
+        organisation: { id: 0, name: '' },
+    });
+}
+
 export function assigneeToUser(assignee: OrderAssignee, roster?: User[]): User {
     const fromRoster = resolveUserById(assignee.id, roster ?? []);
     if (fromRoster) {
@@ -40,9 +76,7 @@ export function assigneeToUser(assignee: OrderAssignee, roster?: User[]): User {
         email: assignee.email,
         email_verified_at: null,
         role: '',
-        organisation_id: GTC_INTERNAL_ORG_ID,
-        created_at: '',
-        updated_at: '',
+        organisation: { id: GTC_INTERNAL_ORG_ID, name: '' },
     };
 }
 
@@ -50,6 +84,11 @@ export function resolveClientForOrder(
     order: ApiOrder,
     clientRoster: User[],
 ): User | undefined {
+    const embedded = order.client;
+    if (embedded != null && typeof embedded.id === 'number') {
+        return apiOrderClientToUser(embedded);
+    }
+
     return resolveUserById(order.ordered_by_id, clientRoster);
 }
 
