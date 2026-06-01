@@ -81,6 +81,14 @@ export function resolveAssigneesForOrder(
     );
 }
 
+/** @alias resolveAssigneesForOrder */
+export function getAssigneesForOrder(
+    order: ApiOrder,
+    collaboratorRoster: User[],
+): User[] {
+    return resolveAssigneesForOrder(order, collaboratorRoster);
+}
+
 export function orderMatchesClientFilter(
     order: ApiOrder,
     clientIds: number[],

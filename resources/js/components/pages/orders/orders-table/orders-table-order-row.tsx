@@ -4,7 +4,7 @@ import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import {
     getAssigneesForOrder,
     resolveClientForOrder,
-} from '@/lib/orders/order-assignees';
+} from '@/lib/orders/orders-filter-users';
 import { cn } from '@/lib/utils';
 import type { User } from '@/types';
 import type { ApiOrder } from '@/types/orders-api';

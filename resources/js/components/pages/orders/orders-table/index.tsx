@@ -1,5 +1,4 @@
 import { FilledArrow } from '@/components/ui/icons';
-import { useContainedSheetOpen } from '@/components/ui/sheet';
 import {
     Table,
     TableBody,
@@ -11,41 +10,23 @@ import {
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
 import { useOrdersFilterUsers } from '@/hooks/use-orders-filter-users';
 import { useOrdersFilters } from '@/hooks/use-orders-filters';
-import {
-    getAssigneesForOrder,
-    orderMatchesClientFilter,
-    orderMatchesCollaboratorFilter,
-    resolveClientForOrder,
-} from '@/lib/orders/order-assignees';
+import { formatShortUsDate } from '@/lib/format/date';
+import { filterGroupedOrders } from '@/lib/orders/orders-list-filters';
+import { getAssigneesForOrder } from '@/lib/orders/orders-filter-users';
 import { cn, resolveUrl } from '@/lib/utils';
 import { orders } from '@/routes';
-import {
-    type SharedData,
-    type Tour,
-    type TourVenue,
-    type User,
-    type Venue,
-} from '@/types';
+import { type SharedData, type User } from '@/types';
 import { type OrdersPageProps } from '@/types/inertia-pages';
-import type { ApiOrder, GroupedOrders, OrderItemStatus } from '@/types/orders-api';
+import type { ApiOrder, GroupedOrders, OrderStatus } from '@/types/orders-api';
 import { router, usePage } from '@inertiajs/react';
-import {
-    Fragment,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import AddOrderModal, {
     type AddOrderModalTour,
 } from '../add-order-modal';
 import OrdersTableHeaderActions from '../orders-table-header-actions';
-import VenueDetailSlideout from '../slideout';
 import { getVisibleOrderDemoContext } from './orders-table-group-helpers';
 import OrdersTableDemoRow from './orders-table-demo-row';
 import OrdersTableOrderRow from './orders-table-order-row';
-
-const USA_COUNTRY_ID = 1;
 
 function OrdersTable() {
     const page = usePage<SharedData & OrdersPageProps>();
@@ -54,7 +35,7 @@ function OrdersTable() {
     const { clientUsers, collaboratorUsers } = useOrdersFilterUsers();
     const validStatusValues = useMemo(
         () =>
-            catalog.order_status_options.map((o) => o.value) as OrderItemStatus[],
+            catalog.order_status_options.map((o) => o.value) as OrderStatus[],
         [catalog.order_status_options],
     );
     const [filters, setFilters] = useOrdersFilters(
@@ -66,15 +47,6 @@ function OrdersTable() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
     const [isAddOrderModalOpen, setIsAddOrderModalOpen] = useState(false);
-    const [selectedSlideout, setSelectedSlideout] = useState<{
-        order: Tour;
-        venueItem: {
-            orderVenue: TourVenue;
-            venue: Venue | null;
-        } | null;
-    } | null>(null);
-
-    const slideoutOpen = useContainedSheetOpen(selectedSlideout !== null);
 
     const groupedData = catalog.grouped_orders;
 
@@ -84,7 +56,6 @@ function OrdersTable() {
         [collaboratorUsers],
     );
 
-    // Sync URL filter param to myCollaborators (e.g. ?filter=my-tasks)
     useEffect(() => {
         const queryIndex = page.url.indexOf('?');
         const params = new URLSearchParams(
@@ -122,139 +93,25 @@ function OrdersTable() {
         [filters.myCollaborators, page.url, setFilters],
     );
 
-    const filteredGroupedData = useMemo((): GroupedOrders[] => {
-        let searchFiltered: GroupedOrders[];
-
-        if (!searchQuery.trim()) {
-            searchFiltered = groupedData;
-        } else {
-            const query = searchQuery.toLowerCase().trim();
-
-            const orderMatchesSearch = (order: ApiOrder): boolean => {
-                if (order.is_demo) {
-                    const assignees = getAssigneesForOrder(
-                        order,
-                        collaboratorUsers,
-                    );
-                    return (
-                        'demo'.includes(query) ||
-                        assignees.some((a) =>
-                            a.name.toLowerCase().includes(query),
-                        )
-                    );
-                }
-
-                const venue = order.venue;
-                const region = venue
-                    ? `${venue.city ?? ''}, ${venue.state ?? ''}`
-                    : '';
-                const clientName =
-                    resolveClientForOrder(order, clientUsers)?.name
-                        ?.toLowerCase() ?? '';
-                const assignees = getAssigneesForOrder(
-                    order,
-                    collaboratorUsers,
-                );
-
-                return (
-                    region.toLowerCase().includes(query) ||
-                    (venue?.name?.toLowerCase().includes(query) ?? false) ||
-                    clientName.includes(query) ||
-                    assignees.some((a) => a.name.toLowerCase().includes(query))
-                );
-            };
-
-            const hasTourMatch = groupedData.some((g) =>
-                g.tour.name.toLowerCase().includes(query),
-            );
-
-            if (hasTourMatch) {
-                searchFiltered = groupedData.filter((g) =>
-                    g.tour.name.toLowerCase().includes(query),
-                );
-            } else {
-                searchFiltered = groupedData
-                    .filter((g) => g.orders.some(orderMatchesSearch))
-                    .map((g) => ({
-                        ...g,
-                        orders: g.orders.filter(orderMatchesSearch),
-                    }));
-            }
-        }
-
-        const hasClientFilter = filters.clientIds.length > 0;
-        const hasCollaboratorFilter =
-            filters.collaboratorIds.length > 0 || filters.myCollaborators;
-        const hasStatusFilter = filters.statuses.length > 0;
-        const hasCountryFilter =
-            !filters.country.us || !filters.country.international;
-
-        const orderMatchesAdvancedFilters = (order: ApiOrder): boolean => {
-            if (order.is_demo) {
-                if (hasClientFilter || hasCountryFilter) return false;
-            } else {
-                if (
-                    hasClientFilter &&
-                    !orderMatchesClientFilter(order, filters.clientIds)
-                ) {
-                    return false;
-                }
-
-                if (hasCountryFilter && order.venue) {
-                    const isUS = order.venue.country_id === USA_COUNTRY_ID;
-                    const usMatch = filters.country.us && isUS;
-                    const internationalMatch =
-                        filters.country.international && !isUS;
-                    if (!usMatch && !internationalMatch) return false;
-                }
-            }
-
-            if (hasCollaboratorFilter) {
-                if (
-                    !orderMatchesCollaboratorFilter(
-                        order,
-                        collaboratorUsers,
-                        {
-                            myCollaborators: filters.myCollaborators,
-                            collaboratorIds: filters.collaboratorIds,
-                            authUserId: auth.user.id,
-                        },
-                    )
-                ) {
-                    return false;
-                }
-            }
-
-            if (hasStatusFilter && !filters.statuses.includes(order.status)) {
-                return false;
-            }
-
-            return true;
-        };
-
-        if (
-            !hasClientFilter &&
-            !hasCollaboratorFilter &&
-            !hasStatusFilter &&
-            !hasCountryFilter
-        ) {
-            return searchFiltered;
-        }
-
-        return searchFiltered
-            .filter((g) => g.orders.some(orderMatchesAdvancedFilters))
-            .map((g) => ({
-                ...g,
-                orders: g.orders.filter(orderMatchesAdvancedFilters),
-            }));
-    }, [
-        groupedData,
-        searchQuery,
-        filters,
-        auth.user.id,
-        clientUsers,
-        collaboratorUsers,
-    ]);
+    const filteredGroupedData = useMemo(
+        (): GroupedOrders[] =>
+            filterGroupedOrders(
+                groupedData,
+                searchQuery,
+                filters,
+                clientUsers,
+                collaboratorUsers,
+                auth.user.id,
+            ),
+        [
+            groupedData,
+            searchQuery,
+            filters,
+            auth.user.id,
+            clientUsers,
+            collaboratorUsers,
+        ],
+    );
 
     const hasOrderLevelFilter =
         filters.statuses.length > 0 ||
@@ -265,14 +122,6 @@ function OrdersTable() {
     const hasCollaboratorFilter =
         filters.collaboratorIds.length > 0 || filters.myCollaborators;
 
-    const formatDate = (dateString: string): string => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-        });
-    };
-
     const toggleTourExpansion = (tourId: number) => {
         setExpandedTours((prev) => {
             const newSet = new Set(prev);
@@ -281,9 +130,10 @@ function OrdersTable() {
             if (isCurrentlyExpanded) {
                 newSet.delete(tourId);
                 setSelectedOrderIds((prevSelected) => {
-                    const orderIdsForTour = groupedData
-                        .find((g) => g.tour.id === tourId)
-                        ?.orders.map((o) => o.id) ?? [];
+                    const orderIdsForTour =
+                        groupedData
+                            .find((g) => g.tour.id === tourId)
+                            ?.orders.map((o) => o.id) ?? [];
                     return prevSelected.filter(
                         (id) => !orderIdsForTour.includes(id),
                     );
@@ -429,7 +279,9 @@ function OrdersTable() {
                                                     collaboratorRoster={
                                                         collaboratorUsers
                                                     }
-                                                    formatDate={formatDate}
+                                                    formatDate={
+                                                        formatShortUsDate
+                                                    }
                                                     onOrderRowClick={
                                                         handleOrderRowClick
                                                     }
@@ -454,13 +306,6 @@ function OrdersTable() {
                 isOpen={isAddOrderModalOpen}
                 onClose={() => setIsAddOrderModalOpen(false)}
                 tour={selectedTourForModal}
-            />
-
-            <VenueDetailSlideout
-                venueItem={selectedSlideout?.venueItem ?? null}
-                order={selectedSlideout?.order ?? null}
-                isOpen={slideoutOpen}
-                onClose={() => setSelectedSlideout(null)}
             />
         </div>
     );

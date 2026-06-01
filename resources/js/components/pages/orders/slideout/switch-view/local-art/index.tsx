@@ -5,6 +5,7 @@ import {
     venueItemsLocalizedTableRow,
 } from '@/components/utils/venue-items';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
+import { resolveSlideoutCatalog } from '@/lib/orders/slideout-catalog-defaults';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import {
@@ -45,20 +46,21 @@ function LocalArtView({
     onRowSelectToggle,
 }: LocalArtViewProps) {
     const catalog = useOrdersCatalog();
+    const slideout = resolveSlideoutCatalog(catalog);
     const usersWithFallback = useUsersWithFallback();
 
     const venueLineCatalog = useMemo((): OrdersVenueLineCatalog => {
         return {
-            venue_items: catalog.venue_items,
-            venue_item_assigned: catalog.venue_item_assigned,
-            venue_item_notes: catalog.venue_item_notes,
-            venue_item_status: catalog.venue_item_status,
+            venue_items: slideout.venue_items,
+            venue_item_assigned: slideout.venue_item_assigned,
+            venue_item_notes: slideout.venue_item_notes,
+            venue_item_status: slideout.venue_item_status,
         };
     }, [
-        catalog.venue_items,
-        catalog.venue_item_assigned,
-        catalog.venue_item_notes,
-        catalog.venue_item_status,
+        slideout.venue_items,
+        slideout.venue_item_assigned,
+        slideout.venue_item_notes,
+        slideout.venue_item_status,
     ]);
 
     const [notesModalRow, setNotesModalRow] =
@@ -66,7 +68,7 @@ function LocalArtView({
 
     const localizedArtData = useMemo(() => {
         if (!venueItem) return [];
-        return catalog.venue_items
+        return slideout.venue_items
             .filter(
                 (r): r is VenueItemsLocalizedRow =>
                     r.type === 'localized' &&
@@ -82,7 +84,7 @@ function LocalArtView({
                     ),
                 ),
             );
-    }, [venueItem, catalog.venue_items, venueLineCatalog, usersWithFallback]);
+    }, [venueItem, slideout.venue_items, venueLineCatalog, usersWithFallback]);
 
     const {
         localData: localLocalizedRows,
@@ -105,11 +107,11 @@ function LocalArtView({
 
     const resolvedOrderId = useMemo(() => {
         if (!venueItem) return null;
-        const match = (catalog._legacy_orders ?? []).find(
+        const match = slideout._legacy_orders.find(
             (o) => o.tour_venue_id === venueItem.orderVenue.id,
         );
         return match?.id ?? null;
-    }, [catalog._legacy_orders, venueItem]);
+    }, [slideout._legacy_orders, venueItem]);
 
     /**
      * /venue-forms/{mock_venue_id} must match the catalog venue id in DB (see VenueSeeder).
@@ -123,7 +125,7 @@ function LocalArtView({
         if (venueItem.venue != null) {
             return venueItem.venue.id;
         }
-        const stopsForTour = catalog.tour_venue_stops
+        const stopsForTour = slideout.tour_venue_stops
             .filter(
                 (s) =>
                     s.tour_id === venueItem.orderVenue.tour_id &&
@@ -135,8 +137,8 @@ function LocalArtView({
             return firstCatalogVenueId;
         }
 
-        return catalog.venues[0]?.id ?? null;
-    }, [venueItem, catalog.tour_venue_stops, catalog.venues]);
+        return slideout.venues[0]?.id ?? null;
+    }, [venueItem, slideout.tour_venue_stops, slideout.venues]);
 
     const canOpenForm = formMockVenueId != null;
 
@@ -216,7 +218,7 @@ function LocalArtView({
                     notesModalRow
                         ? getNotesForVenueItem(
                               notesModalRow.id,
-                              catalog.venue_item_notes,
+                              slideout.venue_item_notes,
                           )
                         : []
                 }

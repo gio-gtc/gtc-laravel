@@ -2,7 +2,7 @@ import { type OrdersFilterState } from '@/hooks/use-orders-filters';
 import {
     getAssigneesForOrder,
     orderMatchesCollaboratorFilter,
-} from '@/lib/orders/order-assignees';
+} from '@/lib/orders/orders-filter-users';
 import type { ApiOrder, GroupedOrders } from '@/types/orders-api';
 import type { User } from '@/types';
 

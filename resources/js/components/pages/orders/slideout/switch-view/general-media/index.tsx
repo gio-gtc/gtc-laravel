@@ -14,6 +14,7 @@ import {
     type OrdersVenueLineCatalog,
 } from '@/components/utils/venue-items';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
+import { resolveSlideoutCatalog } from '@/lib/orders/slideout-catalog-defaults';
 import { useChat } from '@/hooks/use-chat';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
@@ -86,24 +87,27 @@ function GeneralMediaView({
 }: GeneralMediaViewProps) {
     const { auth } = usePage<SharedData>().props;
     const catalog = useOrdersCatalog();
-    const { replaceVenueItem } = catalog;
+    const slideout = resolveSlideoutCatalog(catalog);
+    const { replaceVenueItem } = slideout;
     const usersWithFallback = useUsersWithFallback();
 
     const venueLineCatalog = useMemo((): OrdersVenueLineCatalog => {
         return {
-            venue_items: catalog.venue_items,
-            venue_item_assigned: catalog.venue_item_assigned,
-            venue_item_status: catalog.venue_item_status,
+            venue_items: slideout.venue_items,
+            venue_item_assigned: slideout.venue_item_assigned,
+            venue_item_notes: slideout.venue_item_notes,
+            venue_item_status: slideout.venue_item_status,
         };
     }, [
-        catalog.venue_items,
-        catalog.venue_item_assigned,
-        catalog.venue_item_status,
+        slideout.venue_items,
+        slideout.venue_item_assigned,
+        slideout.venue_item_notes,
+        slideout.venue_item_status,
     ]);
 
     const venueItemStatusSelectOptions = useMemo(
-        () => buildVenueItemStatusSelectOptions(catalog.venue_item_status),
-        [catalog.venue_item_status],
+        () => buildVenueItemStatusSelectOptions(slideout.venue_item_status),
+        [slideout.venue_item_status],
     );
     const artPackageTypeSelectOptions = useMemo(
         () =>
@@ -136,11 +140,11 @@ function GeneralMediaView({
                     venueLineCatalog,
                     usersWithFallback,
                 ),
-                catalog.venue_item_status,
+                slideout.venue_item_status,
             );
             const resolvedStatus = venueItemStatusIdToLabel(
                 row.status_id,
-                catalog.venue_item_status,
+                slideout.venue_item_status,
             );
             const showDeliverables =
                 row.has_deliverable_actions ??
@@ -156,45 +160,45 @@ function GeneralMediaView({
                     : undefined,
             };
         },
-        [catalog.venue_item_status, venueLineCatalog, usersWithFallback],
+        [slideout.venue_item_status, venueLineCatalog, usersWithFallback],
     );
 
     const venueBroadcastWithCallbacks = useMemo(() => {
         if (!venueItem) return [];
-        return catalog.venue_items
+        return slideout.venue_items
             .filter(
                 (r): r is VenueItemsBroadcastRadioSocialRow =>
                     r.type === 'broadcast' &&
                     r.tour_venue_id === venueItem.orderVenue.id,
             )
             .map(mapBroadcastRadioSocialRow);
-    }, [venueItem, catalog.venue_items, mapBroadcastRadioSocialRow]);
+    }, [venueItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
 
     const venueSocialLineWithCallbacks = useMemo(() => {
         if (!venueItem) return [];
-        return catalog.venue_items
+        return slideout.venue_items
             .filter(
                 (r): r is VenueItemsBroadcastRadioSocialRow =>
                     r.type === 'social' &&
                     r.tour_venue_id === venueItem.orderVenue.id,
             )
             .map(mapBroadcastRadioSocialRow);
-    }, [venueItem, catalog.venue_items, mapBroadcastRadioSocialRow]);
+    }, [venueItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
 
     const venueRadioWithCallbacks = useMemo(() => {
         if (!venueItem) return [];
-        return catalog.venue_items
+        return slideout.venue_items
             .filter(
                 (r): r is VenueItemsBroadcastRadioSocialRow =>
                     r.type === 'radio' &&
                     r.tour_venue_id === venueItem.orderVenue.id,
             )
             .map(mapBroadcastRadioSocialRow);
-    }, [venueItem, catalog.venue_items, mapBroadcastRadioSocialRow]);
+    }, [venueItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
 
     const venueArtWithCallbacks = useMemo(() => {
         if (!venueItem) return [];
-        return catalog.venue_items
+        return slideout.venue_items
             .filter(
                 (r): r is VenueItemsArtRow =>
                     r.type === 'art' &&
@@ -208,11 +212,11 @@ function GeneralMediaView({
                         venueLineCatalog,
                         usersWithFallback,
                     ),
-                    catalog.venue_item_status,
+                    slideout.venue_item_status,
                 );
                 const resolvedStatus = venueItemStatusIdToLabel(
                     row.status_id,
-                    catalog.venue_item_status,
+                    slideout.venue_item_status,
                 );
                 const showDeliverables =
                     row.has_deliverable_actions ??
@@ -230,8 +234,8 @@ function GeneralMediaView({
             });
     }, [
         venueItem,
-        catalog.venue_items,
-        catalog.venue_item_status,
+        slideout.venue_items,
+        slideout.venue_item_status,
         venueLineCatalog,
         usersWithFallback,
     ]);
@@ -434,13 +438,13 @@ function GeneralMediaView({
 
     const billingInvoices = useMemo((): Invoice[] => {
         if (!order || !venueItem || venueItem.venue == null) return [];
-        return catalog.invoices.filter(
+        return slideout.invoices.filter(
             (inv) =>
                 !inv.isDeleted &&
                 inv.tour === order.name &&
                 inv.venue_id === venueItem.venue!.id,
         );
-    }, [order, venueItem, catalog.invoices]);
+    }, [order, venueItem, slideout.invoices]);
 
     const isDemoRow = venueItem != null && venueItem.venue === null;
 
@@ -605,7 +609,7 @@ function GeneralMediaView({
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     onEditLineInModal={(row) => {
-                        const raw = catalog.venue_items.find(
+                        const raw = slideout.venue_items.find(
                             (r): r is VenueItemsBroadcastRow =>
                                 String(r.id) === String(row.id) &&
                                 r.type === 'broadcast',
@@ -637,7 +641,7 @@ function GeneralMediaView({
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     onEditLineInModal={(row) => {
-                        const raw = catalog.venue_items.find(
+                        const raw = slideout.venue_items.find(
                             (r): r is VenueItemsSocialRow =>
                                 String(r.id) === String(row.id) &&
                                 r.type === 'social',
@@ -670,7 +674,7 @@ function GeneralMediaView({
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     onEditLineInModal={(row) => {
-                        const raw = catalog.venue_items.find(
+                        const raw = slideout.venue_items.find(
                             (r): r is VenueItemsRadioRow =>
                                 String(r.id) === String(row.id) &&
                                 r.type === 'radio',
@@ -772,8 +776,8 @@ function GeneralMediaView({
                 mode={broadcastModalMode}
                 initialVenueRow={broadcastEditRow ?? undefined}
                 onEditSave={handleBroadcastEditSave}
-                venue_item_language={catalog.venue_item_language}
-                venue_item_encoding={catalog.venue_item_encoding}
+                venue_item_language={slideout.venue_item_language}
+                venue_item_encoding={slideout.venue_item_encoding}
             />
             <AddSocialVideoModal
                 key={
@@ -786,7 +790,7 @@ function GeneralMediaView({
                 mode={socialModalMode}
                 initialVenueRow={socialEditRow ?? undefined}
                 onEditSave={handleSocialEditSave}
-                venue_item_language={catalog.venue_item_language}
+                venue_item_language={slideout.venue_item_language}
             />
             <AddAudioModal
                 key={
@@ -799,7 +803,7 @@ function GeneralMediaView({
                 mode={radioModalMode}
                 initialVenueRow={radioEditRow ?? undefined}
                 onEditSave={handleRadioEditSave}
-                venue_item_language={catalog.venue_item_language}
+                venue_item_language={slideout.venue_item_language}
             />
             <AddKeyArtStaticAssetsModal
                 isOpen={keyArtModalOpen}

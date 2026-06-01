@@ -73,28 +73,34 @@ export interface DashboardPageProps {
 }
 
 export interface OrdersPageProps {
-    tours: Tour[];
-    tour_venue_status: TourVenueStatusRow[];
-    tour_venue_stops: TourVenue[];
-    tour_venue_demos: TourVenue[];
-    venues: Venue[];
     orders: ApiOrder[];
     grouped_orders: GroupedOrders[];
     order_status_options: OrderStatusOption[];
-    _legacy_orders: import('./index').Order[];
-    venue_items: VenueItemsRow[];
-    venue_item_assigned: VenueItemAssigned[];
-    venue_item_notes: VenueItemNote[];
-    venue_item_status: VenueItemStatus[];
-    venue_item_language: VenueItemLanguage[];
-    venue_item_encoding: VenueItemEncoding[];
-    invoices: Invoice[];
 }
 
-/** Orders page catalog with client-side line updates (slideout edit modals). */
-export interface OrdersCatalogValue extends OrdersPageProps {
-    replaceVenueItem: (row: VenueItemsRow) => void;
+/**
+ * Legacy mock slices for order slideout (follow-up PR).
+ * Not provided on GET /orders index; optional so list page stays slim.
+ */
+export interface OrdersSlideoutCatalogExtensions {
+    tours?: Tour[];
+    tour_venue_status?: TourVenueStatusRow[];
+    tour_venue_stops?: TourVenue[];
+    tour_venue_demos?: TourVenue[];
+    venues?: Venue[];
+    _legacy_orders?: import('./index').Order[];
+    venue_items?: VenueItemsRow[];
+    venue_item_assigned?: VenueItemAssigned[];
+    venue_item_notes?: VenueItemNote[];
+    venue_item_status?: VenueItemStatus[];
+    venue_item_language?: VenueItemLanguage[];
+    venue_item_encoding?: VenueItemEncoding[];
+    invoices?: Invoice[];
+    replaceVenueItem?: (row: VenueItemsRow) => void;
 }
+
+export type OrdersCatalogValue = OrdersPageProps &
+    OrdersSlideoutCatalogExtensions;
 
 export interface InvoicesPageProps {
     invoices: Invoice[];

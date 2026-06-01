@@ -1,14 +1,24 @@
-export type OrderItemStatus =
-    | 'new order'
-    | 'in progress'
-    | 'client review'
-    | 'complete'
-    | 'canceled';
+/** Order container status (orders.status) — Title Case wire values. */
+export type OrderStatus =
+    | 'New Order'
+    | 'In Progress'
+    | 'Client Review'
+    | 'Complete'
+    | 'Canceled';
 
 export interface OrderStatusOption {
-    value: OrderItemStatus;
+    value: OrderStatus;
     label: string;
 }
+
+/** Order line item pipeline status (order_items.status) — Title Case wire values. */
+export type OrderItemStatus =
+    | 'Still In Cart'
+    | 'Unassigned'
+    | 'In Production'
+    | 'Client Review'
+    | 'Out For Delivery'
+    | 'Canceled';
 
 export interface OrderCategory {
     id: number;
@@ -30,14 +40,22 @@ export interface OrderAssignee {
     email: string;
 }
 
+export interface OrderShowDate {
+    show_date: string;
+}
+
 export interface OrderItem {
     id: number;
     order_id: number;
     order_menu_item_id: number;
-    price_locked: string;
+    locked_price: string;
     status: OrderItemStatus;
-    due_date: string;
+    due_date: string | null;
     specifications: Record<string, unknown>;
+    root_order_item_id?: number | null;
+    revision_number?: number;
+    supersedes_order_item_id?: number | null;
+    invoice_line_id?: number | null;
     order_menu_item?: OrderMenuItem;
     assignees?: OrderAssignee[];
 }
@@ -48,6 +66,7 @@ export interface ApiOrderVenue {
     city?: string | null;
     state?: string | null;
     country_id?: number | null;
+    is_international?: boolean;
 }
 
 /** Slim venue row from GET /api/venues (via BFF /api/search/venues). */
@@ -68,7 +87,7 @@ export interface ApiOrderClient {
     email: string;
 }
 
-/** Real order row from gtc-api GET /api/orders (normalized by BFF). */
+/** Order row from gtc-api GET /api/orders (BFF adds collaborators). */
 export interface ApiOrder {
     id: number;
     tour_id: number;
@@ -76,10 +95,12 @@ export interface ApiOrder {
     ordered_by_id: number | null;
     is_demo: boolean;
     due_date: string;
+    submitted_at?: string | null;
     created_at: string;
     local_deliverable_email?: string | null;
-    status: OrderItemStatus;
+    status: OrderStatus;
     awaiting_assets: string[];
+    show_dates?: OrderShowDate[];
     tour: ApiOrderTour;
     venue: ApiOrderVenue | null;
     client: ApiOrderClient | null;

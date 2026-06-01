@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { resolveClientForOrder } from '@/lib/orders/order-assignees';
+import { resolveClientForOrder } from '@/lib/orders/orders-filter-users';
 import { cn } from '@/lib/utils';
 import type { ApiOrder, GroupedOrders } from '@/types/orders-api';
 import type { User } from '@/types';

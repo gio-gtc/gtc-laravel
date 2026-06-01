@@ -13,7 +13,7 @@ import {
     DEFAULT_FILTERS,
 } from '@/hooks/use-orders-filters';
 import { cn } from '@/lib/utils';
-import type { OrderItemStatus } from '@/types/orders-api';
+import type { OrderStatus } from '@/types/orders-api';
 import { usePage } from '@inertiajs/react';
 import { Filter, X } from 'lucide-react';
 import { useMemo } from 'react';
@@ -62,7 +62,7 @@ export default function OrdersAdvancedFilters({
         onFilterChange(DEFAULT_FILTERS);
     };
 
-    const toggleStatus = (status: OrderItemStatus) => {
+    const toggleStatus = (status: OrderStatus) => {
         const isSelected = filter.statuses.includes(status);
         onFilterChange({
             ...filter,

@@ -3,27 +3,25 @@
 namespace App\Support;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 /**
- * Merges gtc-api order reads with remaining DemoCatalog mock slices.
+ * BFF assembly for GET /api/orders index (list + tour grouping).
  *
- * Prop sources (v1):
- * - orders, grouped_orders: real (GET /api/orders)
- * - order_status_options: static filter metadata
- * - _legacy_orders: mock (old tour-venue hash rows; slideout local-art until v2)
- * - all other forOrders() keys: mock
+ * Prop sources:
+ * - orders, grouped_orders: gtc-api GET /api/orders
+ * - order_status_options: order container statuses (Title Case wire values)
+ *
+ * TODO: fetchOrderShow(int $id) → GET /api/orders/{id} for slideout detail (follow-up PR).
  */
 final class OrdersAssembler
 {
-    /** @var array<int, array{value: string, label: string}> */
-    private const ORDER_STATUS_OPTIONS = [
-        ['value' => 'new order', 'label' => 'New Order'],
-        ['value' => 'in progress', 'label' => 'In Progress'],
-        ['value' => 'client review', 'label' => 'Client Review'],
-        ['value' => 'complete', 'label' => 'Complete'],
-        ['value' => 'canceled', 'label' => 'Canceled'],
+    /** Order container statuses (gtc-api wire format). */
+    private const ORDER_STATUSES = [
+        'New Order',
+        'In Progress',
+        'Client Review',
+        'Complete',
+        'Canceled',
     ];
 
     /**
@@ -31,20 +29,32 @@ final class OrdersAssembler
      */
     public static function forIndex(Request $request): array
     {
-        $mock = DemoCatalog::forOrders();
-        $legacyOrders = $mock['orders'] ?? [];
-        unset($mock['orders']);
-
-        $apiSlice = self::fetchOrdersFromApi($request);
-        $normalized = self::normalizeOrders($apiSlice['orders']);
+        $rawOrders = self::fetchOrdersFromApi($request);
+        $normalized = self::normalizeOrders($rawOrders);
         $groupedOrders = self::groupOrdersByTour($normalized);
 
-        return array_merge($mock, [
+        return [
             'orders' => $normalized,
             'grouped_orders' => $groupedOrders,
-            'order_status_options' => self::ORDER_STATUS_OPTIONS,
-            '_legacy_orders' => $legacyOrders,
-        ]);
+            'order_status_options' => self::orderStatusOptions(),
+        ];
+    }
+
+    /**
+     * @return array<int, array{value: string, label: string}>
+     */
+    private static function orderStatusOptions(): array
+    {
+        $options = [];
+
+        foreach (self::ORDER_STATUSES as $status) {
+            $options[] = [
+                'value' => $status,
+                'label' => $status,
+            ];
+        }
+
+        return $options;
     }
 
     /**
@@ -61,27 +71,11 @@ final class OrdersAssembler
             }
 
             $order = $raw;
-            $order['status'] = self::canonicalStatus(
-                is_string($raw['status'] ?? null) ? $raw['status'] : '',
-            );
             $order['collaborators'] = self::dedupeAssignees($raw['order_items'] ?? []);
             $normalized[] = $order;
         }
 
         return $normalized;
-    }
-
-    private static function canonicalStatus(string $status): string
-    {
-        $slug = strtolower(trim($status));
-
-        foreach (self::ORDER_STATUS_OPTIONS as $option) {
-            if ($option['value'] === $slug) {
-                return $slug;
-            }
-        }
-
-        return $slug;
     }
 
     /**
@@ -224,47 +218,26 @@ final class OrdersAssembler
     }
 
     /**
-     * @return array{orders: array<int, mixed>, grouped_orders: array<int, mixed>}
+     * @return array<int, mixed>
      */
     private static function fetchOrdersFromApi(Request $request): array
     {
-        $empty = [
-            'orders' => [],
-            'grouped_orders' => [],
-        ];
+        $client = GtcApiClient::fromRequest($request);
 
-        $token = $request->session()->get('api_token');
-
-        if (! is_string($token) || $token === '') {
-            return $empty;
+        if ($client === null) {
+            return [];
         }
 
-        $baseUrl = rtrim((string) config('services.api.base_url'), '/');
-        $response = Http::withToken($token)
-            ->acceptJson()
-            ->get($baseUrl.'/api/orders');
+        $result = $client->get('/api/orders');
 
-        if ($response->successful()) {
-            $orders = $response->json('orders');
+        if (! $result['ok']) {
+            $request->session()->flash('error', $result['message']);
 
-            return [
-                'orders' => is_array($orders) ? $orders : [],
-                'grouped_orders' => [],
-            ];
+            return [];
         }
 
-        $message = $response->json('message');
-        $errorMessage = is_string($message) && $message !== ''
-            ? $message
-            : 'Could not load orders right now. Please try again.';
+        $orders = GtcApiClient::unwrapList($result['data'], 'orders');
 
-        Log::error('gtc-api orders index failed', [
-            'status' => $response->status(),
-            'body' => $response->body(),
-        ]);
-
-        $request->session()->flash('error', $errorMessage);
-
-        return $empty;
+        return $orders ?? [];
     }
 }

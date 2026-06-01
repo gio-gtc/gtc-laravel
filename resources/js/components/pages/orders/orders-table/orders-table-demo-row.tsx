@@ -1,6 +1,6 @@
 import { TableCell, TableRow } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
-import { getAssigneesForOrder } from '@/lib/orders/order-assignees';
+import { getAssigneesForOrder } from '@/lib/orders/orders-filter-users';
 import type { ApiOrder } from '@/types/orders-api';
 import type { User } from '@/types';
 
