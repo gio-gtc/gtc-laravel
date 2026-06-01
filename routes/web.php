@@ -12,11 +12,13 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DemoController;
 use App\Http\Controllers\InvoicesController;
 use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\OrderStoreController;
 use App\Http\Controllers\OrganisationController;
 use App\Http\Controllers\TourController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\VenueFormController;
 use App\Http\Middleware\BffAuth;
+use App\Support\GtcApiClient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
@@ -64,6 +66,7 @@ Route::middleware([BffAuth::class])->group(function () {
 
     Route::get('dashboard', DashboardController::class)->name('dashboard');
     Route::get('orders', OrdersController::class)->name('orders');
+    Route::post('orders', OrderStoreController::class)->name('orders.store');
     Route::get('invoices', InvoicesController::class)->name('invoices');
     Route::get('/venue-forms/{venueId}/schema', [VenueFormController::class, 'show'])->name('venue.form.show');
     Route::post('/venue-forms/{venueId}', [VenueFormController::class, 'store'])->name('venue.form.store');
@@ -95,6 +98,33 @@ Route::middleware([BffAuth::class])->group(function () {
 
         return $response->successful() ? $response->json() : ['venues' => []];
     })->name('search.venues');
+
+    Route::get('/api/search/clients', function (Request $request) {
+        $search = $request->query('search');
+        if (! is_string($search) || strlen($search) < 2) {
+            return response()->json(['clients' => []]);
+        }
+
+        $token = $request->session()->get('api_token');
+        if (! is_string($token) || $token === '') {
+            return response()->json(['clients' => []]);
+        }
+
+        $apiUrl = config('services.api.base_url').'/api/clients';
+        $response = Http::withToken($token)
+            ->acceptJson()
+            ->get($apiUrl, ['search' => $search]);
+
+        if (! $response->successful()) {
+            return response()->json(['clients' => []]);
+        }
+
+        $list = GtcApiClient::unwrapList($response->json(), 'clients');
+
+        return response()->json([
+            'clients' => is_array($list) ? array_values($list) : [],
+        ]);
+    })->name('search.clients');
 
     Route::post('/contacts/invite', [ContactInviteProxyController::class, 'store'])
         ->name('contacts.invite');

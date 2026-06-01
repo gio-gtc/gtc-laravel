@@ -42,6 +42,17 @@ final class GtcApiClient
     }
 
     /**
+     * @param  array<string, mixed>  $body
+     * @return array{ok: true, data: array<string, mixed>}|array{ok: false, message: string, status: int}
+     */
+    public function post(string $path, array $body): array
+    {
+        $response = $this->request()->post($this->url($path), $body);
+
+        return $this->interpret($response, $path);
+    }
+
+    /**
      * Unwrap successful JSON: prefers root "data", then legacy top-level resource keys.
      *
      * @return array<int, mixed>|array<string, mixed>|null
@@ -96,10 +107,13 @@ final class GtcApiClient
             'body' => $response->body(),
         ]);
 
+        $json = $response->json();
+
         return [
             'ok' => false,
             'message' => $errorMessage,
             'status' => $response->status(),
+            'data' => is_array($json) ? $json : [],
         ];
     }
 

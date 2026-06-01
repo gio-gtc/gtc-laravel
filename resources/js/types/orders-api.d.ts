@@ -76,6 +76,27 @@ export interface VenuesSearchResponse {
     venues?: VenueSearchOption[];
 }
 
+/** Organisation nested on GET /api/clients search rows. */
+export interface ClientSearchOrganisation {
+    id: number;
+    name: string;
+}
+
+/** Client user row from GET /api/clients (via BFF /api/search/clients). */
+export interface ClientSearchOption {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    organisation_id: number;
+    organisation: ClientSearchOrganisation;
+}
+
+/** BFF JSON shape for client autocomplete. */
+export interface ClientsSearchResponse {
+    clients?: ClientSearchOption[];
+}
+
 export interface ApiOrderTour {
     id: number;
     name: string;
@@ -111,4 +132,14 @@ export interface ApiOrder {
 export type GroupedOrders = {
     tour: ApiOrderTour;
     orders: ApiOrder[];
+};
+
+/** BFF form fields for POST /orders (staff may include ordered_by_id). */
+export type CreateOrderForm = {
+    tour_id: number;
+    venue_id: number;
+    due_date: string;
+    show_date: string;
+    local_deliverable_email: string;
+    ordered_by_id?: number;
 };

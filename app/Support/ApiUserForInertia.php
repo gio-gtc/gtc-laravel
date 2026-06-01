@@ -34,12 +34,6 @@ final class ApiUserForInertia
             'email' => $email,
             'avatar' => $avatar,
             'email_verified_at' => $raw['email_verified_at'] ?? null,
-            'organisation_id' => is_numeric($raw['organisation_id'] ?? null)
-                ? (int) $raw['organisation_id']
-                : 0,
-            'organisation_name' => self::organisationDisplayName($raw),
-            'created_at' => (string) ($raw['created_at'] ?? ''),
-            'updated_at' => (string) ($raw['updated_at'] ?? ''),
         ]);
 
         return self::withFirstLastFromNameWhenMissing($merged);

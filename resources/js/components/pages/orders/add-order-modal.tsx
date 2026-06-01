@@ -1,3 +1,4 @@
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -13,9 +14,21 @@ import {
 } from '@/components/utils/column-row-layouts';
 import DatePickerInput from '@/components/utils/date-picker-input';
 import Divider from '@/components/utils/divider';
-import { type Tour, type TourVenue, type Venue } from '@/types';
-import { type VenueSearchOption } from '@/types/orders-api';
-import { useEffect, useState } from 'react';
+import { GTC_INTERNAL_ORG_ID } from '@/lib/orders/orders-filter-users';
+import { store as ordersStore } from '@/routes/orders';
+import {
+    type SharedData,
+    type Tour,
+    type TourVenue,
+    type Venue,
+} from '@/types';
+import {
+    type ClientSearchOption,
+    type VenueSearchOption,
+} from '@/types/orders-api';
+import { useForm, usePage } from '@inertiajs/react';
+import { useEffect, useMemo, useState } from 'react';
+import ClientAutocomplete from './client-autocomplete';
 import VenueAutocomplete from './venue-autocomplete';
 
 export type AddOrderModalTour = {
@@ -40,52 +53,135 @@ interface AddOrderModalProps {
     venueItem?: VenueItem | null;
 }
 
+const todayIso = () => new Date().toISOString().split('T')[0];
+
 export default function AddOrderModal({
     isOpen,
     onClose,
     tour = null,
-    orderId = 0,
     order = null,
     mode = 'add',
     venueItem = null,
 }: AddOrderModalProps) {
+    const { auth } = usePage<SharedData>().props;
+    const isStaff =
+        auth.user != null && auth.user.organisation.id === GTC_INTERNAL_ORG_ID;
+
     const [selectedVenue, setSelectedVenue] =
         useState<VenueSearchOption | null>(null);
-    const [showStartDate, setShowStartDate] = useState<string | null>(null);
-    const [showEndDate, setShowEndDate] = useState<string | null>(null);
-    const [dueDate, setDueDate] = useState<string>();
-    const [localDeliverables, setLocalDeliverables] = useState<string>('');
+    const [selectedClient, setSelectedClient] =
+        useState<ClientSearchOption | null>(null);
 
     const isEditMode = mode === 'edit' && venueItem != null;
     const displayName = tour?.name ?? order?.name ?? '';
+
+    const {
+        data,
+        setData,
+        post,
+        processing,
+        errors,
+        reset,
+        clearErrors,
+        transform,
+    } = useForm({
+        tour_id: tour?.id ?? 0,
+        venue_id: 0,
+        due_date: todayIso(),
+        show_date: '',
+        local_deliverable_email: '',
+        ordered_by_id: 0,
+    });
+
+    useEffect(() => {
+        transform((formData) => {
+            if (isStaff) {
+                return formData;
+            }
+
+            const { ordered_by_id: _removed, ...rest } = formData;
+
+            return rest;
+        });
+    }, [isStaff, transform]);
 
     useEffect(() => {
         if (!isOpen) return;
 
         if (isEditMode && venueItem) {
             setSelectedVenue(venueItem.venue);
-            setShowStartDate(
-                venueItem.orderVenue.start_date.split('T')[0] ?? null,
-            );
-            setShowEndDate(venueItem.orderVenue.end_date.split('T')[0] ?? null);
-            setDueDate(
-                order?.due_date?.split?.('T')[0] ??
-                    new Date().toISOString().split('T')[0],
-            );
-            setLocalDeliverables('');
+            setData({
+                tour_id: tour?.id ?? 0,
+                venue_id: venueItem.venue?.id ?? 0,
+                due_date: order?.due_date?.split?.('T')[0] ?? todayIso(),
+                show_date: venueItem.orderVenue.start_date.split('T')[0] ?? '',
+                local_deliverable_email: '',
+                ordered_by_id: 0,
+            });
+            setSelectedClient(null);
         } else {
-            setDueDate(new Date().toISOString().split('T')[0]);
+            reset();
+            setData({
+                tour_id: tour?.id ?? 0,
+                venue_id: 0,
+                due_date: todayIso(),
+                show_date: '',
+                local_deliverable_email: '',
+                ordered_by_id: 0,
+            });
+            setSelectedVenue(null);
+            setSelectedClient(null);
         }
-    }, [isOpen, order, isEditMode, venueItem]);
+        clearErrors();
+    }, [
+        isOpen,
+        tour?.id,
+        order,
+        isEditMode,
+        venueItem,
+        reset,
+        setData,
+        clearErrors,
+    ]);
 
     useEffect(() => {
         if (!isOpen) {
             setSelectedVenue(null);
-            setShowStartDate(null);
-            setShowEndDate(null);
-            setLocalDeliverables('');
+            setSelectedClient(null);
         }
     }, [isOpen]);
+
+    useEffect(() => {
+        if (tour?.id) {
+            setData('tour_id', tour.id);
+        }
+    }, [tour?.id, setData]);
+
+    useEffect(() => {
+        setData('venue_id', selectedVenue?.id ?? 0);
+    }, [selectedVenue, setData]);
+
+    useEffect(() => {
+        setData('ordered_by_id', selectedClient?.id ?? 0);
+    }, [selectedClient, setData]);
+
+    const canSubmit = useMemo(() => {
+        if (isEditMode) return true;
+        if (!tour?.id || data.tour_id <= 0) return false;
+        if (!selectedVenue?.id) return false;
+        if (!data.due_date || !data.show_date) return false;
+        if (isStaff && !selectedClient?.id) return false;
+        return true;
+    }, [
+        isEditMode,
+        tour?.id,
+        data.tour_id,
+        data.due_date,
+        data.show_date,
+        selectedVenue?.id,
+        isStaff,
+        selectedClient?.id,
+    ]);
 
     const handleSave = () => {
         if (isEditMode) {
@@ -93,7 +189,14 @@ export default function AddOrderModal({
             return;
         }
 
-        onClose();
+        if (!canSubmit) return;
+
+        post(ordersStore.url(), {
+            preserveScroll: true,
+            onSuccess: () => {
+                onClose();
+            },
+        });
     };
 
     return (
@@ -132,33 +235,45 @@ export default function AddOrderModal({
                                 className="bg-muted"
                             />
                         ) : (
-                            <VenueAutocomplete
-                                value={selectedVenue}
-                                onChange={setSelectedVenue}
-                                required
-                            />
+                            <>
+                                <VenueAutocomplete
+                                    value={selectedVenue}
+                                    onChange={setSelectedVenue}
+                                    required
+                                />
+                                <InputError message={errors.venue_id} />
+                            </>
                         )}
                     </ColumnedRowsChild>
 
+                    {isStaff && !isEditMode && (
+                        <ColumnedRowsChild
+                            labelFor="ordered-by"
+                            labelContent="Ordered By"
+                            required
+                        >
+                            <ClientAutocomplete
+                                value={selectedClient}
+                                onChange={setSelectedClient}
+                                required
+                            />
+                            <InputError message={errors.ordered_by_id} />
+                        </ColumnedRowsChild>
+                    )}
+
                     <ColumnedRowsChild
-                        labelFor="show-dates"
-                        labelContent="Show Dates"
-                        childrenContainerClasses="flex gap-2 items-center"
-                        required
+                        labelFor="show-date"
+                        labelContent="Show Date"
+                        required={!isEditMode}
                     >
                         <DatePickerInput
-                            id="show-date-start"
-                            value={showStartDate || ''}
-                            onChange={(value) => setShowStartDate(value)}
-                            required
+                            id="show-date"
+                            value={data.show_date}
+                            onChange={(value) => setData('show_date', value)}
+                            required={!isEditMode}
+                            disabled={isEditMode}
                         />
-                        -
-                        <DatePickerInput
-                            id="show-date-end"
-                            value={showEndDate || ''}
-                            onChange={(value) => setShowEndDate(value)}
-                            required
-                        />
+                        <InputError message={errors.show_date} />
                     </ColumnedRowsChild>
 
                     <ColumnedRowsChild
@@ -168,11 +283,12 @@ export default function AddOrderModal({
                     >
                         <DatePickerInput
                             id="due-date"
-                            value={dueDate || ''}
-                            onChange={(value) => setDueDate(value)}
+                            value={data.due_date}
+                            onChange={(value) => setData('due_date', value)}
                             required={!isEditMode}
                             disabled={isEditMode}
                         />
+                        <InputError message={errors.due_date} />
                     </ColumnedRowsChild>
 
                     <ColumnedRowsChild
@@ -181,26 +297,41 @@ export default function AddOrderModal({
                     >
                         <Input
                             id="local-deliverables"
-                            type="text"
-                            value={localDeliverables}
+                            type="email"
+                            value={data.local_deliverable_email}
                             onChange={(e) =>
-                                setLocalDeliverables(e.target.value)
+                                setData(
+                                    'local_deliverable_email',
+                                    e.target.value,
+                                )
                             }
                             placeholder="email@example.com"
                             disabled={isEditMode}
                             readOnly={isEditMode}
                             className={isEditMode ? 'bg-muted' : ''}
                         />
+                        <InputError message={errors.local_deliverable_email} />
                     </ColumnedRowsChild>
                 </ColumnedRowsParent>
 
                 <Divider />
                 <DialogFooter>
-                    <Button variant="outline" onClick={onClose}>
+                    <Button
+                        variant="outline"
+                        onClick={onClose}
+                        disabled={processing}
+                    >
                         Cancel
                     </Button>
-                    <Button onClick={handleSave}>
-                        {isEditMode ? 'Save' : 'Add Order'}
+                    <Button
+                        onClick={handleSave}
+                        disabled={processing || (!isEditMode && !canSubmit)}
+                    >
+                        {processing
+                            ? 'Saving…'
+                            : isEditMode
+                              ? 'Save'
+                              : 'Add Order'}
                     </Button>
                 </DialogFooter>
             </DialogContent>
