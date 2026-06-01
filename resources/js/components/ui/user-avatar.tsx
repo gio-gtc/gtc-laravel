@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { type User } from '@/types';
 
 interface UserAvatarProps {
+    /** Full `User` from roster or `@/lib/user-for-avatar` embed mapping. */
     user: User;
     className?: string;
     /** When set (e.g. local file preview), shown instead of `user.avatar`. */

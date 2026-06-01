@@ -79,7 +79,7 @@ final class OrdersAssembler
     }
 
     /**
-     * @return array<int, array{id: int, name: string, email: string}>
+     * @return array<int, array{id: int, name: string, email: string, first_name: string|null, last_name: string|null}>
      */
     private static function dedupeAssignees(mixed $orderItems): array
     {
@@ -116,10 +116,26 @@ final class OrdersAssembler
                 }
 
                 $seen[$id] = true;
+
+                $firstName = is_string($assignee['first_name'] ?? null)
+                    ? trim($assignee['first_name'])
+                    : '';
+                $lastName = is_string($assignee['last_name'] ?? null)
+                    ? trim($assignee['last_name'])
+                    : '';
+                $name = is_string($assignee['name'] ?? null)
+                    ? trim($assignee['name'])
+                    : '';
+                if ($name === '') {
+                    $name = trim($firstName.' '.$lastName);
+                }
+
                 $collaborators[] = [
                     'id' => $id,
-                    'name' => is_string($assignee['name'] ?? null) ? $assignee['name'] : '',
+                    'name' => $name,
                     'email' => is_string($assignee['email'] ?? null) ? $assignee['email'] : '',
+                    'first_name' => $firstName !== '' ? $firstName : null,
+                    'last_name' => $lastName !== '' ? $lastName : null,
                 ];
             }
         }

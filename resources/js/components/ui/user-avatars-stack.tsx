@@ -3,6 +3,7 @@ import { type User } from '@/types';
 import { UserAvatar } from './user-avatar';
 
 interface UserAvatarsStackProps {
+    /** Each entry must be a roster `User` or mapped via `@/lib/user-for-avatar`. */
     users: User[];
     maxCount?: number;
     onClick?: () => void;

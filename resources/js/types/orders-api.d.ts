@@ -36,8 +36,11 @@ export interface OrderMenuItem {
 
 export interface OrderAssignee {
     id: number;
-    name: string;
     email: string;
+    name?: string | null;
+    first_name?: string | null;
+    last_name?: string | null;
+    avatar?: string | null;
 }
 
 export interface OrderShowDate {
@@ -109,6 +112,7 @@ export interface ApiOrderClient {
     name?: string | null;
     first_name?: string | null;
     last_name?: string | null;
+    avatar?: string | null;
 }
 
 /** Order row from gtc-api GET /api/orders (BFF adds collaborators). */

@@ -1,13 +1,25 @@
 import type { ApiOrder, ApiOrderClient, OrderAssignee } from '@/types/orders-api';
 import type { User } from '@/types';
 import {
+    externalClientEmbedToUser,
+    findUserInRoster,
+    resolveUserForAvatar,
+} from '@/lib/user-for-avatar';
+import {
     GTC_INTERNAL_ORG_ID,
     isExternalClientUser,
     isGtcStaffUser,
-    normalizeUserOrganisationShape,
 } from '@/lib/user-organisation';
 
 export { GTC_INTERNAL_ORG_ID };
+export {
+    embedPersonToUser,
+    externalClientEmbedToUser,
+    findUserInRoster,
+    resolveUserForAvatar,
+    staffEmbedToUser,
+} from '@/lib/user-for-avatar';
+export type { PersonEmbed } from '@/lib/user-for-avatar';
 
 export function isCollaboratorUser(user: User): boolean {
     return isGtcStaffUser(user);
@@ -29,55 +41,15 @@ export function resolveUserById(
     id: number | null | undefined,
     roster: User[],
 ): User | undefined {
-    if (id == null) return undefined;
-    return roster.find((u) => u.id === id);
+    return findUserInRoster(id, roster);
 }
 
 export function apiOrderClientToUser(client: ApiOrderClient): User {
-    const first_name =
-        typeof client.first_name === 'string' ? client.first_name.trim() : '';
-    const last_name =
-        typeof client.last_name === 'string' ? client.last_name.trim() : '';
-    const email = typeof client.email === 'string' ? client.email.trim() : '';
-    const fromParts = [first_name, last_name].filter(Boolean).join(' ');
-    const fromName =
-        typeof client.name === 'string' ? client.name.trim() : '';
-    const displayName = fromParts || fromName || email || `User ${client.id}`;
-
-    let resolvedFirst = first_name;
-    let resolvedLast = last_name;
-    if (!resolvedFirst && !resolvedLast) {
-        const tokens = displayName.split(/\s+/).filter(Boolean);
-        resolvedFirst = tokens[0] ?? '';
-        resolvedLast = tokens.slice(1).join(' ');
-    }
-
-    return normalizeUserOrganisationShape({
-        id: client.id,
-        name: displayName,
-        email,
-        email_verified_at: null,
-        role: '',
-        first_name: resolvedFirst,
-        last_name: resolvedLast,
-        organisation: { id: 0, name: '' },
-    });
+    return externalClientEmbedToUser(client);
 }
 
 export function assigneeToUser(assignee: OrderAssignee, roster?: User[]): User {
-    const fromRoster = resolveUserById(assignee.id, roster ?? []);
-    if (fromRoster) {
-        return fromRoster;
-    }
-
-    return {
-        id: assignee.id,
-        name: assignee.name,
-        email: assignee.email,
-        email_verified_at: null,
-        role: '',
-        organisation: { id: GTC_INTERNAL_ORG_ID, name: '' },
-    };
+    return resolveUserForAvatar(assignee.id, roster ?? [], assignee);
 }
 
 export function resolveClientForOrder(
