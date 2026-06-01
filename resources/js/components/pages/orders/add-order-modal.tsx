@@ -13,7 +13,13 @@ import {
     ColumnedRowsParent,
 } from '@/components/utils/column-row-layouts';
 import DatePickerInput from '@/components/utils/date-picker-input';
+import ShowDatesInputList from '@/components/utils/show-dates-input-list';
 import Divider from '@/components/utils/divider';
+import {
+    expandVenueShowDates,
+    hasValidShowDates,
+    normalizeShowDates,
+} from '@/lib/format/show-dates';
 import { isCollaboratorUser } from '@/lib/orders/orders-filter-users';
 import { store as ordersStore } from '@/routes/orders';
 import {
@@ -55,6 +61,20 @@ interface AddOrderModalProps {
 
 const todayIso = () => new Date().toISOString().split('T')[0];
 
+function showDatesFormErrors(
+    errors: Record<string, string | undefined>,
+): string | undefined {
+    const direct = errors.show_dates;
+    if (direct) return direct;
+
+    const indexed = Object.entries(errors)
+        .filter(([key]) => key.startsWith('show_dates.'))
+        .map(([, message]) => message)
+        .filter(Boolean);
+
+    return indexed.length > 0 ? indexed.join(' ') : undefined;
+}
+
 export default function AddOrderModal({
     isOpen,
     onClose,
@@ -87,7 +107,7 @@ export default function AddOrderModal({
         tour_id: tour?.id ?? 0,
         venue_id: 0,
         due_date: todayIso(),
-        show_date: '',
+        show_dates: [''],
         local_deliverable_email: '',
         ordered_by_id: 0,
     });
@@ -97,11 +117,18 @@ export default function AddOrderModal({
 
         if (isEditMode && venueItem) {
             setSelectedVenue(venueItem.venue);
+            const prefilledShowDates = normalizeShowDates(
+                expandVenueShowDates(
+                    venueItem.orderVenue.start_date,
+                    venueItem.orderVenue.end_date,
+                ),
+            );
             setData({
                 tour_id: tour?.id ?? 0,
                 venue_id: venueItem.venue?.id ?? 0,
                 due_date: order?.due_date?.split?.('T')[0] ?? todayIso(),
-                show_date: venueItem.orderVenue.start_date.split('T')[0] ?? '',
+                show_dates:
+                    prefilledShowDates.length > 0 ? prefilledShowDates : [''],
                 local_deliverable_email: '',
                 ordered_by_id: 0,
             });
@@ -112,7 +139,7 @@ export default function AddOrderModal({
                 tour_id: tour?.id ?? 0,
                 venue_id: 0,
                 due_date: todayIso(),
-                show_date: '',
+                show_dates: [''],
                 local_deliverable_email: '',
                 ordered_by_id: 0,
             });
@@ -152,7 +179,7 @@ export default function AddOrderModal({
         if (isEditMode) return true;
         if (!tour?.id || data.tour_id <= 0) return false;
         if (!selectedVenue?.id) return false;
-        if (!data.due_date || !data.show_date) return false;
+        if (!data.due_date || !hasValidShowDates(data.show_dates)) return false;
         if (isStaff && !selectedClient?.id) return false;
         return true;
     }, [
@@ -160,7 +187,7 @@ export default function AddOrderModal({
         tour?.id,
         data.tour_id,
         data.due_date,
-        data.show_date,
+        data.show_dates,
         selectedVenue?.id,
         isStaff,
         selectedClient?.id,
@@ -179,7 +206,7 @@ export default function AddOrderModal({
                 tour_id: data.tour_id,
                 venue_id: selectedVenue?.id ?? data.venue_id,
                 due_date: data.due_date,
-                show_date: data.show_date,
+                show_dates: normalizeShowDates(data.show_dates),
                 local_deliverable_email: data.local_deliverable_email,
                 ...(isStaff && selectedClient?.id
                     ? { ordered_by_id: selectedClient.id }
@@ -258,18 +285,17 @@ export default function AddOrderModal({
                     )}
 
                     <ColumnedRowsChild
-                        labelFor="show-date"
-                        labelContent="Show Date"
+                        labelFor="show-date-0"
+                        labelContent="Show Dates"
                         required={!isEditMode}
+                        multiInput
                     >
-                        <DatePickerInput
-                            id="show-date"
-                            value={data.show_date}
-                            onChange={(value) => setData('show_date', value)}
-                            required={!isEditMode}
-                            disabled={isEditMode}
+                        <ShowDatesInputList
+                            dates={data.show_dates}
+                            onChange={(show_dates) => setData('show_dates', show_dates)}
+                            idPrefix="show-date"
                         />
-                        <InputError message={errors.show_date} />
+                        <InputError message={showDatesFormErrors(errors)} />
                     </ColumnedRowsChild>
 
                     <ColumnedRowsChild

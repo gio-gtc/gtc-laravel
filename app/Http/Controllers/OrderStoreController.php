@@ -62,7 +62,8 @@ final class OrderStoreController extends Controller
             'tour_id' => ['required', 'integer'],
             'venue_id' => ['required', 'integer'],
             'due_date' => ['required', 'date'],
-            'show_date' => ['required', 'date'],
+            'show_dates' => ['required', 'array', 'min:1'],
+            'show_dates.*' => ['required', 'date'],
             'local_deliverable_email' => ['nullable', 'email'],
         ];
 
@@ -81,10 +82,7 @@ final class OrderStoreController extends Controller
      */
     private static function mapApiPayload(array $validated, bool $isStaff, ?int $sessionUserId): array
     {
-        $showDate = $validated['show_date'];
-        $showDateString = $showDate instanceof \DateTimeInterface
-            ? $showDate->format('Y-m-d')
-            : (string) $showDate;
+        $showDateStrings = self::normalizeShowDates($validated['show_dates']);
 
         $dueDate = $validated['due_date'];
         $dueDateString = $dueDate instanceof \DateTimeInterface
@@ -102,10 +100,34 @@ final class OrderStoreController extends Controller
                 : (int) $sessionUserId,
             'local_deliverable_email' => is_string($email) && $email !== '' ? $email : null,
             'due_date' => $dueDateString,
-            'show_dates' => [
-                ['show_date' => $showDateString],
-            ],
+            'show_dates' => array_map(
+                static fn (string $showDate) => ['show_date' => $showDate],
+                $showDateStrings,
+            ),
         ];
+    }
+
+    /**
+     * @param  array<int, mixed>  $showDates
+     * @return list<string>
+     */
+    private static function normalizeShowDates(array $showDates): array
+    {
+        $unique = [];
+
+        foreach ($showDates as $showDate) {
+            $showDateString = $showDate instanceof \DateTimeInterface
+                ? $showDate->format('Y-m-d')
+                : (string) $showDate;
+
+            if ($showDateString !== '') {
+                $unique[$showDateString] = $showDateString;
+            }
+        }
+
+        ksort($unique);
+
+        return array_values($unique);
     }
 
     private static function sessionUserIsStaff(Request $request): bool
@@ -165,10 +187,18 @@ final class OrderStoreController extends Controller
 
         $normalized = [];
         foreach ($errors as $key => $messages) {
-            if ($key === 'show_dates' || $key === 'show_dates.0.show_date') {
-                $key = 'show_date';
+            $field = (string) $key;
+            if ($field === 'show_dates' || str_starts_with($field, 'show_dates.')) {
+                $field = 'show_dates';
             }
-            $normalized[$key] = is_array($messages) ? $messages : [$messages];
+
+            $msgList = is_array($messages) ? $messages : [$messages];
+
+            if (isset($normalized[$field])) {
+                $normalized[$field] = array_merge($normalized[$field], $msgList);
+            } else {
+                $normalized[$field] = $msgList;
+            }
         }
 
         throw ValidationException::withMessages($normalized);

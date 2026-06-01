@@ -146,7 +146,7 @@ export type CreateOrderForm = {
     tour_id: number;
     venue_id: number;
     due_date: string;
-    show_date: string;
+    show_dates: string[];
     local_deliverable_email: string;
     ordered_by_id?: number;
 };

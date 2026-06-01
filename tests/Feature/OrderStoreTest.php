@@ -43,7 +43,7 @@ it('proxies staff create order to gtc-api with mapped payload', function () {
             'tour_id' => 12,
             'venue_id' => 84,
             'due_date' => '2026-10-20',
-            'show_date' => '2026-10-15',
+            'show_dates' => ['2026-10-15'],
             'local_deliverable_email' => 'client@example.com',
             'ordered_by_id' => 4,
         ])
@@ -69,6 +69,33 @@ it('proxies staff create order to gtc-api with mapped payload', function () {
     });
 });
 
+it('proxies multiple show dates and dedupes before sending to gtc-api', function () {
+    Http::fake([
+        ordersStoreApiUrl() => Http::response([
+            'data' => ['id' => 101],
+        ], 201),
+    ]);
+
+    $this->actingAsBff(bffStaffSessionUser())
+        ->post(route('orders.store'), [
+            'tour_id' => 12,
+            'venue_id' => 84,
+            'due_date' => '2026-10-20',
+            'show_dates' => ['2026-10-17', '2026-10-15', '2026-10-16', '2026-10-15'],
+            'ordered_by_id' => 4,
+        ])
+        ->assertRedirect(route('orders'));
+
+    Http::assertSent(function ($request) {
+        $body = $request->data();
+
+        return count($body['show_dates']) === 3
+            && $body['show_dates'][0]['show_date'] === '2026-10-15'
+            && $body['show_dates'][1]['show_date'] === '2026-10-16'
+            && $body['show_dates'][2]['show_date'] === '2026-10-17';
+    });
+});
+
 it('sets ordered_by_id from session for client users', function () {
     Http::fake([
         ordersStoreApiUrl() => Http::response(['data' => ['id' => 100]], 201),
@@ -79,7 +106,7 @@ it('sets ordered_by_id from session for client users', function () {
             'tour_id' => 3,
             'venue_id' => 10,
             'due_date' => '2026-11-01',
-            'show_date' => '2026-11-01',
+            'show_dates' => ['2026-11-01'],
             'local_deliverable_email' => '',
         ])
         ->assertRedirect(route('orders'));
@@ -96,7 +123,7 @@ it('rejects ordered_by_id for client users', function () {
             'tour_id' => 3,
             'venue_id' => 10,
             'due_date' => '2026-11-01',
-            'show_date' => '2026-11-01',
+            'show_dates' => ['2026-11-01'],
             'ordered_by_id' => 99,
         ])
         ->assertSessionHasErrors('ordered_by_id');
@@ -112,9 +139,25 @@ it('requires ordered_by_id for staff', function () {
             'tour_id' => 1,
             'venue_id' => 2,
             'due_date' => '2026-06-01',
-            'show_date' => '2026-06-01',
+            'show_dates' => ['2026-06-01'],
         ])
         ->assertSessionHasErrors('ordered_by_id');
+
+    Http::assertNothingSent();
+});
+
+it('requires at least one show date', function () {
+    Http::fake();
+
+    $this->actingAsBff(bffStaffSessionUser())
+        ->post(route('orders.store'), [
+            'tour_id' => 1,
+            'venue_id' => 2,
+            'due_date' => '2026-06-01',
+            'show_dates' => [],
+            'ordered_by_id' => 4,
+        ])
+        ->assertSessionHasErrors('show_dates');
 
     Http::assertNothingSent();
 });
@@ -134,10 +177,31 @@ it('forwards api validation errors to the form', function () {
             'tour_id' => 1,
             'venue_id' => 999,
             'due_date' => '2026-06-01',
-            'show_date' => '2026-06-01',
+            'show_dates' => ['2026-06-01'],
             'ordered_by_id' => 4,
         ])
         ->assertSessionHasErrors('venue_id');
+});
+
+it('maps api show date validation errors to show_dates field', function () {
+    Http::fake([
+        ordersStoreApiUrl() => Http::response([
+            'message' => 'Validation failed.',
+            'errors' => [
+                'show_dates.0.show_date' => ['The show date is invalid.'],
+            ],
+        ], 422),
+    ]);
+
+    $this->actingAsBff(bffStaffSessionUser())
+        ->post(route('orders.store'), [
+            'tour_id' => 1,
+            'venue_id' => 2,
+            'due_date' => '2026-06-01',
+            'show_dates' => ['2026-06-01'],
+            'ordered_by_id' => 4,
+        ])
+        ->assertSessionHasErrors('show_dates');
 });
 
 it('redirects guests to login when creating an order', function () {
@@ -145,7 +209,7 @@ it('redirects guests to login when creating an order', function () {
         'tour_id' => 1,
         'venue_id' => 2,
         'due_date' => '2026-06-01',
-        'show_date' => '2026-06-01',
+        'show_dates' => ['2026-06-01'],
     ])
         ->assertRedirect(route('login'));
 
