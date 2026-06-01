@@ -261,8 +261,14 @@ function OrdersTable() {
                                         {demoCtx && (
                                             <OrdersTableDemoRow
                                                 demoOrder={demoCtx.demoOrder}
+                                                orderIsSelected={selectedOrderIds.includes(
+                                                    demoCtx.demoOrder.id,
+                                                )}
                                                 collaboratorRoster={
                                                     collaboratorUsers
+                                                }
+                                                onOrderRowClick={
+                                                    handleOrderRowClick
                                                 }
                                             />
                                         )}
