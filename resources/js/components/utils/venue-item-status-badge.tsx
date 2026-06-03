@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
-import type { VenueItemStatus } from '@/types';
+import type { OrderItemStatus } from '@/types';
 
-export type VenueItemStatusType = VenueItemStatus['type'];
+export type VenueItemStatusType = OrderItemStatus['type'];
 
 export function VenueItemStatusBadge({
     status,

@@ -1,2 +1,1 @@
-export { default } from '../slideout';
-export { default as VenueDetailSlideout } from '../slideout';
+export { default as OrderDetailSlideout, default } from '../slideout';

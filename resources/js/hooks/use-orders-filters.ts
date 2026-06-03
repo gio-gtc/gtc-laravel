@@ -1,5 +1,5 @@
 import { sanitizeFilterUserIds } from '@/lib/orders/orders-filter-users';
-import type { OrderStatus } from '@/types/orders-api';
+import type { AwaitingAssetTag, OrderStatus } from '@/types/orders-api';
 import type { User } from '@/types';
 import { useEffect, useState } from 'react';
 
@@ -51,6 +51,7 @@ export type OrdersFilterState = {
     collaboratorIds: number[];
     myCollaborators: boolean;
     statuses: OrderStatus[];
+    assetTags: AwaitingAssetTag[];
     country: { us: boolean; international: boolean };
 };
 
@@ -59,6 +60,7 @@ export const DEFAULT_FILTERS: OrdersFilterState = {
     collaboratorIds: [],
     myCollaborators: false,
     statuses: [],
+    assetTags: [],
     country: { us: true, international: true },
 };
 
@@ -67,6 +69,30 @@ type LoadFiltersOptions = {
     clientUsers: User[];
     collaboratorUsers: User[];
 };
+
+const VALID_ASSET_TAGS: AwaitingAssetTag[] = ['Voice Over', 'Audio', 'Art'];
+
+function normalizeStoredAssetTags(raw: unknown): AwaitingAssetTag[] {
+    if (!Array.isArray(raw)) {
+        return [];
+    }
+
+    const seen = new Set<AwaitingAssetTag>();
+    const result: AwaitingAssetTag[] = [];
+
+    for (const entry of raw) {
+        if (
+            typeof entry === 'string' &&
+            VALID_ASSET_TAGS.includes(entry as AwaitingAssetTag) &&
+            !seen.has(entry as AwaitingAssetTag)
+        ) {
+            seen.add(entry as AwaitingAssetTag);
+            result.push(entry as AwaitingAssetTag);
+        }
+    }
+
+    return result;
+}
 
 function loadFiltersFromStorage(options: LoadFiltersOptions): OrdersFilterState {
     if (typeof window === 'undefined') {
@@ -95,6 +121,7 @@ function loadFiltersFromStorage(options: LoadFiltersOptions): OrdersFilterState 
                 parsed.statuses,
                 options.validStatuses,
             ),
+            assetTags: normalizeStoredAssetTags(parsed.assetTags),
             country: {
                 us: parsed.country?.us !== false,
                 international: parsed.country?.international !== false,

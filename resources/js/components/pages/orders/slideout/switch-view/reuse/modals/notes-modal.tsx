@@ -9,13 +9,13 @@ import { Input } from '@/components/ui/input';
 import Divider from '@/components/utils/divider';
 import { ModalFooterActions } from '@/components/utils/modal-footer-actions';
 import { formatUtcAsLocalDateTime } from '@/helper-functions/format-time';
-import type { User, VenueItemNote } from '@/types';
+import type { OrderItemNote, User } from '@/types';
 import { orderModalStyles } from '../../general-media/modals/shared';
 
 interface NotesModalProps {
     isOpen: boolean;
     onClose: () => void;
-    notes: VenueItemNote[];
+    notes: OrderItemNote[];
     users: User[];
     rowId?: string | number;
 }

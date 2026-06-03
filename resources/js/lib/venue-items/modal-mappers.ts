@@ -1,5 +1,5 @@
 import type { ModalDurationKind } from '@/components/pages/orders/slideout/switch-view/general-media/modals/modal-duration';
-import type { VenueItemEncoding, VenueItemLanguage } from '@/types';
+import type { OrderItemEncoding, OrderItemLanguage } from '@/types';
 
 /**
  * Maps modal duration pill (`:30`, `:1:12`, etc.) to whole seconds.
@@ -26,7 +26,7 @@ export function modalDurationPillToSeconds(
 }
 
 export function languageTypeToId(
-    catalog: VenueItemLanguage[],
+    catalog: OrderItemLanguage[],
     type: string,
 ): number | undefined {
     const found = catalog.find((l) => l.type === type);
@@ -34,7 +34,7 @@ export function languageTypeToId(
 }
 
 export function encodingLabelToId(
-    catalog: VenueItemEncoding[],
+    catalog: OrderItemEncoding[],
     label: string,
 ): number | undefined {
     const found = catalog.find((e) => e.type === label);

@@ -33,7 +33,7 @@ export default function StaticAssetsMediaTable({
     onBulkEditDueDateDoubleClick,
     onBulkEditAssignedDoubleClick,
     onPreviewImageClick,
-    venueItemStatusSelectOptions,
+    orderItemStatusSelectOptions,
     artPackageTypeSelectOptions = VENUE_ITEM_ART_PACKAGE_TYPES.map((value) => ({
         value,
         label: value,
@@ -294,7 +294,7 @@ export default function StaticAssetsMediaTable({
                                                                 itemId={row.id}
                                                                 field="status"
                                                                 options={
-                                                                    venueItemStatusSelectOptions
+                                                                    orderItemStatusSelectOptions
                                                                 }
                                                                 renderDisplay={(
                                                                     v,

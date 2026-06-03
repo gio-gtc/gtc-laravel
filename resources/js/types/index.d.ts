@@ -3,10 +3,10 @@ import type {
     AllBroadcastCuts,
     AudioSpotType,
     BroadcastSpotType,
+    OrderItemArtPackageType,
+    OrderItemSocialCardHolder,
     SocialCutOption,
     SocialVideoLayoutType,
-    VenueItemArtPackageType,
-    VenueItemSocialCardHolder,
 } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
 import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
@@ -243,13 +243,13 @@ export interface Venue {
     country_id: number;
 }
 
-export interface VenueItemAssigned {
+export interface OrderItemAssigned {
     id: number;
     venue_item_id: string;
     mockUser_id: number;
 }
 
-export interface VenueItemStatus {
+export interface OrderItemStatus {
     id: number;
     type:
         | 'Still in Cart'
@@ -261,12 +261,12 @@ export interface VenueItemStatus {
         | 'Unassigned';
 }
 
-export interface VenueItemLanguage {
+export interface OrderItemLanguage {
     id: number;
     type: string;
 }
 
-export interface VenueItemEncoding {
+export interface OrderItemEncoding {
     id: number;
     type: string;
 }
@@ -278,7 +278,7 @@ export interface MediaTableRow {
     duration_seconds: number;
     dueDate: string;
     assigned: User[];
-    status: VenueItemStatus['type'];
+    status: OrderItemStatus['type'];
     /** Optional video URL for the preview modal. When absent, a default placeholder video is used. */
     previewVideoUrl?: string | null;
     /** When set, preview opens a full-image dialog instead of video (e.g. social image cutdown). */
@@ -315,7 +315,7 @@ export interface MediaTableProps {
     onRowSelectToggle?: (rowId: string | number) => void;
     onBulkEditDueDateDoubleClick?: (rowId: string | number) => void;
     onBulkEditAssignedDoubleClick?: (rowId: string | number) => void;
-    venueItemStatusSelectOptions: { value: string; label: string }[];
+    orderItemStatusSelectOptions: { value: string; label: string }[];
 }
 
 export interface StaticAssetsTableRow {
@@ -325,7 +325,7 @@ export interface StaticAssetsTableRow {
     height: number;
     dueDate: string; // e.g., "1/15/25"
     assigned: User[];
-    status: VenueItemStatus['type'];
+    status: OrderItemStatus['type'];
     /** Full-size image URL for key-art preview when present. */
     previewImageUrl?: string | null;
     deliverables?: {
@@ -350,11 +350,11 @@ export interface StaticAssetsMediaTableProps {
     onRowSelectToggle?: (rowId: string | number) => void;
     onBulkEditDueDateDoubleClick?: (rowId: string | number) => void;
     onBulkEditAssignedDoubleClick?: (rowId: string | number) => void;
-    venueItemStatusSelectOptions: { value: string; label: string }[];
+    orderItemStatusSelectOptions: { value: string; label: string }[];
     artPackageTypeSelectOptions?: { value: string; label: string }[];
 }
 
-export interface VenueItemNote {
+export interface OrderItemNote {
     id: number;
     venue_item_id: string;
     user_id: number;
@@ -367,27 +367,27 @@ export interface VenueItemNote {
     deleted_date: string | null;
 }
 
-export type VenueItemsRowType =
+export type OrderItemsRowType =
     | 'broadcast'
     | 'radio'
     | 'social'
     | 'art'
     | 'localized';
 
-export interface VenueItemsRowBase {
+export interface OrderItemsRowBase {
     id: string;
     tour_venue_id: number;
-    type: VenueItemsRowType;
+    type: OrderItemsRowType;
     dueDate: string;
     /** ISO 8601 UTC — line creation time (mock + API) */
     created_date: string;
 }
 
 /** Line items for broadcast, radio, or social (video/audio spots). */
-export type VenueItemMediaKind = 'video' | 'audio' | 'image';
+export type OrderItemMediaKind = 'video' | 'audio' | 'image';
 
 /** Shared fields for broadcast / radio / social venue line items. */
-export interface VenueItemsMediaLineShared {
+export interface OrderItemsMediaLineShared {
     isci: string;
     duration_seconds: number;
     status_id: number;
@@ -400,7 +400,7 @@ export interface VenueItemsMediaLineShared {
     previewVideoUrl?: string | null;
     thumbnailUrl?: string;
     mediaUrl?: string;
-    kind?: VenueItemMediaKind;
+    kind?: OrderItemMediaKind;
     deliverables?: MediaTableRow['deliverables'];
     /** Set from server JSON when row supports deliverable actions (replaces inline mock callbacks). */
     has_deliverable_actions?: boolean;
@@ -408,44 +408,44 @@ export interface VenueItemsMediaLineShared {
 }
 
 /** Broadcast: spot types and cuts match add Broadcast & Streaming modal. */
-export interface VenueItemsBroadcastRow
-    extends VenueItemsRowBase,
-        VenueItemsMediaLineShared {
+export interface OrderItemsBroadcastRow
+    extends OrderItemsRowBase,
+        OrderItemsMediaLineShared {
     type: 'broadcast';
     spot_type: BroadcastSpotType;
     cut: AllBroadcastCuts;
 }
 
 /** Radio (audio): spot types and cuts match add Audio modal. */
-export interface VenueItemsRadioRow
-    extends VenueItemsRowBase,
-        VenueItemsMediaLineShared {
+export interface OrderItemsRadioRow
+    extends OrderItemsRowBase,
+        OrderItemsMediaLineShared {
     type: 'radio';
     spot_type: AudioSpotType;
     cut: AllAudioCuts;
 }
 
 /** Social: layout type and cut match add Social Video modal. */
-export interface VenueItemsSocialRow
-    extends VenueItemsRowBase,
-        VenueItemsMediaLineShared {
+export interface OrderItemsSocialRow
+    extends OrderItemsRowBase,
+        OrderItemsMediaLineShared {
     type: 'social';
     spot_type: SocialVideoLayoutType;
     cut: SocialCutOption;
     /** When set, matches add-modal card holder selection (reporting / search). */
-    card_holder?: VenueItemSocialCardHolder;
+    card_holder?: OrderItemSocialCardHolder;
 }
 
-export type VenueItemsBroadcastRadioSocialRow =
-    | VenueItemsBroadcastRow
-    | VenueItemsRadioRow
-    | VenueItemsSocialRow;
+export type OrderItemsBroadcastRadioSocialRow =
+    | OrderItemsBroadcastRow
+    | OrderItemsRadioRow
+    | OrderItemsSocialRow;
 
 /** Key art and static assets (General Media). */
-export interface VenueItemsArtRow extends VenueItemsRowBase {
+export interface OrderItemsArtRow extends OrderItemsRowBase {
     type: 'art';
     /** Billable line from Add Key Art & Static Assets (one row per selected type). */
-    package_type: VenueItemArtPackageType;
+    package_type: OrderItemArtPackageType;
     label: string;
     width: number;
     height: number;
@@ -458,7 +458,7 @@ export interface VenueItemsArtRow extends VenueItemsRowBase {
     order_id?: number;
 }
 
-export interface VenueItemsLocalizedRow extends VenueItemsRowBase {
+export interface OrderItemsLocalizedRow extends OrderItemsRowBase {
     type: 'localized';
     label: string;
     width: number;
@@ -466,10 +466,10 @@ export interface VenueItemsLocalizedRow extends VenueItemsRowBase {
     cta: string;
 }
 
-export type VenueItemsRow =
-    | VenueItemsBroadcastRadioSocialRow
-    | VenueItemsArtRow
-    | VenueItemsLocalizedRow;
+export type OrderItemsRow =
+    | OrderItemsBroadcastRadioSocialRow
+    | OrderItemsArtRow
+    | OrderItemsLocalizedRow;
 
 export interface LocalizedArtTableRow {
     id: string | number;

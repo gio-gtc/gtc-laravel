@@ -1,10 +1,7 @@
-import type { VenueItemsRow } from '@/types';
+import type { OrderItemsRow } from '@/types';
 import type { ApiOrder, OrderItem } from '@/types/orders-api';
 
-export function upsertOrderItem(
-    order: ApiOrder,
-    created: OrderItem,
-): ApiOrder {
+export function upsertOrderItem(order: ApiOrder, created: OrderItem): ApiOrder {
     const items = [...(order.order_items ?? [])];
     const index = items.findIndex((i) => i.id === created.id);
     if (index >= 0) {
@@ -17,7 +14,7 @@ export function upsertOrderItem(
 
 export function replaceOrderItemInOrder(
     order: ApiOrder,
-    row: VenueItemsRow,
+    row: OrderItemsRow,
 ): ApiOrder {
     const items = (order.order_items ?? []).map((item) => {
         if (String(item.id) !== String(row.id)) {

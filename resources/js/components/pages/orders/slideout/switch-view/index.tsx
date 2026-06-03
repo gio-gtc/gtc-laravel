@@ -7,7 +7,7 @@ import LocalArtView from './local-art';
 
 interface SwitchViewProps {
     order: Tour | null;
-    venueItem: { orderVenue: TourVenue; venue: Venue | null } | null;
+    orderItem: { orderVenue: TourVenue; venue: Venue | null } | null;
     selectedRowIds: ReadonlySet<string | number>;
     onToggleRowSelection: (rowId: string | number) => void;
     onClearSelection: () => void;
@@ -19,7 +19,7 @@ interface SwitchViewProps {
 
 export default function SwitchView({
     order,
-    venueItem,
+    orderItem,
     selectedRowIds,
     onToggleRowSelection,
     onClearSelection,
@@ -50,14 +50,14 @@ export default function SwitchView({
 
             {selected === 'local' ? (
                 <LocalArtView
-                    venueItem={venueItem}
+                    orderItem={orderItem}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onToggleRowSelection}
                 />
             ) : (
                 <GeneralMediaView
                     order={order}
-                    venueItem={venueItem}
+                    orderItem={orderItem}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onToggleRowSelection}
                     onOpenAttachModal={onOpenAttachModal}

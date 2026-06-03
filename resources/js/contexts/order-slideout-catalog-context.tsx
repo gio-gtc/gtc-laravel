@@ -2,6 +2,7 @@ import {
     OrdersCatalogProvider,
     useOrdersCatalog,
 } from '@/contexts/orders-catalog-context';
+import { fetchOrderShow } from '@/lib/orders/orders-api-client';
 import {
     apiOrderToLegacySlideout,
     mergeSlideoutVenueItems,
@@ -9,9 +10,8 @@ import {
     upsertOrderItem,
     venueRowToStoreItemPayload,
 } from '@/lib/orders/slideout';
-import type { VenueItemsRow } from '@/types';
+import type { OrderItemsRow, SharedData } from '@/types';
 import type { OrdersCatalogValue } from '@/types/inertia-pages';
-import type { SharedData } from '@/types';
 import type { ApiOrder, OrderItem } from '@/types/orders-api';
 import { router, usePage } from '@inertiajs/react';
 import {
@@ -20,21 +20,27 @@ import {
     useContext,
     useEffect,
     useMemo,
+    useRef,
     useState,
     type ReactNode,
 } from 'react';
 import { toast } from 'react-toastify';
 
+type TourOrdersInvalidator = (tourId: number) => void;
+
 type OrderSlideoutCatalogContextValue = {
     openOrder: ApiOrder | null;
     setOpenOrder: (order: ApiOrder | null) => void;
+    openOrderById: (orderId: number) => Promise<ApiOrder | null>;
+    loadingOrderId: number | null;
     slideoutCatalog: OrdersCatalogValue;
     legacyTour: ReturnType<typeof apiOrderToLegacySlideout>['tour'] | null;
-    legacyVenueItem: ReturnType<
-        typeof apiOrderToLegacySlideout
-    >['venueItem'] | null;
+    legacyVenueItem:
+        | ReturnType<typeof apiOrderToLegacySlideout>['venueItem']
+        | null;
     legacyEventDates: string | undefined;
     submitOpenOrder: () => void;
+    registerTourOrdersInvalidator: (fn: TourOrdersInvalidator) => void;
 };
 
 const OrderSlideoutCatalogContext =
@@ -48,7 +54,58 @@ export function OrderSlideoutCatalogProvider({
     const baseCatalog = useOrdersCatalog();
     const page = usePage<SharedData>();
     const [openOrder, setOpenOrder] = useState<ApiOrder | null>(null);
-    const [extraVenueItems, setExtraVenueItems] = useState<VenueItemsRow[]>([]);
+    const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null);
+    const [ordersDetailCache, setOrdersDetailCache] = useState<
+        Record<number, ApiOrder>
+    >({});
+    const [extraVenueItems, setExtraVenueItems] = useState<OrderItemsRow[]>([]);
+    const tourInvalidatorRef = useRef<TourOrdersInvalidator | null>(null);
+
+    const registerTourOrdersInvalidator = useCallback(
+        (fn: TourOrdersInvalidator) => {
+            tourInvalidatorRef.current = fn;
+        },
+        [],
+    );
+
+    const refreshOpenOrder = useCallback(async (orderId: number) => {
+        try {
+            const order = await fetchOrderShow(orderId);
+            setOrdersDetailCache((prev) => ({ ...prev, [orderId]: order }));
+            setOpenOrder(order);
+            tourInvalidatorRef.current?.(order.tour_id);
+            return order;
+        } catch {
+            toast.error('Could not refresh order details.');
+            return null;
+        }
+    }, []);
+
+    const openOrderById = useCallback(
+        async (orderId: number): Promise<ApiOrder | null> => {
+            const cached = ordersDetailCache[orderId];
+            if (cached) {
+                setOpenOrder(cached);
+                return cached;
+            }
+
+            setLoadingOrderId(orderId);
+            setOpenOrder(null);
+
+            try {
+                const order = await fetchOrderShow(orderId);
+                setOrdersDetailCache((prev) => ({ ...prev, [orderId]: order }));
+                setOpenOrder(order);
+                return order;
+            } catch {
+                toast.error('Could not load order details.');
+                return null;
+            } finally {
+                setLoadingOrderId(null);
+            }
+        },
+        [ordersDetailCache],
+    );
 
     useEffect(() => {
         const created = (
@@ -71,22 +128,24 @@ export function OrderSlideoutCatalogProvider({
         if (!openOrder) {
             return;
         }
-        router.post(`/orders/${openOrder.id}/submit`, {}, {
-            preserveScroll: true,
-            onSuccess: () => {
-                toast.success('Order submitted.');
-                router.reload({
-                    only: ['orders', 'grouped_orders'],
-                });
+        router.post(
+            `/orders/${openOrder.id}/submit`,
+            {},
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    toast.success('Order submitted.');
+                    void refreshOpenOrder(openOrder.id);
+                },
+                onError: () => {
+                    toast.error('Failed to submit order.');
+                },
             },
-            onError: () => {
-                toast.error('Failed to submit order.');
-            },
-        });
-    }, [openOrder]);
+        );
+    }, [openOrder, refreshOpenOrder]);
 
     const replaceVenueItem = useCallback(
-        (row: VenueItemsRow) => {
+        (row: OrderItemsRow) => {
             if (!openOrder) {
                 return;
             }
@@ -143,11 +202,10 @@ export function OrderSlideoutCatalogProvider({
                                 ),
                             );
                             toast.success('Line item added.');
+                            void refreshOpenOrder(openOrder.id);
                             return;
                         }
-                        router.reload({
-                            only: ['orders', 'grouped_orders'],
-                        });
+                        void refreshOpenOrder(openOrder.id);
                     },
                     onError: () => {
                         toast.error('Failed to add line item.');
@@ -155,7 +213,7 @@ export function OrderSlideoutCatalogProvider({
                 },
             );
         },
-        [openOrder],
+        [openOrder, refreshOpenOrder],
     );
 
     const slideoutCatalog = useMemo((): OrdersCatalogValue => {
@@ -199,25 +257,30 @@ export function OrderSlideoutCatalogProvider({
         (): OrderSlideoutCatalogContextValue => ({
             openOrder,
             setOpenOrder,
+            openOrderById,
+            loadingOrderId,
             slideoutCatalog,
             legacyTour: legacyPayload?.tour ?? null,
             legacyVenueItem: legacyPayload?.venueItem ?? null,
             legacyEventDates: legacyPayload?.eventDates,
             submitOpenOrder,
+            registerTourOrdersInvalidator,
         }),
         [
             openOrder,
+            openOrderById,
+            loadingOrderId,
             slideoutCatalog,
             legacyPayload?.tour,
             legacyPayload?.venueItem,
             legacyPayload?.eventDates,
             submitOpenOrder,
+            registerTourOrdersInvalidator,
         ],
     );
 
     return (
         <OrderSlideoutCatalogContext.Provider value={value}>
-            {/* Nested provider merges API-derived venue_items when a slideout is open. */}
             <OrdersCatalogProvider value={slideoutCatalog}>
                 {children}
             </OrdersCatalogProvider>

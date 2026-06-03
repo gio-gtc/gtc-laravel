@@ -2,19 +2,17 @@ import { TableCell, TableRow } from '@/components/ui/table';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import {
-    getAssigneesForOrder,
-    resolveClientForOrder,
-} from '@/lib/orders/orders-filter-users';
-import { aggregateAwaitingAssetTags } from '@/lib/orders/awaiting-asset-tags';
+    indexOrderAssigneesToUsers,
+    resolveClientForIndexOrder,
+} from '@/lib/orders/index-order-helpers';
 import { cn } from '@/lib/utils';
 import type { User } from '@/types';
-import type { ApiOrder } from '@/types/orders-api';
-import { ChevronRight } from 'lucide-react';
-import AwaitingAssetsIconGroup from '../awaiting-assets-icons';
+import type { IndexOrder } from '@/types/orders-api';
+import { AlertCircle, ChevronRight } from 'lucide-react';
 import OrderStatusLabel from '../order-status-label';
 
 type OrdersTableOrderRowProps = {
-    order: ApiOrder;
+    order: IndexOrder;
     orderIsSelected: boolean;
     clientRoster: User[];
     collaboratorRoster: User[];
@@ -33,9 +31,8 @@ export default function OrdersTableOrderRow({
     onOpenSlideout,
 }: OrdersTableOrderRowProps) {
     const venue = order.venue;
-    const client = resolveClientForOrder(order, clientRoster);
-    const assignees = getAssigneesForOrder(order, collaboratorRoster);
-    const assetTags = aggregateAwaitingAssetTags(order);
+    const client = resolveClientForIndexOrder(order, clientRoster);
+    const assignees = indexOrderAssigneesToUsers(order, collaboratorRoster);
     const region =
         venue?.city && venue?.state
             ? `${venue.city}, ${venue.state}`
@@ -82,7 +79,12 @@ export default function OrdersTableOrderRow({
 
             <TableCell className="flex items-center gap-1 px-2 py-0.5">
                 <OrderStatusLabel status={order.status} />
-                <AwaitingAssetsIconGroup tags={assetTags} />
+                {order.is_awaiting_assets && (
+                    <AlertCircle
+                        className="size-3.5 shrink-0 text-amber-500"
+                        aria-label="Awaiting assets"
+                    />
+                )}
             </TableCell>
         </TableRow>
     );

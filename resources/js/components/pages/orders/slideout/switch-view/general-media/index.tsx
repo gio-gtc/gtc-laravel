@@ -5,7 +5,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { buildVenueItemStatusSelectOptions } from '@/components/utils/editable-table/venue-item-status-options';
+import { buildOrderItemStatusSelectOptions } from '@/components/utils/editable-table/venue-item-status-options';
 import {
     getAssignedUsersForVenueItem,
     venueItemStatusIdToLabel,
@@ -14,12 +14,17 @@ import {
     type OrdersVenueLineCatalog,
 } from '@/components/utils/venue-items';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
-import { resolveSlideoutCatalog } from '@/lib/orders/slideout-catalog-defaults';
 import { useChat } from '@/hooks/use-chat';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { plainTextToChatDoc } from '@/lib/chat-utils';
+import { resolveSlideoutCatalog } from '@/lib/orders/slideout-catalog-defaults';
 import {
+    OrderItemsArtRow,
+    OrderItemsBroadcastRadioSocialRow,
+    OrderItemsBroadcastRow,
+    OrderItemsRadioRow,
+    OrderItemsSocialRow,
     type Invoice,
     type MediaTableRow,
     type SharedData,
@@ -28,11 +33,6 @@ import {
     type TourVenue,
     type User,
     type Venue,
-    type VenueItemsArtRow,
-    type VenueItemsBroadcastRadioSocialRow,
-    type VenueItemsBroadcastRow,
-    type VenueItemsRadioRow,
-    type VenueItemsSocialRow,
 } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { format, isValid, parse, parseISO } from 'date-fns';
@@ -62,7 +62,7 @@ import VideoPlayerModal from './modals/video-player-modal';
 
 interface GeneralMediaViewProps {
     order: Tour | null;
-    venueItem: { orderVenue: TourVenue; venue: Venue | null } | null;
+    orderItem: { orderVenue: TourVenue; venue: Venue | null } | null;
     selectedRowIds: ReadonlySet<string | number>;
     onRowSelectToggle: (rowId: string | number) => void;
     onOpenAttachModal?: (context?: {
@@ -81,7 +81,7 @@ function tableDueDateDisplayToIso(display: string): string | undefined {
 
 function GeneralMediaView({
     order,
-    venueItem,
+    orderItem,
     selectedRowIds,
     onRowSelectToggle,
     onOpenAttachModal,
@@ -107,8 +107,8 @@ function GeneralMediaView({
         slideout.venue_item_status,
     ]);
 
-    const venueItemStatusSelectOptions = useMemo(
-        () => buildVenueItemStatusSelectOptions(slideout.venue_item_status),
+    const orderItemStatusSelectOptions = useMemo(
+        () => buildOrderItemStatusSelectOptions(slideout.venue_item_status),
         [slideout.venue_item_status],
     );
     const artPackageTypeSelectOptions = useMemo(
@@ -119,8 +119,8 @@ function GeneralMediaView({
             })),
         [],
     );
-    const chatChannelId = venueItem
-        ? `tour-venue-${venueItem.orderVenue.id}`
+    const chatChannelId = orderItem
+        ? `tour-venue-${orderItem.orderVenue.id}`
         : 'general';
     const {
         messages: chatMessages,
@@ -134,7 +134,7 @@ function GeneralMediaView({
     const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
     const mapBroadcastRadioSocialRow = useCallback(
-        (row: VenueItemsBroadcastRadioSocialRow) => {
+        (row: OrderItemsBroadcastRadioSocialRow) => {
             const mediaRow = venueItemsMediaTableRow(
                 row,
                 getAssignedUsersForVenueItem(
@@ -166,45 +166,45 @@ function GeneralMediaView({
     );
 
     const venueBroadcastWithCallbacks = useMemo(() => {
-        if (!venueItem) return [];
+        if (!orderItem) return [];
         return slideout.venue_items
             .filter(
-                (r): r is VenueItemsBroadcastRadioSocialRow =>
+                (r): r is OrderItemsBroadcastRadioSocialRow =>
                     r.type === 'broadcast' &&
-                    r.tour_venue_id === venueItem.orderVenue.id,
+                    r.tour_venue_id === orderItem.orderVenue.id,
             )
             .map(mapBroadcastRadioSocialRow);
-    }, [venueItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
+    }, [orderItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
 
     const venueSocialLineWithCallbacks = useMemo(() => {
-        if (!venueItem) return [];
+        if (!orderItem) return [];
         return slideout.venue_items
             .filter(
-                (r): r is VenueItemsBroadcastRadioSocialRow =>
+                (r): r is OrderItemsBroadcastRadioSocialRow =>
                     r.type === 'social' &&
-                    r.tour_venue_id === venueItem.orderVenue.id,
+                    r.tour_venue_id === orderItem.orderVenue.id,
             )
             .map(mapBroadcastRadioSocialRow);
-    }, [venueItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
+    }, [orderItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
 
     const venueRadioWithCallbacks = useMemo(() => {
-        if (!venueItem) return [];
+        if (!orderItem) return [];
         return slideout.venue_items
             .filter(
-                (r): r is VenueItemsBroadcastRadioSocialRow =>
+                (r): r is OrderItemsBroadcastRadioSocialRow =>
                     r.type === 'radio' &&
-                    r.tour_venue_id === venueItem.orderVenue.id,
+                    r.tour_venue_id === orderItem.orderVenue.id,
             )
             .map(mapBroadcastRadioSocialRow);
-    }, [venueItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
+    }, [orderItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
 
     const venueArtWithCallbacks = useMemo(() => {
-        if (!venueItem) return [];
+        if (!orderItem) return [];
         return slideout.venue_items
             .filter(
-                (r): r is VenueItemsArtRow =>
+                (r): r is OrderItemsArtRow =>
                     r.type === 'art' &&
-                    r.tour_venue_id === venueItem.orderVenue.id,
+                    r.tour_venue_id === orderItem.orderVenue.id,
             )
             .map((row) => {
                 const staticRow = venueItemsArtTableRow(
@@ -235,7 +235,7 @@ function GeneralMediaView({
                 };
             });
     }, [
-        venueItem,
+        orderItem,
         slideout.venue_items,
         slideout.venue_item_status,
         venueLineCatalog,
@@ -305,14 +305,14 @@ function GeneralMediaView({
         'add' | 'edit'
     >('add');
     const [broadcastEditRow, setBroadcastEditRow] =
-        useState<VenueItemsBroadcastRow | null>(null);
+        useState<OrderItemsBroadcastRow | null>(null);
     const [socialModalMode, setSocialModalMode] = useState<'add' | 'edit'>(
         'add',
     );
     const [socialEditRow, setSocialEditRow] =
-        useState<VenueItemsSocialRow | null>(null);
+        useState<OrderItemsSocialRow | null>(null);
     const [radioModalMode, setRadioModalMode] = useState<'add' | 'edit'>('add');
-    const [radioEditRow, setRadioEditRow] = useState<VenueItemsRadioRow | null>(
+    const [radioEditRow, setRadioEditRow] = useState<OrderItemsRadioRow | null>(
         null,
     );
     const [keyArtModalOpen, setKeyArtModalOpen] = useState(false);
@@ -347,7 +347,7 @@ function GeneralMediaView({
     }, []);
 
     const handleBroadcastEditSave = useCallback(
-        (row: VenueItemsBroadcastRow) => {
+        (row: OrderItemsBroadcastRow) => {
             replaceVenueItem(row);
             closeBroadcastModal();
         },
@@ -355,7 +355,7 @@ function GeneralMediaView({
     );
 
     const handleSocialEditSave = useCallback(
-        (row: VenueItemsSocialRow) => {
+        (row: OrderItemsSocialRow) => {
             replaceVenueItem(row);
             closeSocialVideoModal();
         },
@@ -363,7 +363,7 @@ function GeneralMediaView({
     );
 
     const handleRadioEditSave = useCallback(
-        (row: VenueItemsRadioRow) => {
+        (row: OrderItemsRadioRow) => {
             replaceVenueItem(row);
             closeAudioModal();
         },
@@ -439,22 +439,22 @@ function GeneralMediaView({
     }, []);
 
     const billingInvoices = useMemo((): Invoice[] => {
-        if (!order || !venueItem || venueItem.venue == null) return [];
+        if (!order || !orderItem || orderItem.venue == null) return [];
         return slideout.invoices.filter(
             (inv) =>
                 !inv.isDeleted &&
                 inv.tour === order.name &&
-                inv.venue_id === venueItem.venue!.id,
+                inv.venue_id === orderItem.venue!.id,
         );
-    }, [order, venueItem, slideout.invoices]);
+    }, [order, orderItem, slideout.invoices]);
 
-    const isDemoRow = venueItem != null && venueItem.venue === null;
+    const isDemoRow = orderItem != null && orderItem.venue === null;
 
     const demoLinkHref = useMemo(() => {
-        if (!isDemoRow || !venueItem) return undefined;
-        const u = venueItem.orderVenue.demo_uuid;
+        if (!isDemoRow || !orderItem) return undefined;
+        const u = orderItem.orderVenue.demo_uuid;
         return u ? `/demo/${u}` : undefined;
-    }, [isDemoRow, venueItem]);
+    }, [isDemoRow, orderItem]);
 
     const openDueDateBulkEdit = useCallback(
         (rowId: string | number) => {
@@ -613,7 +613,7 @@ function GeneralMediaView({
                     data={filteredBroadcastData}
                     cellEditing={sharedBroadcastCellEditing}
                     editScope="broadcast"
-                    venueItemStatusSelectOptions={venueItemStatusSelectOptions}
+                    orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
@@ -632,7 +632,7 @@ function GeneralMediaView({
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     onEditLineInModal={(row) => {
                         const raw = slideout.venue_items.find(
-                            (r): r is VenueItemsBroadcastRow =>
+                            (r): r is OrderItemsBroadcastRow =>
                                 String(r.id) === String(row.id) &&
                                 r.type === 'broadcast',
                         );
@@ -648,7 +648,7 @@ function GeneralMediaView({
                     data={filteredSocialLineData}
                     cellEditing={sharedSocialLineCellEditing}
                     editScope="socialLine"
-                    venueItemStatusSelectOptions={venueItemStatusSelectOptions}
+                    orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
@@ -664,7 +664,7 @@ function GeneralMediaView({
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     onEditLineInModal={(row) => {
                         const raw = slideout.venue_items.find(
-                            (r): r is VenueItemsSocialRow =>
+                            (r): r is OrderItemsSocialRow =>
                                 String(r.id) === String(row.id) &&
                                 r.type === 'social',
                         );
@@ -680,7 +680,7 @@ function GeneralMediaView({
                     data={filteredRadioData}
                     cellEditing={sharedRadioCellEditing}
                     editScope="radio"
-                    venueItemStatusSelectOptions={venueItemStatusSelectOptions}
+                    orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
@@ -697,7 +697,7 @@ function GeneralMediaView({
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     onEditLineInModal={(row) => {
                         const raw = slideout.venue_items.find(
-                            (r): r is VenueItemsRadioRow =>
+                            (r): r is OrderItemsRadioRow =>
                                 String(r.id) === String(row.id) &&
                                 r.type === 'radio',
                         );
@@ -711,7 +711,7 @@ function GeneralMediaView({
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
                     data={filteredStaticAssetsData}
-                    venueItemStatusSelectOptions={venueItemStatusSelectOptions}
+                    orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     artPackageTypeSelectOptions={artPackageTypeSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
@@ -831,7 +831,7 @@ function GeneralMediaView({
                 isOpen={keyArtModalOpen}
                 onClose={() => setKeyArtModalOpen(false)}
                 isUSOrder={
-                    venueItem?.venue ? venueItem.venue.country_id === 1 : true
+                    orderItem?.venue ? orderItem.venue.country_id === 1 : true
                 }
             />
             <RevisionRequestModal

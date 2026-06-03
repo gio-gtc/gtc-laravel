@@ -1,10 +1,10 @@
-import type { VenueItemsRow } from '@/types';
+import type { OrderItemsRow } from '@/types';
 
 /** Merge API-derived lines with localized mock rows from the page catalog. */
 export function mergeSlideoutVenueItems(
-    apiItems: VenueItemsRow[],
-    catalogLocalizedItems: VenueItemsRow[] | undefined,
-): VenueItemsRow[] {
+    apiItems: OrderItemsRow[],
+    catalogLocalizedItems: OrderItemsRow[] | undefined,
+): OrderItemsRow[] {
     const localized = (catalogLocalizedItems ?? []).filter(
         (r) => r.type === 'localized',
     );

@@ -1,22 +1,22 @@
+import type { VenueItemSocialCardHolder } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
 import { MultiSelectCombobox } from '@/components/ui/combobox';
 import { Label } from '@/components/ui/label';
 import {
     defaultVenueItemLanguageLabels,
     venueItemLanguageIdToLabel,
 } from '@/components/utils/venue-items';
+import { cn } from '@/lib/utils';
 import {
     languageTypeToId,
     modalDurationPillToSeconds,
 } from '@/lib/venue-items/modal-mappers';
-import { cn } from '@/lib/utils';
-import type { VenueItemLanguage, VenueItemsSocialRow } from '@/types';
-import type { VenueItemSocialCardHolder } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
+import type { OrderItemLanguage, OrderItemsSocialRow } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
-import OrderModalLayout from './order-modal-layout';
 import {
     durationSecondsToModalPillLabel,
     isNonDefaultModalDuration,
 } from './modal-duration';
+import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
 import {
@@ -40,11 +40,11 @@ interface AddSocialVideoModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAdd?: (values: AddSocialVideoFormValues) => void;
-    venue_item_language: VenueItemLanguage[];
+    venue_item_language: OrderItemLanguage[];
     initialDurationSeconds?: number;
     mode?: 'add' | 'edit';
-    initialVenueRow?: VenueItemsSocialRow;
-    onEditSave?: (row: VenueItemsSocialRow) => void;
+    initialVenueRow?: OrderItemsSocialRow;
+    onEditSave?: (row: OrderItemsSocialRow) => void;
 }
 
 export default function AddSocialVideoModal({
@@ -114,10 +114,7 @@ export default function AddSocialVideoModal({
         !isEdit &&
         initialDurationSeconds !== undefined &&
         isNonDefaultModalDuration(initialDurationSeconds, 'social')
-            ? durationSecondsToModalPillLabel(
-                  initialDurationSeconds,
-                  'social',
-              )
+            ? durationSecondsToModalPillLabel(initialDurationSeconds, 'social')
             : null;
 
     const editSocialDurationSeconds = useMemo(
@@ -162,12 +159,12 @@ export default function AddSocialVideoModal({
         const langId = languageTypeToId(venue_item_language, editLanguage);
         if (langId === undefined) return;
 
-        const restSocial: VenueItemsSocialRow = { ...initialVenueRow };
+        const restSocial: OrderItemsSocialRow = { ...initialVenueRow };
         delete restSocial.card_holder;
-        const next: VenueItemsSocialRow = {
+        const next: OrderItemsSocialRow = {
             ...restSocial,
-            spot_type: editLayout as VenueItemsSocialRow['spot_type'],
-            cut: editCut as VenueItemsSocialRow['cut'],
+            spot_type: editLayout as OrderItemsSocialRow['spot_type'],
+            cut: editCut as OrderItemsSocialRow['cut'],
             duration_seconds: modalDurationPillToSeconds(
                 editDuration,
                 'social',
@@ -175,8 +172,7 @@ export default function AddSocialVideoModal({
             language_id: langId,
             ...(editCardHolder !== CARD_NONE
                 ? {
-                      card_holder:
-                          editCardHolder as VenueItemSocialCardHolder,
+                      card_holder: editCardHolder as VenueItemSocialCardHolder,
                   }
                 : {}),
         };
@@ -212,12 +208,12 @@ export default function AddSocialVideoModal({
                                 mode="single"
                                 options={SOCIAL_VIDEO_TYPE_OPTIONS}
                                 value={editLayout ? [editLayout] : []}
-                                onValueChange={(v) =>
-                                    setEditLayout(v[0] ?? '')
-                                }
+                                onValueChange={(v) => setEditLayout(v[0] ?? '')}
                                 placeholder="Select Type"
                                 emptyMessage="No cuts found."
-                                triggerClassName={orderModalStyles.selectTrigger}
+                                triggerClassName={
+                                    orderModalStyles.selectTrigger
+                                }
                             />
                         </div>
 
@@ -239,14 +235,18 @@ export default function AddSocialVideoModal({
                                 onValueChange={(v) => setEditCut(v[0] ?? '')}
                                 placeholder="Select Cuts"
                                 emptyMessage="No cuts found."
-                                triggerClassName={orderModalStyles.selectTrigger}
+                                triggerClassName={
+                                    orderModalStyles.selectTrigger
+                                }
                             />
                         </div>
                     </div>
 
                     <div className="flex flex-row justify-between gap-2 text-xs sm:justify-center">
                         <div className="flex flex-col gap-2">
-                            <Label className={cn('pb-4', orderModalStyles.label)}>
+                            <Label
+                                className={cn('pb-4', orderModalStyles.label)}
+                            >
                                 Card Holder
                             </Label>
                             <div className="flex flex-col gap-2">
@@ -266,7 +266,9 @@ export default function AddSocialVideoModal({
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <Label className={cn('pb-4', orderModalStyles.label)}>
+                            <Label
+                                className={cn('pb-4', orderModalStyles.label)}
+                            >
                                 Duration
                             </Label>
                             <div className="flex flex-col gap-2">
@@ -280,7 +282,8 @@ export default function AddSocialVideoModal({
                                             selected={editDuration === d}
                                             disabled={isDisabled}
                                             onClick={() =>
-                                                !isDisabled && setEditDuration(d)
+                                                !isDisabled &&
+                                                setEditDuration(d)
                                             }
                                         >
                                             {d}
@@ -292,10 +295,13 @@ export default function AddSocialVideoModal({
                                         key={editExtraDurationLabel}
                                         className="w-full"
                                         selected={
-                                            editDuration === editExtraDurationLabel
+                                            editDuration ===
+                                            editExtraDurationLabel
                                         }
                                         onClick={() =>
-                                            setEditDuration(editExtraDurationLabel)
+                                            setEditDuration(
+                                                editExtraDurationLabel,
+                                            )
                                         }
                                     >
                                         {editExtraDurationLabel}
@@ -305,7 +311,9 @@ export default function AddSocialVideoModal({
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <Label className={cn('pb-4', orderModalStyles.label)}>
+                            <Label
+                                className={cn('pb-4', orderModalStyles.label)}
+                            >
                                 Language
                             </Label>
                             <div className="flex flex-col gap-2">
@@ -345,7 +353,9 @@ export default function AddSocialVideoModal({
                                 onValueChange={setType}
                                 placeholder="Select Type"
                                 emptyMessage="No cuts found."
-                                triggerClassName={orderModalStyles.selectTrigger}
+                                triggerClassName={
+                                    orderModalStyles.selectTrigger
+                                }
                             />
                         </div>
 
@@ -366,14 +376,18 @@ export default function AddSocialVideoModal({
                                 onValueChange={setCuts}
                                 placeholder="Select Cuts"
                                 emptyMessage="No cuts found."
-                                triggerClassName={orderModalStyles.selectTrigger}
+                                triggerClassName={
+                                    orderModalStyles.selectTrigger
+                                }
                             />
                         </div>
                     </div>
 
                     <div className="flex flex-row justify-between gap-2 text-xs sm:justify-center">
                         <div className="flex flex-col gap-2">
-                            <Label className={cn('pb-4', orderModalStyles.label)}>
+                            <Label
+                                className={cn('pb-4', orderModalStyles.label)}
+                            >
                                 Card Holder
                             </Label>
                             <div className="flex flex-col gap-2">
@@ -395,7 +409,9 @@ export default function AddSocialVideoModal({
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <Label className={cn('pb-4', orderModalStyles.label)}>
+                            <Label
+                                className={cn('pb-4', orderModalStyles.label)}
+                            >
                                 Duration
                             </Label>
                             <div className="flex flex-col gap-2">
@@ -442,7 +458,9 @@ export default function AddSocialVideoModal({
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <Label className={cn('pb-4', orderModalStyles.label)}>
+                            <Label
+                                className={cn('pb-4', orderModalStyles.label)}
+                            >
                                 Language
                             </Label>
                             <div className="flex flex-col gap-2">

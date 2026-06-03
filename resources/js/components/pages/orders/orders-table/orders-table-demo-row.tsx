@@ -1,13 +1,13 @@
 import { TableCell, TableRow } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
-import { getAssigneesForOrder } from '@/lib/orders/orders-filter-users';
+import { indexOrderAssigneesToUsers } from '@/lib/orders/index-order-helpers';
 import { cn } from '@/lib/utils';
 import type { User } from '@/types';
-import type { ApiOrder } from '@/types/orders-api';
+import type { IndexOrder } from '@/types/orders-api';
 import { ChevronRight } from 'lucide-react';
 
 type OrdersTableDemoRowProps = {
-    demoOrder: ApiOrder;
+    demoOrder: IndexOrder;
     orderIsSelected: boolean;
     collaboratorRoster: User[];
     onOrderRowSelect: (orderId: number) => void;
@@ -21,7 +21,10 @@ export default function OrdersTableDemoRow({
     onOrderRowSelect,
     onOpenSlideout,
 }: OrdersTableDemoRowProps) {
-    const assignees = getAssigneesForOrder(demoOrder, collaboratorRoster);
+    const assignees = indexOrderAssigneesToUsers(
+        demoOrder,
+        collaboratorRoster,
+    );
 
     return (
         <TableRow

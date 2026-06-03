@@ -11,18 +11,18 @@ import {
     defaultVenueItemLanguageLabels,
     venueItemLanguageIdToLabel,
 } from '@/components/utils/venue-items';
+import { cn } from '@/lib/utils';
 import {
     languageTypeToId,
     modalDurationPillToSeconds,
 } from '@/lib/venue-items/modal-mappers';
-import { cn } from '@/lib/utils';
-import type { VenueItemLanguage, VenueItemsRadioRow } from '@/types';
+import type { OrderItemLanguage, OrderItemsRadioRow } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
-import OrderModalLayout from './order-modal-layout';
 import {
     durationSecondsToModalPillLabel,
     isNonDefaultModalDuration,
 } from './modal-duration';
+import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
 import { OPTIONS_BY_TYPE_AUDIO } from './spot-type-cuts-options';
@@ -41,11 +41,11 @@ interface AddAudioModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAdd?: (values: AddAudioFormValues) => void;
-    venue_item_language: VenueItemLanguage[];
+    venue_item_language: OrderItemLanguage[];
     initialDurationSeconds?: number;
     mode?: 'add' | 'edit';
-    initialVenueRow?: VenueItemsRadioRow;
-    onEditSave?: (row: VenueItemsRadioRow) => void;
+    initialVenueRow?: OrderItemsRadioRow;
+    onEditSave?: (row: OrderItemsRadioRow) => void;
 }
 
 export default function AddAudioModal({
@@ -107,10 +107,7 @@ export default function AddAudioModal({
         !isEdit &&
         initialDurationSeconds !== undefined &&
         isNonDefaultModalDuration(initialDurationSeconds, 'audio')
-            ? durationSecondsToModalPillLabel(
-                  initialDurationSeconds,
-                  'audio',
-              )
+            ? durationSecondsToModalPillLabel(initialDurationSeconds, 'audio')
             : null;
 
     const { availableCuts } = useMemo(() => {
@@ -134,10 +131,7 @@ export default function AddAudioModal({
         isEdit &&
         editDuration &&
         isNonDefaultModalDuration(editDurationSeconds, 'audio')
-            ? durationSecondsToModalPillLabel(
-                  editDurationSeconds,
-                  'audio',
-              )
+            ? durationSecondsToModalPillLabel(editDurationSeconds, 'audio')
             : null;
 
     const canSubmitEdit = useMemo(() => {
@@ -172,9 +166,7 @@ export default function AddAudioModal({
         const config = OPTIONS_BY_TYPE_AUDIO[newType];
         const cutOpts = config?.cuts ?? [];
         if (cutOpts.length) {
-            setEditCut((c) =>
-                cutOpts.includes(c) ? c : (cutOpts[0] ?? ''),
-            );
+            setEditCut((c) => (cutOpts.includes(c) ? c : (cutOpts[0] ?? '')));
         } else {
             setEditCut('');
         }
@@ -197,12 +189,9 @@ export default function AddAudioModal({
 
         onEditSave?.({
             ...initialVenueRow,
-            spot_type: editType as VenueItemsRadioRow['spot_type'],
-            cut: editCut as VenueItemsRadioRow['cut'],
-            duration_seconds: modalDurationPillToSeconds(
-                editDuration,
-                'audio',
-            ),
+            spot_type: editType as OrderItemsRadioRow['spot_type'],
+            cut: editCut as OrderItemsRadioRow['cut'],
+            duration_seconds: modalDurationPillToSeconds(editDuration, 'audio'),
             language_id: langId,
         });
         handleClose();
@@ -276,7 +265,9 @@ export default function AddAudioModal({
 
                     <div className="flex flex-row justify-around gap-2 text-xs sm:justify-center">
                         <div className="flex flex-col gap-2">
-                            <Label className={cn('pb-4', orderModalStyles.label)}>
+                            <Label
+                                className={cn('pb-4', orderModalStyles.label)}
+                            >
                                 Duration
                             </Label>
                             <div className="flex flex-col gap-2">
@@ -292,7 +283,8 @@ export default function AddAudioModal({
                                             selected={editDuration === d}
                                             disabled={isDisabled}
                                             onClick={() =>
-                                                !isDisabled && setEditDuration(d)
+                                                !isDisabled &&
+                                                setEditDuration(d)
                                             }
                                         >
                                             {d}
@@ -304,12 +296,15 @@ export default function AddAudioModal({
                                         key={editExtraDurationLabel}
                                         className="w-full"
                                         selected={
-                                            editDuration === editExtraDurationLabel
+                                            editDuration ===
+                                            editExtraDurationLabel
                                         }
                                         disabled={editType === 'International'}
                                         onClick={() =>
                                             editType !== 'International' &&
-                                            setEditDuration(editExtraDurationLabel)
+                                            setEditDuration(
+                                                editExtraDurationLabel,
+                                            )
                                         }
                                     >
                                         {editExtraDurationLabel}
@@ -319,7 +314,9 @@ export default function AddAudioModal({
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <Label className={cn('pb-4', orderModalStyles.label)}>
+                            <Label
+                                className={cn('pb-4', orderModalStyles.label)}
+                            >
                                 Language
                             </Label>
                             <div className="flex flex-col gap-2">
@@ -330,7 +327,9 @@ export default function AddAudioModal({
                                         <PillButton
                                             key={lang.id}
                                             className="w-full"
-                                            selected={editLanguage === lang.type}
+                                            selected={
+                                                editLanguage === lang.type
+                                            }
                                             disabled={isDisabled}
                                             onClick={() =>
                                                 !isDisabled &&
@@ -348,7 +347,10 @@ export default function AddAudioModal({
             ) : (
                 <div className="flex flex-col gap-2 text-xs sm:flex-row">
                     <div className="flex flex-3 flex-col gap-1.5">
-                        <Label htmlFor="type" className={orderModalStyles.label}>
+                        <Label
+                            htmlFor="type"
+                            className={orderModalStyles.label}
+                        >
                             Type
                         </Label>
                         <p className={orderModalStyles.helper}>
@@ -374,7 +376,10 @@ export default function AddAudioModal({
                     </div>
 
                     <div className="flex flex-3 flex-col gap-1.5">
-                        <Label htmlFor="cuts" className={orderModalStyles.label}>
+                        <Label
+                            htmlFor="cuts"
+                            className={orderModalStyles.label}
+                        >
                             Cuts
                         </Label>
                         <p className={orderModalStyles.helper}>
@@ -393,7 +398,9 @@ export default function AddAudioModal({
 
                     <div className="flex flex-row justify-around gap-2 text-xs sm:justify-center">
                         <div className="flex flex-col gap-2">
-                            <Label className={cn('pb-4', orderModalStyles.label)}>
+                            <Label
+                                className={cn('pb-4', orderModalStyles.label)}
+                            >
                                 Duration
                             </Label>
                             <div className="flex flex-col gap-2">
@@ -444,7 +451,9 @@ export default function AddAudioModal({
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <Label className={cn('pb-4', orderModalStyles.label)}>
+                            <Label
+                                className={cn('pb-4', orderModalStyles.label)}
+                            >
                                 Language
                             </Label>
                             <div className="flex flex-col gap-2">

@@ -5,13 +5,11 @@ namespace App\Support;
 use Illuminate\Http\Request;
 
 /**
- * BFF assembly for GET /api/orders index (list + tour grouping).
+ * BFF assembly for orders dashboard (tour feed + order normalization).
  *
  * Prop sources:
- * - orders, grouped_orders: gtc-api GET /api/orders
+ * - tours, tours_pagination: gtc-api GET /api/tours
  * - order_status_options: order container statuses (Title Case wire values)
- *
- * TODO: fetchOrderShow(int $id) → GET /api/orders/{id} for slideout detail (follow-up PR).
  */
 final class OrdersAssembler
 {
@@ -24,23 +22,115 @@ final class OrdersAssembler
         'Canceled',
     ];
 
+    /** Query keys forwarded from browser to gtc-api tour endpoints. */
+    private const TOUR_FILTER_KEYS = [
+        'page',
+        'search',
+        'client_ids',
+        'assignee_ids',
+        'statuses',
+        'asset_tags',
+        'is_international',
+        'filter',
+    ];
+
     /**
      * @return array<string, mixed>
      */
     public static function forIndex(Request $request): array
     {
-        $rawOrders = self::fetchOrdersFromApi($request);
-        $normalized = self::normalizeOrders($rawOrders);
-        $groupedOrders = self::groupOrdersByTour($normalized);
+        $toursPayload = self::fetchToursPage($request, 1);
 
         return array_merge(
             [
-                'orders' => $normalized,
-                'grouped_orders' => $groupedOrders,
+                'tours' => $toursPayload['tours'],
+                'tours_pagination' => $toursPayload['pagination'],
                 'order_status_options' => self::orderStatusOptions(),
             ],
             self::slideoutCatalogSlices(),
         );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function tourFilterQueryFromRequest(Request $request): array
+    {
+        $query = [];
+
+        foreach (self::TOUR_FILTER_KEYS as $key) {
+            if (! $request->has($key)) {
+                continue;
+            }
+
+            $value = $request->query($key);
+
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $query[$key] = $value;
+        }
+
+        return $query;
+    }
+
+    /**
+     * @return array{tours: array<int, array{id: int, name: string}>, pagination: array{current_page: int, last_page: int, total: int, next_page_url: string|null}}
+     */
+    public static function fetchToursPage(Request $request, int $page = 1): array
+    {
+        $empty = [
+            'tours' => [],
+            'pagination' => [
+                'current_page' => 1,
+                'last_page' => 1,
+                'total' => 0,
+                'next_page_url' => null,
+            ],
+        ];
+
+        $client = GtcApiClient::fromRequest($request);
+
+        if ($client === null) {
+            return $empty;
+        }
+
+        $query = array_merge(
+            self::tourFilterQueryFromRequest($request),
+            ['page' => $page],
+        );
+
+        $result = $client->get('/api/tours', $query);
+
+        if (! $result['ok']) {
+            $request->session()->flash('error', $result['message']);
+
+            return $empty;
+        }
+
+        return self::parseToursPaginationPayload($result['data']);
+    }
+
+    /**
+     * @param  array<int, mixed>  $rawOrders
+     * @return array<int, array<string, mixed>>
+     */
+    public static function normalizeOrders(array $rawOrders): array
+    {
+        $normalized = [];
+
+        foreach ($rawOrders as $raw) {
+            if (! is_array($raw)) {
+                continue;
+            }
+
+            $order = $raw;
+            $order['collaborators'] = self::dedupeAssignees($raw['order_items'] ?? []);
+            $normalized[] = $order;
+        }
+
+        return $normalized;
     }
 
     /**
@@ -90,24 +180,63 @@ final class OrdersAssembler
     }
 
     /**
-     * @param  array<int, mixed>  $rawOrders
-     * @return array<int, array<string, mixed>>
+     * @return array{tours: array<int, array{id: int, name: string}>, pagination: array{current_page: int, last_page: int, total: int, next_page_url: string|null}}
      */
-    private static function normalizeOrders(array $rawOrders): array
+    public static function parseToursPaginationPayload(mixed $body): array
     {
-        $normalized = [];
+        $empty = [
+            'tours' => [],
+            'pagination' => [
+                'current_page' => 1,
+                'last_page' => 1,
+                'total' => 0,
+                'next_page_url' => null,
+            ],
+        ];
 
-        foreach ($rawOrders as $raw) {
-            if (! is_array($raw)) {
+        if (! is_array($body)) {
+            return $empty;
+        }
+
+        $envelope = isset($body['data']) && is_array($body['data']) && ! array_is_list($body['data'])
+            ? $body['data']
+            : $body;
+
+        $data = $envelope['data'] ?? $body['data'] ?? [];
+        if (! is_array($data)) {
+            $data = [];
+        }
+
+        $tours = [];
+        foreach ($data as $row) {
+            if (! is_array($row)) {
                 continue;
             }
 
-            $order = $raw;
-            $order['collaborators'] = self::dedupeAssignees($raw['order_items'] ?? []);
-            $normalized[] = $order;
+            $id = $row['id'] ?? null;
+            $name = $row['name'] ?? null;
+
+            if (! is_numeric($id) || ! is_string($name)) {
+                continue;
+            }
+
+            $tours[] = [
+                'id' => (int) $id,
+                'name' => $name,
+            ];
         }
 
-        return $normalized;
+        return [
+            'tours' => $tours,
+            'pagination' => [
+                'current_page' => (int) ($envelope['current_page'] ?? 1),
+                'last_page' => (int) ($envelope['last_page'] ?? 1),
+                'total' => (int) ($envelope['total'] ?? count($tours)),
+                'next_page_url' => is_string($envelope['next_page_url'] ?? null)
+                    ? $envelope['next_page_url']
+                    : null,
+            ],
+        ];
     }
 
     /**
@@ -173,119 +302,5 @@ final class OrdersAssembler
         }
 
         return $collaborators;
-    }
-
-    /**
-     * @param  array<int, array<string, mixed>>  $orders
-     * @return array<int, array{tour: array{id: int, name: string}, orders: array<int, array<string, mixed>>}>
-     */
-    private static function groupOrdersByTour(array $orders): array
-    {
-        /** @var array<int, array{tour: array{id: int, name: string}, orders: array<int, array<string, mixed>>}> */
-        $byTour = [];
-
-        foreach ($orders as $order) {
-            $tour = $order['tour'] ?? null;
-            $tourId = is_array($tour) && isset($tour['id'])
-                ? (int) $tour['id']
-                : (int) ($order['tour_id'] ?? 0);
-            $tourName = is_array($tour) && is_string($tour['name'] ?? null)
-                ? $tour['name']
-                : 'Unknown tour';
-
-            if (! isset($byTour[$tourId])) {
-                $byTour[$tourId] = [
-                    'tour' => ['id' => $tourId, 'name' => $tourName],
-                    'orders' => [],
-                ];
-            }
-
-            $byTour[$tourId]['orders'][] = $order;
-        }
-
-        foreach ($byTour as &$group) {
-            usort($group['orders'], fn (array $a, array $b): int => self::compareDueDateDesc($a, $b));
-        }
-        unset($group);
-
-        $groups = array_values($byTour);
-
-        usort($groups, function (array $a, array $b): int {
-            $aCreated = self::maxCreatedAtTimestamp($a['orders']);
-            $bCreated = self::maxCreatedAtTimestamp($b['orders']);
-
-            return $bCreated <=> $aCreated;
-        });
-
-        return $groups;
-    }
-
-    /**
-     * @param  array<int, array<string, mixed>>  $orders
-     */
-    private static function maxCreatedAtTimestamp(array $orders): int
-    {
-        $max = 0;
-
-        foreach ($orders as $order) {
-            $createdAt = $order['created_at'] ?? null;
-            if (! is_string($createdAt) || $createdAt === '') {
-                continue;
-            }
-
-            $timestamp = strtotime($createdAt);
-            if ($timestamp !== false && $timestamp > $max) {
-                $max = $timestamp;
-            }
-        }
-
-        return $max;
-    }
-
-    /**
-     * @param  array<string, mixed>  $a
-     * @param  array<string, mixed>  $b
-     */
-    private static function compareDueDateDesc(array $a, array $b): int
-    {
-        $aTs = self::parseDateTimestamp($a['due_date'] ?? null);
-        $bTs = self::parseDateTimestamp($b['due_date'] ?? null);
-
-        return $bTs <=> $aTs;
-    }
-
-    private static function parseDateTimestamp(mixed $value): int
-    {
-        if (! is_string($value) || $value === '') {
-            return 0;
-        }
-
-        $timestamp = strtotime($value);
-
-        return $timestamp !== false ? $timestamp : 0;
-    }
-
-    /**
-     * @return array<int, mixed>
-     */
-    private static function fetchOrdersFromApi(Request $request): array
-    {
-        $client = GtcApiClient::fromRequest($request);
-
-        if ($client === null) {
-            return [];
-        }
-
-        $result = $client->get('/api/orders');
-
-        if (! $result['ok']) {
-            $request->session()->flash('error', $result['message']);
-
-            return [];
-        }
-
-        $orders = GtcApiClient::unwrapList($result['data'], 'orders');
-
-        return $orders ?? [];
     }
 }

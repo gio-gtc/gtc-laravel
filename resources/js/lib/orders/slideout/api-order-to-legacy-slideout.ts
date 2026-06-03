@@ -1,30 +1,33 @@
-import { formatOrderShowDatesForHeader, orderShowDateRange } from '@/lib/orders/format-order-show-dates';
+import {
+    formatOrderShowDatesForHeader,
+    orderShowDateRange,
+} from '@/lib/orders/format-order-show-dates';
+import {
+    orderItemCutLabel,
+    orderItemDefaultCut,
+    orderItemDueDateDisplay,
+    orderItemDurationSeconds,
+    orderItemIsci,
+    parseOrderItemDimensions,
+} from '@/lib/orders/order-item-specifications';
 import {
     defaultArtPackage,
     defaultBroadcastSpotType,
     defaultSocialCut,
     defaultSocialSpotType,
 } from '@/lib/orders/order-item-venue-defaults';
-import {
-    orderItemDefaultCut,
-    orderItemDueDateDisplay,
-    orderItemDurationSeconds,
-    orderItemIsci,
-    orderItemCutLabel,
-    parseOrderItemDimensions,
-} from '@/lib/orders/order-item-specifications';
 import { venueItemTypeFromCategoryId } from '@/lib/orders/order-menu-categories';
 import { collectTourVenueStatuses } from '@/lib/orders/order-status-tour-venue-icons';
 import type {
+    OrderItemAssigned,
+    OrderItemsArtRow,
+    OrderItemsBroadcastRow,
+    OrderItemsRadioRow,
+    OrderItemsRow,
+    OrderItemsSocialRow,
     Tour,
     TourVenue,
     Venue,
-    VenueItemAssigned,
-    VenueItemsArtRow,
-    VenueItemsBroadcastRow,
-    VenueItemsRadioRow,
-    VenueItemsRow,
-    VenueItemsSocialRow,
 } from '@/types';
 import type { OrdersSlideoutCatalogExtensions } from '@/types/inertia-pages';
 import type { ApiOrder, ApiOrderVenue, OrderItem } from '@/types/orders-api';
@@ -97,7 +100,7 @@ function apiOrderToTourVenue(order: ApiOrder): TourVenue {
 function baseRowFields(
     order: ApiOrder,
     item: OrderItem,
-): Pick<VenueItemsRow, 'id' | 'tour_venue_id' | 'dueDate' | 'created_date'> {
+): Pick<OrderItemsRow, 'id' | 'tour_venue_id' | 'dueDate' | 'created_date'> {
     return {
         id: String(item.id),
         tour_venue_id: order.id,
@@ -109,7 +112,7 @@ function baseRowFields(
 function orderItemToVenueRow(
     order: ApiOrder,
     item: OrderItem,
-): VenueItemsRow | null {
+): OrderItemsRow | null {
     const venueType = venueItemTypeFromCategoryId(
         item.order_menu_item?.order_menu_category_id,
     );
@@ -124,14 +127,14 @@ function orderItemToVenueRow(
     const specs = item.specifications;
 
     if (venueType === 'broadcast') {
-        const row: VenueItemsBroadcastRow = {
+        const row: OrderItemsBroadcastRow = {
             ...base,
             type: 'broadcast',
             isci,
             duration_seconds: orderItemDurationSeconds(specs),
             status_id: statusId,
             spot_type: defaultBroadcastSpotType(specs),
-            cut: orderItemDefaultCut(item) as VenueItemsBroadcastRow['cut'],
+            cut: orderItemDefaultCut(item) as OrderItemsBroadcastRow['cut'],
             has_deliverable_actions: hasDeliverables,
             order_id: order.id,
         };
@@ -139,7 +142,7 @@ function orderItemToVenueRow(
     }
 
     if (venueType === 'social') {
-        const row: VenueItemsSocialRow = {
+        const row: OrderItemsSocialRow = {
             ...base,
             type: 'social',
             isci,
@@ -154,14 +157,14 @@ function orderItemToVenueRow(
     }
 
     if (venueType === 'radio') {
-        const row: VenueItemsRadioRow = {
+        const row: OrderItemsRadioRow = {
             ...base,
             type: 'radio',
             isci,
             duration_seconds: orderItemDurationSeconds(specs),
             status_id: statusId,
             spot_type: defaultBroadcastSpotType(specs),
-            cut: orderItemDefaultCut(item) as VenueItemsRadioRow['cut'],
+            cut: orderItemDefaultCut(item) as OrderItemsRadioRow['cut'],
             has_deliverable_actions: hasDeliverables,
             order_id: order.id,
         };
@@ -170,7 +173,7 @@ function orderItemToVenueRow(
 
     if (venueType === 'art') {
         const { width, height } = parseOrderItemDimensions(specs);
-        const row: VenueItemsArtRow = {
+        const row: OrderItemsArtRow = {
             ...base,
             type: 'art',
             package_type: defaultArtPackage(specs),
@@ -187,8 +190,8 @@ function orderItemToVenueRow(
     return null;
 }
 
-function orderItemsToVenueItems(order: ApiOrder): VenueItemsRow[] {
-    const rows: VenueItemsRow[] = [];
+function orderItemsToVenueItems(order: ApiOrder): OrderItemsRow[] {
+    const rows: OrderItemsRow[] = [];
 
     for (const item of order.order_items ?? []) {
         const row = orderItemToVenueRow(order, item);
@@ -200,8 +203,8 @@ function orderItemsToVenueItems(order: ApiOrder): VenueItemsRow[] {
     return rows;
 }
 
-function orderItemsToAssigned(order: ApiOrder): VenueItemAssigned[] {
-    const assigned: VenueItemAssigned[] = [];
+function orderItemsToAssigned(order: ApiOrder): OrderItemAssigned[] {
+    const assigned: OrderItemAssigned[] = [];
     let assignId = 1;
 
     for (const item of order.order_items ?? []) {
@@ -217,9 +220,10 @@ function orderItemsToAssigned(order: ApiOrder): VenueItemAssigned[] {
     return assigned;
 }
 
-export function apiOrderToLegacySlideout(order: ApiOrder): LegacySlideoutPayload {
-    const venue =
-        order.venue != null ? apiVenueToLegacy(order.venue) : null;
+export function apiOrderToLegacySlideout(
+    order: ApiOrder,
+): LegacySlideoutPayload {
+    const venue = order.venue != null ? apiVenueToLegacy(order.venue) : null;
 
     return {
         tour: apiOrderToTour(order),

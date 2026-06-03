@@ -1,7 +1,7 @@
+import type { OrderItemsRow } from '@/types';
 import type { OrdersCatalogValue } from '@/types/inertia-pages';
-import type { VenueItemsRow } from '@/types';
 
-const noopReplaceVenueItem = (_row: VenueItemsRow) => {};
+const noopReplaceVenueItem = (_row: OrderItemsRow) => {};
 
 /** Defaults for slideout until GET /api/orders/{id} detail props ship. */
 export function resolveSlideoutCatalog(catalog: OrdersCatalogValue) {

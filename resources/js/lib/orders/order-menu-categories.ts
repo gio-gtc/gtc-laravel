@@ -1,4 +1,4 @@
-import type { VenueItemsRowType } from '@/types';
+import type { OrderItemsRowType } from '@/types';
 import type { ApiOrder, OrderMenuCategoryId } from '@/types/orders-api';
 
 export const ORDER_MENU_CATEGORY_QUADRANTS = {
@@ -28,7 +28,7 @@ export const DEFAULT_ORDER_MENU_ITEM_ID_BY_CATEGORY: Record<
 
 export function venueItemTypeFromCategoryId(
     categoryId: OrderMenuCategoryId | undefined,
-): VenueItemsRowType | null {
+): OrderItemsRowType | null {
     switch (categoryId) {
         case ORDER_MENU_CATEGORY_QUADRANTS.broadcast:
             return 'broadcast';
@@ -44,7 +44,7 @@ export function venueItemTypeFromCategoryId(
 }
 
 export function categoryIdFromVenueItemType(
-    type: VenueItemsRowType,
+    type: OrderItemsRowType,
 ): OrderMenuCategoryId | null {
     switch (type) {
         case 'broadcast':
@@ -65,8 +65,7 @@ export function defaultOrderMenuItemIdForCategory(
     categoryId: OrderMenuCategoryId,
 ): number | null {
     const match = (order.order_items ?? []).find(
-        (item) =>
-            item.order_menu_item?.order_menu_category_id === categoryId,
+        (item) => item.order_menu_item?.order_menu_category_id === categoryId,
     );
     if (match) {
         return match.order_menu_item_id;

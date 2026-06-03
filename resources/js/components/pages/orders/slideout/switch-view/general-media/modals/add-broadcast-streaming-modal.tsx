@@ -29,9 +29,9 @@ import {
     modalDurationPillToSeconds,
 } from '@/lib/venue-items/modal-mappers';
 import type {
-    VenueItemEncoding,
-    VenueItemLanguage,
-    VenueItemsBroadcastRow,
+    OrderItemEncoding,
+    OrderItemLanguage,
+    OrderItemsBroadcastRow,
 } from '@/types';
 import { useEffect, useMemo, useState } from 'react';
 import {
@@ -69,14 +69,14 @@ interface AddBroadcastStreamingModalProps {
     isOpen: boolean;
     onClose: () => void;
     onAdd?: (values: AddBroadcastStreamingFormValues) => void;
-    venue_item_language: VenueItemLanguage[];
-    venue_item_encoding: VenueItemEncoding[];
+    venue_item_language: OrderItemLanguage[];
+    venue_item_encoding: OrderItemEncoding[];
     /** When set (e.g. edit from table), pre-select duration and optionally show extra pill. */
     initialDurationSeconds?: number;
     mode?: 'add' | 'edit';
     /** Required when mode is `edit` — full row to prefill and merge on save. */
-    initialVenueRow?: VenueItemsBroadcastRow;
-    onEditSave?: (row: VenueItemsBroadcastRow) => void;
+    initialVenueRow?: OrderItemsBroadcastRow;
+    onEditSave?: (row: OrderItemsBroadcastRow) => void;
 }
 
 export default function AddBroadcastStreamingModal({
@@ -352,8 +352,8 @@ export default function AddBroadcastStreamingModal({
             if (!text) return;
             onEditSave?.({
                 ...initialVenueRow,
-                spot_type: editType as VenueItemsBroadcastRow['spot_type'],
-                cut: editCut as VenueItemsBroadcastRow['cut'],
+                spot_type: editType as OrderItemsBroadcastRow['spot_type'],
+                cut: editCut as OrderItemsBroadcastRow['cut'],
                 duration_seconds: modalDurationPillToSeconds(
                     editDuration,
                     'broadcast',
@@ -367,8 +367,8 @@ export default function AddBroadcastStreamingModal({
             if (Number.isNaN(encodingId)) return;
             onEditSave?.({
                 ...initialVenueRow,
-                spot_type: editType as VenueItemsBroadcastRow['spot_type'],
-                cut: editCut as VenueItemsBroadcastRow['cut'],
+                spot_type: editType as OrderItemsBroadcastRow['spot_type'],
+                cut: editCut as OrderItemsBroadcastRow['cut'],
                 duration_seconds: modalDurationPillToSeconds(
                     editDuration,
                     'broadcast',

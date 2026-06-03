@@ -1,4 +1,5 @@
 import { FilledArrow } from '@/components/ui/icons';
+import { useContainedSheetOpen } from '@/components/ui/sheet';
 import {
     Table,
     TableBody,
@@ -7,47 +8,56 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { useContainedSheetOpen } from '@/components/ui/sheet';
 import { useOrderSlideoutCatalog } from '@/contexts/order-slideout-catalog-context';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
 import { useOrdersFilterUsers } from '@/hooks/use-orders-filter-users';
 import { useOrdersFilters } from '@/hooks/use-orders-filters';
 import { useRecentOrders } from '@/hooks/use-recent-orders';
+import { useInfiniteScrollTrigger, useTourFeed } from '@/hooks/use-tour-feed';
+import { useTourOrdersCache } from '@/hooks/use-tour-orders-cache';
 import { formatShortUsDate } from '@/lib/format/date';
-import { filterGroupedOrders } from '@/lib/orders/orders-list-filters';
-import { getAssigneesForOrder } from '@/lib/orders/orders-filter-users';
+import {
+    buildFilterCacheKey,
+    hasRegionalFilter,
+    ordersFilterStateToGlobalFilters,
+} from '@/lib/orders/global-dashboard-filters';
+import { getVisibleIndexOrderDemoContext } from '@/lib/orders/index-order-helpers';
 import { cn, resolveUrl } from '@/lib/utils';
 import { orders } from '@/routes';
-import { type SharedData, type User } from '@/types';
+import { type SharedData } from '@/types';
 import { type OrdersPageProps } from '@/types/inertia-pages';
-import type { ApiOrder, GroupedOrders, OrderStatus } from '@/types/orders-api';
+import type { GlobalDashboardFilters, OrderStatus } from '@/types/orders-api';
 import { router, usePage } from '@inertiajs/react';
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import AddOrderModal, {
-    type AddOrderModalTour,
-} from '../add-order-modal';
-import VenueDetailSlideout from '../order-slideout';
+import {
+    Fragment,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
+import AddOrderModal, { type AddOrderModalTour } from '../add-order-modal';
 import OrdersTableHeaderActions from '../orders-table-header-actions';
-import { getVisibleOrderDemoContext } from './orders-table-group-helpers';
+import OrderDetailSlideout from '../slideout';
 import OrdersTableDemoRow from './orders-table-demo-row';
 import OrdersTableOrderRow from './orders-table-order-row';
 
 function OrdersTable() {
     const page = usePage<SharedData & OrdersPageProps>();
-    const { auth } = page.props;
     const catalog = useOrdersCatalog();
     const {
         openOrder,
         setOpenOrder,
+        openOrderById,
+        loadingOrderId,
         legacyTour,
         legacyVenueItem,
         legacyEventDates,
+        registerTourOrdersInvalidator,
     } = useOrderSlideoutCatalog();
     const { clientUsers, collaboratorUsers } = useOrdersFilterUsers();
-    const { addRecentOrder } = useRecentOrders();
     const validStatusValues = useMemo(
-        () =>
-            catalog.order_status_options.map((o) => o.value) as OrderStatus[],
+        () => catalog.order_status_options.map((o) => o.value) as OrderStatus[],
         [catalog.order_status_options],
     );
     const [filters, setFilters] = useOrdersFilters(
@@ -59,62 +69,77 @@ function OrdersTable() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
     const [isAddOrderModalOpen, setIsAddOrderModalOpen] = useState(false);
+    const filterKeyRef = useRef<string | null>(null);
+    const deepLinkHandled = useRef(false);
 
-    const slideoutOpen = useContainedSheetOpen(openOrder !== null);
+    const globalFilters = useMemo(
+        (): GlobalDashboardFilters =>
+            ordersFilterStateToGlobalFilters(filters, {
+                search: searchQuery,
+                url: page.url,
+            }),
+        [filters, searchQuery, page.url],
+    );
 
-    const groupedData = catalog.grouped_orders;
+    const {
+        tours,
+        isLoadingMore,
+        isResetting,
+        loadError,
+        loadNextPage,
+        resetFeed,
+        hasMore,
+        clearLoadError,
+    } = useTourFeed(catalog.tours, catalog.tours_pagination);
 
-    const findOrderById = useCallback(
-        (orderId: number): ApiOrder | undefined => {
-            for (const group of groupedData) {
-                const order = group.orders.find((o) => o.id === orderId);
-                if (order) {
-                    return order;
-                }
-            }
-            return undefined;
+    const {
+        ordersByTour,
+        loadingTourIds,
+        errorsByTour,
+        loadTourOrders,
+        reloadTour,
+        clearCache,
+    } = useTourOrdersCache(globalFilters);
+
+    const slideoutOpen = useContainedSheetOpen(
+        openOrder !== null || loadingOrderId !== null,
+    );
+    const { addRecentOrder } = useRecentOrders();
+
+    const applyGlobalFilterReset = useCallback(
+        (nextFilters: GlobalDashboardFilters) => {
+            setExpandedTours(new Set());
+            clearCache();
+            setOpenOrder(null);
+            void resetFeed(nextFilters);
         },
-        [groupedData],
-    );
-
-    const getOrderAssignees = useCallback(
-        (order: ApiOrder): User[] =>
-            getAssigneesForOrder(order, collaboratorUsers),
-        [collaboratorUsers],
+        [clearCache, resetFeed, setOpenOrder],
     );
 
     useEffect(() => {
-        const queryIndex = page.url.indexOf('?');
-        const params = new URLSearchParams(
-            queryIndex >= 0 ? page.url.slice(queryIndex) : '',
-        );
-        const openOrderId = params.get('openOrder');
-        if (openOrderId) {
-            const id = Number(openOrderId);
-            if (!Number.isNaN(id)) {
-                const order = findOrderById(id);
-                if (order) {
-                    setSelectedOrderIds([id]);
-                    setOpenOrder(order);
-                }
+        registerTourOrdersInvalidator((tourId) => {
+            void reloadTour(tourId);
+        });
+    }, [registerTourOrdersInvalidator, reloadTour]);
+
+    useEffect(() => {
+        const nextKey = buildFilterCacheKey(globalFilters);
+
+        if (filterKeyRef.current === null) {
+            filterKeyRef.current = nextKey;
+            if (nextKey.length > 0) {
+                applyGlobalFilterReset(globalFilters);
             }
-        }
-    }, [page.url, findOrderById, setOpenOrder]);
-
-    useEffect(() => {
-        if (!openOrder) {
             return;
         }
-        const updated = findOrderById(openOrder.id);
-        if (updated && updated.updated_at !== openOrder.updated_at) {
-            setOpenOrder(updated);
+
+        if (nextKey === filterKeyRef.current) {
+            return;
         }
-    }, [
-        groupedData,
-        openOrder,
-        findOrderById,
-        setOpenOrder,
-    ]);
+
+        filterKeyRef.current = nextKey;
+        applyGlobalFilterReset(globalFilters);
+    }, [globalFilters, applyGlobalFilterReset]);
 
     useEffect(() => {
         const queryIndex = page.url.indexOf('?');
@@ -129,6 +154,45 @@ function OrdersTable() {
                 : prev,
         );
     }, [page.url, setFilters]);
+
+    useEffect(() => {
+        if (deepLinkHandled.current) {
+            return;
+        }
+
+        const queryIndex = page.url.indexOf('?');
+        const params = new URLSearchParams(
+            queryIndex >= 0 ? page.url.slice(queryIndex) : '',
+        );
+        const openOrderId = params.get('openOrder');
+        if (!openOrderId) {
+            return;
+        }
+
+        const id = Number(openOrderId);
+        if (Number.isNaN(id)) {
+            return;
+        }
+
+        deepLinkHandled.current = true;
+
+        void (async () => {
+            const order = await openOrderById(id);
+            if (!order) {
+                return;
+            }
+
+            setExpandedTours((prev) => new Set(prev).add(order.tour_id));
+            void loadTourOrders(order.tour_id);
+            setSelectedOrderIds([id]);
+            addRecentOrder({
+                orderId: order.id,
+                uuid: order.uuid,
+                tourName: tours.find((t) => t.id === order.tour_id)?.name ?? '',
+                venueName: order.is_demo ? 'Demo' : (order.venue?.name ?? ''),
+            });
+        })();
+    }, [page.url, openOrderById, loadTourOrders, addRecentOrder, tours]);
 
     const handleFilterChange = useCallback(
         (newFilters: typeof filters) => {
@@ -153,57 +217,30 @@ function OrdersTable() {
         [filters.myCollaborators, page.url, setFilters],
     );
 
-    const filteredGroupedData = useMemo(
-        (): GroupedOrders[] =>
-            filterGroupedOrders(
-                groupedData,
-                searchQuery,
-                filters,
-                clientUsers,
-                collaboratorUsers,
-                auth.user.id,
-            ),
-        [
-            groupedData,
-            searchQuery,
-            filters,
-            auth.user.id,
-            clientUsers,
-            collaboratorUsers,
-        ],
+    const toggleTourExpansion = useCallback(
+        (tourId: number) => {
+            setExpandedTours((prev) => {
+                const newSet = new Set(prev);
+                const isCurrentlyExpanded = newSet.has(tourId);
+
+                if (isCurrentlyExpanded) {
+                    newSet.delete(tourId);
+                    setSelectedOrderIds((prevSelected) => {
+                        const orderIdsForTour =
+                            ordersByTour[tourId]?.map((o) => o.id) ?? [];
+                        return prevSelected.filter(
+                            (id) => !orderIdsForTour.includes(id),
+                        );
+                    });
+                } else {
+                    newSet.add(tourId);
+                    void loadTourOrders(tourId);
+                }
+                return newSet;
+            });
+        },
+        [loadTourOrders, ordersByTour],
     );
-
-    const hasOrderLevelFilter =
-        filters.statuses.length > 0 ||
-        !filters.country.us ||
-        !filters.country.international;
-
-    const hasClientFilter = filters.clientIds.length > 0;
-    const hasCollaboratorFilter =
-        filters.collaboratorIds.length > 0 || filters.myCollaborators;
-
-    const toggleTourExpansion = (tourId: number) => {
-        setExpandedTours((prev) => {
-            const newSet = new Set(prev);
-            const isCurrentlyExpanded = newSet.has(tourId);
-
-            if (isCurrentlyExpanded) {
-                newSet.delete(tourId);
-                setSelectedOrderIds((prevSelected) => {
-                    const orderIdsForTour =
-                        groupedData
-                            .find((g) => g.tour.id === tourId)
-                            ?.orders.map((o) => o.id) ?? [];
-                    return prevSelected.filter(
-                        (id) => !orderIdsForTour.includes(id),
-                    );
-                });
-            } else {
-                newSet.add(tourId);
-            }
-            return newSet;
-        });
-    };
 
     const handleOrderRowSelect = (orderId: number) => {
         setSelectedOrderIds((prev) => {
@@ -214,31 +251,40 @@ function OrdersTable() {
         });
     };
 
-    const handleOpenSlideout = (orderId: number) => {
-        const order = findOrderById(orderId);
-        if (!order) {
-            return;
-        }
-        setOpenOrder(order);
-        addRecentOrder({
-            orderId: order.id,
-            uuid: order.uuid,
-            tourName: order.tour?.name ?? '',
-            venueName: order.is_demo ? 'Demo' : (order.venue?.name ?? ''),
-        });
-    };
+    const handleOpenSlideout = useCallback(
+        async (orderId: number) => {
+            const order = await openOrderById(orderId);
+            if (!order) {
+                return;
+            }
+            addRecentOrder({
+                orderId: order.id,
+                uuid: order.uuid,
+                tourName: tours.find((t) => t.id === order.tour_id)?.name ?? '',
+                venueName: order.is_demo ? 'Demo' : (order.venue?.name ?? ''),
+            });
+        },
+        [openOrderById, addRecentOrder, tours],
+    );
 
     const selectedTourForModal = useMemo((): AddOrderModalTour | null => {
         if (selectedOrderIds.length === 0) return null;
         const orderId = selectedOrderIds[0];
-        for (const group of groupedData) {
-            const order = group.orders.find((o) => o.id === orderId);
-            if (order) {
-                return { id: group.tour.id, name: group.tour.name };
+        for (const tour of tours) {
+            const ordersForTour = ordersByTour[tour.id] ?? [];
+            if (ordersForTour.some((o) => o.id === orderId)) {
+                return { id: tour.id, name: tour.name };
             }
         }
         return null;
-    }, [selectedOrderIds, groupedData]);
+    }, [selectedOrderIds, tours, ordersByTour]);
+
+    const sentinelRef = useInfiniteScrollTrigger(
+        loadNextPage,
+        hasMore && !isLoadingMore && !isResetting,
+    );
+
+    const regionalFilterActive = hasRegionalFilter(filters);
 
     return (
         <div className="table-content-max-width space-y-4">
@@ -249,9 +295,7 @@ function OrdersTable() {
                 onFilterChange={handleFilterChange}
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
-                groupedData={groupedData}
-                clientUsers={clientUsers}
-                getOrderAssignees={getOrderAssignees}
+                isSearching={isResetting}
             />
 
             <div className="border-t">
@@ -279,38 +323,29 @@ function OrdersTable() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredGroupedData.length > 0 ? (
-                            filteredGroupedData.map((group) => {
-                                const isExpanded = expandedTours.has(
-                                    group.tour.id,
+                        {tours.length > 0 ? (
+                            tours.map((tour) => {
+                                const isExpanded = expandedTours.has(tour.id);
+                                const tourOrders = ordersByTour[tour.id];
+                                const isLoadingTour = loadingTourIds.has(
+                                    tour.id,
                                 );
-                                const demoCtx =
-                                    isExpanded && !hasOrderLevelFilter
-                                        ? getVisibleOrderDemoContext(group, {
-                                              hasOrderLevelFilter,
-                                              hasClientFilter,
-                                              hasCollaboratorFilter,
-                                              filters,
-                                              authUserId: auth.user.id,
-                                              searchQuery,
-                                              collaboratorRoster:
-                                                  collaboratorUsers,
-                                          })
-                                        : null;
-                                const liveOrders = group.orders.filter(
-                                    (o) => !o.is_demo,
-                                );
+                                const tourError = errorsByTour[tour.id];
+                                const demoOrder =
+                                    tourOrders &&
+                                    getVisibleIndexOrderDemoContext(
+                                        tourOrders,
+                                        regionalFilterActive,
+                                    );
+                                const liveOrders =
+                                    tourOrders?.filter((o) => !o.is_demo) ?? [];
 
                                 return (
-                                    <Fragment
-                                        key={`order-group-${group.tour.id}`}
-                                    >
+                                    <Fragment key={`order-group-${tour.id}`}>
                                         <TableRow
                                             className="cursor-pointer text-lg font-semibold hover:bg-muted/50"
                                             onClick={() =>
-                                                toggleTourExpansion(
-                                                    group.tour.id,
-                                                )
+                                                toggleTourExpansion(tour.id)
                                             }
                                         >
                                             <TableCell
@@ -320,37 +355,74 @@ function OrdersTable() {
                                                 <div className="flex items-center gap-2.5">
                                                     <FilledArrow
                                                         className={cn(
-                                                            'text-gray-600translate-x-4 size-1.5 rotate-[-90deg] transition-transform duration-150',
+                                                            'size-1.5 rotate-[-90deg] text-gray-600 transition-transform duration-150',
                                                             isExpanded &&
                                                                 'rotate-0',
                                                         )}
                                                     />
                                                     <span className="text-gray-700">
-                                                        {group.tour.name}
+                                                        {tour.name}
                                                     </span>
                                                 </div>
                                             </TableCell>
                                         </TableRow>
 
-                                        {demoCtx && (
-                                            <OrdersTableDemoRow
-                                                demoOrder={demoCtx.demoOrder}
-                                                orderIsSelected={selectedOrderIds.includes(
-                                                    demoCtx.demoOrder.id,
-                                                )}
-                                                collaboratorRoster={
-                                                    collaboratorUsers
-                                                }
-                                                onOrderRowSelect={
-                                                    handleOrderRowSelect
-                                                }
-                                                onOpenSlideout={
-                                                    handleOpenSlideout
-                                                }
-                                            />
+                                        {isExpanded && isLoadingTour && (
+                                            <TableRow>
+                                                <TableCell
+                                                    colSpan={6}
+                                                    className="py-4 text-center text-sm text-muted-foreground"
+                                                >
+                                                    Loading orders…
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+
+                                        {isExpanded && tourError && (
+                                            <TableRow>
+                                                <TableCell
+                                                    colSpan={6}
+                                                    className="py-4 text-center"
+                                                >
+                                                    <button
+                                                        type="button"
+                                                        className="text-sm text-red-600 underline"
+                                                        onClick={() =>
+                                                            void loadTourOrders(
+                                                                tour.id,
+                                                                true,
+                                                            )
+                                                        }
+                                                    >
+                                                        {tourError} Click to
+                                                        retry.
+                                                    </button>
+                                                </TableCell>
+                                            </TableRow>
                                         )}
 
                                         {isExpanded &&
+                                            demoOrder &&
+                                            !isLoadingTour && (
+                                                <OrdersTableDemoRow
+                                                    demoOrder={demoOrder}
+                                                    orderIsSelected={selectedOrderIds.includes(
+                                                        demoOrder.id,
+                                                    )}
+                                                    collaboratorRoster={
+                                                        collaboratorUsers
+                                                    }
+                                                    onOrderRowSelect={
+                                                        handleOrderRowSelect
+                                                    }
+                                                    onOpenSlideout={
+                                                        handleOpenSlideout
+                                                    }
+                                                />
+                                            )}
+
+                                        {isExpanded &&
+                                            !isLoadingTour &&
                                             liveOrders.map((order) => (
                                                 <OrdersTableOrderRow
                                                     key={`order-${order.id}`}
@@ -380,8 +452,42 @@ function OrdersTable() {
                             <TableRow>
                                 <TableCell
                                     colSpan={6}
-                                    className="h-24 text-center"
-                                />
+                                    className="h-24 text-center text-muted-foreground"
+                                >
+                                    {isResetting
+                                        ? 'Loading tours…'
+                                        : 'No tours found.'}
+                                </TableCell>
+                            </TableRow>
+                        )}
+
+                        {loadError && (
+                            <TableRow>
+                                <TableCell colSpan={6} className="py-3">
+                                    <button
+                                        type="button"
+                                        className="w-full text-center text-sm text-red-600 underline"
+                                        onClick={() => {
+                                            clearLoadError();
+                                            void loadNextPage();
+                                        }}
+                                    >
+                                        {loadError}
+                                    </button>
+                                </TableCell>
+                            </TableRow>
+                        )}
+
+                        {hasMore && (
+                            <TableRow ref={sentinelRef}>
+                                <TableCell
+                                    colSpan={6}
+                                    className="h-8 text-center text-xs text-muted-foreground"
+                                >
+                                    {isLoadingMore
+                                        ? 'Loading more tours…'
+                                        : null}
+                                </TableCell>
                             </TableRow>
                         )}
                     </TableBody>
@@ -394,12 +500,13 @@ function OrdersTable() {
                 tour={selectedTourForModal}
             />
 
-            <VenueDetailSlideout
+            <OrderDetailSlideout
                 order={legacyTour}
-                venueItem={legacyVenueItem}
+                orderItem={legacyVenueItem}
                 apiEventDates={legacyEventDates}
                 apiClient={openOrder?.client ?? null}
                 isOpen={slideoutOpen}
+                isLoading={loadingOrderId !== null && openOrder === null}
                 onClose={() => setOpenOrder(null)}
             />
         </div>

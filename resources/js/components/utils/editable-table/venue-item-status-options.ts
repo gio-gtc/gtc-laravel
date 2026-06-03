@@ -1,7 +1,7 @@
-import type { VenueItemStatus } from '@/types';
+import type { OrderItemStatus } from '@/types';
 
-export function buildVenueItemStatusSelectOptions(
-    venueItemStatus: VenueItemStatus[],
+export function buildOrderItemStatusSelectOptions(
+    orderItemStatus: OrderItemStatus[],
 ): { value: string; label: string }[] {
-    return venueItemStatus.map((s) => ({ value: s.type, label: s.type }));
+    return orderItemStatus.map((s) => ({ value: s.type, label: s.type }));
 }

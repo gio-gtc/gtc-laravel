@@ -3,9 +3,9 @@ import {
     defaultOrderMenuItemIdForCategory,
 } from '@/lib/orders/order-menu-categories';
 import type {
-    VenueItemsArtRow,
-    VenueItemsBroadcastRadioSocialRow,
-    VenueItemsRow,
+    OrderItemsArtRow,
+    OrderItemsBroadcastRadioSocialRow,
+    OrderItemsRow,
 } from '@/types';
 import type { ApiOrder } from '@/types/orders-api';
 
@@ -16,7 +16,7 @@ export type StoreOrderItemPayload = {
     assignee_ids?: number[];
 };
 
-function dueDateIso(order: ApiOrder, row: VenueItemsRow): string {
+function dueDateIso(order: ApiOrder, row: OrderItemsRow): string {
     if (row.dueDate && row.dueDate !== '—') {
         const parsed = Date.parse(row.dueDate);
         if (!Number.isNaN(parsed)) {
@@ -24,13 +24,12 @@ function dueDateIso(order: ApiOrder, row: VenueItemsRow): string {
         }
     }
     return (
-        order.due_date?.split('T')[0] ??
-        new Date().toISOString().slice(0, 10)
+        order.due_date?.split('T')[0] ?? new Date().toISOString().slice(0, 10)
     );
 }
 
 function mediaSpecifications(
-    row: VenueItemsBroadcastRadioSocialRow,
+    row: OrderItemsBroadcastRadioSocialRow,
 ): Record<string, unknown> {
     return {
         isci: row.isci,
@@ -40,7 +39,7 @@ function mediaSpecifications(
     };
 }
 
-function artSpecifications(row: VenueItemsArtRow): Record<string, unknown> {
+function artSpecifications(row: OrderItemsArtRow): Record<string, unknown> {
     return {
         type: row.package_type,
         dimensions:
@@ -55,7 +54,7 @@ function artSpecifications(row: VenueItemsArtRow): Record<string, unknown> {
  * Returns null when the row type cannot be created via API (e.g. localized).
  */
 export function venueRowToStoreItemPayload(
-    row: VenueItemsRow,
+    row: OrderItemsRow,
     order: ApiOrder,
 ): StoreOrderItemPayload | null {
     const categoryId = categoryIdFromVenueItemType(row.type);
@@ -63,7 +62,10 @@ export function venueRowToStoreItemPayload(
         return null;
     }
 
-    const orderMenuItemId = defaultOrderMenuItemIdForCategory(order, categoryId);
+    const orderMenuItemId = defaultOrderMenuItemIdForCategory(
+        order,
+        categoryId,
+    );
     if (orderMenuItemId === null) {
         return null;
     }
@@ -71,7 +73,7 @@ export function venueRowToStoreItemPayload(
     const specifications =
         row.type === 'art'
             ? artSpecifications(row)
-            : mediaSpecifications(row as VenueItemsBroadcastRadioSocialRow);
+            : mediaSpecifications(row as OrderItemsBroadcastRadioSocialRow);
 
     return {
         order_menu_item_id: orderMenuItemId,

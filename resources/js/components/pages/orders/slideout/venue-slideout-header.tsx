@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import StatusIconGroup from '../status-icon';
 
-interface VenueSlideoutHeaderProps {
+interface OrderSlideoutHeaderProps {
     tour: string;
     client: User | undefined;
     venue: string;
@@ -31,7 +31,7 @@ interface VenueSlideoutHeaderProps {
     showMoreButton?: boolean;
 }
 
-export default function VenueSlideoutHeader({
+export default function OrderSlideoutHeader({
     tour,
     client,
     venue,
@@ -48,7 +48,7 @@ export default function VenueSlideoutHeader({
     onClose,
     isMaximized = false,
     showMoreButton = true,
-}: VenueSlideoutHeaderProps) {
+}: OrderSlideoutHeaderProps) {
     // Format venue display with city if available (demo mode: venue only)
     const venueDisplay =
         !state && !city

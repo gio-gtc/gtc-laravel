@@ -13,7 +13,7 @@ import {
     DEFAULT_FILTERS,
 } from '@/hooks/use-orders-filters';
 import { cn } from '@/lib/utils';
-import type { OrderStatus } from '@/types/orders-api';
+import type { AwaitingAssetTag, OrderStatus } from '@/types/orders-api';
 import { usePage } from '@inertiajs/react';
 import { Filter, X } from 'lucide-react';
 import { useMemo } from 'react';
@@ -51,12 +51,33 @@ export default function OrdersAdvancedFilters({
         const collaboratorActive =
             filter.collaboratorIds.length > 0 || filter.myCollaborators;
         const statusActive = filter.statuses.length > 0;
+        const assetTagsActive = filter.assetTags.length > 0;
         const countryActive =
             !filter.country.us || !filter.country.international;
         return (
-            clientActive || collaboratorActive || statusActive || countryActive
+            clientActive ||
+            collaboratorActive ||
+            statusActive ||
+            assetTagsActive ||
+            countryActive
         );
     }, [filter]);
+
+    const toggleAssetTag = (tag: AwaitingAssetTag) => {
+        const isSelected = filter.assetTags.includes(tag);
+        onFilterChange({
+            ...filter,
+            assetTags: isSelected
+                ? filter.assetTags.filter((t) => t !== tag)
+                : [...filter.assetTags, tag],
+        });
+    };
+
+    const assetTagOptions: { value: AwaitingAssetTag; label: string }[] = [
+        { value: 'Voice Over', label: 'Voice Over' },
+        { value: 'Audio', label: 'Audio Tracks' },
+        { value: 'Art', label: 'Key Art / Assets' },
+    ];
 
     const handleClearFilters = () => {
         onFilterChange(DEFAULT_FILTERS);
@@ -126,6 +147,33 @@ export default function OrdersAdvancedFilters({
                             )}
                         />
                     )}
+
+                    {isMyTasksFilterActive && (
+                        <p className="text-sm text-muted-foreground">
+                            Assignee filtering is locked while My Tasks view is
+                            active.
+                        </p>
+                    )}
+
+                    <div className="space-y-2">
+                        <p className="text-sm font-medium">Asset Bottlenecks</p>
+                        <div className="flex flex-wrap gap-2">
+                            {assetTagOptions.map((opt) => (
+                                <Button
+                                    key={opt.value}
+                                    variant={
+                                        filter.assetTags.includes(opt.value)
+                                            ? 'default'
+                                            : 'secondary'
+                                    }
+                                    size="sm"
+                                    onClick={() => toggleAssetTag(opt.value)}
+                                >
+                                    {opt.label}
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
 
                     <div className="space-y-2">
                         <p className="text-sm font-medium">Status</p>

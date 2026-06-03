@@ -1,32 +1,32 @@
+import { VENUE_ITEM_ART_PACKAGE_TYPES } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
 import type {
     LocalizedArtTableRow,
     MediaTableRow,
+    OrderItemAssigned,
+    OrderItemEncoding,
+    OrderItemLanguage,
+    OrderItemNote,
+    OrderItemsArtRow,
+    OrderItemsBroadcastRadioSocialRow,
+    OrderItemsLocalizedRow,
+    OrderItemsRow,
+    OrderItemStatus,
     StaticAssetsTableRow,
     User,
-    VenueItemAssigned,
-    VenueItemEncoding,
-    VenueItemLanguage,
-    VenueItemNote,
-    VenueItemStatus,
-    VenueItemsArtRow,
-    VenueItemsBroadcastRadioSocialRow,
-    VenueItemsLocalizedRow,
-    VenueItemsRow,
 } from '@/types';
-import { VENUE_ITEM_ART_PACKAGE_TYPES } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
 
 export type OrdersVenueLineCatalog = {
-    venue_items: VenueItemsRow[];
-    venue_item_assigned: VenueItemAssigned[];
-    venue_item_notes: VenueItemNote[];
-    venue_item_status: VenueItemStatus[];
+    venue_items: OrderItemsRow[];
+    venue_item_assigned: OrderItemAssigned[];
+    venue_item_notes: OrderItemNote[];
+    venue_item_status: OrderItemStatus[];
 };
 
 /** Non-deleted notes for a venue item, sorted oldest → newest. */
 export function getNotesForVenueItem(
     venueItemId: string | number,
-    notes: VenueItemNote[],
-): VenueItemNote[] {
+    notes: OrderItemNote[],
+): OrderItemNote[] {
     const id = String(venueItemId);
     return notes
         .filter(
@@ -39,7 +39,7 @@ type VenueLineItemStatusLabel = MediaTableRow['status'];
 
 export function venueItemStatusIdToLabel(
     statusId: number,
-    venueItemStatus: VenueItemStatus[],
+    venueItemStatus: OrderItemStatus[],
 ): VenueLineItemStatusLabel {
     const found = venueItemStatus.find((s) => s.id === statusId);
     return (found?.type ?? 'Still in Cart') as VenueLineItemStatusLabel;
@@ -47,7 +47,7 @@ export function venueItemStatusIdToLabel(
 
 export function venueItemLanguageIdToLabel(
     languageId: number,
-    venueItemLanguage: VenueItemLanguage[],
+    venueItemLanguage: OrderItemLanguage[],
 ): string {
     const found = venueItemLanguage.find((l) => l.id === languageId);
     return found?.type ?? '';
@@ -55,7 +55,7 @@ export function venueItemLanguageIdToLabel(
 
 export function venueItemEncodingIdToLabel(
     encodingId: number,
-    venueItemEncoding: VenueItemEncoding[],
+    venueItemEncoding: OrderItemEncoding[],
 ): string {
     const found = venueItemEncoding.find((e) => e.id === encodingId);
     return found?.type ?? '';
@@ -68,7 +68,7 @@ export function venueItemMediaLineLabel(spotType: string, cut: string): string {
 
 /** Default language pill selection for add-line modals (English, else first catalog row). */
 export function defaultVenueItemLanguageLabels(
-    venueItemLanguage: VenueItemLanguage[],
+    venueItemLanguage: OrderItemLanguage[],
 ): string[] {
     const en = venueItemLanguage.find((l) => l.type === 'English');
     if (en) return [en.type];
@@ -126,9 +126,9 @@ export function getAssignedUsersForVenueItem(
 }
 
 export function venueItemsMediaTableRow(
-    row: VenueItemsBroadcastRadioSocialRow,
+    row: OrderItemsBroadcastRadioSocialRow,
     assigned: User[],
-    venueItemStatus: VenueItemStatus[],
+    venueItemStatus: OrderItemStatus[],
 ): MediaTableRow {
     const {
         spot_type,
@@ -144,13 +144,9 @@ export function venueItemsMediaTableRow(
     void has_deliverable_actions;
     void deliverables;
     const previewImageUrl =
-        kind === 'image'
-            ? (mediaUrl ?? thumbnailUrl ?? null)
-            : null;
+        kind === 'image' ? (mediaUrl ?? thumbnailUrl ?? null) : null;
     const previewVideoUrl =
-        kind === 'image'
-            ? null
-            : (mediaUrl ?? row.previewVideoUrl ?? null);
+        kind === 'image' ? null : (mediaUrl ?? row.previewVideoUrl ?? null);
     return {
         ...rest,
         cutName: venueItemMediaLineLabel(spot_type, cut),
@@ -162,9 +158,9 @@ export function venueItemsMediaTableRow(
 }
 
 export function venueItemsArtTableRow(
-    row: VenueItemsArtRow,
+    row: OrderItemsArtRow,
     assigned: User[],
-    venueItemStatus: VenueItemStatus[],
+    venueItemStatus: OrderItemStatus[],
 ): StaticAssetsTableRow {
     const {
         label,
@@ -180,7 +176,8 @@ export function venueItemsArtTableRow(
     void deliverables;
     void kind;
     const previewImageUrl = row.mediaUrl ?? row.thumbnailUrl ?? null;
-    const allowedPackageTypes = VENUE_ITEM_ART_PACKAGE_TYPES as readonly string[];
+    const allowedPackageTypes =
+        VENUE_ITEM_ART_PACKAGE_TYPES as readonly string[];
     const normalizedPackageType = allowedPackageTypes.includes(package_type)
         ? package_type
         : allowedPackageTypes[0];
@@ -194,7 +191,7 @@ export function venueItemsArtTableRow(
 }
 
 export function venueItemsLocalizedTableRow(
-    row: VenueItemsLocalizedRow,
+    row: OrderItemsLocalizedRow,
     assigned: User[],
 ): LocalizedArtTableRow {
     const { label, ...rest } = row;

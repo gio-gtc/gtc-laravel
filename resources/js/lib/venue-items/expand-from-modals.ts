@@ -1,16 +1,16 @@
-import type { AddBroadcastStreamingFormValues } from '@/components/pages/orders/slideout/switch-view/general-media/modals/add-broadcast-streaming-modal';
 import type { AddAudioFormValues } from '@/components/pages/orders/slideout/switch-view/general-media/modals/add-audio-modal';
-import type { AddSocialVideoFormValues } from '@/components/pages/orders/slideout/switch-view/general-media/modals/add-social-video-modal';
+import type { AddBroadcastStreamingFormValues } from '@/components/pages/orders/slideout/switch-view/general-media/modals/add-broadcast-streaming-modal';
 import type { AddKeyArtStaticAssetsFormValues } from '@/components/pages/orders/slideout/switch-view/general-media/modals/add-key-art-static-assets-modal';
+import type { AddSocialVideoFormValues } from '@/components/pages/orders/slideout/switch-view/general-media/modals/add-social-video-modal';
 import type { ModalDurationKind } from '@/components/pages/orders/slideout/switch-view/general-media/modals/modal-duration';
 import type { VenueItemSocialCardHolder } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
 import type {
-    VenueItemEncoding,
-    VenueItemLanguage,
-    VenueItemsArtRow,
-    VenueItemsBroadcastRow,
-    VenueItemsRadioRow,
-    VenueItemsSocialRow,
+    OrderItemEncoding,
+    OrderItemLanguage,
+    OrderItemsArtRow,
+    OrderItemsBroadcastRow,
+    OrderItemsRadioRow,
+    OrderItemsSocialRow,
 } from '@/types';
 import {
     encodingLabelToId,
@@ -28,30 +28,28 @@ export type VenueItemExpandContext = {
 };
 
 export type VenueItemExpandCatalogs = {
-    venue_item_language: VenueItemLanguage[];
-    venue_item_encoding: VenueItemEncoding[];
+    venue_item_language: OrderItemLanguage[];
+    venue_item_encoding: OrderItemEncoding[];
 };
 
 const BROADCAST_DURATION_KIND: ModalDurationKind = 'broadcast';
 const AUDIO_DURATION_KIND: ModalDurationKind = 'audio';
 const SOCIAL_DURATION_KIND: ModalDurationKind = 'social';
 
-function asBroadcastCut(cut: string): VenueItemsBroadcastRow['cut'] {
-    return cut as VenueItemsBroadcastRow['cut'];
+function asBroadcastCut(cut: string): OrderItemsBroadcastRow['cut'] {
+    return cut as OrderItemsBroadcastRow['cut'];
 }
 
-function asRadioCut(cut: string): VenueItemsRadioRow['cut'] {
-    return cut as VenueItemsRadioRow['cut'];
+function asRadioCut(cut: string): OrderItemsRadioRow['cut'] {
+    return cut as OrderItemsRadioRow['cut'];
 }
 
-function asSocialLayout(
-    layout: string,
-): VenueItemsSocialRow['spot_type'] {
-    return layout as VenueItemsSocialRow['spot_type'];
+function asSocialLayout(layout: string): OrderItemsSocialRow['spot_type'] {
+    return layout as OrderItemsSocialRow['spot_type'];
 }
 
-function asSocialCut(cut: string): VenueItemsSocialRow['cut'] {
-    return cut as VenueItemsSocialRow['cut'];
+function asSocialCut(cut: string): OrderItemsSocialRow['cut'] {
+    return cut as OrderItemsSocialRow['cut'];
 }
 
 /** One broadcast row per finalized encoding row from the modal. */
@@ -59,9 +57,9 @@ export function expandBroadcastRowsFromForm(
     ctx: VenueItemExpandContext,
     form: AddBroadcastStreamingFormValues,
     catalogs: VenueItemExpandCatalogs,
-): VenueItemsBroadcastRow[] {
-    const spotType = form.type as VenueItemsBroadcastRow['spot_type'];
-    const rows: VenueItemsBroadcastRow[] = [];
+): OrderItemsBroadcastRow[] {
+    const spotType = form.type as OrderItemsBroadcastRow['spot_type'];
+    const rows: OrderItemsBroadcastRow[] = [];
 
     for (const enc of form.encodings) {
         const languageId = languageTypeToId(
@@ -127,9 +125,9 @@ export function expandRadioRowsFromForm(
     ctx: VenueItemExpandContext,
     form: AddAudioFormValues,
     catalogs: VenueItemExpandCatalogs,
-): VenueItemsRadioRow[] {
-    const spotType = form.type as VenueItemsRadioRow['spot_type'];
-    const rows: VenueItemsRadioRow[] = [];
+): OrderItemsRadioRow[] {
+    const spotType = form.type as OrderItemsRadioRow['spot_type'];
+    const rows: OrderItemsRadioRow[] = [];
 
     const durs = form.duration.length > 0 ? form.duration : [];
     const langs = form.language.length > 0 ? form.language : [];
@@ -175,8 +173,8 @@ export function expandSocialRowsFromForm(
     ctx: VenueItemExpandContext,
     form: AddSocialVideoFormValues,
     catalogs: VenueItemExpandCatalogs,
-): VenueItemsSocialRow[] {
-    const rows: VenueItemsSocialRow[] = [];
+): OrderItemsSocialRow[] {
+    const rows: OrderItemsSocialRow[] = [];
 
     const layouts = form.type.length > 0 ? form.type : [];
     const cuts = form.cuts.length > 0 ? form.cuts : [];
@@ -207,7 +205,7 @@ export function expandSocialRowsFromForm(
                         );
                         if (languageId === undefined) continue;
 
-                        const row: VenueItemsSocialRow = {
+                        const row: OrderItemsSocialRow = {
                             id: ctx.nextId(),
                             tour_venue_id: ctx.tourVenueId,
                             type: 'social',
@@ -237,8 +235,8 @@ export function expandSocialRowsFromForm(
 }
 
 const DEFAULT_ART_BY_PACKAGE: Record<
-    VenueItemsArtRow['package_type'],
-    Pick<VenueItemsArtRow, 'label' | 'width' | 'height'>
+    OrderItemsArtRow['package_type'],
+    Pick<OrderItemsArtRow, 'label' | 'width' | 'height'>
 > = {
     'Key Art Package': {
         label: 'Key Art',
@@ -261,7 +259,7 @@ const DEFAULT_ART_BY_PACKAGE: Record<
 export function expandKeyArtRowsFromForm(
     ctx: VenueItemExpandContext,
     form: AddKeyArtStaticAssetsFormValues,
-): VenueItemsArtRow[] {
+): OrderItemsArtRow[] {
     return form.types.map((package_type) => {
         const defaults = DEFAULT_ART_BY_PACKAGE[package_type];
         return {

@@ -13,8 +13,8 @@ import {
     ColumnedRowsParent,
 } from '@/components/utils/column-row-layouts';
 import DatePickerInput from '@/components/utils/date-picker-input';
-import ShowDatesInputList from '@/components/utils/show-dates-input-list';
 import Divider from '@/components/utils/divider';
+import ShowDatesInputList from '@/components/utils/show-dates-input-list';
 import {
     expandVenueShowDates,
     hasValidShowDates,
@@ -42,7 +42,7 @@ export type AddOrderModalTour = {
     name: string;
 };
 
-interface VenueItem {
+interface OrderItemSchema {
     orderVenue: TourVenue;
     venue: Venue | null;
 }
@@ -56,7 +56,7 @@ interface AddOrderModalProps {
     orderId?: number;
     order?: Tour | null;
     mode?: 'add' | 'edit';
-    venueItem?: VenueItem | null;
+    orderItem?: OrderItemSchema | null;
 }
 
 const todayIso = () => new Date().toISOString().split('T')[0];
@@ -81,7 +81,7 @@ export default function AddOrderModal({
     tour = null,
     order = null,
     mode = 'add',
-    venueItem = null,
+    orderItem = null,
 }: AddOrderModalProps) {
     const { auth } = usePage<SharedData>().props;
     const isStaff = auth.user != null && isCollaboratorUser(auth.user);
@@ -91,7 +91,7 @@ export default function AddOrderModal({
     const [selectedClient, setSelectedClient] =
         useState<ClientSearchOption | null>(null);
 
-    const isEditMode = mode === 'edit' && venueItem != null;
+    const isEditMode = mode === 'edit' && orderItem != null;
     const displayName = tour?.name ?? order?.name ?? '';
 
     const {
@@ -115,17 +115,17 @@ export default function AddOrderModal({
     useEffect(() => {
         if (!isOpen) return;
 
-        if (isEditMode && venueItem) {
-            setSelectedVenue(venueItem.venue);
+        if (isEditMode && orderItem) {
+            setSelectedVenue(orderItem.venue);
             const prefilledShowDates = normalizeShowDates(
                 expandVenueShowDates(
-                    venueItem.orderVenue.start_date,
-                    venueItem.orderVenue.end_date,
+                    orderItem.orderVenue.start_date,
+                    orderItem.orderVenue.end_date,
                 ),
             );
             setData({
                 tour_id: tour?.id ?? 0,
-                venue_id: venueItem.venue?.id ?? 0,
+                venue_id: orderItem.venue?.id ?? 0,
                 due_date: order?.due_date?.split?.('T')[0] ?? todayIso(),
                 show_dates:
                     prefilledShowDates.length > 0 ? prefilledShowDates : [''],
@@ -152,7 +152,7 @@ export default function AddOrderModal({
         tour?.id,
         order,
         isEditMode,
-        venueItem,
+        orderItem,
         reset,
         setData,
         clearErrors,
@@ -250,7 +250,7 @@ export default function AddOrderModal({
                                 type="text"
                                 value={
                                     selectedVenue?.name ??
-                                    venueItem?.venue?.name ??
+                                    orderItem?.venue?.name ??
                                     ''
                                 }
                                 readOnly
@@ -292,7 +292,9 @@ export default function AddOrderModal({
                     >
                         <ShowDatesInputList
                             dates={data.show_dates}
-                            onChange={(show_dates) => setData('show_dates', show_dates)}
+                            onChange={(show_dates) =>
+                                setData('show_dates', show_dates)
+                            }
                             idPrefix="show-date"
                         />
                         <InputError message={showDatesFormErrors(errors)} />

@@ -43,7 +43,7 @@ export default function MediaTable({
     onRowSelectToggle,
     onBulkEditDueDateDoubleClick,
     onBulkEditAssignedDoubleClick,
-    venueItemStatusSelectOptions,
+    orderItemStatusSelectOptions,
 }: MediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -383,7 +383,7 @@ export default function MediaTable({
                                                             itemId={row.id}
                                                             field="status"
                                                             options={
-                                                                venueItemStatusSelectOptions
+                                                                orderItemStatusSelectOptions
                                                             }
                                                             renderDisplay={(
                                                                 v,

@@ -186,6 +186,95 @@ export type GroupedOrders = {
     orders: ApiOrder[];
 };
 
+/** Assignee embed on lean index order items. */
+export interface DashboardAssignee {
+    id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    avatar: string | null;
+}
+
+export interface LeanOrderItem {
+    id: number;
+    order_id: number;
+    order_item_status_id: number;
+    status: string;
+    assignees: DashboardAssignee[];
+}
+
+export interface IndexOrderClientOrganisation {
+    id: number;
+    name: string;
+    country_code: string;
+    is_international: boolean;
+}
+
+export interface IndexOrderClient {
+    id: number;
+    first_name: string;
+    last_name: string;
+    organisation?: IndexOrderClientOrganisation;
+}
+
+export interface IndexOrderVenue {
+    id: number;
+    name: string;
+    city: string;
+    state: string;
+}
+
+/**
+ * Lean order row from GET /api/tours/{tourId}/orders.
+ */
+export interface IndexOrder {
+    id: number;
+    uuid: string;
+    tour_id: number;
+    venue_id: number | null;
+    ordered_by_id: number | null;
+    is_demo: boolean;
+    submitted_at: string | null;
+    due_date: string | null;
+    created_at: string;
+    updated_at: string;
+    status: OrderStatus;
+    item_statuses: string[];
+    is_awaiting_assets: boolean;
+    is_international: boolean;
+    venue?: IndexOrderVenue | null;
+    show_dates?: OrderShowDate[];
+    client?: IndexOrderClient | null;
+    order_items: LeanOrderItem[];
+}
+
+export interface TourHeader {
+    id: number;
+    name: string;
+}
+
+export interface ToursPaginationMeta {
+    current_page: number;
+    last_page: number;
+    total: number;
+    next_page_url: string | null;
+}
+
+export interface PaginatedToursResponse extends ToursPaginationMeta {
+    data: TourHeader[];
+}
+
+/** Server-side filter params for tour feed and tour-orders endpoints. */
+export interface GlobalDashboardFilters {
+    search?: string;
+    client_ids?: number[];
+    assignee_ids?: number[];
+    statuses?: OrderStatusFilterValue[];
+    asset_tags?: AwaitingAssetTag[];
+    is_international?: boolean;
+    filter?: 'my-tasks' | null;
+}
+
 /** BFF form fields for POST /orders (staff may include ordered_by_id). */
 export type CreateOrderForm = {
     tour_id: number;

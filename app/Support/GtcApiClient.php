@@ -32,11 +32,12 @@ final class GtcApiClient
     }
 
     /**
+     * @param  array<string, mixed>  $query
      * @return array{ok: true, data: array<string, mixed>}|array{ok: false, message: string, status: int}
      */
-    public function get(string $path): array
+    public function get(string $path, array $query = []): array
     {
-        $response = $this->request()->get($this->url($path));
+        $response = $this->request()->get($this->url($path), $query);
 
         return $this->interpret($response, $path);
     }

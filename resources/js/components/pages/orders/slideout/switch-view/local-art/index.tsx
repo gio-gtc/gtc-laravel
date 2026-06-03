@@ -5,15 +5,15 @@ import {
     venueItemsLocalizedTableRow,
 } from '@/components/utils/venue-items';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
-import { resolveSlideoutCatalog } from '@/lib/orders/slideout-catalog-defaults';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
+import { resolveSlideoutCatalog } from '@/lib/orders/slideout-catalog-defaults';
 import {
     type LocalizedArtTableRow,
+    type OrderItemsLocalizedRow,
     type TourVenue,
     type User,
     type Venue,
-    type VenueItemsLocalizedRow,
 } from '@/types';
 import { format, isValid, parse, parseISO } from 'date-fns';
 import { useCallback, useMemo, useState } from 'react';
@@ -35,13 +35,13 @@ function tableDueDateDisplayToIso(display: string): string | undefined {
 }
 
 interface LocalArtViewProps {
-    venueItem: { orderVenue: TourVenue; venue: Venue | null } | null;
+    orderItem: { orderVenue: TourVenue; venue: Venue | null } | null;
     selectedRowIds: ReadonlySet<string | number>;
     onRowSelectToggle: (rowId: string | number) => void;
 }
 
 function LocalArtView({
-    venueItem,
+    orderItem,
     selectedRowIds,
     onRowSelectToggle,
 }: LocalArtViewProps) {
@@ -67,12 +67,12 @@ function LocalArtView({
         useState<LocalizedArtTableRow | null>(null);
 
     const localizedArtData = useMemo(() => {
-        if (!venueItem) return [];
+        if (!orderItem) return [];
         return slideout.venue_items
             .filter(
-                (r): r is VenueItemsLocalizedRow =>
+                (r): r is OrderItemsLocalizedRow =>
                     r.type === 'localized' &&
-                    r.tour_venue_id === venueItem.orderVenue.id,
+                    r.tour_venue_id === orderItem.orderVenue.id,
             )
             .map((row) =>
                 venueItemsLocalizedTableRow(
@@ -84,7 +84,7 @@ function LocalArtView({
                     ),
                 ),
             );
-    }, [venueItem, slideout.venue_items, venueLineCatalog, usersWithFallback]);
+    }, [orderItem, slideout.venue_items, venueLineCatalog, usersWithFallback]);
 
     const {
         localData: localLocalizedRows,
@@ -106,12 +106,12 @@ function LocalArtView({
     const [formModalOpen, setFormModalOpen] = useState(false);
 
     const resolvedOrderId = useMemo(() => {
-        if (!venueItem) return null;
+        if (!orderItem) return null;
         const match = slideout._legacy_orders.find(
-            (o) => o.tour_venue_id === venueItem.orderVenue.id,
+            (o) => o.tour_venue_id === orderItem.orderVenue.id,
         );
         return match?.id ?? null;
-    }, [slideout._legacy_orders, venueItem]);
+    }, [slideout._legacy_orders, orderItem]);
 
     /**
      * /venue-forms/{mock_venue_id} must match the catalog venue id in DB (see VenueSeeder).
@@ -119,16 +119,16 @@ function LocalArtView({
      * stays in "Demo" display mode; we still need a mock venue id to load the form.
      */
     const formMockVenueId = useMemo(() => {
-        if (!venueItem) {
+        if (!orderItem) {
             return null;
         }
-        if (venueItem.venue != null) {
-            return venueItem.venue.id;
+        if (orderItem.venue != null) {
+            return orderItem.venue.id;
         }
         const stopsForTour = slideout.tour_venue_stops
             .filter(
                 (s) =>
-                    s.tour_id === venueItem.orderVenue.tour_id &&
+                    s.tour_id === orderItem.orderVenue.tour_id &&
                     s.venue_id != null,
             )
             .sort((a, b) => a.id - b.id);
@@ -138,7 +138,7 @@ function LocalArtView({
         }
 
         return slideout.venues[0]?.id ?? null;
-    }, [venueItem, slideout.tour_venue_stops, slideout.venues]);
+    }, [orderItem, slideout.tour_venue_stops, slideout.venues]);
 
     const canOpenForm = formMockVenueId != null;
 
@@ -185,7 +185,9 @@ function LocalArtView({
                     data={localLocalizedRows}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
-                    onAdd={canOpenForm ? () => setFormModalOpen(true) : undefined}
+                    onAdd={
+                        canOpenForm ? () => setFormModalOpen(true) : undefined
+                    }
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
                     onOpenNotes={(row) => setNotesModalRow(row)}
@@ -230,7 +232,7 @@ function LocalArtView({
                 onClose={() => setFormModalOpen(false)}
                 mockVenueId={formMockVenueId}
                 orderId={resolvedOrderId}
-                tourVenueId={venueItem?.orderVenue.id ?? null}
+                tourVenueId={orderItem?.orderVenue.id ?? null}
             />
 
             {/* Attachments Section */}

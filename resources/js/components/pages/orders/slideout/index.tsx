@@ -6,14 +6,15 @@ import { type Tour, type TourVenue, type User, type Venue } from '@/types';
 import type { ApiOrderClient } from '@/types/orders-api';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import AddOrderModal from '../add-order-modal';
+import OrderSlideoutSkeleton from './order-slideout-skeleton';
 import SwitchView from './switch-view';
 import AttachFileOrDropboxModal, {
     type AttachFileModalContext,
 } from './switch-view/general-media/modals/attach-file-or-dropbox-modal';
-import VenueSlideoutHeader from './venue-slideout-header';
+import OrderSlideoutHeader from './venue-slideout-header';
 
-interface VenueDetailSlideoutProps {
-    venueItem: {
+interface OrderDetailSlideoutProps {
+    orderItem: {
         orderVenue: TourVenue;
         venue: Venue | null;
     } | null;
@@ -23,23 +24,25 @@ interface VenueDetailSlideoutProps {
     /** When set, header uses API show dates and hides legacy mock ticket/website fields. */
     apiEventDates?: string;
     apiClient?: ApiOrderClient | null;
+    isLoading?: boolean;
 }
 
-export default function VenueDetailSlideout({
-    venueItem,
+export default function OrderDetailSlideout({
+    orderItem,
     order,
     isOpen,
     onClose,
     apiEventDates,
     apiClient,
-}: VenueDetailSlideoutProps) {
+    isLoading = false,
+}: OrderDetailSlideoutProps) {
     const usersWithFallback = useUsersWithFallback();
 
     // Format event dates for header (e.g., "Friday, July 12 2026 & Saturday, July 13, 2026")
     const formatEventDates = useMemo(() => {
-        if (!venueItem) return undefined;
-        const startDate = new Date(venueItem.orderVenue.start_date);
-        const endDate = new Date(venueItem.orderVenue.end_date);
+        if (!orderItem) return undefined;
+        const startDate = new Date(orderItem.orderVenue.start_date);
+        const endDate = new Date(orderItem.orderVenue.end_date);
 
         const formatSingleDate = (date: Date): string => {
             return new Intl.DateTimeFormat('en-US', {
@@ -65,7 +68,7 @@ export default function VenueDetailSlideout({
         }).format(endDate);
 
         return `${startFormatted} & ${endFormattedShort}`;
-    }, [venueItem]);
+    }, [orderItem]);
 
     const clientFromApi = useMemo((): User | undefined => {
         if (!apiClient) {
@@ -76,15 +79,15 @@ export default function VenueDetailSlideout({
 
     const client =
         clientFromApi ??
-        usersWithFallback.find((u) => u.id === venueItem?.orderVenue.client);
+        usersWithFallback.find((u) => u.id === orderItem?.orderVenue.client);
 
     const isApiBacked = apiClient != null;
 
     // Generate mock data for ticket sale, website, and presale
     const mockTicketSaleDate = useMemo(() => {
-        if (!venueItem) return undefined;
+        if (!orderItem) return undefined;
         // Mock: 3 months before start date
-        const saleDate = new Date(venueItem.orderVenue.start_date);
+        const saleDate = new Date(orderItem.orderVenue.start_date);
         saleDate.setMonth(saleDate.getMonth() - 3);
         const formatted = new Intl.DateTimeFormat('en-US', {
             weekday: 'long',
@@ -96,12 +99,12 @@ export default function VenueDetailSlideout({
             timeZoneName: 'short',
         }).format(saleDate);
         return formatted;
-    }, [venueItem]);
+    }, [orderItem]);
 
     const mockPresaleInfo = useMemo(() => {
-        if (!venueItem) return undefined;
+        if (!orderItem) return undefined;
         // Mock: 2 days before ticket sale
-        const presaleDate = new Date(venueItem.orderVenue.start_date);
+        const presaleDate = new Date(orderItem.orderVenue.start_date);
         presaleDate.setMonth(presaleDate.getMonth() - 3);
         presaleDate.setDate(presaleDate.getDate() - 2);
         const formatted = new Intl.DateTimeFormat('en-US', {
@@ -114,7 +117,7 @@ export default function VenueDetailSlideout({
             timeZoneName: 'short',
         }).format(presaleDate);
         return `AMEX Presale : ${formatted}`;
-    }, [venueItem]);
+    }, [orderItem]);
 
     // Mock website
     const mockWebsite = 'LiveNation.com';
@@ -149,13 +152,28 @@ export default function VenueDetailSlideout({
 
     useEffect(() => {
         setSelectedRowIds(new Set());
-    }, [venueItem?.orderVenue.id, order?.id]);
+    }, [orderItem?.orderVenue.id, order?.id]);
 
-    if (!order) {
+    if (!order && !isLoading) {
         return null;
     }
 
-    const isDemo = venueItem?.venue == null;
+    if (isLoading || !order) {
+        return (
+            <ContainedSheet open={isOpen} onClose={onClose}>
+                <SheetContent
+                    side="right"
+                    containedInMainColumn
+                    className="w-full gap-1 overflow-y-auto sm:max-w-[875px]"
+                    showExitBtn={false}
+                >
+                    <OrderSlideoutSkeleton />
+                </SheetContent>
+            </ContainedSheet>
+        );
+    }
+
+    const isDemo = orderItem?.venue == null;
 
     return (
         <ContainedSheet open={isOpen} onClose={onClose}>
@@ -171,17 +189,15 @@ export default function VenueDetailSlideout({
                 )}
                 showExitBtn={false}
             >
-                <VenueSlideoutHeader
+                <OrderSlideoutHeader
                     tour={order.name}
                     client={client}
-                    venue={venueItem?.venue?.name ?? 'Demo'}
-                    state={venueItem?.venue?.state ?? ''}
-                    status={venueItem?.orderVenue?.status ?? null}
-                    city={venueItem?.venue?.city}
+                    venue={orderItem?.venue?.name ?? 'Demo'}
+                    state={orderItem?.venue?.state ?? ''}
+                    status={orderItem?.orderVenue?.status ?? null}
+                    city={orderItem?.venue?.city}
                     eventDates={
-                        isDemo
-                            ? undefined
-                            : (apiEventDates ?? formatEventDates)
+                        isDemo ? undefined : (apiEventDates ?? formatEventDates)
                     }
                     ticketSaleDate={
                         isDemo || isApiBacked ? undefined : mockTicketSaleDate
@@ -205,7 +221,7 @@ export default function VenueDetailSlideout({
 
                 <SwitchView
                     order={order}
-                    venueItem={venueItem}
+                    orderItem={orderItem}
                     selectedRowIds={selectedRowIds}
                     onToggleRowSelection={toggleRowSelection}
                     onClearSelection={clearRowSelection}
@@ -230,7 +246,7 @@ export default function VenueDetailSlideout({
                     orderId={order.id}
                     order={order}
                     mode="edit"
-                    venueItem={venueItem}
+                    orderItem={orderItem}
                 />
             </SheetContent>
         </ContainedSheet>

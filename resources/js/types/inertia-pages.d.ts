@@ -1,7 +1,7 @@
 import type {
-    ApiOrder,
-    GroupedOrders,
     OrderStatusOption,
+    TourHeader,
+    ToursPaginationMeta,
 } from './orders-api';
 import type {
     Country,
@@ -73,8 +73,8 @@ export interface DashboardPageProps {
 }
 
 export interface OrdersPageProps {
-    orders: ApiOrder[];
-    grouped_orders: GroupedOrders[];
+    tours: TourHeader[];
+    tours_pagination: ToursPaginationMeta;
     order_status_options: OrderStatusOption[];
 }
 

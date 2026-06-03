@@ -4,14 +4,14 @@ import { OrderSlideoutCatalogProvider } from '@/contexts/order-slideout-catalog-
 import { OrdersCatalogProvider } from '@/contexts/orders-catalog-context';
 import AppLayout from '@/layouts/app-layout';
 import {
-    type Invoice,
-    type VenueItemAssigned,
-    type VenueItemEncoding,
-    type VenueItemLanguage,
-    type VenueItemNote,
-    type VenueItemStatus,
-    type VenueItemsRow,
     type BreadcrumbItem,
+    type Invoice,
+    type OrderItemAssigned,
+    type OrderItemEncoding,
+    type OrderItemLanguage,
+    type OrderItemNote,
+    type OrderItemsRow,
+    type OrderItemStatus,
     type SharedData,
 } from '@/types';
 import {
@@ -31,23 +31,23 @@ export default function Orders() {
     const { props } = usePage<SharedData & OrdersPageProps>();
 
     const catalog: OrdersCatalogValue = {
-        orders: props.orders,
-        grouped_orders: props.grouped_orders,
+        tours: props.tours,
+        tours_pagination: props.tours_pagination,
         order_status_options: props.order_status_options,
-        venue_items: props.venue_items as VenueItemsRow[] | undefined,
+        venue_items: props.venue_items as OrderItemsRow[] | undefined,
         venue_item_status: props.venue_item_status as
-            | VenueItemStatus[]
+            | OrderItemStatus[]
             | undefined,
         venue_item_language: props.venue_item_language as
-            | VenueItemLanguage[]
+            | OrderItemLanguage[]
             | undefined,
         venue_item_encoding: props.venue_item_encoding as
-            | VenueItemEncoding[]
+            | OrderItemEncoding[]
             | undefined,
         venue_item_assigned: props.venue_item_assigned as
-            | VenueItemAssigned[]
+            | OrderItemAssigned[]
             | undefined,
-        venue_item_notes: props.venue_item_notes as VenueItemNote[] | undefined,
+        venue_item_notes: props.venue_item_notes as OrderItemNote[] | undefined,
         invoices: props.invoices as Invoice[] | undefined,
     };
 

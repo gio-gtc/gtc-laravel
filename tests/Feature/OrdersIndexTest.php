@@ -4,9 +4,23 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Inertia\Testing\AssertableInertia as Assert;
 
-function ordersIndexUrl(): string
+function toursIndexUrl(): string
 {
-    return rtrim((string) config('services.api.base_url'), '/').'/api/orders';
+    return rtrim((string) config('services.api.base_url'), '/').'/api/tours';
+}
+
+function sampleToursPaginationPayload(): array
+{
+    return [
+        'current_page' => 1,
+        'data' => [
+            ['id' => 12, 'name' => 'Eras Tour 2026'],
+            ['id' => 13, 'name' => 'Summer Festival 2026'],
+        ],
+        'last_page' => 2,
+        'total' => 30,
+        'next_page_url' => toursIndexUrl().'?page=2',
+    ];
 }
 
 function sampleApiOrderPayload(): array
@@ -26,56 +40,37 @@ function sampleApiOrderPayload(): array
         'status' => 'New Order',
         'item_statuses' => ['New Order'],
         'is_awaiting_assets' => false,
-        'tour' => ['id' => 12, 'name' => 'Eras Tour 2026'],
+        'is_international' => false,
         'venue' => [
             'id' => 84,
             'name' => 'SoFi Stadium',
             'city' => 'Inglewood',
             'state' => 'CA',
-            'country_code' => 'US',
         ],
         'client' => [
             'id' => 4,
             'first_name' => 'Live',
             'last_name' => 'Nation',
-            'email' => 'hq@livenation.com',
-            'organisation_id' => 3,
             'organisation' => [
                 'id' => 3,
                 'name' => 'Live Nation HQ',
+                'country_code' => 'US',
+                'is_international' => false,
             ],
         ],
         'order_items' => [
             [
                 'id' => 142,
                 'order_id' => 1,
-                'order_menu_item_id' => 4,
                 'order_item_status_id' => 1,
-                'locked_price' => '150.00',
-                'status' => 'Still In Cart',
-                'due_date' => '2026-10-15',
-                'created_at' => '2026-05-27T20:00:00.000000Z',
-                'updated_at' => '2026-05-27T20:00:00.000000Z',
-                'specifications' => [
-                    'isci' => 'GTC000142',
-                    'awaiting_assets' => ['Audio'],
-                ],
-                'root_order_item_id' => null,
-                'revision_number' => 1,
-                'supersedes_order_item_id' => null,
-                'invoice_line_id' => null,
-                'order_menu_item' => [
-                    'id' => 4,
-                    'name' => '15s Social Teaser',
-                    'order_menu_category_id' => 2,
-                ],
+                'status' => 'Unassigned',
                 'assignees' => [
                     [
                         'id' => 9,
-                        'name' => 'Alex Editor',
                         'email' => 'alex@gtcforce.com',
                         'first_name' => 'Alex',
                         'last_name' => 'Editor',
+                        'avatar' => null,
                     ],
                 ],
             ],
@@ -83,15 +78,9 @@ function sampleApiOrderPayload(): array
     ];
 }
 
-it('proxies orders index to gtc-api and renders list inertia props', function () {
+it('proxies tours index to gtc-api and renders list inertia props', function () {
     Http::fake([
-        ordersIndexUrl() => Http::response([
-            'data' => [
-                'orders' => [
-                    sampleApiOrderPayload(),
-                ],
-            ],
-        ], 200),
+        toursIndexUrl().'*' => Http::response(sampleToursPaginationPayload(), 200),
     ]);
 
     $this->actingAsBff()
@@ -99,58 +88,46 @@ it('proxies orders index to gtc-api and renders list inertia props', function ()
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
             ->component('orders')
-            ->has('orders', 1)
-            ->where('orders.0.id', 1)
-            ->where('orders.0.uuid', '550e8400-e29b-41d4-a716-446655440000')
-            ->where('orders.0.status', 'New Order')
-            ->where('orders.0.is_awaiting_assets', false)
-            ->where('orders.0.order_items.0.order_item_status_id', 1)
-            ->where('orders.0.order_items.0.locked_price', '150.00')
-            ->has('orders.0.collaborators', 1)
-            ->has('grouped_orders', 1)
-            ->where('grouped_orders.0.tour.id', 12)
-            ->where('grouped_orders.0.orders.0.id', 1)
+            ->has('tours', 2)
+            ->where('tours.0.id', 12)
+            ->where('tours.0.name', 'Eras Tour 2026')
+            ->where('tours_pagination.current_page', 1)
+            ->where('tours_pagination.last_page', 2)
+            ->where('tours_pagination.total', 30)
             ->has('order_status_options', 5)
             ->where('order_status_options.0.value', 'New Order')
             ->where('order_status_options.4.value', 'Canceled')
             ->has('venue_item_status')
             ->has('venue_item_language')
             ->has('venue_item_encoding')
-            ->missing('tours')
+            ->missing('orders')
+            ->missing('grouped_orders')
             ->missing('_legacy_orders')
         );
 
     Http::assertSent(function ($request) {
-        return $request->url() === ordersIndexUrl()
+        return $request->url() === toursIndexUrl().'?page=1'
             && $request->method() === 'GET'
             && $request->hasHeader('Authorization', 'Bearer test-bff-token');
     });
 });
 
-it('unwraps legacy top-level orders key when data envelope is absent', function () {
-    $order = sampleApiOrderPayload();
-    $order['id'] = 2;
-    $order['tour_id'] = 3;
-    $order['venue_id'] = null;
-    $order['is_demo'] = true;
-    $order['due_date'] = '2026-11-01';
-    $order['venue'] = null;
-    $order['client'] = null;
-    $order['order_items'] = [];
-
+it('forwards filter query params to gtc-api on orders page load', function () {
     Http::fake([
-        ordersIndexUrl() => Http::response([
-            'orders' => [$order],
-        ], 200),
+        toursIndexUrl().'*' => Http::response(sampleToursPaginationPayload(), 200),
     ]);
 
     $this->actingAsBff()
-        ->get(route('orders'))
-        ->assertOk()
-        ->assertInertia(fn (Assert $page) => $page
-            ->has('orders', 1)
-            ->where('orders.0.id', 2)
-        );
+        ->get(route('orders').'?filter=my-tasks&statuses[]=In+Progress')
+        ->assertOk();
+
+    Http::assertSent(function ($request) {
+        parse_str(parse_url($request->url(), PHP_URL_QUERY), $query);
+
+        return str_starts_with($request->url(), toursIndexUrl())
+            && ($query['filter'] ?? null) === 'my-tasks'
+            && in_array('In Progress', (array) ($query['statuses'] ?? []), true);
+    });
 });
 
 it('redirects guests to login when visiting orders', function () {
@@ -160,23 +137,23 @@ it('redirects guests to login when visiting orders', function () {
     Http::assertNothingSent();
 });
 
-it('returns empty orders and flashes error when gtc-api fails', function () {
+it('returns empty tours and flashes error when gtc-api fails', function () {
     Log::spy();
 
     Http::fake([
-        ordersIndexUrl() => Http::response([
-            'message' => 'Orders are temporarily unavailable.',
+        toursIndexUrl().'*' => Http::response([
+            'message' => 'Tours are temporarily unavailable.',
         ], 503),
     ]);
 
     $this->actingAsBff()
         ->get(route('orders'))
         ->assertOk()
-        ->assertSessionHas('error', 'Orders are temporarily unavailable.')
+        ->assertSessionHas('error', 'Tours are temporarily unavailable.')
         ->assertInertia(fn (Assert $page) => $page
             ->component('orders')
-            ->where('orders', [])
-            ->where('grouped_orders', [])
+            ->where('tours', [])
+            ->where('tours_pagination.total', 0)
             ->has('order_status_options', 5)
             ->has('venue_item_status')
         );
@@ -185,4 +162,74 @@ it('returns empty orders and flashes error when gtc-api fails', function () {
         ->once()
         ->withArgs(fn (string $message, array $context) => $message === 'gtc-api request failed'
             && $context['status'] === 503);
+});
+
+it('proxies GET /api/tours with filter query params', function () {
+    Http::fake([
+        toursIndexUrl().'*' => Http::response(sampleToursPaginationPayload(), 200),
+    ]);
+
+    $this->actingAsBff()
+        ->getJson('/api/tours?page=1&filter=my-tasks&statuses[]=Client+Review&asset_tags[]=Audio')
+        ->assertOk()
+        ->assertJsonPath('current_page', 1)
+        ->assertJsonCount(2, 'data');
+
+    Http::assertSent(function ($request) {
+        parse_str(parse_url($request->url(), PHP_URL_QUERY), $query);
+
+        return str_starts_with($request->url(), toursIndexUrl())
+            && ($query['filter'] ?? null) === 'my-tasks'
+            && in_array('Client Review', (array) ($query['statuses'] ?? []), true)
+            && in_array('Audio', (array) ($query['asset_tags'] ?? []), true);
+    });
+});
+
+it('redirects guests from tour index proxy', function () {
+    $this->getJson('/api/tours')
+        ->assertRedirect(route('login'));
+});
+
+it('proxies GET /api/tours/{tour}/orders and normalizes orders', function () {
+    $tourOrdersUrl = toursIndexUrl().'/12/orders';
+
+    Http::fake([
+        $tourOrdersUrl.'*' => Http::response([
+            'data' => [sampleApiOrderPayload()],
+        ], 200),
+    ]);
+
+    $this->actingAsBff()
+        ->getJson('/api/tours/12/orders?filter=my-tasks')
+        ->assertOk()
+        ->assertJsonPath('data.0.id', 1)
+        ->assertJsonPath('data.0.collaborators.0.id', 9);
+
+    Http::assertSent(function ($request) use ($tourOrdersUrl) {
+        return str_starts_with($request->url(), $tourOrdersUrl)
+            && str_contains($request->url(), 'filter=my-tasks');
+    });
+});
+
+it('proxies GET /api/orders/{id} and normalizes order show payload', function () {
+    $orderShowUrl = rtrim((string) config('services.api.base_url'), '/').'/api/orders/1';
+
+    Http::fake([
+        $orderShowUrl => Http::response([
+            'data' => [
+                'order' => sampleApiOrderPayload(),
+            ],
+        ], 200),
+    ]);
+
+    $this->actingAsBff()
+        ->getJson('/api/orders/1')
+        ->assertOk()
+        ->assertJsonPath('order.id', 1)
+        ->assertJsonPath('order.collaborators.0.id', 9);
+});
+
+it('redirects guests from order show proxy', function () {
+    $this->getJson('/api/orders/1')
+        ->assertRedirect(route('login'));
 });

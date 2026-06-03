@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\ChannelMessageController;
+use App\Http\Controllers\Api\OrderShowController;
+use App\Http\Controllers\Api\TourIndexController;
+use App\Http\Controllers\Api\TourOrdersController;
 use App\Http\Controllers\Auth\BffForgotPasswordController;
 use App\Http\Controllers\Auth\BffLoginController;
 use App\Http\Controllers\Auth\BffLogoutController;
@@ -137,6 +140,10 @@ Route::middleware([BffAuth::class])->group(function () {
 
     // VVV Supabase Chat Routes
     Route::prefix('api')->group(function () {
+        Route::get('tours', TourIndexController::class)->name('api.tours.index');
+        Route::get('tours/{tour}/orders', TourOrdersController::class)->name('api.tours.orders');
+        Route::get('orders/{order}', OrderShowController::class)->name('api.orders.show');
+
         Route::patch('channels/{channelId}/messages/{id}', [ChannelMessageController::class, 'update']);
         Route::delete('channels/{channelId}/messages/{id}', [ChannelMessageController::class, 'destroy']);
     });
