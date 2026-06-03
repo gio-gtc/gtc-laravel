@@ -75,8 +75,8 @@ export default function OrdersAdvancedFilters({
 
     const assetTagOptions: { value: AwaitingAssetTag; label: string }[] = [
         { value: 'Voice Over', label: 'Voice Over' },
-        { value: 'Audio', label: 'Audio Tracks' },
-        { value: 'Art', label: 'Key Art / Assets' },
+        { value: 'Audio', label: 'Audio' },
+        { value: 'Art', label: 'Art' },
     ];
 
     const handleClearFilters = () => {
@@ -156,26 +156,6 @@ export default function OrdersAdvancedFilters({
                     )}
 
                     <div className="space-y-2">
-                        <p className="text-sm font-medium">Asset Bottlenecks</p>
-                        <div className="flex flex-wrap gap-2">
-                            {assetTagOptions.map((opt) => (
-                                <Button
-                                    key={opt.value}
-                                    variant={
-                                        filter.assetTags.includes(opt.value)
-                                            ? 'default'
-                                            : 'secondary'
-                                    }
-                                    size="sm"
-                                    onClick={() => toggleAssetTag(opt.value)}
-                                >
-                                    {opt.label}
-                                </Button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="space-y-2">
                         <p className="text-sm font-medium">Status</p>
                         <div className="flex flex-wrap gap-2">
                             {orderStatusOptions.map((opt) => (
@@ -188,6 +168,26 @@ export default function OrdersAdvancedFilters({
                                     }
                                     size="sm"
                                     onClick={() => toggleStatus(opt.value)}
+                                >
+                                    {opt.label}
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <p className="text-sm font-medium">Waiting for</p>
+                        <div className="flex flex-wrap gap-2">
+                            {assetTagOptions.map((opt) => (
+                                <Button
+                                    key={opt.value}
+                                    variant={
+                                        filter.assetTags.includes(opt.value)
+                                            ? 'default'
+                                            : 'secondary'
+                                    }
+                                    size="sm"
+                                    onClick={() => toggleAssetTag(opt.value)}
                                 >
                                     {opt.label}
                                 </Button>
