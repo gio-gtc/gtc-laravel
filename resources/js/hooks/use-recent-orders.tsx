@@ -5,7 +5,8 @@ const STORAGE_KEY = 'gtc-recent-order-slideouts';
 const MAX_RECENT = 5;
 
 export type RecentOrderItem = {
-    tourVenueId: number;
+    orderId: number;
+    uuid: string;
     tourName: string;
     venueName: string;
 };
@@ -22,7 +23,8 @@ function loadRecentOrders(): RecentOrderItem[] {
                 (item): item is RecentOrderItem =>
                     typeof item === 'object' &&
                     item !== null &&
-                    typeof (item as RecentOrderItem).tourVenueId === 'number' &&
+                    typeof (item as RecentOrderItem).orderId === 'number' &&
+                    typeof (item as RecentOrderItem).uuid === 'string' &&
                     typeof (item as RecentOrderItem).tourName === 'string' &&
                     typeof (item as RecentOrderItem).venueName === 'string',
             )
@@ -65,9 +67,7 @@ export function RecentOrdersProvider({
 
     const addRecentOrder = useCallback((item: RecentOrderItem) => {
         setRecentOrders((prev) => {
-            const filtered = prev.filter(
-                (v) => v.tourVenueId !== item.tourVenueId,
-            );
+            const filtered = prev.filter((v) => v.orderId !== item.orderId);
             return [item, ...filtered].slice(0, MAX_RECENT);
         });
     }, []);

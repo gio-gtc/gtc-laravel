@@ -10,7 +10,8 @@
         "format:check": "prettier --check resources/",
         "lint": "eslint . --fix",
         "types": "tsc --noEmit",
-        "validate:venue-items": "npx --yes tsx scripts/validate-venue-items-mock.ts"
+        "validate:venue-items": "npx --yes tsx scripts/validate-venue-items-mock.ts",
+        "validate:api-order-slideout": "npx --yes tsx scripts/validate-api-order-slideout.ts"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",

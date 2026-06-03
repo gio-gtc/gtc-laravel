@@ -37,6 +37,7 @@ import {
 import { usePage } from '@inertiajs/react';
 import { format, isValid, parse, parseISO } from 'date-fns';
 import { useCallback, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 import { ChatThread } from '../reuse/chat';
 import BulkEditAssignedModal from '../reuse/modals/bulk-edit-assigned-modal';
 import BulkEditDueDateModal from '../reuse/modals/bulk-edit-due-date-modal';
@@ -88,6 +89,7 @@ function GeneralMediaView({
     const { auth } = usePage<SharedData>().props;
     const catalog = useOrdersCatalog();
     const slideout = resolveSlideoutCatalog(catalog);
+    const apiSlideoutOrderId = catalog.slideoutApiOrderId;
     const { replaceVenueItem } = slideout;
     const usersWithFallback = useUsersWithFallback();
 
@@ -496,8 +498,20 @@ function GeneralMediaView({
         ],
     );
 
+    const notifyIfApiSlideoutReadOnly = useCallback(() => {
+        if (apiSlideoutOrderId != null) {
+            toast.info(
+                'Inline edits are not saved to the API yet. Use add/edit modals for supported changes.',
+            );
+        }
+    }, [apiSlideoutOrderId]);
+
     const handleDueDateBulkSave = useCallback(
         ({ dueDateIso }: { dueDateIso: string }) => {
+            if (apiSlideoutOrderId != null) {
+                notifyIfApiSlideoutReadOnly();
+                return;
+            }
             const dueDate = format(parseISO(dueDateIso), 'M/d/yy');
             bulkPatchBroadcastRows(selectedRowIds, { dueDate });
             bulkPatchSocialLineRows(selectedRowIds, { dueDate });
@@ -510,11 +524,17 @@ function GeneralMediaView({
             bulkPatchRadioRows,
             bulkPatchStaticRows,
             selectedRowIds,
+            apiSlideoutOrderId,
+            notifyIfApiSlideoutReadOnly,
         ],
     );
 
     const handleAssignedBulkSave = useCallback(
         ({ assigned }: { assigned: User[] }) => {
+            if (apiSlideoutOrderId != null) {
+                notifyIfApiSlideoutReadOnly();
+                return;
+            }
             bulkPatchBroadcastRows(selectedRowIds, { assigned });
             bulkPatchSocialLineRows(selectedRowIds, { assigned });
             bulkPatchRadioRows(selectedRowIds, { assigned });
@@ -526,6 +546,8 @@ function GeneralMediaView({
             bulkPatchRadioRows,
             bulkPatchStaticRows,
             selectedRowIds,
+            apiSlideoutOrderId,
+            notifyIfApiSlideoutReadOnly,
         ],
     );
 

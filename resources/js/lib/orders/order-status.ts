@@ -5,9 +5,11 @@ import {
     type LucideIcon,
     MessageCircleQuestion,
     Pause,
+    ShoppingCart,
 } from 'lucide-react';
 
 export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+    'Still In Cart': 'Still In Cart',
     'New Order': 'New Order',
     'In Progress': 'In Progress',
     'Client Review': 'Client Review',
@@ -21,6 +23,10 @@ type OrderStatusIconConfig = {
 };
 
 const ORDER_STATUS_ICON_MAP: Record<OrderStatus, OrderStatusIconConfig> = {
+    'Still In Cart': {
+        icon: ShoppingCart,
+        containerClass: 'bg-gray-500',
+    },
     'New Order': {
         icon: ClipBoardPlusIcon,
         containerClass: 'bg-green-600',

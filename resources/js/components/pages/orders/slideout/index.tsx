@@ -1,7 +1,9 @@
 import { ContainedSheet, SheetContent } from '@/components/ui/sheet';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
+import { apiOrderClientToUser } from '@/lib/orders/orders-filter-users';
 import { cn } from '@/lib/utils';
-import { type Tour, type TourVenue, type Venue } from '@/types';
+import { type Tour, type TourVenue, type User, type Venue } from '@/types';
+import type { ApiOrderClient } from '@/types/orders-api';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import AddOrderModal from '../add-order-modal';
 import SwitchView from './switch-view';
@@ -18,6 +20,9 @@ interface VenueDetailSlideoutProps {
     order: Tour | null;
     isOpen: boolean;
     onClose: () => void;
+    /** When set, header uses API show dates and hides legacy mock ticket/website fields. */
+    apiEventDates?: string;
+    apiClient?: ApiOrderClient | null;
 }
 
 export default function VenueDetailSlideout({
@@ -25,6 +30,8 @@ export default function VenueDetailSlideout({
     order,
     isOpen,
     onClose,
+    apiEventDates,
+    apiClient,
 }: VenueDetailSlideoutProps) {
     const usersWithFallback = useUsersWithFallback();
 
@@ -60,9 +67,18 @@ export default function VenueDetailSlideout({
         return `${startFormatted} & ${endFormattedShort}`;
     }, [venueItem]);
 
-    const client = usersWithFallback.find(
-        (u) => u.id === venueItem?.orderVenue.client,
-    );
+    const clientFromApi = useMemo((): User | undefined => {
+        if (!apiClient) {
+            return undefined;
+        }
+        return apiOrderClientToUser(apiClient);
+    }, [apiClient]);
+
+    const client =
+        clientFromApi ??
+        usersWithFallback.find((u) => u.id === venueItem?.orderVenue.client);
+
+    const isApiBacked = apiClient != null;
 
     // Generate mock data for ticket sale, website, and presale
     const mockTicketSaleDate = useMemo(() => {
@@ -162,10 +178,18 @@ export default function VenueDetailSlideout({
                     state={venueItem?.venue?.state ?? ''}
                     status={venueItem?.orderVenue?.status ?? null}
                     city={venueItem?.venue?.city}
-                    eventDates={isDemo ? undefined : formatEventDates}
-                    ticketSaleDate={isDemo ? undefined : mockTicketSaleDate}
-                    website={isDemo ? undefined : mockWebsite}
-                    presaleInfo={isDemo ? undefined : mockPresaleInfo}
+                    eventDates={
+                        isDemo
+                            ? undefined
+                            : (apiEventDates ?? formatEventDates)
+                    }
+                    ticketSaleDate={
+                        isDemo || isApiBacked ? undefined : mockTicketSaleDate
+                    }
+                    website={isDemo || isApiBacked ? undefined : mockWebsite}
+                    presaleInfo={
+                        isDemo || isApiBacked ? undefined : mockPresaleInfo
+                    }
                     onAttach={() => {
                         setAttachModalContext(null);
                         setAttachModalOpen(true);

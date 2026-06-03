@@ -32,14 +32,16 @@ export function CollapsibleTableSectionHeader({
                     <span className="md-gray-700-weight-600">{title}</span>
                 </button>
             </CollapsibleTrigger>
-            <Button
-                variant="ghost"
-                size="icon"
-                className="size-4 cursor-pointer rounded-full border-2 border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-white"
-                onClick={onAdd ?? undefined}
-            >
-                <Plus className="size-2.5" strokeWidth={3} />
-            </Button>
+            {onAdd != null && (
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-4 cursor-pointer rounded-full border-2 border-gray-400 text-gray-400 hover:bg-gray-400 hover:text-white"
+                    onClick={onAdd}
+                >
+                    <Plus className="size-2.5" strokeWidth={3} />
+                </Button>
+            )}
         </div>
     );
 }

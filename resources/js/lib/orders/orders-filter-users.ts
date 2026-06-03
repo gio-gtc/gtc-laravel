@@ -1,7 +1,7 @@
 import type { ApiOrder, ApiOrderClient, OrderAssignee } from '@/types/orders-api';
 import type { User } from '@/types';
 import {
-    externalClientEmbedToUser,
+    embedPersonToUser,
     findUserInRoster,
     resolveUserForAvatar,
 } from '@/lib/user-for-avatar';
@@ -45,7 +45,15 @@ export function resolveUserById(
 }
 
 export function apiOrderClientToUser(client: ApiOrderClient): User {
-    return externalClientEmbedToUser(client);
+    const org = client.organisation ?? {
+        id: client.organisation_id ?? 0,
+        name: '',
+    };
+
+    return embedPersonToUser(client, {
+        id: org.id,
+        name: org.name,
+    });
 }
 
 export function assigneeToUser(assignee: OrderAssignee, roster?: User[]): User {

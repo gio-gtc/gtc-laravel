@@ -33,10 +33,42 @@ final class OrdersAssembler
         $normalized = self::normalizeOrders($rawOrders);
         $groupedOrders = self::groupOrdersByTour($normalized);
 
+        return array_merge(
+            [
+                'orders' => $normalized,
+                'grouped_orders' => $groupedOrders,
+                'order_status_options' => self::orderStatusOptions(),
+            ],
+            self::slideoutCatalogSlices(),
+        );
+    }
+
+    /**
+     * Reference data for legacy order slideout (status dropdowns, Local Art mock lines).
+     *
+     * @return array<string, mixed>
+     */
+    private static function slideoutCatalogSlices(): array
+    {
+        $allVenueItems = config('mockdata.venue_items', []);
+        $localizedItems = [];
+
+        if (is_array($allVenueItems)) {
+            foreach ($allVenueItems as $row) {
+                if (is_array($row) && ($row['type'] ?? null) === 'localized') {
+                    $localizedItems[] = $row;
+                }
+            }
+        }
+
         return [
-            'orders' => $normalized,
-            'grouped_orders' => $groupedOrders,
-            'order_status_options' => self::orderStatusOptions(),
+            'venue_items' => $localizedItems,
+            'venue_item_status' => config('mockdata.venue_item_status', []),
+            'venue_item_language' => config('mockdata.venue_item_language', []),
+            'venue_item_encoding' => config('mockdata.venue_item_encoding', []),
+            'venue_item_assigned' => [],
+            'venue_item_notes' => [],
+            'invoices' => config('mockdata.invoices', []),
         ];
     }
 

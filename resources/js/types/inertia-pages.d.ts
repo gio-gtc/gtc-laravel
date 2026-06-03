@@ -97,6 +97,9 @@ export interface OrdersSlideoutCatalogExtensions {
     venue_item_encoding?: VenueItemEncoding[];
     invoices?: Invoice[];
     replaceVenueItem?: (row: VenueItemsRow) => void;
+    /** When set, slideout is backed by gtc-api order data (inline edits are not persisted). */
+    slideoutApiOrderId?: number;
+    submitOpenOrder?: () => void;
 }
 
 export type OrdersCatalogValue = OrdersPageProps &

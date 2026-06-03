@@ -30,11 +30,11 @@ export function RecentOrders() {
             'filter',
         ) === 'my-tasks';
 
-    const handleClick = (tourVenueId: number) => (e: React.MouseEvent) => {
+    const handleClick = (orderId: number) => (e: React.MouseEvent) => {
         e.preventDefault();
         const params = new URLSearchParams();
         if (hasMyTasksFilter) params.set('filter', 'my-tasks');
-        params.set('openVenue', String(tourVenueId));
+        params.set('openOrder', String(orderId));
         const url = `${ordersBaseUrl}?${params.toString()}`;
         router.visit(url, { preserveState: true });
     };
@@ -48,10 +48,10 @@ export function RecentOrders() {
             <SidebarGroupContent>
                 <SidebarMenu className="mt-1 gap-1">
                     {recentOrders.map((item) => (
-                        <SidebarMenuItem key={item.tourVenueId}>
+                        <SidebarMenuItem key={item.orderId}>
                             <SidebarMenuButton
                                 asChild={false}
-                                onClick={handleClick(item.tourVenueId)}
+                                onClick={handleClick(item.orderId)}
                                 tooltip={{
                                     children: `${item.venueName} (${item.tourName})`,
                                 }}

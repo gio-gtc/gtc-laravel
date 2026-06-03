@@ -4,19 +4,22 @@ import { getAssigneesForOrder } from '@/lib/orders/orders-filter-users';
 import { cn } from '@/lib/utils';
 import type { User } from '@/types';
 import type { ApiOrder } from '@/types/orders-api';
+import { ChevronRight } from 'lucide-react';
 
 type OrdersTableDemoRowProps = {
     demoOrder: ApiOrder;
     orderIsSelected: boolean;
     collaboratorRoster: User[];
-    onOrderRowClick: (orderId: number) => void;
+    onOrderRowSelect: (orderId: number) => void;
+    onOpenSlideout: (orderId: number) => void;
 };
 
 export default function OrdersTableDemoRow({
     demoOrder,
     orderIsSelected,
     collaboratorRoster,
-    onOrderRowClick,
+    onOrderRowSelect,
+    onOpenSlideout,
 }: OrdersTableDemoRowProps) {
     const assignees = getAssigneesForOrder(demoOrder, collaboratorRoster);
 
@@ -27,10 +30,20 @@ export default function OrdersTableDemoRow({
                 'xs-gray-500-weight-600 cursor-pointer text-gray-500 hover:bg-gray-100',
                 orderIsSelected && 'data-[state=selected]:bg-red-100',
             )}
-            onClick={() => onOrderRowClick(demoOrder.id)}
+            onClick={() => onOrderRowSelect(demoOrder.id)}
         >
             <TableCell className="px-2 py-0.5">
-                <div className="pl-2 leading-[24px]">Demo</div>
+                <div className="flex items-center justify-between">
+                    <span className="pl-2 leading-[24px]">Demo</span>
+                    <ChevronRight
+                        className="h-2.5 w-2.5 shrink-0 cursor-pointer text-gray-400 hover:text-gray-600"
+                        strokeWidth={3}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onOpenSlideout(demoOrder.id);
+                        }}
+                    />
+                </div>
             </TableCell>
             <TableCell className="px-2 py-0.5" />
             <TableCell className="px-2 py-0.5" />

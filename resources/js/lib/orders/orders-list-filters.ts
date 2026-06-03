@@ -7,7 +7,7 @@ import {
 import type { ApiOrder, GroupedOrders, OrderStatus } from '@/types/orders-api';
 import type { User } from '@/types';
 
-export const USA_COUNTRY_ID = 1;
+export const USA_COUNTRY_CODE = 'US';
 
 export type OrdersListFilterState = {
     clientIds: number[];
@@ -110,7 +110,7 @@ export function orderMatchesAdvancedFilters(
         }
 
         if (hasCountryFilter && order.venue) {
-            const isUS = order.venue.country_id === USA_COUNTRY_ID;
+            const isUS = order.venue.country_code === USA_COUNTRY_CODE;
             const usMatch = filters.country.us && isUS;
             const internationalMatch =
                 filters.country.international && !isUS;

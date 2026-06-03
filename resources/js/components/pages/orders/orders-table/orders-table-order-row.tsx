@@ -5,9 +5,11 @@ import {
     getAssigneesForOrder,
     resolveClientForOrder,
 } from '@/lib/orders/orders-filter-users';
+import { aggregateAwaitingAssetTags } from '@/lib/orders/awaiting-asset-tags';
 import { cn } from '@/lib/utils';
 import type { User } from '@/types';
 import type { ApiOrder } from '@/types/orders-api';
+import { ChevronRight } from 'lucide-react';
 import AwaitingAssetsIconGroup from '../awaiting-assets-icons';
 import OrderStatusLabel from '../order-status-label';
 
@@ -17,7 +19,8 @@ type OrdersTableOrderRowProps = {
     clientRoster: User[];
     collaboratorRoster: User[];
     formatDate: (dateString: string) => string;
-    onOrderRowClick: (orderId: number) => void;
+    onOrderRowSelect: (orderId: number) => void;
+    onOpenSlideout: (orderId: number) => void;
 };
 
 export default function OrdersTableOrderRow({
@@ -26,11 +29,13 @@ export default function OrdersTableOrderRow({
     clientRoster,
     collaboratorRoster,
     formatDate,
-    onOrderRowClick,
+    onOrderRowSelect,
+    onOpenSlideout,
 }: OrdersTableOrderRowProps) {
     const venue = order.venue;
     const client = resolveClientForOrder(order, clientRoster);
     const assignees = getAssigneesForOrder(order, collaboratorRoster);
+    const assetTags = aggregateAwaitingAssetTags(order);
     const region =
         venue?.city && venue?.state
             ? `${venue.city}, ${venue.state}`
@@ -43,10 +48,20 @@ export default function OrdersTableOrderRow({
                 'xs-gray-500-weight-600 cursor-pointer hover:bg-gray-100',
                 orderIsSelected && 'data-[state=selected]:bg-red-100',
             )}
-            onClick={() => onOrderRowClick(order.id)}
+            onClick={() => onOrderRowSelect(order.id)}
         >
             <TableCell className={cn('px-2 py-0.5 text-gray-500')}>
-                <span className="truncate pl-2">{region}</span>
+                <div className="flex items-center justify-between">
+                    <span className="truncate pl-2">{region}</span>
+                    <ChevronRight
+                        className="h-2.5 w-2.5 shrink-0 cursor-pointer text-gray-400 hover:text-gray-600"
+                        strokeWidth={3}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onOpenSlideout(order.id);
+                        }}
+                    />
+                </div>
             </TableCell>
 
             <TableCell className={cn('truncate px-2 py-0.5 text-gray-500')}>
@@ -54,7 +69,7 @@ export default function OrdersTableOrderRow({
             </TableCell>
 
             <TableCell className={cn('truncate px-2 py-0.5 text-gray-500')}>
-                {formatDate(order.due_date)}
+                {order.due_date ? formatDate(order.due_date) : '—'}
             </TableCell>
 
             <TableCell className={cn('px-2 py-0.5 text-gray-500')}>
@@ -67,7 +82,7 @@ export default function OrdersTableOrderRow({
 
             <TableCell className="flex items-center gap-1 px-2 py-0.5">
                 <OrderStatusLabel status={order.status} />
-                <AwaitingAssetsIconGroup tags={order.awaiting_assets} />
+                <AwaitingAssetsIconGroup tags={assetTags} />
             </TableCell>
         </TableRow>
     );
