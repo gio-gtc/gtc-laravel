@@ -1,6 +1,6 @@
 import { sanitizeFilterUserIds } from '@/lib/orders/orders-filter-users';
-import type { AwaitingAssetTag, OrderStatus } from '@/types/orders-api';
 import type { User } from '@/types';
+import type { AwaitingAssetTag, OrderStatus } from '@/types/orders-api';
 import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'gtc-orders-filters';
@@ -14,7 +14,10 @@ const LEGACY_STATUS_SLUG_TO_WIRE: Record<string, OrderStatus> = {
     canceled: 'Canceled',
 };
 
-function migrateStoredStatus(raw: string, validStatuses: OrderStatus[]): OrderStatus | null {
+function migrateStoredStatus(
+    raw: string,
+    validStatuses: OrderStatus[],
+): OrderStatus | null {
     const wire = LEGACY_STATUS_SLUG_TO_WIRE[raw] ?? raw;
     return validStatuses.includes(wire as OrderStatus)
         ? (wire as OrderStatus)
@@ -94,7 +97,9 @@ function normalizeStoredAssetTags(raw: unknown): AwaitingAssetTag[] {
     return result;
 }
 
-function loadFiltersFromStorage(options: LoadFiltersOptions): OrdersFilterState {
+function loadFiltersFromStorage(
+    options: LoadFiltersOptions,
+): OrdersFilterState {
     if (typeof window === 'undefined') {
         return DEFAULT_FILTERS;
     }
@@ -148,7 +153,14 @@ export function useOrdersFilters(
     validStatuses: OrderStatus[],
     clientUsers: User[],
     collaboratorUsers: User[],
-): [OrdersFilterState, (next: OrdersFilterState | ((prev: OrdersFilterState) => OrdersFilterState)) => void] {
+): [
+    OrdersFilterState,
+    (
+        next:
+            | OrdersFilterState
+            | ((prev: OrdersFilterState) => OrdersFilterState),
+    ) => void,
+] {
     const [filters, setFilters] = useState<OrdersFilterState>(() =>
         loadFiltersFromStorage({
             validStatuses,

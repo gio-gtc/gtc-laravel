@@ -5,6 +5,7 @@ import {
     indexOrderAssigneesToUsers,
     resolveClientForIndexOrder,
 } from '@/lib/orders/index-order-helpers';
+import { indexOrderShowsStatusIcon } from '@/lib/orders/order-status';
 import { cn } from '@/lib/utils';
 import type { User } from '@/types';
 import type { IndexOrder } from '@/types/orders-api';
@@ -78,7 +79,9 @@ export default function OrdersTableOrderRow({
             </TableCell>
 
             <TableCell className="flex items-center gap-1 px-2 py-0.5">
-                <OrderStatusLabel status={order.status} />
+                {indexOrderShowsStatusIcon(order.status) && (
+                    <OrderStatusLabel status={order.status} />
+                )}
                 {order.is_awaiting_assets && (
                     <AlertCircle
                         className="size-3.5 shrink-0 text-amber-500"

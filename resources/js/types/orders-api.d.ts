@@ -1,17 +1,20 @@
 /**
- * Parent order status (virtual `orders.status` accessor).
- * Precedence: Canceled → Client Review → In Progress → New Order → Complete → Still In Cart
+ * Parent order status (virtual `orders.status` accessor) for list/table UI.
+ * API may still emit `Still In Cart` when every line is in cart — map that on the
+ * orders index table only; line-level `Still In Cart` stays in the slideout.
  */
 export type OrderStatus =
-    | 'Still In Cart'
     | 'New Order'
     | 'In Progress'
     | 'Client Review'
     | 'Complete'
     | 'Canceled';
 
-/** Status filter dropdown values (excludes cart-only state). */
-export type OrderStatusFilterValue = Exclude<OrderStatus, 'Still In Cart'>;
+/** Order container statuses shown in /orders filters and status icons. */
+export type OrderStatusFilterValue = OrderStatus;
+
+/** Cart-only waterfall value from gtc-api — not shown on /orders table. */
+export type ApiOrderWireStatus = OrderStatus | 'Still In Cart';
 
 export interface OrderStatusOption {
     value: OrderStatusFilterValue;
@@ -165,7 +168,7 @@ export interface ApiOrder {
     updated_at: string;
 
     /** Virtual primary status (server waterfall). */
-    status: OrderStatus;
+    status: ApiOrderWireStatus;
     /** Deduped active parent statuses on lines in this order. */
     item_statuses: string[];
     /** True when any line is Unassigned, In Production, or Client Review. */
@@ -238,7 +241,7 @@ export interface IndexOrder {
     due_date: string | null;
     created_at: string;
     updated_at: string;
-    status: OrderStatus;
+    status: ApiOrderWireStatus;
     item_statuses: string[];
     is_awaiting_assets: boolean;
     is_international: boolean;

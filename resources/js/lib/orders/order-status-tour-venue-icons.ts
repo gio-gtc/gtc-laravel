@@ -1,8 +1,12 @@
 import type { TourVenueStatusValue } from '@/types';
-import type { ApiOrder, AwaitingAssetTag, OrderStatus } from '@/types/orders-api';
+import type {
+    ApiOrder,
+    ApiOrderWireStatus,
+    AwaitingAssetTag,
+} from '@/types/orders-api';
 
 const ORDER_STATUS_TO_TOUR_VENUE_STATUS: Partial<
-    Record<OrderStatus, TourVenueStatusValue>
+    Record<ApiOrderWireStatus, TourVenueStatusValue>
 > = {
     'New Order': 1,
     'In Progress': 2,
