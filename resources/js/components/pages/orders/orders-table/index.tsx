@@ -1,4 +1,3 @@
-import { FilledArrow } from '@/components/ui/icons';
 import { useContainedSheetOpen } from '@/components/ui/sheet';
 import {
     Table,
@@ -22,7 +21,7 @@ import {
     ordersFilterStateToGlobalFilters,
 } from '@/lib/orders/global-dashboard-filters';
 import { getVisibleIndexOrderDemoContext } from '@/lib/orders/index-order-helpers';
-import { cn, resolveUrl } from '@/lib/utils';
+import { resolveUrl } from '@/lib/utils';
 import { orders } from '@/routes';
 import { type SharedData } from '@/types';
 import { type OrdersPageProps } from '@/types/inertia-pages';
@@ -41,6 +40,7 @@ import OrdersTableHeaderActions from '../orders-table-header-actions';
 import OrderDetailSlideout from '../slideout';
 import OrdersTableDemoRow from './orders-table-demo-row';
 import OrdersTableOrderRow from './orders-table-order-row';
+import OrdersTableTourHeaderRow from './orders-table-tour-header-row';
 
 function OrdersTable() {
     const page = usePage<SharedData & OrdersPageProps>();
@@ -95,8 +95,10 @@ function OrdersTable() {
     const {
         ordersByTour,
         loadingTourIds,
+        prefetchingTourIds,
         errorsByTour,
         loadTourOrders,
+        prefetchTourOrders,
         reloadTour,
         clearCache,
     } = useTourOrdersCache(globalFilters);
@@ -217,6 +219,16 @@ function OrdersTable() {
         [filters.myCollaborators, page.url, setFilters],
     );
 
+    const handlePrefetchTour = useCallback(
+        (tourId: number) => {
+            if (expandedTours.has(tourId)) {
+                return;
+            }
+            prefetchTourOrders(tourId);
+        },
+        [expandedTours, prefetchTourOrders],
+    );
+
     const toggleTourExpansion = useCallback(
         (tourId: number) => {
             setExpandedTours((prev) => {
@@ -293,9 +305,7 @@ function OrdersTable() {
                 onAddOrderClick={() => setIsAddOrderModalOpen(true)}
                 filters={filters}
                 onFilterChange={handleFilterChange}
-                searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
-                isSearching={isResetting}
             />
 
             <div className="border-t">
@@ -342,30 +352,21 @@ function OrdersTable() {
 
                                 return (
                                     <Fragment key={`order-group-${tour.id}`}>
-                                        <TableRow
-                                            className="cursor-pointer text-lg font-semibold hover:bg-muted/50"
-                                            onClick={() =>
+                                        <OrdersTableTourHeaderRow
+                                            tour={tour}
+                                            isExpanded={isExpanded}
+                                            isPrefetching={prefetchingTourIds.has(
+                                                tour.id,
+                                            )}
+                                            isCached={
+                                                ordersByTour[tour.id] !==
+                                                undefined
+                                            }
+                                            onToggle={() =>
                                                 toggleTourExpansion(tour.id)
                                             }
-                                        >
-                                            <TableCell
-                                                colSpan={6}
-                                                className="h-[45px] px-2 py-1"
-                                            >
-                                                <div className="flex items-center gap-2.5">
-                                                    <FilledArrow
-                                                        className={cn(
-                                                            'size-1.5 rotate-[-90deg] text-gray-600 transition-transform duration-150',
-                                                            isExpanded &&
-                                                                'rotate-0',
-                                                        )}
-                                                    />
-                                                    <span className="text-gray-700">
-                                                        {tour.name}
-                                                    </span>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
+                                            onPrefetch={handlePrefetchTour}
+                                        />
 
                                         {isExpanded && isLoadingTour && (
                                             <TableRow>

@@ -2,13 +2,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Search, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface ExpandableSearchProps {
     onSearchChange: (query: string) => void;
     placeholder?: string;
     expandedWidth?: string;
     transitionDuration?: number;
+    debounceMs?: number;
     className?: string;
 }
 
@@ -17,11 +18,14 @@ export function ExpandableSearch({
     placeholder = 'Search...',
     expandedWidth = 'w-64',
     transitionDuration = 300,
+    debounceMs = 0,
     className,
 }: ExpandableSearchProps) {
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const [showSearchContent, setShowSearchContent] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const onSearchChangeRef = useRef(onSearchChange);
+    onSearchChangeRef.current = onSearchChange;
 
     // Handle smooth open/close transitions
     useEffect(() => {
@@ -39,12 +43,22 @@ export function ExpandableSearch({
 
     // Notify parent of search query changes
     useEffect(() => {
-        onSearchChange(searchQuery);
-    }, [searchQuery, onSearchChange]);
+        if (debounceMs <= 0) {
+            onSearchChangeRef.current(searchQuery);
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            onSearchChangeRef.current(searchQuery);
+        }, debounceMs);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery, debounceMs]);
 
     const handleClear = () => {
         setSearchQuery('');
         setIsSearchExpanded(false);
+        onSearchChangeRef.current('');
     };
 
     const transitionStyle = {

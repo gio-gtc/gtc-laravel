@@ -1,16 +1,14 @@
 import { Button } from '@/components/ui/button';
+import { ExpandableSearch } from '@/components/utils/expandable-search';
 import { type OrdersFilterState } from '@/hooks/use-orders-filters';
 import OrdersAdvancedFilters from './orders-advanced-filters';
-import OrdersSearchFilter from './orders-search-filter';
 
 interface OrdersTableHeaderActionsProps {
     selectedOrderCount: number;
     onAddOrderClick: () => void;
     filters: OrdersFilterState;
     onFilterChange: (filters: OrdersFilterState) => void;
-    searchQuery: string;
     onSearchChange: (query: string) => void;
-    isSearching?: boolean;
 }
 
 export default function OrdersTableHeaderActions({
@@ -18,9 +16,7 @@ export default function OrdersTableHeaderActions({
     onAddOrderClick,
     filters,
     onFilterChange,
-    searchQuery,
     onSearchChange,
-    isSearching = false,
 }: OrdersTableHeaderActionsProps) {
     return (
         <div className="flex items-center justify-between gap-1 overflow-y-auto">
@@ -39,10 +35,10 @@ export default function OrdersTableHeaderActions({
                     filter={filters}
                     onFilterChange={onFilterChange}
                 />
-                <OrdersSearchFilter
-                    searchQuery={searchQuery}
+                <ExpandableSearch
                     onSearchChange={onSearchChange}
-                    isSearching={isSearching}
+                    debounceMs={400}
+                    placeholder="Search tours, venues, clients…"
                 />
             </div>
         </div>
