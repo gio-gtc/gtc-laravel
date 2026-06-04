@@ -13,6 +13,7 @@ import { useOrdersFilterUsers } from '@/hooks/use-orders-filter-users';
 import { useOrdersFilters } from '@/hooks/use-orders-filters';
 import { useRecentOrders } from '@/hooks/use-recent-orders';
 import { useInfiniteScrollTrigger, useTourFeed } from '@/hooks/use-tour-feed';
+import { useOrdersPageFlashSync } from '@/hooks/use-orders-page-flash-sync';
 import { useTourOrdersCache } from '@/hooks/use-tour-orders-cache';
 import { formatShortUsDate } from '@/lib/format/date';
 import {
@@ -107,6 +108,17 @@ function OrdersTable() {
         openOrder !== null || loadingOrderId !== null,
     );
     const { addRecentOrder } = useRecentOrders();
+
+    const revealTourOrder = useCallback(
+        (tourId: number, orderId: number) => {
+            setExpandedTours((prev) => new Set(prev).add(tourId));
+            void loadTourOrders(tourId, true);
+            setSelectedOrderIds([orderId]);
+        },
+        [loadTourOrders],
+    );
+
+    useOrdersPageFlashSync({ revealTourOrder });
 
     const applyGlobalFilterReset = useCallback(
         (nextFilters: GlobalDashboardFilters) => {

@@ -24,12 +24,32 @@ import type {
 
 export type SharedProps = SharedData;
 
+/** Flash payload to sync the orders table after shell create. */
+export type CreatedOrderFlash = {
+    id: number;
+    tour_id: number;
+};
+
+/** Flash payload to sync the orders table after cart submit. */
+export type SubmittedOrderFlash = {
+    id: number;
+    tour_id?: number;
+};
+
 /** Shared Inertia flash props (see HandleInertiaRequests `flash` share). */
 export type FlashPayload = {
     success?: string | null;
     error?: string | null;
     new_organisation?: { id: number; name: string } | null;
+    created_order_item?: import('./orders-api').OrderItem | null;
+    created_order?: CreatedOrderFlash | null;
+    submitted_order?: SubmittedOrderFlash | null;
 };
+
+export type OrderListFlashPayload = Pick<
+    FlashPayload,
+    'created_order' | 'submitted_order'
+>;
 
 export interface Country {
     id: number;

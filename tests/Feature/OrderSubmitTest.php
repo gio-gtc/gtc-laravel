@@ -15,7 +15,8 @@ it('proxies order submit to gtc-api', function () {
     $this->actingAsBff()
         ->post(route('orders.submit', ['order' => 5]))
         ->assertRedirect(route('orders'))
-        ->assertSessionHas('success', 'Order submitted successfully.');
+        ->assertSessionHas('success', 'Order submitted successfully.')
+        ->assertSessionHas('submitted_order', ['id' => 5]);
 
     Http::assertSent(function ($request) {
         return $request->url() === orderSubmitApiUrl(5)

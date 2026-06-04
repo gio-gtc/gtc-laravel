@@ -36,9 +36,19 @@ final class OrderStoreController extends Controller
         $result = $client->post('/api/orders', $apiPayload);
 
         if ($result['ok']) {
-            return redirect()
+            $redirect = redirect()
                 ->route('orders')
                 ->with('success', 'Order created successfully.');
+
+            $created = self::extractCreatedOrder(
+                $result['data'],
+                (int) $validated['tour_id'],
+            );
+            if ($created !== null) {
+                $redirect->with('created_order', $created);
+            }
+
+            return $redirect;
         }
 
         if ($result['status'] === 422) {
@@ -177,6 +187,40 @@ final class OrderStoreController extends Controller
     /**
      * @param  array<string, mixed>  $errors
      */
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array{id: int, tour_id: int}|null
+     */
+    private static function extractCreatedOrder(array $data, int $tourId): ?array
+    {
+        $candidates = [
+            $data['order'] ?? null,
+            $data['data']['order'] ?? null,
+            $data['data'] ?? null,
+            $data,
+        ];
+
+        foreach ($candidates as $order) {
+            if (! is_array($order)) {
+                continue;
+            }
+
+            $id = $order['id'] ?? null;
+            if (! is_numeric($id)) {
+                continue;
+            }
+
+            $resolvedTourId = $order['tour_id'] ?? $tourId;
+
+            return [
+                'id' => (int) $id,
+                'tour_id' => is_numeric($resolvedTourId) ? (int) $resolvedTourId : $tourId,
+            ];
+        }
+
+        return null;
+    }
+
     private function throwValidationFromApiErrors(array $errors): void
     {
         if ($errors === []) {

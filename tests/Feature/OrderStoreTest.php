@@ -48,7 +48,8 @@ it('proxies staff create order to gtc-api with mapped payload', function () {
             'ordered_by_id' => 4,
         ])
         ->assertRedirect(route('orders'))
-        ->assertSessionHas('success', 'Order created successfully.');
+        ->assertSessionHas('success', 'Order created successfully.')
+        ->assertSessionHas('created_order', ['id' => 99, 'tour_id' => 12]);
 
     Http::assertSent(function ($request) {
         if ($request->url() !== ordersStoreApiUrl() || $request->method() !== 'POST') {
