@@ -1,6 +1,8 @@
 /**
  * Smoke tests for apiOrderToLegacySlideout. Run: npx tsx scripts/validate-api-order-slideout.ts
  */
+import { formatOrderShowDatesForHeader } from '../resources/js/lib/orders/format-order-show-dates.ts';
+import { mergeApiOrderUpdate } from '../resources/js/lib/orders/merge-api-order-update.ts';
 import {
     apiOrderToLegacySlideout,
     mergeSlideoutVenueItems,
@@ -94,6 +96,24 @@ assert(
     'formatted event dates',
 );
 
+const threeDateHeader = formatOrderShowDatesForHeader([
+    { id: 1, order_id: 1, show_date: '2026-10-15' },
+    { id: 2, order_id: 1, show_date: '2026-10-16' },
+    { id: 3, order_id: 1, show_date: '2026-10-17' },
+]);
+assert(threeDateHeader != null, 'three-date header is defined');
+assert(
+    (threeDateHeader.match(/ & /g) ?? []).length === 2,
+    'three dates joined with two ampersands',
+);
+assert(
+    threeDateHeader.includes('October') &&
+        threeDateHeader.includes('15') &&
+        threeDateHeader.includes('16') &&
+        threeDateHeader.includes('17'),
+    'three-date header includes all day numbers',
+);
+
 const merged = mergeSlideoutVenueItems(payload.catalogExtensions.venue_items ?? [], [
     {
         id: 'loc-1',
@@ -108,5 +128,37 @@ const merged = mergeSlideoutVenueItems(payload.catalogExtensions.venue_items ?? 
     },
 ]);
 assert(merged.length === 2, 'merged localized row');
+
+const partialPatch = {
+    id: sampleOrder.id,
+    uuid: sampleOrder.uuid,
+    tour_id: sampleOrder.tour_id,
+    venue_id: sampleOrder.venue_id,
+    ordered_by_id: sampleOrder.ordered_by_id,
+    is_demo: sampleOrder.is_demo,
+    local_deliverable_email: sampleOrder.local_deliverable_email,
+    submitted_at: sampleOrder.submitted_at,
+    due_date: sampleOrder.due_date,
+    created_at: sampleOrder.created_at,
+    updated_at: sampleOrder.updated_at,
+    status: sampleOrder.status,
+    is_awaiting_assets: sampleOrder.is_awaiting_assets,
+    show_dates: [
+        { id: 1, order_id: 1, show_date: '2026-10-16' },
+        { id: 2, order_id: 1, show_date: '2026-10-17' },
+    ],
+    ticket_outlets: 'AXS',
+} as ApiOrder;
+
+const mergedOrder = mergeApiOrderUpdate(sampleOrder, partialPatch);
+assert(mergedOrder.tour?.name === 'Eras Tour 2026', 'merge keeps tour embed');
+assert(mergedOrder.venue?.name === 'SoFi Stadium', 'merge keeps venue embed');
+assert(mergedOrder.order_items?.length === 1, 'merge keeps order items');
+assert(mergedOrder.show_dates?.length === 2, 'merge applies patched show_dates');
+assert(mergedOrder.ticket_outlets === 'AXS', 'merge applies patched descriptions');
+
+const afterPartial = apiOrderToLegacySlideout(mergedOrder);
+assert(afterPartial.venueItem.venue?.name === 'SoFi Stadium', 'slideout venue after merge');
+assert(afterPartial.tour.name === 'Eras Tour 2026', 'slideout tour after merge');
 
 console.log('api-order-to-legacy-slideout: ok');

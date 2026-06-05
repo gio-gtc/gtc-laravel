@@ -2,6 +2,7 @@ import {
     OrdersCatalogProvider,
     useOrdersCatalog,
 } from '@/contexts/orders-catalog-context';
+import { mergeApiOrderUpdate } from '@/lib/orders/merge-api-order-update';
 import { fetchOrderShow } from '@/lib/orders/orders-api-client';
 import {
     apiOrderToLegacySlideout,
@@ -39,6 +40,7 @@ type OrderSlideoutCatalogContextValue = {
         | ReturnType<typeof apiOrderToLegacySlideout>['venueItem']
         | null;
     legacyEventDates: string | undefined;
+    updateOpenOrder: (order: ApiOrder) => void;
     submitOpenOrder: () => void;
     registerTourOrdersInvalidator: (fn: TourOrdersInvalidator) => void;
 };
@@ -80,6 +82,27 @@ export function OrderSlideoutCatalogProvider({
             return null;
         }
     }, []);
+
+    const updateOpenOrder = useCallback(
+        (order: ApiOrder) => {
+            setOpenOrder((prev) => {
+                const merged =
+                    prev != null && prev.id === order.id
+                        ? mergeApiOrderUpdate(prev, order)
+                        : order;
+
+                setOrdersDetailCache((cache) => ({
+                    ...cache,
+                    [merged.id]: merged,
+                }));
+
+                return merged;
+            });
+            tourInvalidatorRef.current?.(order.tour_id);
+            void refreshOpenOrder(order.id);
+        },
+        [refreshOpenOrder],
+    );
 
     const openOrderById = useCallback(
         async (orderId: number): Promise<ApiOrder | null> => {
@@ -263,6 +286,7 @@ export function OrderSlideoutCatalogProvider({
             legacyTour: legacyPayload?.tour ?? null,
             legacyVenueItem: legacyPayload?.venueItem ?? null,
             legacyEventDates: legacyPayload?.eventDates,
+            updateOpenOrder,
             submitOpenOrder,
             registerTourOrdersInvalidator,
         }),
@@ -274,6 +298,7 @@ export function OrderSlideoutCatalogProvider({
             legacyPayload?.tour,
             legacyPayload?.venueItem,
             legacyPayload?.eventDates,
+            updateOpenOrder,
             submitOpenOrder,
             registerTourOrdersInvalidator,
         ],

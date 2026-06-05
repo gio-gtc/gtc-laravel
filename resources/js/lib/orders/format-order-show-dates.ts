@@ -33,16 +33,7 @@ function formatSingleShowDate(dateStr: string): string {
     }).format(date);
 }
 
-function formatShowDateShort(dateStr: string): string {
-    const date = parseISO(dateStr.split('T')[0]);
-    return new Intl.DateTimeFormat('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-    }).format(date);
-}
-
-/** Header display for `order.show_dates` (e.g. single day or start & end range). */
+/** Header display for `order.show_dates` — every date, joined with " & ". */
 export function formatOrderShowDatesForHeader(
     showDates: OrderShowDate[] | undefined,
 ): string | undefined {
@@ -53,12 +44,27 @@ export function formatOrderShowDatesForHeader(
     const sorted = [...showDates].sort((a, b) =>
         a.show_date.localeCompare(b.show_date),
     );
-    const first = sorted[0].show_date;
-    const last = sorted[sorted.length - 1].show_date;
 
-    if (first === last) {
-        return formatSingleShowDate(first);
-    }
+    return sorted
+        .map((row) => formatSingleShowDate(row.show_date))
+        .join(' & ');
+}
 
-    return `${formatSingleShowDate(first)} & ${formatShowDateShort(last)}`;
+/** Legacy TourVenue start/end → same header format as API show_dates. */
+export function formatVenueDateRangeForHeader(
+    startDate: string,
+    endDate: string,
+): string | undefined {
+    const start = dateOnly(startDate);
+    const end = dateOnly(endDate);
+
+    const rows: OrderShowDate[] =
+        start === end
+            ? [{ id: 0, order_id: 0, show_date: start }]
+            : [
+                  { id: 0, order_id: 0, show_date: start },
+                  { id: 1, order_id: 0, show_date: end },
+              ];
+
+    return formatOrderShowDatesForHeader(rows);
 }

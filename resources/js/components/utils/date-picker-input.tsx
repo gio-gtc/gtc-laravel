@@ -263,11 +263,16 @@ export default function DatePickerInput({
                         side="bottom"
                         className="max-h-[100vh] gap-0 overflow-y-auto"
                     >
-                        {dialogTitle && (
-                            <SheetHeader className="pb-0">
-                                <SheetTitle>{dialogTitle}</SheetTitle>
-                            </SheetHeader>
-                        )}
+                        <SheetHeader
+                            className={dialogTitle ? 'pb-0' : 'sr-only'}
+                        >
+                            <SheetTitle>
+                                {dialogTitle ??
+                                    label ??
+                                    placeholder ??
+                                    'Select date'}
+                            </SheetTitle>
+                        </SheetHeader>
                         {pickerContent}
                     </SheetContent>
                 </Sheet>

@@ -53,7 +53,7 @@ function OrdersTable() {
         loadingOrderId,
         legacyTour,
         legacyVenueItem,
-        legacyEventDates,
+        updateOpenOrder,
         registerTourOrdersInvalidator,
     } = useOrderSlideoutCatalog();
     const { clientUsers, collaboratorUsers } = useOrdersFilterUsers();
@@ -516,8 +516,8 @@ function OrdersTable() {
             <OrderDetailSlideout
                 order={legacyTour}
                 orderItem={legacyVenueItem}
-                apiEventDates={legacyEventDates}
-                apiClient={openOrder?.client ?? null}
+                apiOrder={openOrder}
+                onOrderSaved={updateOpenOrder}
                 isOpen={slideoutOpen}
                 isLoading={loadingOrderId !== null && openOrder === null}
                 onClose={() => setOpenOrder(null)}

@@ -1,3 +1,4 @@
+import { getCsrfHeaders } from '@/lib/forms/csrf';
 import {
     buildGlobalFilterParams,
 } from '@/lib/orders/global-dashboard-filters';
@@ -5,6 +6,7 @@ import type {
     ApiOrder,
     GlobalDashboardFilters,
     IndexOrder,
+    OrderPatchPayload,
     PaginatedToursResponse,
     ToursPaginationMeta,
 } from '@/types/orders-api';
@@ -100,6 +102,30 @@ export async function fetchOrderShow(
     }
 
     return body.order;
+}
+
+export async function patchOrder(
+    orderId: number,
+    payload: OrderPatchPayload,
+    signal?: AbortSignal,
+): Promise<ApiOrder | null> {
+    const headers = getCsrfHeaders();
+
+    const response = await fetch(`/api/orders/${orderId}`, {
+        method: 'PATCH',
+        headers,
+        credentials: 'same-origin',
+        signal,
+        body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+        throw new Error('Could not save order info.');
+    }
+
+    const body = (await response.json()) as { order?: ApiOrder; ok?: boolean };
+
+    return body.order ?? null;
 }
 
 export function hasMoreTours(pagination: ToursPaginationMeta): boolean {

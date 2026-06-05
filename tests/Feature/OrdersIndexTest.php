@@ -41,6 +41,18 @@ function sampleApiOrderPayload(): array
         'item_statuses' => ['New Order'],
         'is_awaiting_assets' => false,
         'is_international' => false,
+        'ticket_outlets' => 'Ticketmaster',
+        'on_same_date' => null,
+        'cardholder_times' => 'Doors 6 PM',
+        'logos' => 'Primary logo only',
+        'special_instructions' => 'Mix to -14 LUFS',
+        'show_dates' => [
+            [
+                'id' => 145,
+                'order_id' => 1,
+                'show_date' => '2026-10-15',
+            ],
+        ],
         'venue' => [
             'id' => 84,
             'name' => 'SoFi Stadium',
@@ -226,7 +238,53 @@ it('proxies GET /api/orders/{id} and normalizes order show payload', function ()
         ->getJson('/api/orders/1')
         ->assertOk()
         ->assertJsonPath('order.id', 1)
-        ->assertJsonPath('order.collaborators.0.id', 9);
+        ->assertJsonPath('order.collaborators.0.id', 9)
+        ->assertJsonPath('order.ticket_outlets', 'Ticketmaster')
+        ->assertJsonPath('order.special_instructions', 'Mix to -14 LUFS');
+});
+
+it('proxies PATCH /api/orders/{id} with descriptions and show_dates', function () {
+    $orderPatchUrl = rtrim((string) config('services.api.base_url'), '/').'/api/orders/1';
+
+    $patchBody = [
+        'ticket_outlets' => 'AXS / Venue',
+        'on_same_date' => 'Same night graphics',
+        'cardholder_times' => 'Doors 6 PM',
+        'logos' => 'Primary logo',
+        'special_instructions' => 'Mix to -14 LUFS',
+        'show_dates' => [
+            ['id' => 145, 'show_date' => '2026-10-15'],
+            ['show_date' => '2026-10-16'],
+        ],
+    ];
+
+    Http::fake([
+        $orderPatchUrl => Http::response([
+            'data' => array_merge(sampleApiOrderPayload(), $patchBody),
+        ], 200),
+    ]);
+
+    $this->actingAsBff()
+        ->patchJson('/api/orders/1', $patchBody)
+        ->assertOk()
+        ->assertJsonPath('order.ticket_outlets', 'AXS / Venue')
+        ->assertJsonPath('order.show_dates.0.show_date', '2026-10-15')
+        ->assertJsonPath('order.show_dates.1.show_date', '2026-10-16');
+
+    Http::assertSent(function ($request) use ($orderPatchUrl, $patchBody) {
+        return $request->url() === $orderPatchUrl
+            && $request->method() === 'PATCH'
+            && $request['ticket_outlets'] === $patchBody['ticket_outlets']
+            && count($request['show_dates']) === 2
+            && $request['show_dates'][0]['id'] === 145
+            && ! isset($request['show_dates'][1]['id']);
+    });
+});
+
+it('rejects PATCH /api/orders/{id} without editable fields', function () {
+    $this->actingAsBff()
+        ->patchJson('/api/orders/1', [])
+        ->assertStatus(422);
 });
 
 it('redirects guests from order show proxy', function () {

@@ -54,6 +54,17 @@ final class GtcApiClient
     }
 
     /**
+     * @param  array<string, mixed>  $body
+     * @return array{ok: true, data: array<string, mixed>}|array{ok: false, message: string, status: int}
+     */
+    public function patch(string $path, array $body): array
+    {
+        $response = $this->request()->patch($this->url($path), $body);
+
+        return $this->interpret($response, $path);
+    }
+
+    /**
      * Unwrap successful JSON: prefers root "data", then legacy top-level resource keys.
      *
      * @return array<int, mixed>|array<string, mixed>|null

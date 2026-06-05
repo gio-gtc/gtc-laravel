@@ -150,6 +150,51 @@ export interface ApiOrderTour {
     name: string;
 }
 
+/** Workspace slideout header notes — present on GET /api/orders/{id} only. */
+export type OrderHeaderDescriptionKey =
+    | 'ticket_outlets'
+    | 'on_same_date'
+    | 'cardholder_times'
+    | 'logos'
+    | 'special_instructions';
+
+export type OrderHeaderDescriptions = Record<
+    OrderHeaderDescriptionKey,
+    string | null
+>;
+
+/** Existing show date row on PATCH (gtc-api). */
+export type OrderPatchShowDateExisting = {
+    id: number;
+    show_date: string;
+};
+
+/** New show date row on PATCH (gtc-api). */
+export type OrderPatchShowDateNew = {
+    show_date: string;
+};
+
+export type OrderPatchShowDate =
+    | OrderPatchShowDateExisting
+    | OrderPatchShowDateNew;
+
+/** Allowed body for PATCH /api/orders/{id}. */
+export type OrderPatchPayload = OrderHeaderDescriptions & {
+    show_dates: OrderPatchShowDate[];
+};
+
+/** Edit modal row — preserves id for existing API show_dates. */
+export type ShowDateEditRow = {
+    id?: number;
+    show_date: string;
+};
+
+/**
+ * Heavy order detail from GET /api/orders/{id} (slideout workspace).
+ * Index/accordion rows use {@link IndexOrder} and omit header description fields.
+ */
+export type HeavyOrderDetail = ApiOrder;
+
 /**
  * Order row from gtc-api GET /api/orders | GET /api/orders/{id}.
  * BFF may add `collaborators`.
@@ -179,6 +224,13 @@ export interface ApiOrder {
     client?: ApiOrderClient | null;
     show_dates?: OrderShowDate[];
     order_items?: OrderItem[];
+
+    /** Slideout header — omitted on GET /api/tours/{tourId}/orders. */
+    ticket_outlets?: string | null;
+    on_same_date?: string | null;
+    cardholder_times?: string | null;
+    logos?: string | null;
+    special_instructions?: string | null;
 
     /** BFF-derived from item assignees — not from gtc-api root. */
     collaborators?: OrderAssignee[];

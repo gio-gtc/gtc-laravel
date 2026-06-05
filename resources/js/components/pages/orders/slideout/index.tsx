@@ -1,17 +1,25 @@
-import { ContainedSheet, SheetContent } from '@/components/ui/sheet';
+import {
+    ContainedSheet,
+    SheetContent,
+    SheetTitle,
+} from '@/components/ui/sheet';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
+import {
+    formatOrderShowDatesForHeader,
+    formatVenueDateRangeForHeader,
+} from '@/lib/orders/format-order-show-dates';
 import { apiOrderClientToUser } from '@/lib/orders/orders-filter-users';
 import { cn } from '@/lib/utils';
 import { type Tour, type TourVenue, type User, type Venue } from '@/types';
-import type { ApiOrderClient } from '@/types/orders-api';
+import type { ApiOrder } from '@/types/orders-api';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import AddOrderModal from '../add-order-modal';
+import OrderSlideoutHeader from './order-slideout-header';
 import OrderSlideoutSkeleton from './order-slideout-skeleton';
 import SwitchView from './switch-view';
 import AttachFileOrDropboxModal, {
     type AttachFileModalContext,
 } from './switch-view/general-media/modals/attach-file-or-dropbox-modal';
-import OrderSlideoutHeader from './venue-slideout-header';
 
 interface OrderDetailSlideoutProps {
     orderItem: {
@@ -21,9 +29,8 @@ interface OrderDetailSlideoutProps {
     order: Tour | null;
     isOpen: boolean;
     onClose: () => void;
-    /** When set, header uses API show dates and hides legacy mock ticket/website fields. */
-    apiEventDates?: string;
-    apiClient?: ApiOrderClient | null;
+    apiOrder?: ApiOrder | null;
+    onOrderSaved?: (order: ApiOrder) => void;
     isLoading?: boolean;
 }
 
@@ -32,95 +39,37 @@ export default function OrderDetailSlideout({
     order,
     isOpen,
     onClose,
-    apiEventDates,
-    apiClient,
+    apiOrder = null,
+    onOrderSaved,
     isLoading = false,
 }: OrderDetailSlideoutProps) {
     const usersWithFallback = useUsersWithFallback();
 
-    // Format event dates for header (e.g., "Friday, July 12 2026 & Saturday, July 13, 2026")
     const formatEventDates = useMemo(() => {
         if (!orderItem) return undefined;
-        const startDate = new Date(orderItem.orderVenue.start_date);
-        const endDate = new Date(orderItem.orderVenue.end_date);
+        return formatVenueDateRangeForHeader(
+            orderItem.orderVenue.start_date,
+            orderItem.orderVenue.end_date,
+        );
+    }, [orderItem]);
 
-        const formatSingleDate = (date: Date): string => {
-            return new Intl.DateTimeFormat('en-US', {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-            }).format(date);
-        };
-
-        const startFormatted = formatSingleDate(startDate);
-
-        // If same day, just return one date
-        if (startDate.toDateString() === endDate.toDateString()) {
-            return startFormatted;
+    const client = useMemo((): User | undefined => {
+        if (apiOrder?.client) {
+            return apiOrderClientToUser(apiOrder.client);
         }
+        return usersWithFallback.find(
+            (u) => u.id === orderItem?.orderVenue.client,
+        );
+    }, [apiOrder?.client, orderItem?.orderVenue.client, usersWithFallback]);
 
-        // Format end date without weekday for cleaner display
-        const endFormattedShort = new Intl.DateTimeFormat('en-US', {
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-        }).format(endDate);
-
-        return `${startFormatted} & ${endFormattedShort}`;
-    }, [orderItem]);
-
-    const clientFromApi = useMemo((): User | undefined => {
-        if (!apiClient) {
-            return undefined;
+    const eventDates = useMemo(() => {
+        if (apiOrder?.show_dates?.length) {
+            return formatOrderShowDatesForHeader(apiOrder.show_dates);
         }
-        return apiOrderClientToUser(apiClient);
-    }, [apiClient]);
+        return formatEventDates;
+    }, [apiOrder?.show_dates, formatEventDates]);
 
-    const client =
-        clientFromApi ??
-        usersWithFallback.find((u) => u.id === orderItem?.orderVenue.client);
-
-    const isApiBacked = apiClient != null;
-
-    // Generate mock data for ticket sale, website, and presale
-    const mockTicketSaleDate = useMemo(() => {
-        if (!orderItem) return undefined;
-        // Mock: 3 months before start date
-        const saleDate = new Date(orderItem.orderVenue.start_date);
-        saleDate.setMonth(saleDate.getMonth() - 3);
-        const formatted = new Intl.DateTimeFormat('en-US', {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true,
-            timeZoneName: 'short',
-        }).format(saleDate);
-        return formatted;
-    }, [orderItem]);
-
-    const mockPresaleInfo = useMemo(() => {
-        if (!orderItem) return undefined;
-        // Mock: 2 days before ticket sale
-        const presaleDate = new Date(orderItem.orderVenue.start_date);
-        presaleDate.setMonth(presaleDate.getMonth() - 3);
-        presaleDate.setDate(presaleDate.getDate() - 2);
-        const formatted = new Intl.DateTimeFormat('en-US', {
-            weekday: 'long',
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true,
-            timeZoneName: 'short',
-        }).format(presaleDate);
-        return `AMEX Presale : ${formatted}`;
-    }, [orderItem]);
-
-    // Mock website
-    const mockWebsite = 'LiveNation.com';
+    const isApiBacked = apiOrder != null;
 
     const [attachModalOpen, setAttachModalOpen] = useState(false);
     const [attachModalContext, setAttachModalContext] =
@@ -167,6 +116,9 @@ export default function OrderDetailSlideout({
                     className="w-full gap-1 overflow-y-auto sm:max-w-[875px]"
                     showExitBtn={false}
                 >
+                    <SheetTitle className="sr-only">
+                        Loading order details
+                    </SheetTitle>
                     <OrderSlideoutSkeleton />
                 </SheetContent>
             </ContainedSheet>
@@ -196,25 +148,19 @@ export default function OrderDetailSlideout({
                     state={orderItem?.venue?.state ?? ''}
                     status={orderItem?.orderVenue?.status ?? null}
                     city={orderItem?.venue?.city}
-                    eventDates={
-                        isDemo ? undefined : (apiEventDates ?? formatEventDates)
-                    }
-                    ticketSaleDate={
-                        isDemo || isApiBacked ? undefined : mockTicketSaleDate
-                    }
-                    website={isDemo || isApiBacked ? undefined : mockWebsite}
-                    presaleInfo={
-                        isDemo || isApiBacked ? undefined : mockPresaleInfo
-                    }
+                    eventDates={isDemo ? undefined : eventDates}
+                    apiOrder={isApiBacked ? apiOrder : null}
                     onAttach={() => {
                         setAttachModalContext(null);
                         setAttachModalOpen(true);
                     }}
                     onMaximize={() => setIsMaximized((m) => !m)}
                     onMore={
-                        isDemo ? undefined : () => setIsEditVenueModalOpen(true)
+                        isDemo || !isApiBacked
+                            ? undefined
+                            : () => setIsEditVenueModalOpen(true)
                     }
-                    showMoreButton={!isDemo}
+                    showMoreButton={!isDemo && isApiBacked}
                     onClose={onClose}
                     isMaximized={isMaximized}
                 />
@@ -243,10 +189,11 @@ export default function OrderDetailSlideout({
                 <AddOrderModal
                     isOpen={isEditVenueModalOpen}
                     onClose={() => setIsEditVenueModalOpen(false)}
-                    orderId={order.id}
+                    apiOrder={apiOrder}
                     order={order}
                     mode="edit"
                     orderItem={orderItem}
+                    onOrderSaved={onOrderSaved}
                 />
             </SheetContent>
         </ContainedSheet>

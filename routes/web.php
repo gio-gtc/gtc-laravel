@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ChannelMessageController;
 use App\Http\Controllers\Api\OrderShowController;
+use App\Http\Controllers\Api\OrderUpdateController;
 use App\Http\Controllers\Api\TourIndexController;
 use App\Http\Controllers\Api\TourOrdersController;
 use App\Http\Controllers\Auth\BffForgotPasswordController;
@@ -143,6 +144,7 @@ Route::middleware([BffAuth::class])->group(function () {
         Route::get('tours', TourIndexController::class)->name('api.tours.index');
         Route::get('tours/{tour}/orders', TourOrdersController::class)->name('api.tours.orders');
         Route::get('orders/{order}', OrderShowController::class)->name('api.orders.show');
+        Route::patch('orders/{order}', OrderUpdateController::class)->name('api.orders.update');
 
         Route::patch('channels/{channelId}/messages/{id}', [ChannelMessageController::class, 'update']);
         Route::delete('channels/{channelId}/messages/{id}', [ChannelMessageController::class, 'destroy']);

@@ -1,7 +1,9 @@
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import NavOptionButton from '@/components/ui/slideout/nav-option-button';
 import Divider from '@/components/utils/divider';
+import { ORDER_HEADER_DESCRIPTION_FIELDS } from '@/lib/orders/order-header-descriptions';
 import { User, type TourVenueStatusValue } from '@/types';
+import type { ApiOrder } from '@/types/orders-api';
 import {
     ArrowRightToLine,
     ExpandIcon,
@@ -20,9 +22,7 @@ interface OrderSlideoutHeaderProps {
     status: TourVenueStatusValue[] | null;
     city?: string;
     eventDates?: string;
-    ticketSaleDate?: string;
-    website?: string;
-    presaleInfo?: string;
+    apiOrder?: ApiOrder | null;
     onAttach: () => void;
     onMaximize: () => void;
     onMore?: () => void;
@@ -39,9 +39,7 @@ export default function OrderSlideoutHeader({
     status,
     city,
     eventDates,
-    ticketSaleDate,
-    website,
-    presaleInfo,
+    apiOrder = null,
     onAttach,
     onMaximize,
     onMore = () => {},
@@ -49,7 +47,6 @@ export default function OrderSlideoutHeader({
     isMaximized = false,
     showMoreButton = true,
 }: OrderSlideoutHeaderProps) {
-    // Format venue display with city if available (demo mode: venue only)
     const venueDisplay =
         !state && !city
             ? venue
@@ -67,19 +64,16 @@ export default function OrderSlideoutHeader({
         const subject = `${tour} - ${venue} - ${eventDates}`;
         const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${encodeURIComponent(subject)}`;
 
-        // Open in a new tab
         window.open(gmailLink, '_blank');
     };
 
     return (
         <SheetHeader className="relative gap-0 p-0">
-            {/* Top row: Status icon on left, action buttons on right */}
             <div className="slide-out-container flex items-center justify-between shadow-lg">
                 <div className="flex gap-0.5">
                     <StatusIconGroup status={status} />
                 </div>
 
-                {/* Action buttons */}
                 <div className="flex items-center gap-0.5">
                     <NavOptionButton onClick={onAttach} icon={PaperclipIcon} />
                     <NavOptionButton onClick={onSend} icon={SendIcon} />
@@ -100,7 +94,6 @@ export default function OrderSlideoutHeader({
                 </div>
             </div>
 
-            {/* Main content: Title and details */}
             <Divider className="shadow-lg" />
             <SheetTitle className="px-3 py-[7px] text-[28px] font-medium text-black">
                 {tour}
@@ -109,10 +102,19 @@ export default function OrderSlideoutHeader({
             <div className="slide-out-container flex-1 !py-[10px]">
                 <div className="sm-black-weight-500">
                     <p>{venueDisplay}</p>
-                    {eventDates && <p>{eventDates}</p>}
-                    {ticketSaleDate && <p>Ticket Sale : {ticketSaleDate}</p>}
-                    {website && <p>{website}</p>}
-                    {presaleInfo && <p>{presaleInfo}</p>}
+                    {eventDates && <p>Show Dates: {eventDates}</p>}
+                    {apiOrder &&
+                        ORDER_HEADER_DESCRIPTION_FIELDS.map(({ key, label }) => {
+                            const text = apiOrder[key]?.trim();
+                            if (!text) {
+                                return null;
+                            }
+                            return (
+                                <p key={key}>
+                                    {label}: {text}
+                                </p>
+                            );
+                        })}
                 </div>
             </div>
             <Divider variant="fade" />

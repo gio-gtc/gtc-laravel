@@ -8,6 +8,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
     ColumnedRowsChild,
     ColumnedRowsParent,
@@ -20,7 +21,14 @@ import {
     hasValidShowDates,
     normalizeShowDates,
 } from '@/lib/format/show-dates';
+import { ORDER_HEADER_DESCRIPTION_FIELDS } from '@/lib/orders/order-header-descriptions';
+import {
+    buildOrderPatchPayload,
+    descriptionFormFromApiOrder,
+    showDateRowsFromApiOrder,
+} from '@/lib/orders/order-patch-payload';
 import { isCollaboratorUser } from '@/lib/orders/orders-filter-users';
+import { patchOrder } from '@/lib/orders/orders-api-client';
 import { store as ordersStore } from '@/routes/orders';
 import {
     type SharedData,
@@ -28,12 +36,16 @@ import {
     type TourVenue,
     type Venue,
 } from '@/types';
-import {
-    type ClientSearchOption,
-    type VenueSearchOption,
+import type {
+    ApiOrder,
+    ClientSearchOption,
+    OrderHeaderDescriptionKey,
+    ShowDateEditRow,
+    VenueSearchOption,
 } from '@/types/orders-api';
 import { useForm, usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 import ClientAutocomplete from './client-autocomplete';
 import VenueAutocomplete from './venue-autocomplete';
 
@@ -47,16 +59,26 @@ interface OrderItemSchema {
     venue: Venue | null;
 }
 
+const emptyDescriptionForm = (): Record<
+    OrderHeaderDescriptionKey,
+    string
+> => ({
+    ticket_outlets: '',
+    on_same_date: '',
+    cardholder_times: '',
+    logos: '',
+    special_instructions: '',
+});
+
 interface AddOrderModalProps {
     isOpen: boolean;
     onClose: () => void;
-    /** Tour context for add mode (from API table selection). */
     tour?: AddOrderModalTour | null;
-    /** Legacy slideout edit mode. */
-    orderId?: number;
     order?: Tour | null;
+    apiOrder?: ApiOrder | null;
     mode?: 'add' | 'edit';
     orderItem?: OrderItemSchema | null;
+    onOrderSaved?: (order: ApiOrder) => void;
 }
 
 const todayIso = () => new Date().toISOString().split('T')[0];
@@ -80,8 +102,10 @@ export default function AddOrderModal({
     onClose,
     tour = null,
     order = null,
+    apiOrder = null,
     mode = 'add',
     orderItem = null,
+    onOrderSaved,
 }: AddOrderModalProps) {
     const { auth } = usePage<SharedData>().props;
     const isStaff = auth.user != null && isCollaboratorUser(auth.user);
@@ -90,6 +114,11 @@ export default function AddOrderModal({
         useState<VenueSearchOption | null>(null);
     const [selectedClient, setSelectedClient] =
         useState<ClientSearchOption | null>(null);
+    const [headerForm, setHeaderForm] = useState(emptyDescriptionForm);
+    const [showDateRows, setShowDateRows] = useState<ShowDateEditRow[]>([
+        { show_date: '' },
+    ]);
+    const [saving, setSaving] = useState(false);
 
     const isEditMode = mode === 'edit' && orderItem != null;
     const displayName = tour?.name ?? order?.name ?? '';
@@ -117,21 +146,44 @@ export default function AddOrderModal({
 
         if (isEditMode && orderItem) {
             setSelectedVenue(orderItem.venue);
-            const prefilledShowDates = normalizeShowDates(
-                expandVenueShowDates(
-                    orderItem.orderVenue.start_date,
-                    orderItem.orderVenue.end_date,
-                ),
-            );
-            setData({
-                tour_id: tour?.id ?? 0,
-                venue_id: orderItem.venue?.id ?? 0,
-                due_date: order?.due_date?.split?.('T')[0] ?? todayIso(),
-                show_dates:
-                    prefilledShowDates.length > 0 ? prefilledShowDates : [''],
-                local_deliverable_email: '',
-                ordered_by_id: 0,
-            });
+
+            if (apiOrder) {
+                setShowDateRows(showDateRowsFromApiOrder(apiOrder.show_dates));
+                setHeaderForm(descriptionFormFromApiOrder(apiOrder));
+                setData({
+                    tour_id: apiOrder.tour_id,
+                    venue_id: orderItem.venue?.id ?? 0,
+                    due_date:
+                        apiOrder.due_date?.split?.('T')[0] ??
+                        order?.due_date?.split?.('T')[0] ??
+                        todayIso(),
+                    show_dates: [''],
+                    local_deliverable_email:
+                        apiOrder.local_deliverable_email ?? '',
+                    ordered_by_id: apiOrder.ordered_by_id ?? 0,
+                });
+            } else {
+                const legacyDates = normalizeShowDates(
+                    expandVenueShowDates(
+                        orderItem.orderVenue.start_date,
+                        orderItem.orderVenue.end_date,
+                    ),
+                );
+                setShowDateRows(
+                    legacyDates.length > 0
+                        ? legacyDates.map((show_date) => ({ show_date }))
+                        : [{ show_date: '' }],
+                );
+                setHeaderForm(emptyDescriptionForm());
+                setData({
+                    tour_id: tour?.id ?? 0,
+                    venue_id: orderItem.venue?.id ?? 0,
+                    due_date: order?.due_date?.split?.('T')[0] ?? todayIso(),
+                    show_dates: [''],
+                    local_deliverable_email: '',
+                    ordered_by_id: 0,
+                });
+            }
             setSelectedClient(null);
         } else {
             reset();
@@ -145,12 +197,15 @@ export default function AddOrderModal({
             });
             setSelectedVenue(null);
             setSelectedClient(null);
+            setHeaderForm(emptyDescriptionForm());
+            setShowDateRows([{ show_date: '' }]);
         }
         clearErrors();
     }, [
         isOpen,
         tour?.id,
         order,
+        apiOrder,
         isEditMode,
         orderItem,
         reset,
@@ -175,8 +230,18 @@ export default function AddOrderModal({
         setData('venue_id', selectedVenue?.id ?? 0);
     }, [selectedVenue, setData]);
 
+    const editShowDateStrings = useMemo(
+        () => showDateRows.map((r) => r.show_date),
+        [showDateRows],
+    );
+
     const canSubmit = useMemo(() => {
-        if (isEditMode) return true;
+        if (isEditMode) {
+            return (
+                apiOrder != null &&
+                hasValidShowDates(editShowDateStrings)
+            );
+        }
         if (!tour?.id || data.tour_id <= 0) return false;
         if (!selectedVenue?.id) return false;
         if (!data.due_date || !hasValidShowDates(data.show_dates)) return false;
@@ -184,6 +249,8 @@ export default function AddOrderModal({
         return true;
     }, [
         isEditMode,
+        apiOrder,
+        editShowDateStrings,
         tour?.id,
         data.tour_id,
         data.due_date,
@@ -193,9 +260,42 @@ export default function AddOrderModal({
         selectedClient?.id,
     ]);
 
-    const handleSave = () => {
+    const isSaving = processing || saving;
+
+    const handleShowDatesChange = (dates: string[]) => {
         if (isEditMode) {
-            onClose();
+            setShowDateRows(
+                dates.map((show_date, index) => ({
+                    id: showDateRows[index]?.id,
+                    show_date,
+                })),
+            );
+            return;
+        }
+        setData('show_dates', dates);
+    };
+
+    const handleSave = async () => {
+        if (isEditMode) {
+            if (!apiOrder?.id || !canSubmit) {
+                return;
+            }
+
+            setSaving(true);
+            try {
+                const payload = buildOrderPatchPayload(
+                    headerForm,
+                    showDateRows,
+                );
+                const updated = await patchOrder(apiOrder.id, payload);
+                onOrderSaved?.(updated ?? apiOrder);
+                toast.success('Order info saved.');
+                onClose();
+            } catch {
+                toast.error('Could not save order info.');
+            } finally {
+                setSaving(false);
+            }
             return;
         }
 
@@ -221,6 +321,8 @@ export default function AddOrderModal({
             },
         });
     };
+
+    const showDatesForList = isEditMode ? editShowDateStrings : data.show_dates;
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -291,10 +393,8 @@ export default function AddOrderModal({
                         multiInput
                     >
                         <ShowDatesInputList
-                            dates={data.show_dates}
-                            onChange={(show_dates) =>
-                                setData('show_dates', show_dates)
-                            }
+                            dates={showDatesForList}
+                            onChange={handleShowDatesChange}
                             idPrefix="show-date"
                         />
                         <InputError message={showDatesFormErrors(errors)} />
@@ -336,6 +436,43 @@ export default function AddOrderModal({
                         />
                         <InputError message={errors.local_deliverable_email} />
                     </ColumnedRowsChild>
+
+                    {isEditMode &&
+                        ORDER_HEADER_DESCRIPTION_FIELDS.map(
+                            ({ key, label, multiline }) => (
+                                <ColumnedRowsChild
+                                    key={key}
+                                    labelFor={`order-header-${key}`}
+                                    labelContent={label}
+                                >
+                                    {multiline ? (
+                                        <Textarea
+                                            id={`order-header-${key}`}
+                                            value={headerForm[key]}
+                                            className="min-h-28"
+                                            onChange={(e) =>
+                                                setHeaderForm((prev) => ({
+                                                    ...prev,
+                                                    [key]: e.target.value,
+                                                }))
+                                            }
+                                        />
+                                    ) : (
+                                        <Input
+                                            id={`order-header-${key}`}
+                                            type="text"
+                                            value={headerForm[key]}
+                                            onChange={(e) =>
+                                                setHeaderForm((prev) => ({
+                                                    ...prev,
+                                                    [key]: e.target.value,
+                                                }))
+                                            }
+                                        />
+                                    )}
+                                </ColumnedRowsChild>
+                            ),
+                        )}
                 </ColumnedRowsParent>
 
                 <Divider />
@@ -343,15 +480,15 @@ export default function AddOrderModal({
                     <Button
                         variant="outline"
                         onClick={onClose}
-                        disabled={processing}
+                        disabled={isSaving}
                     >
                         Cancel
                     </Button>
                     <Button
-                        onClick={handleSave}
-                        disabled={processing || (!isEditMode && !canSubmit)}
+                        onClick={() => void handleSave()}
+                        disabled={isSaving || !canSubmit}
                     >
-                        {processing
+                        {isSaving
                             ? 'Saving…'
                             : isEditMode
                               ? 'Save'
