@@ -397,6 +397,13 @@ export interface OrderItemsMediaLineShared {
     encoding_id?: number;
     /** Free-form encoding when not using `encoding_id` (broadcast). */
     encoding_custom?: string;
+    /** Wire language string from API specs (broadcast). */
+    language?: string;
+    /** Wire catalog encoding string from API specs (broadcast). */
+    encoding?: string;
+    /** Optimistic add — row awaiting POST resolution. */
+    is_pending?: boolean;
+    create_error?: string;
     previewVideoUrl?: string | null;
     thumbnailUrl?: string;
     mediaUrl?: string;

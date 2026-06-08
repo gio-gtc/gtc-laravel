@@ -65,6 +65,16 @@ final class GtcApiClient
     }
 
     /**
+     * @return array{ok: true, data: array<string, mixed>}|array{ok: false, message: string, status: int}
+     */
+    public function delete(string $path): array
+    {
+        $response = $this->request()->delete($this->url($path));
+
+        return $this->interpret($response, $path);
+    }
+
+    /**
      * Unwrap successful JSON: prefers root "data", then legacy top-level resource keys.
      *
      * @return array<int, mixed>|array<string, mixed>|null

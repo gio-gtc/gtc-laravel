@@ -1,4 +1,4 @@
-import { INTERNATIONAL_TV_PACKAGE } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
+import { INTERNATIONAL_TV_PACKAGE_CUT } from '@/lib/orders/order-catalog';
 
 export function broadcastEncodingRowKey(
     cut: string,
@@ -33,9 +33,9 @@ export function buildBroadcastEncodingMatrixRows(
 
     for (const cut of cuts) {
         const durs =
-            cut === INTERNATIONAL_TV_PACKAGE ? ([':30'] as const) : duration;
+            cut === INTERNATIONAL_TV_PACKAGE_CUT ? ([':30'] as const) : duration;
         const langs =
-            cut === INTERNATIONAL_TV_PACKAGE
+            cut === INTERNATIONAL_TV_PACKAGE_CUT
                 ? ([internationalSingleLanguage] as const)
                 : language;
         if (durs.length === 0 || langs.length === 0) continue;

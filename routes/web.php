@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\ChannelMessageController;
+use App\Http\Controllers\Api\OrderCatalogMenuController;
+use App\Http\Controllers\Api\OrderItemStoreController as ApiOrderItemStoreController;
 use App\Http\Controllers\Api\OrderShowController;
 use App\Http\Controllers\Api\OrderUpdateController;
 use App\Http\Controllers\Api\TourIndexController;
@@ -141,9 +143,11 @@ Route::middleware([BffAuth::class])->group(function () {
 
     // VVV Supabase Chat Routes
     Route::prefix('api')->group(function () {
+        Route::get('order-catalog-menu', OrderCatalogMenuController::class)->name('api.order-catalog-menu');
         Route::get('tours', TourIndexController::class)->name('api.tours.index');
         Route::get('tours/{tour}/orders', TourOrdersController::class)->name('api.tours.orders');
         Route::get('orders/{order}', OrderShowController::class)->name('api.orders.show');
+        Route::post('orders/{order}/items', ApiOrderItemStoreController::class)->name('api.orders.items.store');
         Route::patch('orders/{order}', OrderUpdateController::class)->name('api.orders.update');
 
         Route::patch('channels/{channelId}/messages/{id}', [ChannelMessageController::class, 'update']);

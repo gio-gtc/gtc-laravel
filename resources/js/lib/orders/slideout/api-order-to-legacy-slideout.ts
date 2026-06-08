@@ -9,6 +9,7 @@ import {
     orderItemDurationSeconds,
     orderItemIsci,
     parseOrderItemDimensions,
+    specString,
 } from '@/lib/orders/order-item-specifications';
 import {
     defaultArtPackage,
@@ -109,7 +110,7 @@ function baseRowFields(
     };
 }
 
-function orderItemToVenueRow(
+export function mapApiOrderItemToVenueRow(
     order: ApiOrder,
     item: OrderItem,
 ): OrderItemsRow | null {
@@ -127,6 +128,8 @@ function orderItemToVenueRow(
     const specs = item.specifications;
 
     if (venueType === 'broadcast') {
+        const encodingCustom = specString(specs, 'encoding_custom');
+        const encoding = specString(specs, 'encoding');
         const row: OrderItemsBroadcastRow = {
             ...base,
             type: 'broadcast',
@@ -135,6 +138,9 @@ function orderItemToVenueRow(
             status_id: statusId,
             spot_type: defaultBroadcastSpotType(specs),
             cut: orderItemDefaultCut(item) as OrderItemsBroadcastRow['cut'],
+            language: specString(specs, 'language') || undefined,
+            encoding: encoding || undefined,
+            encoding_custom: encodingCustom || undefined,
             has_deliverable_actions: hasDeliverables,
             order_id: order.id,
         };
@@ -194,7 +200,7 @@ function orderItemsToVenueItems(order: ApiOrder): OrderItemsRow[] {
     const rows: OrderItemsRow[] = [];
 
     for (const item of order.order_items ?? []) {
-        const row = orderItemToVenueRow(order, item);
+        const row = mapApiOrderItemToVenueRow(order, item);
         if (row) {
             rows.push(row);
         }

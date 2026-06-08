@@ -30,11 +30,18 @@ export function pillButtonClassName(
     selected: boolean,
     base: string = orderModalStyles.pillBase,
     className?: string,
+    disabled?: boolean,
 ): string {
     return cn(
         base,
         orderModalStyles.pillUnselected,
         selected && orderModalStyles.pillSelected,
+        disabled &&
+            !selected &&
+            'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400 opacity-60 hover:bg-gray-50 hover:text-gray-400',
+        disabled &&
+            selected &&
+            'cursor-not-allowed opacity-80 hover:bg-brand-gtc-red/70 hover:text-white',
         className,
     );
 }

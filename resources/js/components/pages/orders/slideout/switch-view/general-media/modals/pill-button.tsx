@@ -31,6 +31,7 @@ export default function PillButton({
                 selected,
                 baseClassName ?? orderModalStyles.pillBase,
                 className,
+                disabled,
             )}
             onClick={onClick}
         >

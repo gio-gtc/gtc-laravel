@@ -1,5 +1,6 @@
 export {
     apiOrderToLegacySlideout,
+    mapApiOrderItemToVenueRow,
     type LegacySlideoutPayload,
 } from '@/lib/orders/slideout/api-order-to-legacy-slideout';
 export { mergeSlideoutVenueItems } from '@/lib/orders/slideout/merge-slideout-venue-items';

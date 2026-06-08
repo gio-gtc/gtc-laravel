@@ -23,11 +23,18 @@ export type ComboboxOption =
     | {
           value: string;
           label: string;
+          disabled?: boolean;
       };
+
+export type NormalizedComboboxOption = {
+    value: string;
+    label: string;
+    disabled?: boolean;
+};
 
 export function normalizeComboboxOptions(
     options: readonly ComboboxOption[],
-): { value: string; label: string }[] {
+): NormalizedComboboxOption[] {
     return options.map((o) =>
         typeof o === 'string' ? { value: o, label: o } : o,
     );
@@ -47,6 +54,7 @@ export interface MultiSelectComboboxProps {
     badgeClassName?: string;
     maxBadges?: number;
     id?: string;
+    disabled?: boolean;
 }
 
 export function MultiSelectCombobox({
@@ -62,6 +70,7 @@ export function MultiSelectCombobox({
     badgeClassName,
     maxBadges = 1,
     id,
+    disabled = false,
 }: MultiSelectComboboxProps) {
     const [open, setOpen] = React.useState(false);
     const [search, setSearch] = React.useState('');
@@ -80,6 +89,11 @@ export function MultiSelectCombobox({
     }, [normalizedOptions]);
 
     const toggleOption = (optionValue: string) => {
+        const option = normalizedOptions.find((o) => o.value === optionValue);
+        if (option?.disabled) {
+            return;
+        }
+
         if (mode === 'single') {
             const isSelected = value.includes(optionValue);
             onValueChange(isSelected ? [] : [optionValue]);
@@ -111,15 +125,21 @@ export function MultiSelectCombobox({
 
     return (
         <>
-            <Popover open={open} onOpenChange={setOpen}>
-                <PopoverTrigger asChild>
+            <Popover
+                open={disabled ? false : open}
+                onOpenChange={disabled ? undefined : setOpen}
+            >
+                <PopoverTrigger asChild disabled={disabled}>
                     <div
                         id={id}
                         role="combobox"
                         aria-expanded={open}
-                        tabIndex={0}
+                        aria-disabled={disabled}
+                        tabIndex={disabled ? -1 : 0}
                         className={cn(
                             'flex h-9 w-full min-w-0 cursor-pointer items-center gap-2 overflow-hidden rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs transition-[color,box-shadow] outline-none hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50',
+                            disabled &&
+                                'cursor-not-allowed opacity-60 hover:bg-transparent hover:text-inherit',
                             triggerClassName,
                         )}
                     >
@@ -142,16 +162,18 @@ export function MultiSelectCombobox({
                                             )}
                                         >
                                             {display}
-                                            <button
-                                                type="button"
-                                                onClick={(e) =>
-                                                    removeOption(e, v)
-                                                }
-                                                className="ml-0.5 cursor-pointer rounded-full p-0.5 hover:bg-muted"
-                                                aria-label={`Remove ${display}`}
-                                            >
-                                                <X className="size-3" />
-                                            </button>
+                                            {!disabled && (
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) =>
+                                                        removeOption(e, v)
+                                                    }
+                                                    className="ml-0.5 cursor-pointer rounded-full p-0.5 hover:bg-muted"
+                                                    aria-label={`Remove ${display}`}
+                                                >
+                                                    <X className="size-3" />
+                                                </button>
+                                            )}
                                         </Badge>
                                     );
                                 })
@@ -194,8 +216,15 @@ export function MultiSelectCombobox({
                                             onSelect={() =>
                                                 toggleOption(option.value)
                                             }
-                                            className="relative flex cursor-pointer items-center rounded-md p-1.5 py-0.5 pr-8 hover:bg-gray-200 [&:not(:last-child)]:mb-2"
+                                            disabled={option.disabled}
+                                            className={cn(
+                                                'relative flex items-center rounded-md p-1.5 py-0.5 pr-8 [&:not(:last-child)]:mb-2',
+                                                option.disabled
+                                                    ? 'cursor-not-allowed text-gray-400 opacity-50'
+                                                    : 'cursor-pointer hover:bg-gray-200',
+                                            )}
                                             aria-selected={isSelected}
+                                            aria-disabled={option.disabled}
                                         >
                                             {isSelected && (
                                                 <span className="absolute right-1 flex">

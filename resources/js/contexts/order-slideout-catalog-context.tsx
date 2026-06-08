@@ -2,7 +2,14 @@ import {
     OrdersCatalogProvider,
     useOrdersCatalog,
 } from '@/contexts/orders-catalog-context';
+import { runSequentialOrderItemCreate } from '@/hooks/use-sequential-order-item-create';
 import { mergeApiOrderUpdate } from '@/lib/orders/merge-api-order-update';
+import { fetchOrderCatalogMenu } from '@/lib/orders/order-item-api-client';
+import type {
+    OrderItemCreateAdapter,
+    SequentialCreateResult,
+} from '@/lib/orders/order-item-adapters/types';
+import { resolveMenuItemByCategoryId } from '@/lib/orders/order-catalog';
 import { fetchOrderShow } from '@/lib/orders/orders-api-client';
 import {
     apiOrderToLegacySlideout,
@@ -11,9 +18,10 @@ import {
     upsertOrderItem,
     venueRowToStoreItemPayload,
 } from '@/lib/orders/slideout';
+import type { OrderCatalogMenu } from '@/types/order-catalog';
 import type { OrderItemsRow, SharedData } from '@/types';
 import type { OrdersCatalogValue } from '@/types/inertia-pages';
-import type { ApiOrder, OrderItem } from '@/types/orders-api';
+import type { ApiOrder, OrderItem, OrderMenuCategoryId } from '@/types/orders-api';
 import { router, usePage } from '@inertiajs/react';
 import {
     createContext,
@@ -43,6 +51,15 @@ type OrderSlideoutCatalogContextValue = {
     updateOpenOrder: (order: ApiOrder) => void;
     submitOpenOrder: () => void;
     registerTourOrdersInvalidator: (fn: TourOrdersInvalidator) => void;
+    orderCatalog: OrderCatalogMenu | null;
+    orderCatalogLoading: boolean;
+    getMenuItemForCategory: (
+        categoryId: OrderMenuCategoryId,
+    ) => ReturnType<typeof resolveMenuItemByCategoryId>;
+    createOrderItemsFromForm: <TForm>(
+        adapter: OrderItemCreateAdapter<TForm>,
+        form: TForm,
+    ) => Promise<SequentialCreateResult>;
 };
 
 const OrderSlideoutCatalogContext =
@@ -61,7 +78,43 @@ export function OrderSlideoutCatalogProvider({
         Record<number, ApiOrder>
     >({});
     const [extraVenueItems, setExtraVenueItems] = useState<OrderItemsRow[]>([]);
+    const [orderCatalog, setOrderCatalog] = useState<OrderCatalogMenu | null>(
+        null,
+    );
+    const [orderCatalogLoading, setOrderCatalogLoading] = useState(true);
     const tourInvalidatorRef = useRef<TourOrdersInvalidator | null>(null);
+
+    useEffect(() => {
+        let cancelled = false;
+        setOrderCatalogLoading(true);
+
+        void fetchOrderCatalogMenu()
+            .then((catalog) => {
+                if (!cancelled) {
+                    setOrderCatalog(catalog);
+                }
+            })
+            .catch(() => {
+                if (!cancelled) {
+                    toast.error('Could not load order catalog menu.');
+                }
+            })
+            .finally(() => {
+                if (!cancelled) {
+                    setOrderCatalogLoading(false);
+                }
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const getMenuItemForCategory = useCallback(
+        (categoryId: OrderMenuCategoryId) =>
+            resolveMenuItemByCategoryId(orderCatalog, categoryId),
+        [orderCatalog],
+    );
 
     const registerTourOrdersInvalidator = useCallback(
         (fn: TourOrdersInvalidator) => {
@@ -239,12 +292,65 @@ export function OrderSlideoutCatalogProvider({
         [openOrder, refreshOpenOrder],
     );
 
+    const createOrderItemsFromForm = useCallback(
+        async <TForm,>(
+            adapter: OrderItemCreateAdapter<TForm>,
+            form: TForm,
+        ): Promise<SequentialCreateResult> => {
+            if (!openOrder) {
+                toast.error('Open an order before adding line items.');
+                return { succeeded: 0, failed: true };
+            }
+
+            const menuItem = getMenuItemForCategory(adapter.categoryId);
+            if (!menuItem) {
+                toast.error(
+                    'Could not resolve order menu item for this category.',
+                );
+                return { succeeded: 0, failed: true };
+            }
+
+            const result = await runSequentialOrderItemCreate(
+                adapter,
+                form,
+                menuItem.id,
+                {
+                    order: openOrder,
+                    setOpenOrder,
+                    setExtraVenueItems,
+                },
+            );
+
+            if (result.failed) {
+                if (result.errors) {
+                    toast.error('Could not add one or more line items.');
+                } else {
+                    toast.error('Failed to add line item.');
+                }
+            } else if (result.succeeded > 0) {
+                toast.success(
+                    result.succeeded === 1
+                        ? 'Line item added.'
+                        : `${result.succeeded} line items added.`,
+                );
+                void refreshOpenOrder(openOrder.id);
+            }
+
+            return result;
+        },
+        [openOrder, getMenuItemForCategory, refreshOpenOrder],
+    );
+
     const slideoutCatalog = useMemo((): OrdersCatalogValue => {
         if (!legacyPayload) {
             return {
                 ...baseCatalog,
                 replaceVenueItem,
                 submitOpenOrder,
+                orderCatalog,
+                orderCatalogLoading,
+                getMenuItemForCategory,
+                createOrderItemsFromForm,
             };
         }
 
@@ -266,6 +372,10 @@ export function OrderSlideoutCatalogProvider({
             replaceVenueItem,
             submitOpenOrder,
             slideoutApiOrderId: openOrder?.id,
+            orderCatalog,
+            orderCatalogLoading,
+            getMenuItemForCategory,
+            createOrderItemsFromForm,
         };
     }, [
         baseCatalog,
@@ -274,6 +384,10 @@ export function OrderSlideoutCatalogProvider({
         replaceVenueItem,
         submitOpenOrder,
         openOrder?.id,
+        orderCatalog,
+        orderCatalogLoading,
+        getMenuItemForCategory,
+        createOrderItemsFromForm,
     ]);
 
     const value = useMemo(
@@ -289,6 +403,10 @@ export function OrderSlideoutCatalogProvider({
             updateOpenOrder,
             submitOpenOrder,
             registerTourOrdersInvalidator,
+            orderCatalog,
+            orderCatalogLoading,
+            getMenuItemForCategory,
+            createOrderItemsFromForm,
         }),
         [
             openOrder,
@@ -301,6 +419,10 @@ export function OrderSlideoutCatalogProvider({
             updateOpenOrder,
             submitOpenOrder,
             registerTourOrdersInvalidator,
+            orderCatalog,
+            orderCatalogLoading,
+            getMenuItemForCategory,
+            createOrderItemsFromForm,
         ],
     );
 

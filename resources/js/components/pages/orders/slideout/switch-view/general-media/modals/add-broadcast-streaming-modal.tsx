@@ -19,6 +19,21 @@ import {
     venueItemEncodingIdToLabel,
     venueItemLanguageIdToLabel,
 } from '@/components/utils/venue-items';
+import {
+    BROADCAST_ENCODING_UNSET,
+    isBroadcastAddFormComplete,
+} from '@/lib/orders/broadcast-add-form-complete';
+import {
+    applyInternationalLocks,
+    getAllBroadcastDurationPills,
+    getAllBroadcastLanguages,
+    getBlueprintSlice,
+    getBlueprintTypeKeys,
+    getBroadcastCutsForType,
+    getBroadcastDurationPills,
+    getBroadcastLanguagesForType,
+    isInternationalSpotType,
+} from '@/lib/orders/order-catalog';
 import { cn } from '@/lib/utils';
 import {
     broadcastEncodingRowKey,
@@ -33,6 +48,7 @@ import type {
     OrderItemLanguage,
     OrderItemsBroadcastRow,
 } from '@/types';
+import type { OrderMenuFormBlueprint } from '@/types/order-catalog';
 import { useEffect, useMemo, useState } from 'react';
 import {
     durationSecondsToModalPillLabel,
@@ -43,10 +59,8 @@ import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
 import { OPTIONS_BY_TYPE } from './spot-type-cuts-options';
 
-const DURATION_OPTIONS = [':10', ':15', ':30'] as const;
-
 /** Placeholder until each row has a selected encoding id */
-const ENCODING_UNSET = '__none__';
+const ENCODING_UNSET = BROADCAST_ENCODING_UNSET;
 
 export interface BroadcastEncodingRow {
     cut: string;
@@ -68,9 +82,16 @@ export interface AddBroadcastStreamingFormValues {
 interface AddBroadcastStreamingModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAdd?: (values: AddBroadcastStreamingFormValues) => void;
+    onAdd?: (
+        values: AddBroadcastStreamingFormValues,
+    ) => void | Promise<{ failed: boolean }>;
+    /** Category 1 form blueprint from order catalog menu (required for add). */
+    blueprint?: OrderMenuFormBlueprint | null;
+    fieldErrors?: Record<string, string[]>;
+    catalogLoading?: boolean;
     venue_item_language: OrderItemLanguage[];
-    venue_item_encoding: OrderItemEncoding[];
+    /** Legacy edit prefill only — add mode uses blueprint.encodings. */
+    venue_item_encoding?: OrderItemEncoding[];
     /** When set (e.g. edit from table), pre-select duration and optionally show extra pill. */
     initialDurationSeconds?: number;
     mode?: 'add' | 'edit';
@@ -83,16 +104,27 @@ export default function AddBroadcastStreamingModal({
     isOpen,
     onClose,
     onAdd,
+    blueprint,
+    fieldErrors,
+    catalogLoading = false,
     venue_item_language,
-    venue_item_encoding,
+    venue_item_encoding = [],
     initialDurationSeconds,
     mode = 'add',
     initialVenueRow,
     onEditSave,
 }: AddBroadcastStreamingModalProps) {
     const isEdit = mode === 'edit' && initialVenueRow != null;
+    const typeKeys = useMemo(
+        () =>
+            blueprint
+                ? getBlueprintTypeKeys(blueprint)
+                : Object.keys(OPTIONS_BY_TYPE),
+        [blueprint],
+    );
+    const defaultType = typeKeys[0] ?? 'Generic';
 
-    const [type, setType] = useState('Generic');
+    const [type, setType] = useState(defaultType);
     const [cuts, setCuts] = useState<string[]>([]);
     const [duration, setDuration] = useState<string[]>([]);
     const [language, setLanguage] = useState<string[]>(() =>
@@ -107,6 +139,7 @@ export default function AddBroadcastStreamingModal({
     const [encodingCustomText, setEncodingCustomText] = useState<
         Record<string, string>
     >({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [editType, setEditType] = useState('Generic');
     const [editCut, setEditCut] = useState('');
@@ -130,7 +163,12 @@ export default function AddBroadcastStreamingModal({
             initialVenueRow.language_id ?? -1,
             venue_item_language,
         );
-        setEditLanguage(langLabel || venue_item_language[0]?.type || '');
+        setEditLanguage(
+            initialVenueRow.language ??
+                (langLabel ||
+                    venue_item_language[0]?.type ||
+                    ''),
+        );
         if (
             initialVenueRow.encoding_custom != null &&
             initialVenueRow.encoding_custom !== ''
@@ -138,6 +176,10 @@ export default function AddBroadcastStreamingModal({
             setEditEncodingCustom(true);
             setEditEncodingCustomText(initialVenueRow.encoding_custom);
             setEditEncodingId(ENCODING_UNSET);
+        } else if (initialVenueRow.encoding) {
+            setEditEncodingCustom(false);
+            setEditEncodingCustomText('');
+            setEditEncodingId(initialVenueRow.encoding);
         } else if (initialVenueRow.encoding_id != null) {
             setEditEncodingCustom(false);
             setEditEncodingCustomText('');
@@ -162,6 +204,20 @@ export default function AddBroadcastStreamingModal({
         /* eslint-enable react-hooks/set-state-in-effect */
     }, [isOpen, isEdit, initialDurationSeconds]);
 
+    useEffect(() => {
+        if (!isOpen || isEdit || !isInternationalSpotType(type)) return;
+        const locks = applyInternationalLocks(
+            type,
+            getBlueprintSlice(blueprint, type),
+        );
+        if (!locks) return;
+        /* eslint-disable react-hooks/set-state-in-effect -- keep International fields synced */
+        setCuts(locks.cuts);
+        setDuration([locks.durationPill]);
+        setLanguage(locks.languages);
+        /* eslint-enable react-hooks/set-state-in-effect */
+    }, [isOpen, isEdit, type, blueprint]);
+
     const extraDurationLabel =
         !isEdit &&
         initialDurationSeconds !== undefined &&
@@ -172,17 +228,89 @@ export default function AddBroadcastStreamingModal({
               )
             : null;
 
-    const { availableCuts } = useMemo(() => {
-        const config = type ? OPTIONS_BY_TYPE[type] : null;
-        return {
-            availableCuts: config?.cuts ?? [],
-        };
-    }, [type]);
+    const typeSlice = useMemo(
+        () => getBlueprintSlice(blueprint, type),
+        [blueprint, type],
+    );
 
-    const editAvailableCuts = useMemo(() => {
-        const config = editType ? OPTIONS_BY_TYPE[editType] : null;
-        return config?.cuts ?? [];
-    }, [editType]);
+    const enabledCuts = useMemo(() => {
+        const fromBlueprint = getBroadcastCutsForType(blueprint, type);
+        if (fromBlueprint.length > 0) {
+            return fromBlueprint;
+        }
+        return OPTIONS_BY_TYPE[type]?.cuts ?? [];
+    }, [blueprint, type]);
+
+    const isAddInternationalLocked = isInternationalSpotType(type);
+    const isEditInternationalLocked = isInternationalSpotType(editType);
+
+    const allDurationPills = useMemo(
+        () => getAllBroadcastDurationPills(blueprint),
+        [blueprint],
+    );
+
+    const enabledDurationPills = useMemo(
+        () => getBroadcastDurationPills(blueprint, type),
+        [blueprint, type],
+    );
+
+    const editEnabledDurationPills = useMemo(
+        () => getBroadcastDurationPills(blueprint, editType),
+        [blueprint, editType],
+    );
+
+    const allLanguages = useMemo(
+        () => getAllBroadcastLanguages(blueprint),
+        [blueprint],
+    );
+
+    const enabledLanguages = useMemo(
+        () => getBroadcastLanguagesForType(blueprint, type),
+        [blueprint, type],
+    );
+
+    useEffect(() => {
+        if (!isOpen || isEdit || isAddInternationalLocked) return;
+        /* eslint-disable react-hooks/set-state-in-effect -- drop stale pill values on reopen/type */
+        setCuts((prev) => {
+            const next = prev.filter((c) => enabledCuts.includes(c));
+            return next.length === prev.length ? prev : next;
+        });
+        setDuration((prev) => {
+            const next = prev.filter((d) => enabledDurationPills.includes(d));
+            return next.length === prev.length ? prev : next;
+        });
+        setLanguage((prev) => {
+            const next = prev.filter((l) => enabledLanguages.includes(l));
+            return next.length === prev.length ? prev : next;
+        });
+        /* eslint-enable react-hooks/set-state-in-effect */
+    }, [
+        isOpen,
+        isEdit,
+        isAddInternationalLocked,
+        enabledCuts,
+        enabledDurationPills,
+        enabledLanguages,
+    ]);
+
+    const editEnabledLanguages = useMemo(
+        () => getBroadcastLanguagesForType(blueprint, editType),
+        [blueprint, editType],
+    );
+
+    const catalogEncodings = useMemo(
+        () => blueprint?.encodings ?? [],
+        [blueprint],
+    );
+
+    const editEnabledCuts = useMemo(() => {
+        const fromBlueprint = getBroadcastCutsForType(blueprint, editType);
+        if (fromBlueprint.length > 0) {
+            return fromBlueprint;
+        }
+        return OPTIONS_BY_TYPE[editType]?.cuts ?? [];
+    }, [blueprint, editType]);
 
     const editDurationSeconds = useMemo(
         () => modalDurationPillToSeconds(editDuration, 'broadcast'),
@@ -201,13 +329,17 @@ export default function AddBroadcastStreamingModal({
         return `${editCut} ${editDuration} ${editLanguage}`;
     }, [editCut, editDuration, editLanguage]);
 
-    const internationalLangLabel = useMemo(
-        () =>
+    const internationalLangLabel = useMemo(() => {
+        const fromBlueprint = typeSlice?.languages.find((l) => l === 'English');
+        if (fromBlueprint) {
+            return fromBlueprint;
+        }
+        return (
             venue_item_language.find((l) => l.type === 'English')?.type ??
             defaultVenueItemLanguageLabels(venue_item_language)[0] ??
-            '',
-        [venue_item_language],
-    );
+            'English'
+        );
+    }, [typeSlice, venue_item_language]);
 
     const encodingRows = useMemo(
         () =>
@@ -228,21 +360,41 @@ export default function AddBroadcastStreamingModal({
         return next;
     }, [encodingRows, encodingSelections]);
 
-    const canSubmit = useMemo(() => {
-        if (encodingRows.length === 0) return false;
-        return encodingRows.every((row) => {
-            if (encodingCustomEnabled[row.key]) {
-                return (encodingCustomText[row.key] ?? '').trim() !== '';
-            }
-            const v = encodingByRowKey[row.key];
-            return Boolean(v && v !== ENCODING_UNSET);
-        });
-    }, [
-        encodingRows,
-        encodingByRowKey,
-        encodingCustomEnabled,
-        encodingCustomText,
-    ]);
+    const canSubmit = useMemo(
+        () =>
+            isBroadcastAddFormComplete({
+                // Catalog fetch finished; blueprint optional (UI uses legacy fallback).
+                catalogReady: !catalogLoading,
+                type,
+                cuts,
+                duration,
+                language,
+                encodingRows,
+                encodingByRowKey,
+                encodingCustomEnabled,
+                encodingCustomText,
+                isInternationalLocked: isAddInternationalLocked,
+                enabledCuts,
+                enabledDurationPills,
+                enabledLanguages,
+                encodingUnset: ENCODING_UNSET,
+            }),
+        [
+            catalogLoading,
+            type,
+            cuts,
+            duration,
+            language,
+            encodingRows,
+            encodingByRowKey,
+            encodingCustomEnabled,
+            encodingCustomText,
+            isAddInternationalLocked,
+            enabledCuts,
+            enabledDurationPills,
+            enabledLanguages,
+        ],
+    );
 
     const canSubmitEdit = useMemo(() => {
         if (!editCut || !editDuration || !editLanguage) return false;
@@ -259,10 +411,15 @@ export default function AddBroadcastStreamingModal({
         editEncodingCustomText,
     ]);
 
-    const resetForm = () => {
+    const resetForm = (typeKey: string = type) => {
         setCuts([]);
         setDuration([]);
-        setLanguage(defaultVenueItemLanguageLabels(venue_item_language));
+        const slice = getBlueprintSlice(blueprint, typeKey);
+        setLanguage(
+            slice?.languages.length
+                ? [slice.languages[0]!]
+                : defaultVenueItemLanguageLabels(venue_item_language),
+        );
     };
 
     const resetEncodingFields = () => {
@@ -272,39 +429,69 @@ export default function AddBroadcastStreamingModal({
     };
 
     const handleTypeChange = (newType: string) => {
-        resetForm();
         setType(newType);
-        const config = OPTIONS_BY_TYPE[newType];
-        if (config) {
-            setCuts((prev) => prev.filter((c) => config.cuts.includes(c)));
-        } else {
-            setCuts([]);
-            setDuration([]);
+        resetEncodingFields();
+
+        const slice = getBlueprintSlice(blueprint, newType);
+        const locks = applyInternationalLocks(newType, slice);
+
+        if (locks) {
+            setCuts(locks.cuts);
+            setDuration([locks.durationPill]);
+            setLanguage(locks.languages);
+            return;
         }
+
+        setCuts([]);
+        setDuration([]);
+        const defaultLangs = getBroadcastLanguagesForType(blueprint, newType);
+        setLanguage(
+            defaultLangs.length
+                ? [defaultLangs[0]!]
+                : defaultVenueItemLanguageLabels(venue_item_language),
+        );
     };
 
     const handleEditTypeChange = (newType: string) => {
         setEditType(newType);
-        const config = OPTIONS_BY_TYPE[newType];
-        const cutOpts = config?.cuts ?? [];
-        if (cutOpts.length) {
-            setEditCut((c) => (cutOpts.includes(c) ? c : (cutOpts[0] ?? '')));
+        const slice = getBlueprintSlice(blueprint, newType);
+        const locks = applyInternationalLocks(newType, slice);
+
+        if (locks) {
+            setEditCut(locks.cuts[0] ?? '');
+            setEditDuration(locks.durationPill);
+            setEditLanguage(locks.languages[0] ?? '');
+            return;
+        }
+
+        const cutOpts = getBroadcastCutsForType(blueprint, newType);
+        const fallbackCuts = OPTIONS_BY_TYPE[newType]?.cuts ?? [];
+        const cutsForType =
+            cutOpts.length > 0 ? cutOpts : [...fallbackCuts];
+        if (cutsForType.length) {
+            setEditCut((c) =>
+                cutsForType.includes(c) ? c : (cutsForType[0] ?? ''),
+            );
         } else {
             setEditCut('');
         }
     };
 
     const handleClose = () => {
-        resetForm();
+        resetForm(defaultType);
+        setType(defaultType);
         resetEncodingFields();
+        setIsSubmitting(false);
         setEditEncodingCustom(false);
         setEditEncodingCustomText('');
         setEditEncodingId(ENCODING_UNSET);
         onClose();
     };
 
-    const handleAddToOrder = () => {
-        if (!canSubmit) return;
+    const handleAddToOrder = async () => {
+        if (!canSubmit || !onAdd || isSubmitting) return;
+
+        setIsSubmitting(true);
 
         const encodings: BroadcastEncodingRow[] = encodingRows.map((row) => {
             if (encodingCustomEnabled[row.key]) {
@@ -318,28 +505,31 @@ export default function AddBroadcastStreamingModal({
                 };
             }
             const raw = encodingByRowKey[row.key]!;
-            const encodingId = Number.parseInt(raw, 10);
             return {
                 cut: row.cut,
                 duration: row.duration,
                 language: row.language,
-                encoding: venueItemEncodingIdToLabel(
-                    encodingId,
-                    venue_item_encoding,
-                ),
+                encoding: raw,
                 label: row.label,
                 encodingMode: 'catalog' as const,
             };
         });
 
-        onAdd?.({
-            type,
-            cuts,
-            duration,
-            language,
-            encodings,
-        });
-        handleClose();
+        try {
+            const result = await onAdd({
+                type,
+                cuts,
+                duration,
+                language,
+                encodings,
+            });
+
+            if (!result?.failed) {
+                handleClose();
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleEditSave = () => {
@@ -363,8 +553,14 @@ export default function AddBroadcastStreamingModal({
                 encoding_id: undefined,
             });
         } else {
+            if (editEncodingId === ENCODING_UNSET) return;
             const encodingId = Number.parseInt(editEncodingId, 10);
-            if (Number.isNaN(encodingId)) return;
+            const encodingLabel = Number.isNaN(encodingId)
+                ? editEncodingId
+                : venueItemEncodingIdToLabel(
+                      encodingId,
+                      venue_item_encoding,
+                  );
             onEditSave?.({
                 ...initialVenueRow,
                 spot_type: editType as OrderItemsBroadcastRow['spot_type'],
@@ -374,7 +570,9 @@ export default function AddBroadcastStreamingModal({
                     'broadcast',
                 ),
                 language_id: langId,
-                encoding_id: encodingId,
+                language: editLanguage,
+                encoding: encodingLabel || undefined,
+                encoding_id: Number.isNaN(encodingId) ? undefined : encodingId,
                 encoding_custom: undefined,
             });
         }
@@ -390,11 +588,28 @@ export default function AddBroadcastStreamingModal({
                     ? 'Edit Broadcast & Streaming Video'
                     : 'Add Broadcast & Streaming Video'
             }
-            primaryLabel={isEdit ? 'Save changes' : 'Add to Order'}
+            primaryLabel={
+                isEdit
+                    ? 'Save changes'
+                    : isSubmitting
+                      ? 'Adding…'
+                      : 'Add to Order'
+            }
             onPrimaryClick={isEdit ? handleEditSave : handleAddToOrder}
-            primaryDisabled={isEdit ? !canSubmitEdit : !canSubmit}
+            primaryDisabled={
+                isEdit ? !canSubmitEdit : !canSubmit || isSubmitting
+            }
             modalClasses="sm:max-w-[585px]"
         >
+            {fieldErrors && Object.keys(fieldErrors).length > 0 && (
+                <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+                    {Object.entries(fieldErrors).map(([field, messages]) => (
+                        <p key={field}>
+                            {messages.join(' ')}
+                        </p>
+                    ))}
+                </div>
+            )}
             {isEdit ? (
                 <>
                     <div className="flex flex-col gap-2 text-xs sm:flex-row">
@@ -448,9 +663,14 @@ export default function AddBroadcastStreamingModal({
                             <MultiSelectCombobox
                                 id="edit-cuts"
                                 mode="single"
-                                options={editAvailableCuts}
+                                options={editEnabledCuts}
                                 value={editCut ? [editCut] : []}
-                                onValueChange={(v) => setEditCut(v[0] ?? '')}
+                                onValueChange={
+                                    isEditInternationalLocked
+                                        ? () => {}
+                                        : (v) => setEditCut(v[0] ?? '')
+                                }
+                                disabled={isEditInternationalLocked}
                                 placeholder="Select Cuts"
                                 emptyMessage="No cuts found."
                                 triggerClassName={
@@ -470,11 +690,12 @@ export default function AddBroadcastStreamingModal({
                                     Duration
                                 </Label>
                                 <div className="flex flex-col gap-2">
-                                    {DURATION_OPTIONS.map((d) => {
+                                    {allDurationPills.map((d) => {
                                         const isDisabled =
-                                            (d == ':10' &&
-                                                editType != 'Generic') ||
-                                            editType === 'International';
+                                            isEditInternationalLocked ||
+                                            !editEnabledDurationPills.includes(
+                                                d,
+                                            );
 
                                         return (
                                             <PillButton
@@ -500,10 +721,16 @@ export default function AddBroadcastStreamingModal({
                                                 editExtraDurationLabel
                                             }
                                             disabled={
-                                                editType === 'International'
+                                                isEditInternationalLocked ||
+                                                !editEnabledDurationPills.includes(
+                                                    editExtraDurationLabel,
+                                                )
                                             }
                                             onClick={() =>
-                                                editType !== 'International' &&
+                                                !isEditInternationalLocked &&
+                                                editEnabledDurationPills.includes(
+                                                    editExtraDurationLabel,
+                                                ) &&
                                                 setEditDuration(
                                                     editExtraDurationLabel,
                                                 )
@@ -525,23 +752,24 @@ export default function AddBroadcastStreamingModal({
                                     Language
                                 </Label>
                                 <div className="flex flex-col gap-2">
-                                    {venue_item_language.map((lang) => {
+                                    {allLanguages.map((lang) => {
                                         const isDisabled =
-                                            editType === 'International';
+                                            isEditInternationalLocked ||
+                                            !editEnabledLanguages.includes(
+                                                lang,
+                                            );
                                         return (
                                             <PillButton
-                                                key={lang.id}
+                                                key={lang}
                                                 className="w-full"
-                                                selected={
-                                                    editLanguage === lang.type
-                                                }
+                                                selected={editLanguage === lang}
                                                 disabled={isDisabled}
                                                 onClick={() =>
                                                     !isDisabled &&
-                                                    setEditLanguage(lang.type)
+                                                    setEditLanguage(lang)
                                                 }
                                             >
-                                                {lang.type}
+                                                {lang}
                                             </PillButton>
                                         );
                                     })}
@@ -624,19 +852,20 @@ export default function AddBroadcastStreamingModal({
                                                     >
                                                         Select encoding
                                                     </SelectItem>
-                                                    {venue_item_encoding.map(
-                                                        (enc) => (
-                                                            <SelectItem
-                                                                key={enc.id}
-                                                                value={String(
-                                                                    enc.id,
-                                                                )}
-                                                                className="text-left"
-                                                            >
-                                                                {enc.type}
-                                                            </SelectItem>
-                                                        ),
-                                                    )}
+                                                    {(catalogEncodings.length
+                                                        ? catalogEncodings
+                                                        : venue_item_encoding.map(
+                                                              (e) => e.type,
+                                                          )
+                                                    ).map((enc) => (
+                                                        <SelectItem
+                                                            key={enc}
+                                                            value={enc}
+                                                            className="text-left"
+                                                        >
+                                                            {enc}
+                                                        </SelectItem>
+                                                    ))}
                                                 </SelectContent>
                                             </Select>
                                         )}
@@ -691,17 +920,14 @@ export default function AddBroadcastStreamingModal({
                                     <SelectValue placeholder="Select the type of Spot" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Generic">
-                                        Generic
-                                    </SelectItem>
-                                    <SelectItem value="AmEx">AmEx</SelectItem>
-                                    <SelectItem value="Verizon">
-                                        Verizon
-                                    </SelectItem>
-                                    <SelectItem value="Citi">Citi</SelectItem>
-                                    <SelectItem value="International">
-                                        International
-                                    </SelectItem>
+                                    {typeKeys.map((typeKey) => (
+                                        <SelectItem
+                                            key={typeKey}
+                                            value={typeKey}
+                                        >
+                                            {typeKey}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -718,9 +944,14 @@ export default function AddBroadcastStreamingModal({
                             </p>
                             <MultiSelectCombobox
                                 id="cuts"
-                                options={availableCuts}
+                                options={enabledCuts}
                                 value={cuts}
-                                onValueChange={setCuts}
+                                onValueChange={
+                                    isAddInternationalLocked
+                                        ? () => {}
+                                        : setCuts
+                                }
+                                disabled={isAddInternationalLocked}
                                 placeholder="Select Cuts"
                                 emptyMessage="No cuts found."
                                 triggerClassName={
@@ -740,11 +971,10 @@ export default function AddBroadcastStreamingModal({
                                     Duration
                                 </Label>
                                 <div className="flex flex-col gap-2">
-                                    {DURATION_OPTIONS.map((d) => {
+                                    {allDurationPills.map((d) => {
                                         const isDisabled =
-                                            (d == ':10' && type != 'Generic') ||
-                                            type === 'International';
-
+                                            isAddInternationalLocked ||
+                                            !enabledDurationPills.includes(d);
                                         return (
                                             <PillButton
                                                 key={d}
@@ -769,9 +999,17 @@ export default function AddBroadcastStreamingModal({
                                             selected={duration.includes(
                                                 extraDurationLabel,
                                             )}
-                                            disabled={type === 'International'}
+                                            disabled={
+                                                isAddInternationalLocked ||
+                                                !enabledDurationPills.includes(
+                                                    extraDurationLabel,
+                                                )
+                                            }
                                             onClick={() =>
-                                                type !== 'International' &&
+                                                !isAddInternationalLocked &&
+                                                enabledDurationPills.includes(
+                                                    extraDurationLabel,
+                                                ) &&
                                                 setDuration((prev) =>
                                                     toggleInArray(
                                                         prev,
@@ -796,15 +1034,16 @@ export default function AddBroadcastStreamingModal({
                                     Language
                                 </Label>
                                 <div className="flex flex-col gap-2">
-                                    {venue_item_language.map((lang) => {
+                                    {allLanguages.map((lang) => {
                                         const isDisabled =
-                                            type === 'International';
+                                            isAddInternationalLocked ||
+                                            !enabledLanguages.includes(lang);
                                         return (
                                             <PillButton
-                                                key={lang.id}
+                                                key={lang}
                                                 className="w-full"
                                                 selected={language.includes(
-                                                    lang.type,
+                                                    lang,
                                                 )}
                                                 disabled={isDisabled}
                                                 onClick={() =>
@@ -812,12 +1051,12 @@ export default function AddBroadcastStreamingModal({
                                                     setLanguage((prev) =>
                                                         toggleInArray(
                                                             prev,
-                                                            lang.type,
+                                                            lang,
                                                         ),
                                                     )
                                                 }
                                             >
-                                                {lang.type}
+                                                {lang}
                                             </PillButton>
                                         );
                                     })}
@@ -919,23 +1158,21 @@ export default function AddBroadcastStreamingModal({
                                                             >
                                                                 Select encoding
                                                             </SelectItem>
-                                                            {venue_item_encoding.map(
-                                                                (enc) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            enc.id
-                                                                        }
-                                                                        value={String(
-                                                                            enc.id,
-                                                                        )}
-                                                                        className="text-left"
-                                                                    >
-                                                                        {
-                                                                            enc.type
-                                                                        }
-                                                                    </SelectItem>
-                                                                ),
-                                                            )}
+                                                            {(catalogEncodings.length
+                                                                ? catalogEncodings
+                                                                : venue_item_encoding.map(
+                                                                      (e) =>
+                                                                          e.type,
+                                                                  )
+                                                            ).map((enc) => (
+                                                                <SelectItem
+                                                                    key={enc}
+                                                                    value={enc}
+                                                                    className="text-left"
+                                                                >
+                                                                    {enc}
+                                                                </SelectItem>
+                                                            ))}
                                                         </SelectContent>
                                                     </Select>
                                                 )}

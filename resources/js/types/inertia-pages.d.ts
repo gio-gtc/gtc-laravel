@@ -120,6 +120,17 @@ export interface OrdersSlideoutCatalogExtensions {
     /** When set, slideout is backed by gtc-api order data (inline edits are not persisted). */
     slideoutApiOrderId?: number;
     submitOpenOrder?: () => void;
+    orderCatalog?: import('./order-catalog').OrderCatalogMenu | null;
+    orderCatalogLoading?: boolean;
+    getMenuItemForCategory?: (
+        categoryId: import('./orders-api').OrderMenuCategoryId,
+    ) => import('./order-catalog').OrderCatalogMenuItem | null;
+    createOrderItemsFromForm?: <TForm>(
+        adapter: import('@/lib/orders/order-item-adapters/types').OrderItemCreateAdapter<TForm>,
+        form: TForm,
+    ) => Promise<
+        import('@/lib/orders/order-item-adapters/types').SequentialCreateResult
+    >;
 }
 
 export type OrdersCatalogValue = OrdersPageProps &

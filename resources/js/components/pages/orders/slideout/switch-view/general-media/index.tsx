@@ -13,7 +13,10 @@ import {
     venueItemsMediaTableRow,
     type OrdersVenueLineCatalog,
 } from '@/components/utils/venue-items';
+import { useOrderSlideoutCatalog } from '@/contexts/order-slideout-catalog-context';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
+import { broadcastCreateAdapter } from '@/lib/orders/order-item-adapters';
+import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
 import { useChat } from '@/hooks/use-chat';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
@@ -53,7 +56,9 @@ import Filters, {
     type SortDirection,
 } from './filters';
 import AddAudioModal from './modals/add-audio-modal';
-import AddBroadcastStreamingModal from './modals/add-broadcast-streaming-modal';
+import AddBroadcastStreamingModal, {
+    type AddBroadcastStreamingFormValues,
+} from './modals/add-broadcast-streaming-modal';
 import AddKeyArtStaticAssetsModal from './modals/add-key-art-static-assets-modal';
 import AddSocialVideoModal from './modals/add-social-video-modal';
 import RevisionRequestModal from './modals/revision-request-modal';
@@ -88,7 +93,15 @@ function GeneralMediaView({
 }: GeneralMediaViewProps) {
     const { auth } = usePage<SharedData>().props;
     const catalog = useOrdersCatalog();
+    const {
+        createOrderItemsFromForm,
+        getMenuItemForCategory,
+        orderCatalogLoading,
+    } = useOrderSlideoutCatalog();
     const slideout = resolveSlideoutCatalog(catalog);
+    const broadcastMenuItem = getMenuItemForCategory(
+        ORDER_MENU_CATEGORY_QUADRANTS.broadcast,
+    );
     const apiSlideoutOrderId = catalog.slideoutApiOrderId;
     const { replaceVenueItem } = slideout;
     const usersWithFallback = useUsersWithFallback();
@@ -306,6 +319,9 @@ function GeneralMediaView({
     >('add');
     const [broadcastEditRow, setBroadcastEditRow] =
         useState<OrderItemsBroadcastRow | null>(null);
+    const [broadcastFieldErrors, setBroadcastFieldErrors] = useState<
+        Record<string, string[]> | undefined
+    >();
     const [socialModalMode, setSocialModalMode] = useState<'add' | 'edit'>(
         'add',
     );
@@ -332,7 +348,23 @@ function GeneralMediaView({
         setBroadcastModalOpen(false);
         setBroadcastModalMode('add');
         setBroadcastEditRow(null);
+        setBroadcastFieldErrors(undefined);
     }, []);
+
+    const handleBroadcastAdd = useCallback(
+        async (form: AddBroadcastStreamingFormValues) => {
+            setBroadcastFieldErrors(undefined);
+            const result = await createOrderItemsFromForm(
+                broadcastCreateAdapter,
+                form,
+            );
+            if (result.failed && result.errors) {
+                setBroadcastFieldErrors(result.errors);
+            }
+            return result;
+        },
+        [createOrderItemsFromForm],
+    );
 
     const closeSocialVideoModal = useCallback(() => {
         setSocialVideoModalOpen(false);
@@ -798,6 +830,10 @@ function GeneralMediaView({
                 mode={broadcastModalMode}
                 initialVenueRow={broadcastEditRow ?? undefined}
                 onEditSave={handleBroadcastEditSave}
+                onAdd={handleBroadcastAdd}
+                blueprint={broadcastMenuItem?.form_blueprint ?? undefined}
+                fieldErrors={broadcastFieldErrors}
+                catalogLoading={orderCatalogLoading}
                 venue_item_language={slideout.venue_item_language}
                 venue_item_encoding={slideout.venue_item_encoding}
             />
