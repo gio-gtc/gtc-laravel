@@ -120,6 +120,18 @@ function GeneralMediaView({
         slideout.venue_item_status,
     ]);
 
+    const existingBroadcastRows = useMemo((): OrderItemsBroadcastRow[] => {
+        if (!orderItem) {
+            return [];
+        }
+        return slideout.venue_items.filter(
+            (r): r is OrderItemsBroadcastRow =>
+                r.type === 'broadcast' &&
+                r.tour_venue_id === orderItem.orderVenue.id &&
+                !r.is_pending,
+        );
+    }, [orderItem, slideout.venue_items]);
+
     const orderItemStatusSelectOptions = useMemo(
         () => buildOrderItemStatusSelectOptions(slideout.venue_item_status),
         [slideout.venue_item_status],
@@ -834,6 +846,7 @@ function GeneralMediaView({
                 blueprint={broadcastMenuItem?.form_blueprint ?? undefined}
                 fieldErrors={broadcastFieldErrors}
                 catalogLoading={orderCatalogLoading}
+                existingBroadcastRows={existingBroadcastRows}
                 venue_item_language={slideout.venue_item_language}
                 venue_item_encoding={slideout.venue_item_encoding}
             />

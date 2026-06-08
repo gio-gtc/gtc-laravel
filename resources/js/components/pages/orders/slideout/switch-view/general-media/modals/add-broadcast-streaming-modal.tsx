@@ -1,4 +1,13 @@
+import { Button } from '@/components/ui/button';
 import { MultiSelectCombobox } from '@/components/ui/combobox';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { LabelCheck } from '@/components/ui/label-check';
@@ -23,6 +32,7 @@ import {
     BROADCAST_ENCODING_UNSET,
     isBroadcastAddFormComplete,
 } from '@/lib/orders/broadcast-add-form-complete';
+import { hasBroadcastFormDuplicates } from '@/lib/orders/broadcast-duplicate-check';
 import {
     applyInternationalLocks,
     getAllBroadcastDurationPills,
@@ -98,6 +108,8 @@ interface AddBroadcastStreamingModalProps {
     /** Required when mode is `edit` — full row to prefill and merge on save. */
     initialVenueRow?: OrderItemsBroadcastRow;
     onEditSave?: (row: OrderItemsBroadcastRow) => void;
+    /** Broadcast lines already on this order (add-mode duplicate check). */
+    existingBroadcastRows?: OrderItemsBroadcastRow[];
 }
 
 export default function AddBroadcastStreamingModal({
@@ -113,6 +125,7 @@ export default function AddBroadcastStreamingModal({
     mode = 'add',
     initialVenueRow,
     onEditSave,
+    existingBroadcastRows = [],
 }: AddBroadcastStreamingModalProps) {
     const isEdit = mode === 'edit' && initialVenueRow != null;
     const typeKeys = useMemo(
@@ -140,6 +153,7 @@ export default function AddBroadcastStreamingModal({
         Record<string, string>
     >({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [duplicateConfirmOpen, setDuplicateConfirmOpen] = useState(false);
 
     const [editType, setEditType] = useState('Generic');
     const [editCut, setEditCut] = useState('');
@@ -482,17 +496,14 @@ export default function AddBroadcastStreamingModal({
         setType(defaultType);
         resetEncodingFields();
         setIsSubmitting(false);
+        setDuplicateConfirmOpen(false);
         setEditEncodingCustom(false);
         setEditEncodingCustomText('');
         setEditEncodingId(ENCODING_UNSET);
         onClose();
     };
 
-    const handleAddToOrder = async () => {
-        if (!canSubmit || !onAdd || isSubmitting) return;
-
-        setIsSubmitting(true);
-
+    const buildAddFormValues = (): AddBroadcastStreamingFormValues => {
         const encodings: BroadcastEncodingRow[] = encodingRows.map((row) => {
             if (encodingCustomEnabled[row.key]) {
                 return {
@@ -515,14 +526,24 @@ export default function AddBroadcastStreamingModal({
             };
         });
 
+        return {
+            type,
+            cuts,
+            duration,
+            language,
+            encodings,
+        };
+    };
+
+    const submitAdd = async (formValues: AddBroadcastStreamingFormValues) => {
+        if (!onAdd) {
+            return;
+        }
+
+        setIsSubmitting(true);
+
         try {
-            const result = await onAdd({
-                type,
-                cuts,
-                duration,
-                language,
-                encodings,
-            });
+            const result = await onAdd(formValues);
 
             if (!result?.failed) {
                 handleClose();
@@ -530,6 +551,30 @@ export default function AddBroadcastStreamingModal({
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const handleAddToOrder = async () => {
+        if (!canSubmit || !onAdd || isSubmitting) return;
+
+        const formValues = buildAddFormValues();
+
+        if (
+            !isEdit &&
+            hasBroadcastFormDuplicates(formValues, existingBroadcastRows, {
+                venue_item_language,
+                venue_item_encoding,
+            })
+        ) {
+            setDuplicateConfirmOpen(true);
+            return;
+        }
+
+        await submitAdd(formValues);
+    };
+
+    const handleConfirmDuplicate = async () => {
+        setDuplicateConfirmOpen(false);
+        await submitAdd(buildAddFormValues());
     };
 
     const handleEditSave = () => {
@@ -580,6 +625,7 @@ export default function AddBroadcastStreamingModal({
     };
 
     return (
+        <>
         <OrderModalLayout
             isOpen={isOpen}
             onClose={handleClose}
@@ -1226,5 +1272,43 @@ export default function AddBroadcastStreamingModal({
                 </>
             )}
         </OrderModalLayout>
+
+        <Dialog
+            open={duplicateConfirmOpen}
+            onOpenChange={(open) => {
+                if (!open) {
+                    setDuplicateConfirmOpen(false);
+                }
+            }}
+        >
+            <DialogContent className="gap-2.5 sm:max-w-md">
+                <DialogHeader>
+                    <DialogTitle className={orderModalStyles.dialogTitle}>
+                        Duplicate line item
+                    </DialogTitle>
+                    <DialogDescription className="text-xs text-gray-600">
+                        This combination already exists in this order. Are you
+                        sure you want to add a duplicate?
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="gap-2 sm:justify-end">
+                    <Button
+                        variant="outline"
+                        onClick={() => setDuplicateConfirmOpen(false)}
+                        className={orderModalStyles.cancelButton}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        className={orderModalStyles.primaryButton}
+                        onClick={() => void handleConfirmDuplicate()}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Adding…' : 'Add anyway'}
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+        </>
     );
 }

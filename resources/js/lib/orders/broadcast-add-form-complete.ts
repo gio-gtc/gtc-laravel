@@ -20,13 +20,16 @@ export type BroadcastAddFormCompleteInput = {
     encodingCustomText: Record<string, string>;
     /** When true, skip membership checks (values come from applyInternationalLocks). */
     isInternationalLocked?: boolean;
-    enabledCuts?: string[];
-    enabledDurationPills?: string[];
-    enabledLanguages?: string[];
+    enabledCuts?: readonly string[];
+    enabledDurationPills?: readonly string[];
+    enabledLanguages?: readonly string[];
     encodingUnset?: string;
 };
 
-function everyInSet(values: string[], allowed: string[] | undefined): boolean {
+function everyInSet(
+    values: string[],
+    allowed: readonly string[] | undefined,
+): boolean {
     if (!allowed || allowed.length === 0) {
         return values.length > 0;
     }
