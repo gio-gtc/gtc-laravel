@@ -49,6 +49,7 @@ type OrderSlideoutCatalogContextValue = {
         | null;
     legacyEventDates: string | undefined;
     updateOpenOrder: (order: ApiOrder) => void;
+    refreshOpenOrder: (orderId: number) => Promise<ApiOrder | null>;
     submitOpenOrder: () => void;
     registerTourOrdersInvalidator: (fn: TourOrdersInvalidator) => void;
     orderCatalog: OrderCatalogMenu | null;
@@ -401,6 +402,7 @@ export function OrderSlideoutCatalogProvider({
             legacyVenueItem: legacyPayload?.venueItem ?? null,
             legacyEventDates: legacyPayload?.eventDates,
             updateOpenOrder,
+            refreshOpenOrder,
             submitOpenOrder,
             registerTourOrdersInvalidator,
             orderCatalog,
@@ -417,6 +419,7 @@ export function OrderSlideoutCatalogProvider({
             legacyPayload?.venueItem,
             legacyPayload?.eventDates,
             updateOpenOrder,
+            refreshOpenOrder,
             submitOpenOrder,
             registerTourOrdersInvalidator,
             orderCatalog,

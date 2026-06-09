@@ -105,6 +105,7 @@ function GeneralMediaView({
         orderCatalogLoading,
         openOrder,
         setOpenOrder,
+        refreshOpenOrder,
     } = useOrderSlideoutCatalog();
     const slideout = resolveSlideoutCatalog(catalog);
     const broadcastMenuItem = getMenuItemForCategory(
@@ -413,6 +414,7 @@ function GeneralMediaView({
                 setOpenOrder(upsertOrderItem(openOrder, updated));
                 toast.success('Line item updated.');
                 closeBroadcastModal();
+                void refreshOpenOrder(openOrder.id);
             } catch (error) {
                 if (
                     error instanceof OrderItemApiError &&
@@ -430,7 +432,7 @@ function GeneralMediaView({
                 return { failed: true };
             }
         },
-        [openOrder, setOpenOrder, closeBroadcastModal],
+        [openOrder, setOpenOrder, refreshOpenOrder, closeBroadcastModal],
     );
 
     const handleSocialEditSave = useCallback(
