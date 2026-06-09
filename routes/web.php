@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ChannelMessageController;
 use App\Http\Controllers\Api\OrderCatalogMenuController;
+use App\Http\Controllers\Api\OrderItemDeleteController;
 use App\Http\Controllers\Api\OrderItemStoreController as ApiOrderItemStoreController;
 use App\Http\Controllers\Api\OrderItemUpdateController;
 use App\Http\Controllers\Api\OrderShowController;
@@ -150,6 +151,7 @@ Route::middleware([BffAuth::class])->group(function () {
         Route::get('orders/{order}', OrderShowController::class)->name('api.orders.show');
         Route::post('orders/{order}/items', ApiOrderItemStoreController::class)->name('api.orders.items.store');
         Route::patch('order-items/{orderItem}', OrderItemUpdateController::class)->name('api.order-items.update');
+        Route::delete('order-items/{orderItem}', OrderItemDeleteController::class)->name('api.order-items.delete');
         Route::patch('orders/{order}', OrderUpdateController::class)->name('api.orders.update');
 
         Route::patch('channels/{channelId}/messages/{id}', [ChannelMessageController::class, 'update']);

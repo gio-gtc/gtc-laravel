@@ -127,6 +127,9 @@ final class OrdersAssembler
 
             $order = $raw;
             $order['collaborators'] = self::dedupeAssignees($raw['order_items'] ?? []);
+            if (isset($order['order_items']) && is_array($order['order_items'])) {
+                $order['order_items'] = OrderItemNormalizer::normalizeItems($order['order_items']);
+            }
             $normalized[] = $order;
         }
 

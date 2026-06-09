@@ -1,17 +1,106 @@
 import { formatShortUsDate } from '@/lib/format/date';
-import type { OrderItem } from '@/types/orders-api';
+import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
+import type {
+    ApiOrder,
+    AssetTrackingMap,
+    OrderItem,
+    OrderItemStatus,
+} from '@/types/orders-api';
 
-export function specString(
-    specs: OrderItem['specifications'],
-    key: string,
-): string {
+export const BROADCAST_SPECIFIABLE_TYPE =
+    'App\\Models\\OrderItemBroadcastSpecification';
+
+export type OrderItemSpecRecord = Record<string, unknown>;
+
+export function specString(specs: OrderItemSpecRecord, key: string): string {
     const value = specs[key];
     return typeof value === 'string' ? value.trim() : '';
 }
 
-export function orderItemDurationSeconds(
-    specs: OrderItem['specifications'],
-): number {
+export function isBroadcastOrderItem(item: OrderItem): boolean {
+    if (item.specifiable_type === BROADCAST_SPECIFIABLE_TYPE) {
+        return true;
+    }
+    return (
+        item.order_menu_item?.order_menu_category_id ===
+        ORDER_MENU_CATEGORY_QUADRANTS.broadcast
+    );
+}
+
+export function orderItemSpecRecord(item: OrderItem): OrderItemSpecRecord {
+    if (isBroadcastOrderItem(item) && item.specifiable != null) {
+        return item.specifiable as OrderItemSpecRecord;
+    }
+    return (item.specifications ?? {}) as OrderItemSpecRecord;
+}
+
+export function normalizeOrderItemWireStatus(
+    status: string | undefined,
+): OrderItemStatus | undefined {
+    if (!status) {
+        return undefined;
+    }
+    if (status === 'Canceled') {
+        return 'Cancelled';
+    }
+    return status as OrderItemStatus;
+}
+
+export function orderItemWireStatus(item: OrderItem): OrderItemStatus {
+    const fromLookup = normalizeOrderItemWireStatus(item.status_lookup?.name);
+    if (fromLookup) {
+        return fromLookup;
+    }
+    const legacy = normalizeOrderItemWireStatus(item.status);
+    if (legacy) {
+        return legacy;
+    }
+    return 'Still In Cart';
+}
+
+export function orderItemAssetTracking(item: OrderItem): AssetTrackingMap {
+    const specs = orderItemSpecRecord(item);
+    const tracking = specs.asset_tracking;
+    if (tracking != null && typeof tracking === 'object') {
+        return tracking as AssetTrackingMap;
+    }
+    return {};
+}
+
+export function missingAssetTagsFromTrackingMap(
+    tracking: AssetTrackingMap,
+): string[] {
+    return Object.entries(tracking)
+        .filter(([, value]) => value === false)
+        .map(([tag]) => tag);
+}
+
+export function missingAssetTagsFromItem(item: OrderItem): string[] {
+    return missingAssetTagsFromTrackingMap(orderItemAssetTracking(item));
+}
+
+export function aggregateMissingAssetTags(
+    order: Pick<ApiOrder, 'order_items'>,
+): string[] {
+    const tags = new Set<string>();
+    for (const item of order.order_items ?? []) {
+        for (const tag of missingAssetTagsFromItem(item)) {
+            tags.add(tag);
+        }
+    }
+    return [...tags];
+}
+
+export function initialAssetTrackingFromCatalogTags(
+    tags: string[] | undefined,
+): AssetTrackingMap {
+    if (!tags?.length) {
+        return {};
+    }
+    return Object.fromEntries(tags.map((tag) => [tag, false]));
+}
+
+export function orderItemDurationSeconds(specs: OrderItemSpecRecord): number {
     if (typeof specs.duration_seconds === 'number') {
         return specs.duration_seconds;
     }
@@ -19,7 +108,7 @@ export function orderItemDurationSeconds(
 }
 
 export function parseOrderItemDimensions(
-    specs: OrderItem['specifications'],
+    specs: OrderItemSpecRecord,
 ): { width: number; height: number } {
     const raw =
         specString(specs, 'dimensions') ||
@@ -38,8 +127,9 @@ export function parseOrderItemDimensions(
 
 export function orderItemCutLabel(item: OrderItem): string {
     const menuName = item.order_menu_item?.name?.trim() ?? '';
-    const specType = specString(item.specifications, 'type');
-    const specDimensions = specString(item.specifications, 'dimensions');
+    const specs = orderItemSpecRecord(item);
+    const specType = specString(specs, 'type');
+    const specDimensions = specString(specs, 'dimensions');
 
     const parts = [menuName];
     if (specType && specType !== menuName) {
@@ -61,13 +151,47 @@ export function orderItemDueDateDisplay(item: OrderItem): string {
 }
 
 export function orderItemIsci(item: OrderItem): string {
-    return specString(item.specifications, 'isci');
+    return specString(orderItemSpecRecord(item), 'isci');
 }
 
 export function orderItemDefaultCut(item: OrderItem): string {
-    const cut = specString(item.specifications, 'cut');
+    const cut = specString(orderItemSpecRecord(item), 'cut');
     if (cut) {
         return cut;
     }
     return orderItemCutLabel(item);
+}
+
+/** Missing tags from a lean index row when full OrderItem is unavailable. */
+export function missingAssetTagsFromLeanItem(item: {
+    asset_tracking?: AssetTrackingMap;
+    specifiable?: { asset_tracking?: AssetTrackingMap };
+}): string[] {
+    const tracking =
+        item.asset_tracking ??
+        item.specifiable?.asset_tracking ??
+        ({} as AssetTrackingMap);
+    return missingAssetTagsFromTrackingMap(tracking);
+}
+
+export function aggregateMissingAssetTagsFromIndex(order: {
+    order_items?: Array<
+        | OrderItem
+        | {
+              asset_tracking?: AssetTrackingMap;
+              specifiable?: { asset_tracking?: AssetTrackingMap };
+          }
+    >;
+}): string[] {
+    const tags = new Set<string>();
+    for (const item of order.order_items ?? []) {
+        const itemTags =
+            'order_menu_item_id' in item || 'specifiable_type' in item
+                ? missingAssetTagsFromItem(item as OrderItem)
+                : missingAssetTagsFromLeanItem(item);
+        for (const tag of itemTags) {
+            tags.add(tag);
+        }
+    }
+    return [...tags];
 }

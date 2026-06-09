@@ -22,6 +22,10 @@ import {
     OrderItemApiError,
     updateOrderItem,
 } from '@/lib/orders/order-item-api-client';
+import {
+    apiBroadcastRowTableStatus,
+    isMediaTableRowStillInCart,
+} from '@/lib/orders/order-item-table-rows';
 import { upsertOrderItem } from '@/lib/orders/slideout/order-mutations';
 import { useChat } from '@/hooks/use-chat';
 import { useEditableTable } from '@/hooks/use-editable-table';
@@ -106,6 +110,7 @@ function GeneralMediaView({
         openOrder,
         setOpenOrder,
         refreshOpenOrder,
+        removeOrderItemFromCart,
     } = useOrderSlideoutCatalog();
     const slideout = resolveSlideoutCatalog(catalog);
     const broadcastMenuItem = getMenuItemForCategory(
@@ -169,6 +174,11 @@ function GeneralMediaView({
 
     const mapBroadcastRadioSocialRow = useCallback(
         (row: OrderItemsBroadcastRadioSocialRow) => {
+            const statusOverride =
+                apiSlideoutOrderId && row.type === 'broadcast'
+                    ? apiBroadcastRowTableStatus(row.id, openOrder)
+                    : undefined;
+
             const mediaRow = venueItemsMediaTableRow(
                 row,
                 getAssignedUsersForVenueItem(
@@ -177,11 +187,14 @@ function GeneralMediaView({
                     usersWithFallback,
                 ),
                 slideout.venue_item_status,
+                statusOverride,
             );
-            const resolvedStatus = venueItemStatusIdToLabel(
-                row.status_id,
-                slideout.venue_item_status,
-            );
+            const resolvedStatus =
+                statusOverride ??
+                venueItemStatusIdToLabel(
+                    row.status_id,
+                    slideout.venue_item_status,
+                );
             const showDeliverables =
                 row.has_deliverable_actions ??
                 resolvedStatus === 'Client Review';
@@ -196,7 +209,13 @@ function GeneralMediaView({
                     : undefined,
             };
         },
-        [slideout.venue_item_status, venueLineCatalog, usersWithFallback],
+        [
+            apiSlideoutOrderId,
+            openOrder,
+            slideout.venue_item_status,
+            venueLineCatalog,
+            usersWithFallback,
+        ],
     );
 
     const venueBroadcastWithCallbacks = useMemo(() => {
@@ -711,7 +730,23 @@ function GeneralMediaView({
                         })
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
-                    isEditLineDisabled={(row) => row.status_id !== 1}
+                    isEditLineDisabled={(row) =>
+                        apiSlideoutOrderId
+                            ? !isMediaTableRowStillInCart(row)
+                            : row.status_id !== 1
+                    }
+                    canRemoveFromCart={
+                        apiSlideoutOrderId
+                            ? isMediaTableRowStillInCart
+                            : undefined
+                    }
+                    onRemoveFromCart={
+                        apiSlideoutOrderId
+                            ? (row) => {
+                                  void removeOrderItemFromCart(Number(row.id));
+                              }
+                            : undefined
+                    }
                     onEditLineInModal={(row) => {
                         const raw = slideout.venue_items.find(
                             (r): r is OrderItemsBroadcastRow =>

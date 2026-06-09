@@ -3,11 +3,15 @@ import {
     orderShowDateRange,
 } from '@/lib/orders/format-order-show-dates';
 import {
+    missingAssetTagsFromItem,
+    orderItemAssetTracking,
     orderItemCutLabel,
     orderItemDefaultCut,
     orderItemDueDateDisplay,
     orderItemDurationSeconds,
     orderItemIsci,
+    orderItemSpecRecord,
+    orderItemWireStatus,
     parseOrderItemDimensions,
     specString,
 } from '@/lib/orders/order-item-specifications';
@@ -123,13 +127,15 @@ export function mapApiOrderItemToVenueRow(
 
     const isci = orderItemIsci(item);
     const statusId = item.order_item_status_id;
-    const hasDeliverables = item.status === 'Client Review';
+    const wireStatus = orderItemWireStatus(item);
+    const hasDeliverables = wireStatus === 'Client Review';
     const base = baseRowFields(order, item);
-    const specs = item.specifications;
 
     if (venueType === 'broadcast') {
+        const specs = orderItemSpecRecord(item);
         const encodingCustom = specString(specs, 'encoding_custom');
         const encoding = specString(specs, 'encoding');
+        const assetTracking = orderItemAssetTracking(item);
         const row: OrderItemsBroadcastRow = {
             ...base,
             type: 'broadcast',
@@ -141,21 +147,25 @@ export function mapApiOrderItemToVenueRow(
             language: specString(specs, 'language') || undefined,
             encoding: encoding || undefined,
             encoding_custom: encodingCustom || undefined,
+            asset_tracking: assetTracking,
+            missingAssetTags: missingAssetTagsFromItem(item),
             has_deliverable_actions: hasDeliverables,
             order_id: order.id,
         };
         return row;
     }
 
+    const specs = item.specifications ?? {};
+
     if (venueType === 'social') {
         const row: OrderItemsSocialRow = {
             ...base,
             type: 'social',
             isci,
-            duration_seconds: orderItemDurationSeconds(specs),
+            duration_seconds: orderItemDurationSeconds(specs as Record<string, unknown>),
             status_id: statusId,
-            spot_type: defaultSocialSpotType(specs),
-            cut: defaultSocialCut(specs),
+            spot_type: defaultSocialSpotType(specs as Record<string, unknown>),
+            cut: defaultSocialCut(specs as Record<string, unknown>),
             has_deliverable_actions: hasDeliverables,
             order_id: order.id,
         };
@@ -167,9 +177,9 @@ export function mapApiOrderItemToVenueRow(
             ...base,
             type: 'radio',
             isci,
-            duration_seconds: orderItemDurationSeconds(specs),
+            duration_seconds: orderItemDurationSeconds(specs as Record<string, unknown>),
             status_id: statusId,
-            spot_type: defaultBroadcastSpotType(specs),
+            spot_type: defaultBroadcastSpotType(specs as Record<string, unknown>),
             cut: orderItemDefaultCut(item) as OrderItemsRadioRow['cut'],
             has_deliverable_actions: hasDeliverables,
             order_id: order.id,
@@ -178,11 +188,13 @@ export function mapApiOrderItemToVenueRow(
     }
 
     if (venueType === 'art') {
-        const { width, height } = parseOrderItemDimensions(specs);
+        const { width, height } = parseOrderItemDimensions(
+            specs as Record<string, unknown>,
+        );
         const row: OrderItemsArtRow = {
             ...base,
             type: 'art',
-            package_type: defaultArtPackage(specs),
+            package_type: defaultArtPackage(specs as Record<string, unknown>),
             label: orderItemCutLabel(item),
             width,
             height,

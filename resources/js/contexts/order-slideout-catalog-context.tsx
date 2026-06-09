@@ -4,7 +4,11 @@ import {
 } from '@/contexts/orders-catalog-context';
 import { runSequentialOrderItemCreate } from '@/hooks/use-sequential-order-item-create';
 import { mergeApiOrderUpdate } from '@/lib/orders/merge-api-order-update';
-import { fetchOrderCatalogMenu } from '@/lib/orders/order-item-api-client';
+import {
+    deleteOrderItem,
+    fetchOrderCatalogMenu,
+    OrderItemApiError,
+} from '@/lib/orders/order-item-api-client';
 import type {
     OrderItemCreateAdapter,
     SequentialCreateResult,
@@ -61,6 +65,7 @@ type OrderSlideoutCatalogContextValue = {
         adapter: OrderItemCreateAdapter<TForm>,
         form: TForm,
     ) => Promise<SequentialCreateResult>;
+    removeOrderItemFromCart: (orderItemId: number) => Promise<boolean>;
 };
 
 const OrderSlideoutCatalogContext =
@@ -320,6 +325,7 @@ export function OrderSlideoutCatalogProvider({
                     setOpenOrder,
                     setExtraVenueItems,
                 },
+                menuItem.tags,
             );
 
             if (result.failed) {
@@ -340,6 +346,33 @@ export function OrderSlideoutCatalogProvider({
             return result;
         },
         [openOrder, getMenuItemForCategory, refreshOpenOrder],
+    );
+
+    const removeOrderItemFromCart = useCallback(
+        async (orderItemId: number): Promise<boolean> => {
+            if (!openOrder) {
+                toast.error('Open an order before removing line items.');
+                return false;
+            }
+
+            try {
+                const updated = await deleteOrderItem(orderItemId);
+                setOpenOrder((prev) =>
+                    prev ? upsertOrderItem(prev, updated) : prev,
+                );
+                toast.success('Line item removed from cart.');
+                void refreshOpenOrder(openOrder.id);
+                return true;
+            } catch (error) {
+                toast.error(
+                    error instanceof OrderItemApiError
+                        ? error.message
+                        : 'Failed to remove line item.',
+                );
+                return false;
+            }
+        },
+        [openOrder, refreshOpenOrder],
     );
 
     const slideoutCatalog = useMemo((): OrdersCatalogValue => {
@@ -409,6 +442,7 @@ export function OrderSlideoutCatalogProvider({
             orderCatalogLoading,
             getMenuItemForCategory,
             createOrderItemsFromForm,
+            removeOrderItemFromCart,
         }),
         [
             openOrder,
@@ -426,6 +460,7 @@ export function OrderSlideoutCatalogProvider({
             orderCatalogLoading,
             getMenuItemForCategory,
             createOrderItemsFromForm,
+            removeOrderItemFromCart,
         ],
     );
 

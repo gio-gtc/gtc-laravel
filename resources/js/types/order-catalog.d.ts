@@ -16,6 +16,8 @@ export interface OrderCatalogMenuItem {
     name: string;
     order_menu_category_id: OrderMenuCategoryId;
     form_blueprint?: OrderMenuFormBlueprint | null;
+    /** Drives `specifiable.asset_tracking` columns initialized on line-item create. */
+    tags?: string[];
 }
 
 export interface OrderCatalogCategory {

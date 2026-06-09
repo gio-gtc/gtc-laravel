@@ -12,6 +12,8 @@ export type OrderItemExpandContext = {
     orderMenuItemId: number;
     dueDate: string;
     nextPendingId: () => string;
+    /** Catalog menu item tags — used for optimistic asset_tracking on pending rows. */
+    catalogTags?: string[];
 };
 
 export interface OrderItemCreateAdapter<TForm> {

@@ -1,0 +1,51 @@
+<?php
+
+function gtcApiBaseUrl(): string
+{
+    return rtrim((string) config('services.api.base_url'), '/');
+}
+
+function apiOrderItemsStoreUrl(int $orderId): string
+{
+    return gtcApiBaseUrl()."/api/orders/{$orderId}/items";
+}
+
+function apiOrderItemUrl(int $orderItemId): string
+{
+    return gtcApiBaseUrl()."/api/order-items/{$orderItemId}";
+}
+
+function samplePolymorphicBroadcastOrderItem(int $id = 200): array
+{
+    return [
+        'id' => $id,
+        'order_id' => 1,
+        'order_menu_item_id' => 1,
+        'order_item_status_id' => 1,
+        'locked_price' => '250.00',
+        'due_date' => '2026-07-25',
+        'revision_number' => 0,
+        'specifiable_id' => 14,
+        'specifiable_type' => 'App\\Models\\OrderItemBroadcastSpecification',
+        'specifiable' => [
+            'id' => 14,
+            'type' => 'Generic',
+            'cut' => 'On Sale Now',
+            'duration_seconds' => 30,
+            'language' => 'English',
+            'encoding' => 'Station MP4 (Broadcast)',
+            'encoding_custom' => null,
+            'isci' => 'ISCI-ABCDEFGH',
+            'asset_tracking' => [
+                'Voice Over' => false,
+                'Audio' => null,
+                'Art' => false,
+            ],
+        ],
+        'status_lookup' => [
+            'id' => 1,
+            'name' => 'Still In Cart',
+            'order_status_id' => 1,
+        ],
+    ];
+}

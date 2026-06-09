@@ -129,6 +129,7 @@ export function venueItemsMediaTableRow(
     row: OrderItemsBroadcastRadioSocialRow,
     assigned: User[],
     venueItemStatus: OrderItemStatus[],
+    statusOverride?: VenueLineItemStatusLabel,
 ): MediaTableRow {
     const {
         spot_type,
@@ -147,14 +148,26 @@ export function venueItemsMediaTableRow(
         kind === 'image' ? (mediaUrl ?? thumbnailUrl ?? null) : null;
     const previewVideoUrl =
         kind === 'image' ? null : (mediaUrl ?? row.previewVideoUrl ?? null);
+
+    const broadcastExtras =
+        row.type === 'broadcast'
+            ? {
+                  asset_tracking: row.asset_tracking,
+                  missingAssetTags: row.missingAssetTags,
+              }
+            : {};
+
     return {
         ...rest,
         cutName: venueItemMediaLineLabel(spot_type, cut),
         assigned,
-        status: venueItemStatusIdToLabel(status_id, venueItemStatus),
+        status:
+            statusOverride ??
+            venueItemStatusIdToLabel(status_id, venueItemStatus),
         status_id,
         previewVideoUrl,
         previewImageUrl,
+        ...broadcastExtras,
     };
 }
 

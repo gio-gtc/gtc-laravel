@@ -8,6 +8,7 @@ import type {
     SocialCutOption,
     SocialVideoLayoutType,
 } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
+import type { AssetTrackingMap } from '@/types/orders-api';
 import { InertiaLinkProps } from '@inertiajs/react';
 import { LucideIcon } from 'lucide-react';
 import type { KeyboardEvent } from 'react';
@@ -292,6 +293,9 @@ export interface MediaTableRow {
     };
     /** ISO 8601 UTC — used for General Media sort by created date */
     created_date: string;
+    /** Tags with missing required assets (`asset_tracking[tag] === false`). */
+    missingAssetTags?: string[];
+    asset_tracking?: AssetTrackingMap;
 }
 
 export interface MediaTableProps {
@@ -309,6 +313,10 @@ export interface MediaTableProps {
     onEditLineInModal?: (row: MediaTableRow) => void;
     /** When provided, further disables "Edit Line Details" for matching rows. */
     isEditLineDisabled?: (row: MediaTableRow) => boolean;
+    /** Soft-cancel cart line via DELETE /api/order-items/{id}. */
+    onRemoveFromCart?: (row: MediaTableRow) => void;
+    /** When provided, shows "Remove from cart" only for matching rows. */
+    canRemoveFromCart?: (row: MediaTableRow) => boolean;
     /** Called when a preview icon is clicked (row, iconIndex). Video: 0 = play, 1 = link; audio: 0 only. */
     onPreviewClick?: (row: MediaTableRow, iconIndex: number) => void;
     /** When set, Cut Name uses EditableCellInput (parent should own useEditableTable) */
@@ -425,6 +433,8 @@ export interface OrderItemsBroadcastRow
     type: 'broadcast';
     spot_type: BroadcastSpotType;
     cut: AllBroadcastCuts;
+    asset_tracking?: AssetTrackingMap;
+    missingAssetTags?: string[];
 }
 
 /** Radio (audio): spot types and cuts match add Audio modal. */

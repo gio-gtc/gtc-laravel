@@ -45,7 +45,7 @@ final class OrderItemApiResponse
 
         return response()->json([
             'message' => is_string($message) ? $message : $fallbackMessage,
-            'order_item' => $item,
+            'order_item' => OrderItemNormalizer::normalizeItem($item),
         ], $status);
     }
 

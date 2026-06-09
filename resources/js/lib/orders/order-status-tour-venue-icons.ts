@@ -1,3 +1,4 @@
+import { aggregateMissingAssetTags } from '@/lib/orders/order-item-specifications';
 import type { TourVenueStatusValue } from '@/types';
 import type {
     ApiOrder,
@@ -15,6 +16,16 @@ const ORDER_STATUS_TO_TOUR_VENUE_STATUS: Partial<
     Canceled: 6,
 };
 
+/** Order waterfall status for header icons — canonical key is `Canceled`, not line-item `Cancelled`. */
+function orderWireStatusForTourVenueLookup(
+    status: ApiOrderWireStatus | string,
+): ApiOrderWireStatus {
+    if (status === 'Cancelled') {
+        return 'Canceled';
+    }
+    return status as ApiOrderWireStatus;
+}
+
 const AWAITING_ASSET_TO_STATUS: Record<AwaitingAssetTag, TourVenueStatusValue> =
     {
         'Voice Over': 3,
@@ -22,27 +33,24 @@ const AWAITING_ASSET_TO_STATUS: Record<AwaitingAssetTag, TourVenueStatusValue> =
         Art: 5,
     };
 
-/** Map API order status + awaiting assets → legacy header StatusIconGroup ids. */
-export function collectTourVenueStatuses(order: ApiOrder): TourVenueStatusValue[] {
+/** Map API order status + missing asset tags → legacy header StatusIconGroup ids. */
+export function collectTourVenueStatuses(
+    order: ApiOrder,
+): TourVenueStatusValue[] {
     const set = new Set<TourVenueStatusValue>();
 
-    const primary = ORDER_STATUS_TO_TOUR_VENUE_STATUS[order.status];
+    const primary =
+        ORDER_STATUS_TO_TOUR_VENUE_STATUS[
+            orderWireStatusForTourVenueLookup(order.status)
+        ];
     if (primary !== undefined) {
         set.add(primary);
     }
 
-    if (order.is_awaiting_assets) {
-        for (const item of order.order_items ?? []) {
-            const tags = item.specifications?.awaiting_assets;
-            if (!Array.isArray(tags)) {
-                continue;
-            }
-            for (const tag of tags) {
-                const mapped = AWAITING_ASSET_TO_STATUS[tag as AwaitingAssetTag];
-                if (mapped !== undefined) {
-                    set.add(mapped);
-                }
-            }
+    for (const tag of aggregateMissingAssetTags(order)) {
+        const mapped = AWAITING_ASSET_TO_STATUS[tag as AwaitingAssetTag];
+        if (mapped !== undefined) {
+            set.add(mapped);
         }
     }
 

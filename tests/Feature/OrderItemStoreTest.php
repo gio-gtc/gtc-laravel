@@ -2,48 +2,73 @@
 
 use Illuminate\Support\Facades\Http;
 
-function orderItemStoreApiUrl(int $orderId): string
-{
-    return rtrim((string) config('services.api.base_url'), '/')."/api/orders/{$orderId}/items";
-}
+require_once __DIR__.'/Api/OrderItemFixtures.php';
 
 it('proxies add order item to gtc-api', function () {
     Http::fake([
-        orderItemStoreApiUrl(1) => Http::response([
-            'data' => [
-                'id' => 200,
-                'order_id' => 1,
-                'order_menu_item_id' => 4,
-                'order_item_status_id' => 1,
-                'status' => 'Still In Cart',
-                'due_date' => '2026-10-15',
-                'specifications' => ['isci' => 'GTC000200'],
-            ],
+        apiOrderItemsStoreUrl(1) => Http::response([
+            'data' => samplePolymorphicBroadcastOrderItem(),
         ], 201),
     ]);
 
     $this->actingAsBff()
         ->post(route('orders.items.store', ['order' => 1]), [
-            'order_menu_item_id' => 4,
-            'due_date' => '2026-10-15',
+            'order_menu_item_id' => 1,
+            'due_date' => '2026-07-25',
             'specifications' => [
-                'type' => 'Social - 16:9',
+                'type' => 'Generic',
                 'cut' => 'On Sale Now',
+                'duration_seconds' => 30,
+                'language' => 'English',
+                'encoding' => 'Station MP4 (Broadcast)',
             ],
         ])
         ->assertRedirect(route('orders'))
         ->assertSessionHas('success', 'Line item added successfully.')
         ->assertSessionHas('created_order_item');
 
+    $created = session('created_order_item');
+    expect($created)->toBeArray()
+        ->and($created['specifiable']['encoding'])->toBe('Station MP4 (Broadcast)')
+        ->and($created['status_lookup']['name'])->toBe('Still In Cart')
+        ->and($created['specifiable']['asset_tracking']['Voice Over'])->toBeFalse();
+
     Http::assertSent(function ($request) {
-        if ($request->url() !== orderItemStoreApiUrl(1) || $request->method() !== 'POST') {
+        if ($request->url() !== apiOrderItemsStoreUrl(1) || $request->method() !== 'POST') {
             return false;
         }
 
         $body = $request->data();
 
-        return $body['order_menu_item_id'] === 4
-            && $body['due_date'] === '2026-10-15'
-            && $body['specifications']['type'] === 'Social - 16:9';
+        return $body['order_menu_item_id'] === 1
+            && $body['due_date'] === '2026-07-25'
+            && $body['specifications']['duration_seconds'] === 30;
     });
+});
+
+it('normalizes canceled status lookup to cancelled in legacy store flash', function () {
+    $item = samplePolymorphicBroadcastOrderItem();
+    $item['status_lookup']['name'] = 'Canceled';
+
+    Http::fake([
+        apiOrderItemsStoreUrl(1) => Http::response([
+            'data' => $item,
+        ], 201),
+    ]);
+
+    $this->actingAsBff()
+        ->post(route('orders.items.store', ['order' => 1]), [
+            'order_menu_item_id' => 1,
+            'due_date' => '2026-07-25',
+            'specifications' => [
+                'type' => 'Generic',
+                'cut' => 'On Sale Now',
+                'duration_seconds' => 30,
+                'language' => 'English',
+                'encoding' => 'Station MP4 (Broadcast)',
+            ],
+        ])
+        ->assertRedirect(route('orders'));
+
+    expect(session('created_order_item.status_lookup.name'))->toBe('Cancelled');
 });

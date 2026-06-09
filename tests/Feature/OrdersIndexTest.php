@@ -74,8 +74,33 @@ function sampleApiOrderPayload(): array
             [
                 'id' => 142,
                 'order_id' => 1,
+                'order_menu_item_id' => 1,
                 'order_item_status_id' => 1,
-                'status' => 'Unassigned',
+                'order_menu_item' => [
+                    'id' => 1,
+                    'name' => 'Broadcast & Streaming Video Details',
+                    'order_menu_category_id' => 1,
+                ],
+                'specifiable_id' => 14,
+                'specifiable_type' => 'App\\Models\\OrderItemBroadcastSpecification',
+                'specifiable' => [
+                    'id' => 14,
+                    'type' => 'Generic',
+                    'cut' => 'On Sale Now',
+                    'duration_seconds' => 30,
+                    'language' => 'English',
+                    'encoding' => 'Station MP4 (Broadcast)',
+                    'isci' => 'ISCI-ABCDEFGH',
+                    'asset_tracking' => [
+                        'Voice Over' => false,
+                        'Audio' => null,
+                    ],
+                ],
+                'status_lookup' => [
+                    'id' => 1,
+                    'name' => 'Still In Cart',
+                    'order_status_id' => 1,
+                ],
                 'assignees' => [
                     [
                         'id' => 9,

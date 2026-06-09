@@ -25,10 +25,6 @@ export function replaceOrderItemInOrder(
             due_date: row.dueDate === '—' ? null : item.due_date,
             order_item_status_id:
                 'status_id' in row ? row.status_id : item.order_item_status_id,
-            specifications: {
-                ...item.specifications,
-                isci: 'isci' in row ? row.isci : item.specifications.isci,
-            },
         };
     });
     return { ...order, order_items: items };

@@ -22,6 +22,7 @@ function pendingRowsForDrafts<TForm>(
     form: TForm,
     order: ApiOrder,
     orderMenuItemId: number,
+    catalogTags?: string[],
 ): { drafts: ReturnType<OrderItemCreateAdapter<TForm>['expandDrafts']>; pendingRows: OrderItemsRow[] } {
     let pendingCounter = 0;
     const dueDate =
@@ -30,18 +31,16 @@ function pendingRowsForDrafts<TForm>(
     const drafts = adapter.expandDrafts(form, {
         orderMenuItemId,
         dueDate,
+        catalogTags,
         nextPendingId: () => {
             pendingCounter += 1;
             return `pending-${Date.now()}-${pendingCounter}`;
         },
     });
 
-    const pendingRows: OrderItemsRow[] = drafts.map((draft) => {
-        if (adapter.categoryId === 1) {
-            return draftToPendingBroadcastRow(draft, order.id);
-        }
-        return draftToPendingBroadcastRow(draft, order.id);
-    });
+    const pendingRows: OrderItemsRow[] = drafts.map((draft) =>
+        draftToPendingBroadcastRow(draft, order.id, catalogTags),
+    );
 
     return { drafts, pendingRows };
 }
@@ -51,6 +50,7 @@ export async function runSequentialOrderItemCreate<TForm>(
     form: TForm,
     orderMenuItemId: number,
     deps: SequentialCreateDeps,
+    catalogTags?: string[],
 ): Promise<SequentialCreateResult> {
     const { order, setOpenOrder, setExtraVenueItems } = deps;
     const { drafts, pendingRows } = pendingRowsForDrafts(
@@ -58,6 +58,7 @@ export async function runSequentialOrderItemCreate<TForm>(
         form,
         order,
         orderMenuItemId,
+        catalogTags,
     );
 
     if (drafts.length === 0) {

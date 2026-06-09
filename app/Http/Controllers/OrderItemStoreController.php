@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Support\GtcApiClient;
+use App\Support\OrderItemApiResponse;
+use App\Support\OrderItemNormalizer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -42,7 +44,11 @@ final class OrderItemStoreController extends Controller
         $result = $client->post("/api/orders/{$order}/items", $payload);
 
         if ($result['ok']) {
-            $created = self::extractOrderItem($result['data']);
+            $created = OrderItemApiResponse::extractOrderItem($result['data']);
+
+            if ($created !== null) {
+                $created = OrderItemNormalizer::normalizeItem($created);
+            }
 
             return redirect()
                 ->route('orders')
@@ -60,27 +66,5 @@ final class OrderItemStoreController extends Controller
         return redirect()
             ->route('orders')
             ->with('error', $result['message']);
-    }
-
-    /**
-     * @param  array<string, mixed>  $data
-     * @return array<string, mixed>|null
-     */
-    private static function extractOrderItem(array $data): ?array
-    {
-        $candidates = [
-            $data['order_item'] ?? null,
-            $data['data']['order_item'] ?? null,
-            $data['data'] ?? null,
-            $data,
-        ];
-
-        foreach ($candidates as $item) {
-            if (is_array($item) && isset($item['id'], $item['order_id'])) {
-                return $item;
-            }
-        }
-
-        return null;
     }
 }

@@ -8,11 +8,13 @@ import {
     type SocialVideoLayoutType,
     type VenueItemArtPackageType,
 } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
-import { specString } from '@/lib/orders/order-item-specifications';
-import type { OrderItem } from '@/types/orders-api';
+import {
+    specString,
+    type OrderItemSpecRecord,
+} from '@/lib/orders/order-item-specifications';
 
 export function defaultBroadcastSpotType(
-    specs: OrderItem['specifications'],
+    specs: OrderItemSpecRecord,
 ): BroadcastSpotType {
     const type = specString(specs, 'type');
     if (BROADCAST_SPOT_TYPES.includes(type as BroadcastSpotType)) {
@@ -22,7 +24,7 @@ export function defaultBroadcastSpotType(
 }
 
 export function defaultSocialSpotType(
-    specs: OrderItem['specifications'],
+    specs: OrderItemSpecRecord,
 ): SocialVideoLayoutType {
     const type = specString(specs, 'type');
     if (SOCIAL_VIDEO_TYPE_OPTIONS.includes(type as SocialVideoLayoutType)) {
@@ -31,9 +33,7 @@ export function defaultSocialSpotType(
     return 'Social - 16:9';
 }
 
-export function defaultSocialCut(
-    specs: OrderItem['specifications'],
-): SocialCutOption {
+export function defaultSocialCut(specs: OrderItemSpecRecord): SocialCutOption {
     const cut = specString(specs, 'cut');
     if (SOCIAL_CUT_OPTIONS.includes(cut as SocialCutOption)) {
         return cut as SocialCutOption;
@@ -42,7 +42,7 @@ export function defaultSocialCut(
 }
 
 export function defaultArtPackage(
-    specs: OrderItem['specifications'],
+    specs: OrderItemSpecRecord,
 ): VenueItemArtPackageType {
     const type = specString(specs, 'type');
     if (VENUE_ITEM_ART_PACKAGE_TYPES.includes(type as VenueItemArtPackageType)) {

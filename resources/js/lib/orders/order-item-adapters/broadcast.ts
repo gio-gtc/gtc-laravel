@@ -1,6 +1,10 @@
 import type { AddBroadcastStreamingFormValues } from '@/components/pages/orders/slideout/switch-view/general-media/modals/add-broadcast-streaming-modal';
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
 import { pillToBlueprintDuration } from '@/lib/orders/order-catalog';
+import {
+    initialAssetTrackingFromCatalogTags,
+    missingAssetTagsFromTrackingMap,
+} from '@/lib/orders/order-item-specifications';
 import { dueDateIso } from '@/lib/orders/slideout/legacy-venue-row-to-api-item';
 import type { StoreOrderItemPayload } from '@/lib/orders/slideout/legacy-venue-row-to-api-item';
 import type { OrderItemsBroadcastRow } from '@/types';
@@ -93,6 +97,7 @@ export function expandBroadcastCreateDrafts(
 export function draftToPendingBroadcastRow(
     draft: OrderItemCreateDraft,
     tourVenueId: number,
+    catalogTags?: string[],
 ): OrderItemsBroadcastRow {
     const specs = draft.specifications;
     const spotType = String(specs.type ?? 'Generic');
@@ -101,6 +106,8 @@ export function draftToPendingBroadcastRow(
         typeof specs.duration_seconds === 'number'
             ? specs.duration_seconds
             : Number(specs.duration_seconds) || 0;
+    const assetTracking = initialAssetTrackingFromCatalogTags(catalogTags);
+    const missingAssetTags = missingAssetTagsFromTrackingMap(assetTracking);
 
     return {
         id: draft.pendingId,
@@ -121,6 +128,8 @@ export function draftToPendingBroadcastRow(
             typeof specs.encoding_custom === 'string'
                 ? specs.encoding_custom
                 : undefined,
+        asset_tracking: assetTracking,
+        missingAssetTags,
         is_pending: true,
     };
 }

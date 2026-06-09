@@ -1,6 +1,7 @@
 import { TableCell, TableRow } from '@/components/ui/table';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
+import { indexOrderMissingAssetTags } from '@/lib/orders/awaiting-asset-tags';
 import {
     indexOrderAssigneesToUsers,
     resolveClientForIndexOrder,
@@ -9,7 +10,8 @@ import { indexOrderShowsStatusIcon } from '@/lib/orders/order-status';
 import { cn } from '@/lib/utils';
 import type { User } from '@/types';
 import type { IndexOrder } from '@/types/orders-api';
-import { AlertCircle, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import AwaitingAssetsIconGroup from '../awaiting-assets-icons';
 import OrderStatusLabel from '../order-status-label';
 
 type OrdersTableOrderRowProps = {
@@ -34,6 +36,7 @@ export default function OrdersTableOrderRow({
     const venue = order.venue;
     const client = resolveClientForIndexOrder(order, clientRoster);
     const assignees = indexOrderAssigneesToUsers(order, collaboratorRoster);
+    const missingAssetTags = indexOrderMissingAssetTags(order);
     const region =
         venue?.city && venue?.state
             ? `${venue.city}, ${venue.state}`
@@ -82,12 +85,10 @@ export default function OrdersTableOrderRow({
                 {indexOrderShowsStatusIcon(order.status) && (
                     <OrderStatusLabel status={order.status} />
                 )}
-                {order.is_awaiting_assets && (
-                    <AlertCircle
-                        className="size-3.5 shrink-0 text-amber-500"
-                        aria-label="Awaiting assets"
-                    />
-                )}
+                <AwaitingAssetsIconGroup
+                    tags={missingAssetTags}
+                    iconClassName="size-3"
+                />
             </TableCell>
         </TableRow>
     );

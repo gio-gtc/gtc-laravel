@@ -21,17 +21,20 @@ export interface OrderStatusOption {
     label: string;
 }
 
-/** Line item pipeline status (virtual `order_items.status` accessor). */
+/** Line item pipeline status (`order_items.status_lookup.name`). */
 export type OrderItemStatus =
     | 'Still In Cart'
     | 'Unassigned'
     | 'In Production'
     | 'Client Review'
     | 'Out For Delivery'
-    | 'Canceled';
+    | 'Cancelled';
 
-/** Asset blocker tags inside `order_items.specifications.awaiting_assets`. */
+/** Catalog / tracking asset tag labels (Voice Over, Audio, Art, …). */
 export type AwaitingAssetTag = 'Voice Over' | 'Audio' | 'Art';
+
+/** Per-tag line-item asset tracking (`false` = missing, `true` = received, `null` = N/A). */
+export type AssetTrackingMap = Record<string, boolean | null>;
 
 /** UI quadrant ids from `order_menu_item.order_menu_category_id`. */
 export type OrderMenuCategoryId = 1 | 2 | 3 | 4;
@@ -58,10 +61,29 @@ export interface OrderShowDate {
     show_date: string;
 }
 
+/** @deprecated Legacy flat specs — use `specifiable` on read. */
 export interface OrderItemSpecifications {
     isci?: string;
     awaiting_assets?: AwaitingAssetTag[];
     [key: string]: unknown;
+}
+
+export interface OrderItemStatusLookup {
+    id: number;
+    name: OrderItemStatus;
+    order_status_id: number;
+}
+
+export interface OrderItemBroadcastSpecification {
+    id: number;
+    type: string;
+    cut: string;
+    duration_seconds: number;
+    language: string;
+    encoding?: string | null;
+    encoding_custom?: string | null;
+    isci: string;
+    asset_tracking?: AssetTrackingMap;
 }
 
 export interface OrderItem {
@@ -70,15 +92,20 @@ export interface OrderItem {
     order_menu_item_id: number;
     /** Physical FK — use for future writes/state changes. */
     order_item_status_id: number;
-    /** Virtual accessor — UI labels only. */
-    status: OrderItemStatus;
-    locked_price: string;
+    /** @deprecated Use `status_lookup.name`. */
+    status?: OrderItemStatus;
+    locked_price?: string;
     due_date: string | null;
-    specifications: OrderItemSpecifications;
-    root_order_item_id: number | null;
-    revision_number: number;
-    supersedes_order_item_id: number | null;
-    invoice_line_id: number | null;
+    /** @deprecated Use `specifiable` on read. */
+    specifications?: OrderItemSpecifications;
+    specifiable_id?: number;
+    specifiable_type?: string;
+    specifiable?: OrderItemBroadcastSpecification | Record<string, unknown>;
+    status_lookup?: OrderItemStatusLookup;
+    root_order_item_id?: number | null;
+    revision_number?: number;
+    supersedes_order_item_id?: number | null;
+    invoice_line_id?: number | null;
     created_at: string;
     updated_at: string;
     order_menu_item?: OrderMenuItem;
@@ -216,8 +243,8 @@ export interface ApiOrder {
     status: ApiOrderWireStatus;
     /** Deduped active parent statuses on lines in this order. */
     item_statuses: string[];
-    /** True when any line is Unassigned, In Production, or Client Review. */
-    is_awaiting_assets: boolean;
+    /** Legacy index hint — derive missing-asset icons from line `asset_tracking`, not this flag. */
+    is_awaiting_assets?: boolean;
 
     tour?: ApiOrderTour;
     venue?: ApiOrderVenue | null;
@@ -256,6 +283,9 @@ export interface LeanOrderItem {
     order_item_status_id: number;
     status: string;
     assignees: DashboardAssignee[];
+    /** When present on index rows, used to derive missing-asset icons. */
+    asset_tracking?: AssetTrackingMap;
+    specifiable?: { asset_tracking?: AssetTrackingMap };
 }
 
 export interface IndexOrderClientOrganisation {
@@ -295,7 +325,7 @@ export interface IndexOrder {
     updated_at: string;
     status: ApiOrderWireStatus;
     item_statuses: string[];
-    is_awaiting_assets: boolean;
+    is_awaiting_assets?: boolean;
     is_international: boolean;
     venue?: IndexOrderVenue | null;
     show_dates?: OrderShowDate[];

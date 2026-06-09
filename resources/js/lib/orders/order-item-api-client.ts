@@ -121,7 +121,7 @@ export async function updateOrderItem(
     return parsed.order_item;
 }
 
-/** Follow-up PR: remove from cart. */
+/** DELETE /api/order-items/{itemId} — soft-cancel cart line. */
 export async function deleteOrderItem(
     orderItemId: number,
     signal?: AbortSignal,
