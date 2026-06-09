@@ -26,6 +26,22 @@ export type BroadcastAddFormCompleteInput = {
     encodingUnset?: string;
 };
 
+export type BroadcastEditFormCompleteInput = {
+    type: string;
+    cut: string;
+    duration: string;
+    language: string;
+    encodingCustom: boolean;
+    encodingCustomText: string;
+    encodingId: string;
+    /** When true, skip membership checks (values come from applyInternationalLocks). */
+    isInternationalLocked?: boolean;
+    enabledCuts?: readonly string[];
+    enabledDurationPills?: readonly string[];
+    enabledLanguages?: readonly string[];
+    encodingUnset?: string;
+};
+
 function everyInSet(
     values: string[],
     allowed: readonly string[] | undefined,
@@ -94,4 +110,56 @@ export function isBroadcastAddFormComplete(
         const value = encodingByRowKey[row.key];
         return Boolean(value && value !== encodingUnset);
     });
+}
+
+/**
+ * True when broadcast edit-mode form has all required fields and valid selections.
+ */
+export function isBroadcastEditFormComplete(
+    input: BroadcastEditFormCompleteInput,
+): boolean {
+    const {
+        type,
+        cut,
+        duration,
+        language,
+        encodingCustom,
+        encodingCustomText,
+        encodingId,
+        isInternationalLocked = false,
+        enabledCuts,
+        enabledDurationPills,
+        enabledLanguages,
+        encodingUnset = BROADCAST_ENCODING_UNSET,
+    } = input;
+
+    if (!type.trim() || !cut.trim() || !duration.trim() || !language.trim()) {
+        return false;
+    }
+
+    if (!isInternationalLocked) {
+        if (enabledCuts && enabledCuts.length > 0 && !enabledCuts.includes(cut)) {
+            return false;
+        }
+        if (
+            enabledDurationPills &&
+            enabledDurationPills.length > 0 &&
+            !enabledDurationPills.includes(duration)
+        ) {
+            return false;
+        }
+        if (
+            enabledLanguages &&
+            enabledLanguages.length > 0 &&
+            !enabledLanguages.includes(language)
+        ) {
+            return false;
+        }
+    }
+
+    if (encodingCustom) {
+        return encodingCustomText.trim() !== '';
+    }
+
+    return Boolean(encodingId && encodingId !== encodingUnset);
 }

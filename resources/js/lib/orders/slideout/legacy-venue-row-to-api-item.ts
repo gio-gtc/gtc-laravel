@@ -16,7 +16,7 @@ export type StoreOrderItemPayload = {
     assignee_ids?: number[];
 };
 
-function dueDateIso(order: ApiOrder, row: OrderItemsRow): string {
+export function dueDateIso(order: ApiOrder, row: OrderItemsRow): string {
     if (row.dueDate && row.dueDate !== '—') {
         const parsed = Date.parse(row.dueDate);
         if (!Number.isNaN(parsed)) {

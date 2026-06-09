@@ -31,6 +31,7 @@ import {
 import {
     BROADCAST_ENCODING_UNSET,
     isBroadcastAddFormComplete,
+    isBroadcastEditFormComplete,
 } from '@/lib/orders/broadcast-add-form-complete';
 import { hasBroadcastFormDuplicates } from '@/lib/orders/broadcast-duplicate-check';
 import {
@@ -107,7 +108,9 @@ interface AddBroadcastStreamingModalProps {
     mode?: 'add' | 'edit';
     /** Required when mode is `edit` — full row to prefill and merge on save. */
     initialVenueRow?: OrderItemsBroadcastRow;
-    onEditSave?: (row: OrderItemsBroadcastRow) => void;
+    onEditSave?: (
+        row: OrderItemsBroadcastRow,
+    ) => void | Promise<{ failed: boolean } | void>;
     /** Broadcast lines already on this order (add-mode duplicate check). */
     existingBroadcastRows?: OrderItemsBroadcastRow[];
 }
@@ -410,20 +413,36 @@ export default function AddBroadcastStreamingModal({
         ],
     );
 
-    const canSubmitEdit = useMemo(() => {
-        if (!editCut || !editDuration || !editLanguage) return false;
-        if (editEncodingCustom) {
-            return editEncodingCustomText.trim() !== '';
-        }
-        return editEncodingId !== ENCODING_UNSET;
-    }, [
-        editCut,
-        editDuration,
-        editLanguage,
-        editEncodingId,
-        editEncodingCustom,
-        editEncodingCustomText,
-    ]);
+    const canSubmitEdit = useMemo(
+        () =>
+            isBroadcastEditFormComplete({
+                type: editType,
+                cut: editCut,
+                duration: editDuration,
+                language: editLanguage,
+                encodingCustom: editEncodingCustom,
+                encodingCustomText: editEncodingCustomText,
+                encodingId: editEncodingId,
+                isInternationalLocked: isEditInternationalLocked,
+                enabledCuts: editEnabledCuts,
+                enabledDurationPills: editEnabledDurationPills,
+                enabledLanguages: editEnabledLanguages,
+                encodingUnset: ENCODING_UNSET,
+            }),
+        [
+            editType,
+            editCut,
+            editDuration,
+            editLanguage,
+            editEncodingCustom,
+            editEncodingCustomText,
+            editEncodingId,
+            isEditInternationalLocked,
+            editEnabledCuts,
+            editEnabledDurationPills,
+            editEnabledLanguages,
+        ],
+    );
 
     const resetForm = (typeKey: string = type) => {
         setCuts([]);
@@ -577,51 +596,67 @@ export default function AddBroadcastStreamingModal({
         await submitAdd(buildAddFormValues());
     };
 
-    const handleEditSave = () => {
-        if (!canSubmitEdit || !initialVenueRow) return;
+    const handleEditSave = async () => {
+        if (!canSubmitEdit || !initialVenueRow || isSubmitting || !onEditSave) {
+            return;
+        }
+
         const langId = languageTypeToId(venue_item_language, editLanguage);
         if (langId === undefined) return;
 
-        if (editEncodingCustom) {
-            const text = editEncodingCustomText.trim();
-            if (!text) return;
-            onEditSave?.({
-                ...initialVenueRow,
-                spot_type: editType as OrderItemsBroadcastRow['spot_type'],
-                cut: editCut as OrderItemsBroadcastRow['cut'],
-                duration_seconds: modalDurationPillToSeconds(
-                    editDuration,
-                    'broadcast',
-                ),
-                language_id: langId,
-                encoding_custom: text,
-                encoding_id: undefined,
-            });
-        } else {
-            if (editEncodingId === ENCODING_UNSET) return;
-            const encodingId = Number.parseInt(editEncodingId, 10);
-            const encodingLabel = Number.isNaN(encodingId)
-                ? editEncodingId
-                : venueItemEncodingIdToLabel(
-                      encodingId,
-                      venue_item_encoding,
-                  );
-            onEditSave?.({
-                ...initialVenueRow,
-                spot_type: editType as OrderItemsBroadcastRow['spot_type'],
-                cut: editCut as OrderItemsBroadcastRow['cut'],
-                duration_seconds: modalDurationPillToSeconds(
-                    editDuration,
-                    'broadcast',
-                ),
-                language_id: langId,
-                language: editLanguage,
-                encoding: encodingLabel || undefined,
-                encoding_id: Number.isNaN(encodingId) ? undefined : encodingId,
-                encoding_custom: undefined,
-            });
+        const durationSeconds = modalDurationPillToSeconds(
+            editDuration,
+            'broadcast',
+        );
+
+        const baseRow: OrderItemsBroadcastRow = {
+            ...initialVenueRow,
+            spot_type: editType as OrderItemsBroadcastRow['spot_type'],
+            cut: editCut as OrderItemsBroadcastRow['cut'],
+            duration_seconds: durationSeconds,
+            language_id: langId,
+            language: editLanguage,
+        };
+
+        setIsSubmitting(true);
+
+        try {
+            let result: { failed: boolean } | void;
+
+            if (editEncodingCustom) {
+                const text = editEncodingCustomText.trim();
+                if (!text) return;
+                result = await onEditSave({
+                    ...baseRow,
+                    encoding_custom: text,
+                    encoding_id: undefined,
+                    encoding: undefined,
+                });
+            } else {
+                if (editEncodingId === ENCODING_UNSET) return;
+                const encodingId = Number.parseInt(editEncodingId, 10);
+                const encodingLabel = Number.isNaN(encodingId)
+                    ? editEncodingId
+                    : venueItemEncodingIdToLabel(
+                          encodingId,
+                          venue_item_encoding,
+                      );
+                result = await onEditSave({
+                    ...baseRow,
+                    encoding: encodingLabel || undefined,
+                    encoding_id: Number.isNaN(encodingId)
+                        ? undefined
+                        : encodingId,
+                    encoding_custom: undefined,
+                });
+            }
+
+            if (!result?.failed) {
+                handleClose();
+            }
+        } finally {
+            setIsSubmitting(false);
         }
-        handleClose();
     };
 
     return (
@@ -636,14 +671,18 @@ export default function AddBroadcastStreamingModal({
             }
             primaryLabel={
                 isEdit
-                    ? 'Save changes'
+                    ? isSubmitting
+                        ? 'Saving…'
+                        : 'Save changes'
                     : isSubmitting
                       ? 'Adding…'
                       : 'Add to Order'
             }
             onPrimaryClick={isEdit ? handleEditSave : handleAddToOrder}
             primaryDisabled={
-                isEdit ? !canSubmitEdit : !canSubmit || isSubmitting
+                isEdit
+                    ? !canSubmitEdit || isSubmitting
+                    : !canSubmit || isSubmitting
             }
             modalClasses="sm:max-w-[585px]"
         >
@@ -681,17 +720,11 @@ export default function AddBroadcastStreamingModal({
                                     <SelectValue placeholder="Select the type of Spot" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Generic">
-                                        Generic
-                                    </SelectItem>
-                                    <SelectItem value="AmEx">AmEx</SelectItem>
-                                    <SelectItem value="Verizon">
-                                        Verizon
-                                    </SelectItem>
-                                    <SelectItem value="Citi">Citi</SelectItem>
-                                    <SelectItem value="International">
-                                        International
-                                    </SelectItem>
+                                    {typeKeys.map((typeKey) => (
+                                        <SelectItem key={typeKey} value={typeKey}>
+                                            {typeKey}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>

@@ -101,7 +101,7 @@ export async function createOrderItem(
     return parsed.order_item;
 }
 
-/** Follow-up PR: broadcast edit. */
+/** PATCH /api/order-items/{itemId} — update cart line specifications. */
 export async function updateOrderItem(
     orderItemId: number,
     payload: Pick<StoreOrderItemPayload, 'due_date' | 'specifications'>,

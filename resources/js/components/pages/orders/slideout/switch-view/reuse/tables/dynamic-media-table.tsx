@@ -36,6 +36,7 @@ export default function MediaTable({
     onUploadRow,
     onEditIsciRow,
     onEditLineInModal,
+    isEditLineDisabled,
     onPreviewClick,
     cellEditing,
     editScope,
@@ -147,7 +148,10 @@ export default function MediaTable({
                                                             {onEditLineInModal && (
                                                                 <DropdownMenuItem
                                                                     disabled={
-                                                                        isDisabledRow
+                                                                        isDisabledRow ||
+                                                                        isEditLineDisabled?.(
+                                                                            row,
+                                                                        )
                                                                     }
                                                                     onClick={() =>
                                                                         onEditLineInModal(

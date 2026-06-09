@@ -16,7 +16,13 @@ import {
 import { useOrderSlideoutCatalog } from '@/contexts/order-slideout-catalog-context';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
 import { broadcastCreateAdapter } from '@/lib/orders/order-item-adapters';
+import { broadcastRowToUpdatePayload } from '@/lib/orders/order-item-adapters/broadcast';
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
+import {
+    OrderItemApiError,
+    updateOrderItem,
+} from '@/lib/orders/order-item-api-client';
+import { upsertOrderItem } from '@/lib/orders/slideout/order-mutations';
 import { useChat } from '@/hooks/use-chat';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
@@ -97,6 +103,8 @@ function GeneralMediaView({
         createOrderItemsFromForm,
         getMenuItemForCategory,
         orderCatalogLoading,
+        openOrder,
+        setOpenOrder,
     } = useOrderSlideoutCatalog();
     const slideout = resolveSlideoutCatalog(catalog);
     const broadcastMenuItem = getMenuItemForCategory(
@@ -391,11 +399,38 @@ function GeneralMediaView({
     }, []);
 
     const handleBroadcastEditSave = useCallback(
-        (row: OrderItemsBroadcastRow) => {
-            replaceVenueItem(row);
-            closeBroadcastModal();
+        async (row: OrderItemsBroadcastRow) => {
+            if (!openOrder) {
+                toast.error('Open an order before editing line items.');
+                return { failed: true };
+            }
+
+            setBroadcastFieldErrors(undefined);
+
+            try {
+                const payload = broadcastRowToUpdatePayload(row, openOrder);
+                const updated = await updateOrderItem(Number(row.id), payload);
+                setOpenOrder(upsertOrderItem(openOrder, updated));
+                toast.success('Line item updated.');
+                closeBroadcastModal();
+            } catch (error) {
+                if (
+                    error instanceof OrderItemApiError &&
+                    error.errors &&
+                    Object.keys(error.errors).length > 0
+                ) {
+                    setBroadcastFieldErrors(error.errors);
+                    return { failed: true };
+                }
+                toast.error(
+                    error instanceof OrderItemApiError
+                        ? error.message
+                        : 'Failed to update line item.',
+                );
+                return { failed: true };
+            }
         },
-        [replaceVenueItem, closeBroadcastModal],
+        [openOrder, setOpenOrder, closeBroadcastModal],
     );
 
     const handleSocialEditSave = useCallback(
@@ -674,6 +709,7 @@ function GeneralMediaView({
                         })
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
+                    isEditLineDisabled={(row) => row.status_id !== 1}
                     onEditLineInModal={(row) => {
                         const raw = slideout.venue_items.find(
                             (r): r is OrderItemsBroadcastRow =>

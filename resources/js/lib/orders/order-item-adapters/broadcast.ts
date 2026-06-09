@@ -1,7 +1,10 @@
 import type { AddBroadcastStreamingFormValues } from '@/components/pages/orders/slideout/switch-view/general-media/modals/add-broadcast-streaming-modal';
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
 import { pillToBlueprintDuration } from '@/lib/orders/order-catalog';
+import { dueDateIso } from '@/lib/orders/slideout/legacy-venue-row-to-api-item';
+import type { StoreOrderItemPayload } from '@/lib/orders/slideout/legacy-venue-row-to-api-item';
 import type { OrderItemsBroadcastRow } from '@/types';
+import type { ApiOrder } from '@/types/orders-api';
 import { formatShortUsDate } from '@/lib/format/date';
 import type {
     OrderItemCreateAdapter,
@@ -30,6 +33,36 @@ function buildBroadcastSpecifications(
     }
 
     return specs;
+}
+
+function broadcastUpdateSpecifications(
+    row: OrderItemsBroadcastRow,
+): Record<string, unknown> {
+    const specs: Record<string, unknown> = {
+        type: row.spot_type,
+        cut: row.cut,
+        duration_seconds: Math.trunc(Number(row.duration_seconds)),
+        language: row.language ?? '',
+    };
+
+    const custom = row.encoding_custom?.trim();
+    if (custom) {
+        specs.encoding_custom = custom;
+    } else if (row.encoding) {
+        specs.encoding = row.encoding;
+    }
+
+    return specs;
+}
+
+export function broadcastRowToUpdatePayload(
+    row: OrderItemsBroadcastRow,
+    order: ApiOrder,
+): Pick<StoreOrderItemPayload, 'due_date' | 'specifications'> {
+    return {
+        due_date: dueDateIso(order, row),
+        specifications: broadcastUpdateSpecifications(row),
+    };
 }
 
 export function expandBroadcastCreateDrafts(

@@ -279,6 +279,8 @@ export interface MediaTableRow {
     dueDate: string;
     assigned: User[];
     status: OrderItemStatus['type'];
+    /** Physical FK for gating edit actions (e.g. cart-only edit). */
+    status_id?: number;
     /** Optional video URL for the preview modal. When absent, a default placeholder video is used. */
     previewVideoUrl?: string | null;
     /** When set, preview opens a full-image dialog instead of video (e.g. social image cutdown). */
@@ -305,6 +307,8 @@ export interface MediaTableProps {
     onEditIsciRow?: (row: MediaTableRow) => void;
     /** Opens add modal prefilled for line edit (e.g. duration) when provided */
     onEditLineInModal?: (row: MediaTableRow) => void;
+    /** When provided, further disables "Edit Line Details" for matching rows. */
+    isEditLineDisabled?: (row: MediaTableRow) => boolean;
     /** Called when a preview icon is clicked (row, iconIndex). Video: 0 = play, 1 = link; audio: 0 only. */
     onPreviewClick?: (row: MediaTableRow, iconIndex: number) => void;
     /** When set, Cut Name uses EditableCellInput (parent should own useEditableTable) */

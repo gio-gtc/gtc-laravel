@@ -152,6 +152,7 @@ export function venueItemsMediaTableRow(
         cutName: venueItemMediaLineLabel(spot_type, cut),
         assigned,
         status: venueItemStatusIdToLabel(status_id, venueItemStatus),
+        status_id,
         previewVideoUrl,
         previewImageUrl,
     };
