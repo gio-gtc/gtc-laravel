@@ -40,6 +40,7 @@ export default function MediaTable({
     isEditLineDisabled,
     onRemoveFromCart,
     canRemoveFromCart,
+    allowEditInactiveRows = false,
     onPreviewClick,
     cellEditing,
     editScope,
@@ -108,6 +109,9 @@ export default function MediaTable({
                                         const isDisabledRow =
                                             row.status === 'Cancelled' ||
                                             row.status === 'Revision Requested';
+                                        const rowEditsLocked =
+                                            isDisabledRow &&
+                                            !allowEditInactiveRows;
                                         return (
                                             <TableRow
                                                 key={row.id}
@@ -158,7 +162,7 @@ export default function MediaTable({
                                                             {onEditLineInModal && (
                                                                 <DropdownMenuItem
                                                                     disabled={
-                                                                        isDisabledRow ||
+                                                                        rowEditsLocked ||
                                                                         isEditLineDisabled?.(
                                                                             row,
                                                                         )
@@ -175,7 +179,7 @@ export default function MediaTable({
                                                             )}
                                                             <DropdownMenuItem
                                                                 disabled={
-                                                                    isDisabledRow
+                                                                    rowEditsLocked
                                                                 }
                                                                 onClick={() =>
                                                                     onEditIsciRow?.(
@@ -261,7 +265,7 @@ export default function MediaTable({
                                                                 editScope,
                                                             )}
                                                             disabled={
-                                                                isDisabledRow
+                                                                rowEditsLocked
                                                             }
                                                         />
                                                     ) : ( */}
@@ -336,7 +340,7 @@ export default function MediaTable({
                                                                 editScope,
                                                             )}
                                                             disabled={
-                                                                isDisabledRow
+                                                                rowEditsLocked
                                                             }
                                                         />
                                                     ) : (

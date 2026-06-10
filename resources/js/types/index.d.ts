@@ -317,6 +317,8 @@ export interface MediaTableProps {
     onRemoveFromCart?: (row: MediaTableRow) => void;
     /** When provided, shows "Remove from cart" only for matching rows. */
     canRemoveFromCart?: (row: MediaTableRow) => boolean;
+    /** Admin override — allow edit actions on cancelled / revision rows. */
+    allowEditInactiveRows?: boolean;
     /** Called when a preview icon is clicked (row, iconIndex). Video: 0 = play, 1 = link; audio: 0 only. */
     onPreviewClick?: (row: MediaTableRow, iconIndex: number) => void;
     /** When set, Cut Name uses EditableCellInput (parent should own useEditableTable) */
@@ -364,6 +366,8 @@ export interface StaticAssetsMediaTableProps {
     onBulkEditAssignedDoubleClick?: (rowId: string | number) => void;
     orderItemStatusSelectOptions: { value: string; label: string }[];
     artPackageTypeSelectOptions?: { value: string; label: string }[];
+    /** Admin override — allow inline edits on cancelled / revision rows. */
+    allowEditInactiveRows?: boolean;
 }
 
 export interface OrderItemNote {

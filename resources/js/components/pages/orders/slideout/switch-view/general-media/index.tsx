@@ -23,6 +23,10 @@ import {
     updateOrderItem,
 } from '@/lib/orders/order-item-api-client';
 import {
+    isOrderLineItemAdmin,
+    isOrderLineItemEditDisabled,
+} from '@/lib/orders/order-line-item-write-access';
+import {
     apiBroadcastRowTableStatus,
     isMediaTableRowStillInCart,
 } from '@/lib/orders/order-item-table-rows';
@@ -117,6 +121,7 @@ function GeneralMediaView({
         ORDER_MENU_CATEGORY_QUADRANTS.broadcast,
     );
     const apiSlideoutOrderId = catalog.slideoutApiOrderId;
+    const canAdminEditLineItems = isOrderLineItemAdmin(auth.roles ?? []);
     const { replaceVenueItem } = slideout;
     const usersWithFallback = useUsersWithFallback();
 
@@ -713,6 +718,7 @@ function GeneralMediaView({
                     data={filteredBroadcastData}
                     cellEditing={sharedBroadcastCellEditing}
                     editScope="broadcast"
+                    allowEditInactiveRows={canAdminEditLineItems}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
@@ -731,9 +737,11 @@ function GeneralMediaView({
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     isEditLineDisabled={(row) =>
-                        apiSlideoutOrderId
-                            ? !isMediaTableRowStillInCart(row)
-                            : row.status_id !== 1
+                        isOrderLineItemEditDisabled(
+                            row,
+                            auth.roles ?? [],
+                            apiSlideoutOrderId,
+                        )
                     }
                     canRemoveFromCart={
                         apiSlideoutOrderId
@@ -765,6 +773,7 @@ function GeneralMediaView({
                     data={filteredSocialLineData}
                     cellEditing={sharedSocialLineCellEditing}
                     editScope="socialLine"
+                    allowEditInactiveRows={canAdminEditLineItems}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
@@ -779,6 +788,13 @@ function GeneralMediaView({
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
+                    isEditLineDisabled={(row) =>
+                        isOrderLineItemEditDisabled(
+                            row,
+                            auth.roles ?? [],
+                            apiSlideoutOrderId,
+                        )
+                    }
                     onEditLineInModal={(row) => {
                         const raw = slideout.venue_items.find(
                             (r): r is OrderItemsSocialRow =>
@@ -797,6 +813,7 @@ function GeneralMediaView({
                     data={filteredRadioData}
                     cellEditing={sharedRadioCellEditing}
                     editScope="radio"
+                    allowEditInactiveRows={canAdminEditLineItems}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
@@ -812,6 +829,13 @@ function GeneralMediaView({
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
+                    isEditLineDisabled={(row) =>
+                        isOrderLineItemEditDisabled(
+                            row,
+                            auth.roles ?? [],
+                            apiSlideoutOrderId,
+                        )
+                    }
                     onEditLineInModal={(row) => {
                         const raw = slideout.venue_items.find(
                             (r): r is OrderItemsRadioRow =>
@@ -828,6 +852,7 @@ function GeneralMediaView({
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
                     data={filteredStaticAssetsData}
+                    allowEditInactiveRows={canAdminEditLineItems}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     artPackageTypeSelectOptions={artPackageTypeSelectOptions}
                     selectedRowIds={selectedRowIds}

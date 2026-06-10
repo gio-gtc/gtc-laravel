@@ -38,6 +38,7 @@ export default function StaticAssetsMediaTable({
         value,
         label: value,
     })),
+    allowEditInactiveRows = false,
 }: StaticAssetsMediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -85,6 +86,9 @@ export default function StaticAssetsMediaTable({
                                         const isDisabledRow =
                                             row.status === 'Cancelled' ||
                                             row.status === 'Revision Requested';
+                                        const rowEditsLocked =
+                                            isDisabledRow &&
+                                            !allowEditInactiveRows;
                                         return (
                                             <TableRow
                                                 key={row.id}
@@ -135,7 +139,7 @@ export default function StaticAssetsMediaTable({
                                                                 'cutName',
                                                             )}
                                                             disabled={
-                                                                isDisabledRow
+                                                                rowEditsLocked
                                                             }
                                                         />
                                                     ) : (
@@ -174,7 +178,7 @@ export default function StaticAssetsMediaTable({
                                                             )}
                                                             align="center"
                                                             disabled={
-                                                                isDisabledRow
+                                                                rowEditsLocked
                                                             }
                                                         />
                                                     ) : (
@@ -213,7 +217,7 @@ export default function StaticAssetsMediaTable({
                                                             )}
                                                             align="center"
                                                             disabled={
-                                                                isDisabledRow
+                                                                rowEditsLocked
                                                             }
                                                         />
                                                     ) : (
