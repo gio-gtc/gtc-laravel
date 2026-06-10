@@ -7,6 +7,7 @@ import {
 import Divider from '@/components/utils/divider';
 import FilterUserGroupSection from '@/components/utils/filter-user-group-section';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
+import { useOrdersAdvancedFilterClients } from '@/hooks/use-orders-advanced-filter-clients';
 import { useOrdersFilterUsers } from '@/hooks/use-orders-filter-users';
 import {
     type OrdersFilterState,
@@ -32,7 +33,14 @@ export default function OrdersAdvancedFilters({
     const isMyTasksFilterActive = searchParams.get('filter') === 'my-tasks';
 
     const { order_status_options: orderStatusOptions } = useOrdersCatalog();
-    const { clientUsers, collaboratorUsers } = useOrdersFilterUsers();
+    const { clientUsers, clientsLoading, clientsError } =
+        useOrdersAdvancedFilterClients();
+    const {
+        collaboratorUsers,
+        staffLoading,
+        staffError,
+        loadStaffRoster,
+    } = useOrdersFilterUsers();
 
     const selectedClients = useMemo(
         () => clientUsers.filter((u) => filter.clientIds.includes(u.id)),
@@ -93,8 +101,15 @@ export default function OrdersAdvancedFilters({
         });
     };
 
+    const handleOpenChange = (open: boolean) => {
+        if (!open) {
+            return;
+        }
+        loadStaffRoster();
+    };
+
     return (
-        <DropdownMenu>
+        <DropdownMenu onOpenChange={handleOpenChange}>
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" size={'md'}>
                     <Filter
@@ -111,42 +126,62 @@ export default function OrdersAdvancedFilters({
                 className="max-h-[80vh] w-80 overflow-y-auto p-4"
             >
                 <div className="space-y-4">
-                    <FilterUserGroupSection
-                        title="Clients"
-                        selectedUsers={selectedClients}
-                        onUsersChange={(users) =>
-                            onFilterChange({
-                                ...filter,
-                                clientIds: users.map((u) => u.id),
-                            })
-                        }
-                        availableUsers={clientUsers.filter(
-                            (u) => !filter.clientIds.includes(u.id),
-                        )}
-                    />
-
-                    {!isMyTasksFilterActive && (
+                    {clientsLoading ? (
+                        <p className="text-sm text-muted-foreground">
+                            Loading clients…
+                        </p>
+                    ) : clientsError ? (
+                        <p className="text-sm text-destructive">
+                            {clientsError}
+                        </p>
+                    ) : (
                         <FilterUserGroupSection
-                            title="Collaborators"
-                            myChecked={filter.myCollaborators}
-                            onMyChange={(checked) =>
-                                onFilterChange({
-                                    ...filter,
-                                    myCollaborators: checked,
-                                })
-                            }
-                            selectedUsers={selectedCollaborators}
+                            title="Clients"
+                            selectedUsers={selectedClients}
                             onUsersChange={(users) =>
                                 onFilterChange({
                                     ...filter,
-                                    collaboratorIds: users.map((u) => u.id),
+                                    clientIds: users.map((u) => u.id),
                                 })
                             }
-                            availableUsers={collaboratorUsers.filter(
-                                (u) => !filter.collaboratorIds.includes(u.id),
+                            availableUsers={clientUsers.filter(
+                                (u) => !filter.clientIds.includes(u.id),
                             )}
                         />
                     )}
+
+                    {!isMyTasksFilterActive &&
+                        (staffLoading ? (
+                            <p className="text-sm text-muted-foreground">
+                                Loading collaborators…
+                            </p>
+                        ) : staffError ? (
+                            <p className="text-sm text-destructive">
+                                {staffError}
+                            </p>
+                        ) : (
+                            <FilterUserGroupSection
+                                title="Collaborators"
+                                myChecked={filter.myCollaborators}
+                                onMyChange={(checked) =>
+                                    onFilterChange({
+                                        ...filter,
+                                        myCollaborators: checked,
+                                    })
+                                }
+                                selectedUsers={selectedCollaborators}
+                                onUsersChange={(users) =>
+                                    onFilterChange({
+                                        ...filter,
+                                        collaboratorIds: users.map((u) => u.id),
+                                    })
+                                }
+                                availableUsers={collaboratorUsers.filter(
+                                    (u) =>
+                                        !filter.collaboratorIds.includes(u.id),
+                                )}
+                            />
+                        ))}
 
                     {isMyTasksFilterActive && (
                         <p className="text-sm text-muted-foreground">

@@ -158,14 +158,22 @@ export function orderMatchesCollaboratorFilter(
 export function sanitizeFilterUserIds(
     clientIds: number[],
     collaboratorIds: number[],
-    clientRoster: User[],
     collaboratorRoster: User[],
+    options?: { sanitizeCollaborators?: boolean },
 ): { clientIds: number[]; collaboratorIds: number[] } {
-    const clientIdSet = new Set(clientRoster.map((u) => u.id));
+    const sanitizeCollaborators = options?.sanitizeCollaborators ?? true;
+
+    if (!sanitizeCollaborators || collaboratorRoster.length === 0) {
+        return {
+            clientIds,
+            collaboratorIds,
+        };
+    }
+
     const collaboratorIdSet = new Set(collaboratorRoster.map((u) => u.id));
 
     return {
-        clientIds: clientIds.filter((id) => clientIdSet.has(id)),
+        clientIds,
         collaboratorIds: collaboratorIds.filter((id) =>
             collaboratorIdSet.has(id),
         ),

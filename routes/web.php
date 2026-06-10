@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\OrderItemAssigneesSyncController;
 use App\Http\Controllers\Api\OrderItemDeleteController;
 use App\Http\Controllers\Api\OrderItemStoreController as ApiOrderItemStoreController;
 use App\Http\Controllers\Api\OrderItemUpdateController;
+use App\Http\Controllers\Api\ClientsIndexController;
 use App\Http\Controllers\Api\StaffIndexController;
 use App\Http\Controllers\Api\OrderShowController;
 use App\Http\Controllers\Api\OrderUpdateController;
@@ -115,33 +116,6 @@ Route::middleware([BffAuth::class])->group(function () {
         return $response->successful() ? $response->json() : ['venues' => []];
     })->name('search.venues');
 
-    Route::get('/api/search/clients', function (Request $request) {
-        $search = $request->query('search');
-        if (! is_string($search) || strlen($search) < 2) {
-            return response()->json(['clients' => []]);
-        }
-
-        $token = $request->session()->get('api_token');
-        if (! is_string($token) || $token === '') {
-            return response()->json(['clients' => []]);
-        }
-
-        $apiUrl = config('services.api.base_url').'/api/clients';
-        $response = Http::withToken($token)
-            ->acceptJson()
-            ->get($apiUrl, ['search' => $search]);
-
-        if (! $response->successful()) {
-            return response()->json(['clients' => []]);
-        }
-
-        $list = GtcApiClient::unwrapList($response->json(), 'clients');
-
-        return response()->json([
-            'clients' => is_array($list) ? array_values($list) : [],
-        ]);
-    })->name('search.clients');
-
     Route::post('/contacts/invite', [ContactInviteProxyController::class, 'store'])
         ->name('contacts.invite');
 
@@ -154,6 +128,7 @@ Route::middleware([BffAuth::class])->group(function () {
         Route::get('tours/{tour}/orders', TourOrdersController::class)->name('api.tours.orders');
         Route::get('orders/{order}', OrderShowController::class)->name('api.orders.show');
         Route::post('orders/{order}/items', ApiOrderItemStoreController::class)->name('api.orders.items.store');
+        Route::get('clients', ClientsIndexController::class)->name('api.clients.index');
         Route::get('staff', StaffIndexController::class)->name('api.staff.index');
         Route::patch('order-items/{orderItem}', OrderItemUpdateController::class)->name('api.order-items.update');
         Route::delete('order-items/{orderItem}', OrderItemDeleteController::class)->name('api.order-items.delete');

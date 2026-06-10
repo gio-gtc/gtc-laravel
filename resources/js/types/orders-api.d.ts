@@ -164,18 +164,22 @@ export interface ClientSearchOrganisation {
     name: string;
 }
 
-/** Client user row from GET /api/clients (via BFF /api/search/clients). */
-export interface ClientSearchOption {
+/** Client user row from GET /api/clients (via BFF /api/clients). */
+export interface ClientWireUser {
     id: number;
     first_name: string;
     last_name: string;
     email: string;
     organisation_id: number;
-    organisation: ClientSearchOrganisation;
+    avatar?: string | null;
+    organisation?: ClientSearchOrganisation;
 }
 
-export interface ClientsSearchResponse {
-    clients?: ClientSearchOption[];
+/** @alias ClientWireUser — used by autocomplete and add-order flows. */
+export type ClientSearchOption = ClientWireUser;
+
+export interface ClientsIndexResponse {
+    clients?: ClientWireUser[];
 }
 
 export interface ApiOrderTour {

@@ -56,16 +56,25 @@ function OrdersTable() {
         updateOpenOrder,
         registerTourOrdersInvalidator,
     } = useOrderSlideoutCatalog();
-    const { clientUsers, collaboratorUsers } = useOrdersFilterUsers();
+    const {
+        clientUsers,
+        collaboratorUsers,
+        staffRosterLoaded,
+        loadStaffRoster,
+    } = useOrdersFilterUsers();
     const validStatusValues = useMemo(
         () => catalog.order_status_options.map((o) => o.value) as OrderStatus[],
         [catalog.order_status_options],
     );
     const [filters, setFilters] = useOrdersFilters(
         validStatusValues,
-        clientUsers,
         collaboratorUsers,
+        staffRosterLoaded,
     );
+
+    useEffect(() => {
+        loadStaffRoster();
+    }, [loadStaffRoster]);
     const [expandedTours, setExpandedTours] = useState<Set<number>>(new Set());
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);

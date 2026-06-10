@@ -69,8 +69,6 @@ export const DEFAULT_FILTERS: OrdersFilterState = {
 
 type LoadFiltersOptions = {
     validStatuses: OrderStatus[];
-    clientUsers: User[];
-    collaboratorUsers: User[];
 };
 
 const VALID_ASSET_TAGS: AwaitingAssetTag[] = ['Voice Over', 'Audio', 'Art'];
@@ -114,8 +112,8 @@ function loadFiltersFromStorage(
         const { clientIds, collaboratorIds } = sanitizeFilterUserIds(
             Array.isArray(parsed.clientIds) ? parsed.clientIds : [],
             Array.isArray(parsed.collaboratorIds) ? parsed.collaboratorIds : [],
-            options.clientUsers,
-            options.collaboratorUsers,
+            [],
+            { sanitizeCollaborators: false },
         );
 
         return {
@@ -151,8 +149,8 @@ function saveFiltersToStorage(filters: OrdersFilterState): void {
 
 export function useOrdersFilters(
     validStatuses: OrderStatus[],
-    clientUsers: User[],
     collaboratorUsers: User[],
+    staffRosterLoaded: boolean,
 ): [
     OrdersFilterState,
     (
@@ -164,14 +162,38 @@ export function useOrdersFilters(
     const [filters, setFilters] = useState<OrdersFilterState>(() =>
         loadFiltersFromStorage({
             validStatuses,
-            clientUsers,
-            collaboratorUsers,
         }),
     );
 
     useEffect(() => {
         saveFiltersToStorage(filters);
     }, [filters]);
+
+    useEffect(() => {
+        if (!staffRosterLoaded) {
+            return;
+        }
+
+        setFilters((prev) => {
+            const { collaboratorIds } = sanitizeFilterUserIds(
+                prev.clientIds,
+                prev.collaboratorIds,
+                collaboratorUsers,
+            );
+
+            if (
+                collaboratorIds.length === prev.collaboratorIds.length &&
+                collaboratorIds.every((id, i) => id === prev.collaboratorIds[i])
+            ) {
+                return prev;
+            }
+
+            return {
+                ...prev,
+                collaboratorIds,
+            };
+        });
+    }, [collaboratorUsers, staffRosterLoaded]);
 
     return [filters, setFilters];
 }
