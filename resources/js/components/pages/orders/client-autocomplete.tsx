@@ -22,6 +22,10 @@ import {
     useState,
 } from 'react';
 
+const LISTBOX_ID = 'client-autocomplete-listbox';
+const optionId = (clientId: number) =>
+    `${LISTBOX_ID}-opt-${clientId}`;
+
 interface ClientAutocompleteProps {
     value: ClientSearchOption | null;
     onChange: (client: ClientSearchOption | null) => void;
@@ -40,6 +44,9 @@ export default function ClientAutocomplete({
     const [searchQuery, setSearchQuery] = useState('');
     const [open, setOpen] = useState(false);
     const [clients, setClients] = useState<ClientSearchOption[]>([]);
+    const [highlightedIndex, setHighlightedIndex] = useState<number | null>(
+        null,
+    );
     const [popoverContentWidth, setPopoverContentWidth] = useState<
         number | null
     >(null);
@@ -80,6 +87,38 @@ export default function ClientAutocomplete({
             window.clearTimeout(timerId);
         };
     }, [canSearch, trimmedQuery, runFetch]);
+
+    useEffect(() => {
+        setHighlightedIndex(null);
+    }, [searchQuery]);
+
+    useEffect(() => {
+        if (!showList) {
+            setHighlightedIndex(null);
+            return;
+        }
+        setHighlightedIndex((prev) => {
+            if (prev === null || clients.length === 0) {
+                return null;
+            }
+            return Math.min(prev, clients.length - 1);
+        });
+    }, [showList, clients.length]);
+
+    useEffect(() => {
+        if (highlightedIndex === null || !showList) {
+            return;
+        }
+        const client = clients[highlightedIndex];
+        if (!client) {
+            return;
+        }
+        window.requestAnimationFrame(() => {
+            document
+                .getElementById(optionId(client.id))
+                ?.scrollIntoView({ block: 'nearest' });
+        });
+    }, [highlightedIndex, showList, clients]);
 
     useLayoutEffect(() => {
         if (!showList) {
@@ -135,6 +174,7 @@ export default function ClientAutocomplete({
         setSearchQuery(clientDisplayLabel(client));
         setOpen(false);
         setClients([]);
+        setHighlightedIndex(null);
         inputRef.current?.blur();
     };
 
@@ -154,7 +194,59 @@ export default function ClientAutocomplete({
         }, 200);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (!showList || clients.length === 0) {
+            if (e.key === 'Escape' && showList) {
+                e.preventDefault();
+                handleOpenChange(false);
+            }
+            return;
+        }
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setHighlightedIndex((prev) =>
+                prev === null ? 0 : prev >= clients.length - 1 ? 0 : prev + 1,
+            );
+            return;
+        }
+
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setHighlightedIndex((prev) =>
+                prev === null
+                    ? clients.length - 1
+                    : prev <= 0
+                      ? clients.length - 1
+                      : prev - 1,
+            );
+            return;
+        }
+
+        if (e.key === 'Enter') {
+            if (highlightedIndex === null) {
+                return;
+            }
+            e.preventDefault();
+            const client = clients[highlightedIndex];
+            if (client) {
+                handleClientSelect(client);
+            }
+            return;
+        }
+
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            handleOpenChange(false);
+        }
+    };
+
     const displayValue = value ? clientDisplayLabel(value) : searchQuery;
+
+    const activeDescendantId =
+        highlightedIndex !== null && showList
+            ? optionId(clients[highlightedIndex]?.id ?? 0)
+            : undefined;
 
     return (
         <Popover open={showList} onOpenChange={handleOpenChange} modal={false}>
@@ -167,10 +259,13 @@ export default function ClientAutocomplete({
                         role="combobox"
                         aria-expanded={showList}
                         aria-autocomplete="list"
+                        aria-controls={showList ? LISTBOX_ID : undefined}
+                        aria-activedescendant={activeDescendantId}
                         value={displayValue}
                         onChange={handleInputChange}
                         onFocus={handleInputFocus}
                         onBlur={handleInputBlur}
+                        onKeyDown={handleKeyDown}
                         placeholder="Search clients..."
                         required={required}
                         autoComplete="off"
@@ -178,10 +273,13 @@ export default function ClientAutocomplete({
                 </div>
             </PopoverAnchor>
             <PopoverContent
+                id={LISTBOX_ID}
+                role="listbox"
                 className={cn(
                     'max-h-60 overflow-auto p-0',
                     popoverContentWidth != null && 'w-auto min-w-0',
                 )}
+                onWheel={(e) => e.stopPropagation()}
                 style={
                     popoverContentWidth != null
                         ? {
@@ -196,22 +294,35 @@ export default function ClientAutocomplete({
             >
                 {showList ? (
                     <div className="py-1">
-                        {clients.map((client) => (
-                            <button
-                                key={client.id}
-                                type="button"
-                                className="w-full px-4 py-2 text-left hover:bg-accent focus:bg-accent focus:text-accent-foreground focus:outline-none"
-                                onMouseDown={(e) => e.preventDefault()}
-                                onClick={() => handleClientSelect(client)}
-                            >
-                                <div className="font-medium">
-                                    {clientDisplayLabel(client)}
-                                </div>
-                                <div className="text-sm">
-                                    {clientSecondaryLabel(client)}
-                                </div>
-                            </button>
-                        ))}
+                        {clients.map((client, index) => {
+                            const isKeyboardActive = highlightedIndex === index;
+                            return (
+                                <button
+                                    key={client.id}
+                                    id={optionId(client.id)}
+                                    type="button"
+                                    role="option"
+                                    aria-selected={value?.id === client.id}
+                                    className={cn(
+                                        'w-full px-4 py-2 text-left hover:bg-accent focus:bg-accent focus:text-accent-foreground focus:outline-none',
+                                        isKeyboardActive &&
+                                            'bg-accent text-accent-foreground',
+                                    )}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onMouseEnter={() =>
+                                        setHighlightedIndex(index)
+                                    }
+                                    onClick={() => handleClientSelect(client)}
+                                >
+                                    <div className="font-medium">
+                                        {clientDisplayLabel(client)}
+                                    </div>
+                                    <div className="text-sm">
+                                        {clientSecondaryLabel(client)}
+                                    </div>
+                                </button>
+                            );
+                        })}
                     </div>
                 ) : null}
             </PopoverContent>

@@ -19,6 +19,8 @@ import {
 } from 'react';
 
 const MIN_SEARCH_LENGTH = 2;
+const LISTBOX_ID = 'venue-autocomplete-listbox';
+const optionId = (venueId: number) => `${LISTBOX_ID}-opt-${venueId}`;
 
 interface VenueAutocompleteProps {
     value: VenueSearchOption | null;
@@ -67,6 +69,9 @@ export default function VenueAutocomplete({
     const [searchQuery, setSearchQuery] = useState('');
     const [open, setOpen] = useState(false);
     const [venues, setVenues] = useState<VenueSearchOption[]>([]);
+    const [highlightedIndex, setHighlightedIndex] = useState<number | null>(
+        null,
+    );
     const [popoverContentWidth, setPopoverContentWidth] = useState<
         number | null
     >(null);
@@ -107,6 +112,38 @@ export default function VenueAutocomplete({
             window.clearTimeout(timerId);
         };
     }, [canSearch, trimmedQuery, runFetch]);
+
+    useEffect(() => {
+        setHighlightedIndex(null);
+    }, [searchQuery]);
+
+    useEffect(() => {
+        if (!showList) {
+            setHighlightedIndex(null);
+            return;
+        }
+        setHighlightedIndex((prev) => {
+            if (prev === null || venues.length === 0) {
+                return null;
+            }
+            return Math.min(prev, venues.length - 1);
+        });
+    }, [showList, venues.length]);
+
+    useEffect(() => {
+        if (highlightedIndex === null || !showList) {
+            return;
+        }
+        const venue = venues[highlightedIndex];
+        if (!venue) {
+            return;
+        }
+        window.requestAnimationFrame(() => {
+            document
+                .getElementById(optionId(venue.id))
+                ?.scrollIntoView({ block: 'nearest' });
+        });
+    }, [highlightedIndex, showList, venues]);
 
     useLayoutEffect(() => {
         if (!showList) {
@@ -162,6 +199,7 @@ export default function VenueAutocomplete({
         setSearchQuery(venue.name);
         setOpen(false);
         setVenues([]);
+        setHighlightedIndex(null);
         inputRef.current?.blur();
     };
 
@@ -181,7 +219,59 @@ export default function VenueAutocomplete({
         }, 200);
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (!showList || venues.length === 0) {
+            if (e.key === 'Escape' && showList) {
+                e.preventDefault();
+                handleOpenChange(false);
+            }
+            return;
+        }
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setHighlightedIndex((prev) =>
+                prev === null ? 0 : prev >= venues.length - 1 ? 0 : prev + 1,
+            );
+            return;
+        }
+
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setHighlightedIndex((prev) =>
+                prev === null
+                    ? venues.length - 1
+                    : prev <= 0
+                      ? venues.length - 1
+                      : prev - 1,
+            );
+            return;
+        }
+
+        if (e.key === 'Enter') {
+            if (highlightedIndex === null) {
+                return;
+            }
+            e.preventDefault();
+            const venue = venues[highlightedIndex];
+            if (venue) {
+                handleVenueSelect(venue);
+            }
+            return;
+        }
+
+        if (e.key === 'Escape') {
+            e.preventDefault();
+            handleOpenChange(false);
+        }
+    };
+
     const displayValue = value ? value.name : searchQuery;
+
+    const activeDescendantId =
+        highlightedIndex !== null && showList
+            ? optionId(venues[highlightedIndex]?.id ?? 0)
+            : undefined;
 
     return (
         <Popover open={showList} onOpenChange={handleOpenChange} modal={false}>
@@ -194,10 +284,13 @@ export default function VenueAutocomplete({
                         role="combobox"
                         aria-expanded={showList}
                         aria-autocomplete="list"
+                        aria-controls={showList ? LISTBOX_ID : undefined}
+                        aria-activedescendant={activeDescendantId}
                         value={displayValue}
                         onChange={handleInputChange}
                         onFocus={handleInputFocus}
                         onBlur={handleInputBlur}
+                        onKeyDown={handleKeyDown}
                         placeholder="Search venues..."
                         required={required}
                         autoComplete="off"
@@ -205,10 +298,13 @@ export default function VenueAutocomplete({
                 </div>
             </PopoverAnchor>
             <PopoverContent
+                id={LISTBOX_ID}
+                role="listbox"
                 className={cn(
                     'max-h-60 overflow-auto p-0',
                     popoverContentWidth != null && 'w-auto min-w-0',
                 )}
+                onWheel={(e) => e.stopPropagation()}
                 style={
                     popoverContentWidth != null
                         ? {
@@ -223,22 +319,37 @@ export default function VenueAutocomplete({
             >
                 {showList ? (
                     <div className="py-1">
-                        {venues.map((venue) => (
-                            <button
-                                key={venue.id}
-                                type="button"
-                                className="w-full px-4 py-2 text-left hover:bg-accent focus:bg-accent focus:text-accent-foreground focus:outline-none"
-                                onMouseDown={(e) => e.preventDefault()}
-                                onClick={() => handleVenueSelect(venue)}
-                            >
-                                <div className="font-medium">{venue.name}</div>
-                                <div className="text-sm">
-                                    {[venue.city, venue.state]
-                                        .filter(Boolean)
-                                        .join(', ')}
-                                </div>
-                            </button>
-                        ))}
+                        {venues.map((venue, index) => {
+                            const isKeyboardActive = highlightedIndex === index;
+                            return (
+                                <button
+                                    key={venue.id}
+                                    id={optionId(venue.id)}
+                                    type="button"
+                                    role="option"
+                                    aria-selected={value?.id === venue.id}
+                                    className={cn(
+                                        'w-full px-4 py-2 text-left hover:bg-accent focus:bg-accent focus:text-accent-foreground focus:outline-none',
+                                        isKeyboardActive &&
+                                            'bg-accent text-accent-foreground',
+                                    )}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onMouseEnter={() =>
+                                        setHighlightedIndex(index)
+                                    }
+                                    onClick={() => handleVenueSelect(venue)}
+                                >
+                                    <div className="font-medium">
+                                        {venue.name}
+                                    </div>
+                                    <div className="text-sm">
+                                        {[venue.city, venue.state]
+                                            .filter(Boolean)
+                                            .join(', ')}
+                                    </div>
+                                </button>
+                            );
+                        })}
                     </div>
                 ) : null}
             </PopoverContent>
