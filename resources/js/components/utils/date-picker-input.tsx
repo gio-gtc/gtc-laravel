@@ -19,7 +19,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 import { format, parseISO, startOfDay } from 'date-fns';
 import { Calendar } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Matcher } from 'react-day-picker';
 
 function toISOString(date: Date): string {
@@ -97,6 +97,7 @@ export default function DatePickerInput({
     const [inputValue, setInputValue] = useState(() =>
         value ? isoToMasked(value) : '',
     );
+    const isInputFocusedRef = useRef(false);
     const isMobile = useIsMobile();
 
     const containerVariantClasses = cn(
@@ -105,6 +106,9 @@ export default function DatePickerInput({
     );
 
     useEffect(() => {
+        if (isInputFocusedRef.current) {
+            return;
+        }
         setInputValue(value ? isoToMasked(value) : '');
     }, [value]);
 
@@ -146,21 +150,34 @@ export default function DatePickerInput({
         setOpen(false);
     };
 
+    const handleInputFocus = () => {
+        isInputFocusedRef.current = true;
+    };
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const raw = e.target.value.replace(/\D/g, '');
-        const capped = raw.slice(0, 8);
-        setInputValue(formatForMask(capped));
+        setInputValue(e.target.value.replace(/[^\d/]/g, ''));
     };
 
     const handleInputBlur = () => {
-        const parsed = parseMaskedValue(inputValue);
+        const digits = inputValue.replace(/\D/g, '').slice(0, 8);
+        if (digits.length === 0) {
+            onChange('');
+            setInputValue('');
+            isInputFocusedRef.current = false;
+            return;
+        }
+
+        const masked = formatForMask(digits);
+        const parsed = parseMaskedValue(masked);
         if (parsed) {
             const iso = toISOString(parsed);
             onChange(iso);
             setInputValue(isoToMasked(iso));
-        } else if (inputValue.trim() === '') {
-            onChange('');
+        } else {
+            setInputValue(value ? isoToMasked(value) : '');
         }
+
+        isInputFocusedRef.current = false;
     };
 
     const calendarIcon = (
@@ -247,6 +264,7 @@ export default function DatePickerInput({
                         variant={variant}
                         value={inputValue}
                         onChange={handleInputChange}
+                        onFocus={handleInputFocus}
                         onBlur={handleInputBlur}
                         placeholder={placeholder}
                         required={required}
@@ -324,6 +342,7 @@ export default function DatePickerInput({
                     variant={variant}
                     value={inputValue}
                     onChange={handleInputChange}
+                    onFocus={handleInputFocus}
                     onBlur={handleInputBlur}
                     placeholder={placeholder}
                     required={required}
