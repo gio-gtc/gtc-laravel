@@ -329,6 +329,8 @@ export interface MediaTableProps {
     onRowSelectToggle?: (rowId: string | number) => void;
     onBulkEditDueDateDoubleClick?: (rowId: string | number) => void;
     onBulkEditAssignedDoubleClick?: (rowId: string | number) => void;
+    /** Admin-only — gates Assigned cell double-click. */
+    canEditAssignees?: boolean;
     orderItemStatusSelectOptions: { value: string; label: string }[];
 }
 
@@ -364,6 +366,8 @@ export interface StaticAssetsMediaTableProps {
     onRowSelectToggle?: (rowId: string | number) => void;
     onBulkEditDueDateDoubleClick?: (rowId: string | number) => void;
     onBulkEditAssignedDoubleClick?: (rowId: string | number) => void;
+    /** Admin-only — gates Assigned cell double-click. */
+    canEditAssignees?: boolean;
     orderItemStatusSelectOptions: { value: string; label: string }[];
     artPackageTypeSelectOptions?: { value: string; label: string }[];
     /** Admin override — allow inline edits on cancelled / revision rows. */

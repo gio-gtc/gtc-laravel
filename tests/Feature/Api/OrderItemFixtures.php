@@ -15,6 +15,33 @@ function apiOrderItemUrl(int $orderItemId): string
     return gtcApiBaseUrl()."/api/order-items/{$orderItemId}";
 }
 
+function apiStaffUrl(): string
+{
+    return gtcApiBaseUrl().'/api/staff';
+}
+
+function apiOrderItemAssigneesUrl(int $orderItemId): string
+{
+    return gtcApiBaseUrl()."/api/order-items/{$orderItemId}/assignees";
+}
+
+function apiOrderItemAssigneeDestroyUrl(int $orderItemId, int $userId): string
+{
+    return gtcApiBaseUrl()."/api/order-items/{$orderItemId}/assignees/{$userId}";
+}
+
+function sampleStaffWireUser(int $id = 12): array
+{
+    return [
+        'id' => $id,
+        'first_name' => 'Sarah',
+        'last_name' => 'Connor',
+        'email' => 'sconnor@gtcforce.com',
+        'avatar' => 'https://cdn.example.com/avatars/sarah.jpg',
+        'organisation_id' => 1,
+    ];
+}
+
 function samplePolymorphicBroadcastOrderItem(int $id = 200): array
 {
     return [

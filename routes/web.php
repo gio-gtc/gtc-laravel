@@ -2,9 +2,13 @@
 
 use App\Http\Controllers\Api\ChannelMessageController;
 use App\Http\Controllers\Api\OrderCatalogMenuController;
+use App\Http\Controllers\Api\OrderItemAssigneesDestroyController;
+use App\Http\Controllers\Api\OrderItemAssigneesIndexController;
+use App\Http\Controllers\Api\OrderItemAssigneesSyncController;
 use App\Http\Controllers\Api\OrderItemDeleteController;
 use App\Http\Controllers\Api\OrderItemStoreController as ApiOrderItemStoreController;
 use App\Http\Controllers\Api\OrderItemUpdateController;
+use App\Http\Controllers\Api\StaffIndexController;
 use App\Http\Controllers\Api\OrderShowController;
 use App\Http\Controllers\Api\OrderUpdateController;
 use App\Http\Controllers\Api\TourIndexController;
@@ -150,8 +154,12 @@ Route::middleware([BffAuth::class])->group(function () {
         Route::get('tours/{tour}/orders', TourOrdersController::class)->name('api.tours.orders');
         Route::get('orders/{order}', OrderShowController::class)->name('api.orders.show');
         Route::post('orders/{order}/items', ApiOrderItemStoreController::class)->name('api.orders.items.store');
+        Route::get('staff', StaffIndexController::class)->name('api.staff.index');
         Route::patch('order-items/{orderItem}', OrderItemUpdateController::class)->name('api.order-items.update');
         Route::delete('order-items/{orderItem}', OrderItemDeleteController::class)->name('api.order-items.delete');
+        Route::get('order-items/{orderItem}/assignees', OrderItemAssigneesIndexController::class)->name('api.order-items.assignees.index');
+        Route::post('order-items/{orderItem}/assignees', OrderItemAssigneesSyncController::class)->name('api.order-items.assignees.sync');
+        Route::delete('order-items/{orderItem}/assignees/{user}', OrderItemAssigneesDestroyController::class)->name('api.order-items.assignees.destroy');
         Route::patch('orders/{order}', OrderUpdateController::class)->name('api.orders.update');
 
         Route::patch('channels/{channelId}/messages/{id}', [ChannelMessageController::class, 'update']);

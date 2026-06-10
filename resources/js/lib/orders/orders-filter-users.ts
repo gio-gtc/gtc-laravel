@@ -60,6 +60,13 @@ export function assigneeToUser(assignee: OrderAssignee, roster?: User[]): User {
     return resolveUserForAvatar(assignee.id, roster ?? [], assignee);
 }
 
+export function orderItemAssigneesToUsers(
+    assignees: OrderAssignee[] | undefined,
+    roster: User[],
+): User[] {
+    return (assignees ?? []).map((assignee) => assigneeToUser(assignee, roster));
+}
+
 export function resolveClientForOrder(
     order: ApiOrder,
     clientRoster: User[],

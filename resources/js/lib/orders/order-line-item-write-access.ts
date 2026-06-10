@@ -25,3 +25,14 @@ export function isOrderLineItemEditDisabled(
 
     return row.status_id !== 1;
 }
+
+export function canEditOrderItemAssignees(
+    roles: readonly string[],
+    row: Pick<MediaTableRow, 'status'>,
+): boolean {
+    return (
+        isOrderLineItemAdmin(roles) &&
+        row.status !== 'Cancelled' &&
+        row.status !== 'Revision Requested'
+    );
+}

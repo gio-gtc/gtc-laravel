@@ -53,7 +53,13 @@ export interface OrderAssignee {
     first_name?: string | null;
     last_name?: string | null;
     avatar?: string | null;
+    organisation_id?: number;
 }
+
+/** gtc-api wire shape for GET /api/staff and assignee mutation responses. */
+export type StaffWireUser = OrderAssignee & {
+    organisation_id: number;
+};
 
 export interface OrderShowDate {
     id: number;

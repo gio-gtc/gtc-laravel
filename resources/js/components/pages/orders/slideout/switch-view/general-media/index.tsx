@@ -20,8 +20,10 @@ import { broadcastRowToUpdatePayload } from '@/lib/orders/order-item-adapters/br
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
 import {
     OrderItemApiError,
+    syncOrderItemAssignees,
     updateOrderItem,
 } from '@/lib/orders/order-item-api-client';
+import { orderItemAssigneesToUsers } from '@/lib/orders/orders-filter-users';
 import {
     isOrderLineItemAdmin,
     isOrderLineItemEditDisabled,
@@ -122,6 +124,7 @@ function GeneralMediaView({
     );
     const apiSlideoutOrderId = catalog.slideoutApiOrderId;
     const canAdminEditLineItems = isOrderLineItemAdmin(auth.roles ?? []);
+    const canEditAssignees = canAdminEditLineItems;
     const { replaceVenueItem } = slideout;
     const usersWithFallback = useUsersWithFallback();
 
@@ -177,6 +180,29 @@ function GeneralMediaView({
     const [statusFilter, setStatusFilter] = useState<MediaStatusFilter>([]);
     const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
+    const resolveAssignedForRow = useCallback(
+        (rowId: string | number): User[] => {
+            if (openOrder) {
+                const item = openOrder.order_items?.find(
+                    (orderItem) => String(orderItem.id) === String(rowId),
+                );
+                if (item) {
+                    return orderItemAssigneesToUsers(
+                        item.assignees,
+                        usersWithFallback,
+                    );
+                }
+            }
+
+            return getAssignedUsersForVenueItem(
+                rowId,
+                venueLineCatalog,
+                usersWithFallback,
+            );
+        },
+        [openOrder, venueLineCatalog, usersWithFallback],
+    );
+
     const mapBroadcastRadioSocialRow = useCallback(
         (row: OrderItemsBroadcastRadioSocialRow) => {
             const statusOverride =
@@ -186,11 +212,7 @@ function GeneralMediaView({
 
             const mediaRow = venueItemsMediaTableRow(
                 row,
-                getAssignedUsersForVenueItem(
-                    row.id,
-                    venueLineCatalog,
-                    usersWithFallback,
-                ),
+                resolveAssignedForRow(row.id),
                 slideout.venue_item_status,
                 statusOverride,
             );
@@ -218,8 +240,7 @@ function GeneralMediaView({
             apiSlideoutOrderId,
             openOrder,
             slideout.venue_item_status,
-            venueLineCatalog,
-            usersWithFallback,
+            resolveAssignedForRow,
         ],
     );
 
@@ -267,11 +288,7 @@ function GeneralMediaView({
             .map((row) => {
                 const staticRow = venueItemsArtTableRow(
                     row,
-                    getAssignedUsersForVenueItem(
-                        row.id,
-                        venueLineCatalog,
-                        usersWithFallback,
-                    ),
+                    resolveAssignedForRow(row.id),
                     slideout.venue_item_status,
                 );
                 const resolvedStatus = venueItemStatusIdToLabel(
@@ -296,8 +313,7 @@ function GeneralMediaView({
         orderItem,
         slideout.venue_items,
         slideout.venue_item_status,
-        venueLineCatalog,
-        usersWithFallback,
+        resolveAssignedForRow,
     ]);
 
     const {
@@ -356,6 +372,9 @@ function GeneralMediaView({
     const [assignedModalOpen, setAssignedModalOpen] = useState(false);
     const [dueDateSeedIso, setDueDateSeedIso] = useState<string | undefined>();
     const [assignedSeed, setAssignedSeed] = useState<User[]>([]);
+    const [assigneeSaveError, setAssigneeSaveError] = useState<
+        string | undefined
+    >();
 
     const [audioModalOpen, setAudioModalOpen] = useState(false);
     const [broadcastModalOpen, setBroadcastModalOpen] = useState(false);
@@ -592,6 +611,7 @@ function GeneralMediaView({
             const staticRow = localStaticRows.find((r) => r.id === rowId);
             const row = broadcastRow ?? socialLineRow ?? radioRow ?? staticRow;
             if (!row) return;
+            setAssigneeSaveError(undefined);
             setAssignedSeed([...row.assigned]);
             setAssignedModalOpen(true);
         },
@@ -635,24 +655,93 @@ function GeneralMediaView({
     );
 
     const handleAssignedBulkSave = useCallback(
-        ({ assigned }: { assigned: User[] }) => {
-            if (apiSlideoutOrderId != null) {
-                notifyIfApiSlideoutReadOnly();
+        async ({ assigned }: { assigned: User[] }) => {
+            if (!canEditAssignees) {
                 return;
             }
-            bulkPatchBroadcastRows(selectedRowIds, { assigned });
-            bulkPatchSocialLineRows(selectedRowIds, { assigned });
-            bulkPatchRadioRows(selectedRowIds, { assigned });
-            bulkPatchStaticRows(selectedRowIds, { assigned });
+
+            if (!openOrder) {
+                toast.error('Open an order before updating assignees.');
+                return;
+            }
+
+            const frozenStatuses = new Set([
+                'Cancelled',
+                'Revision Requested',
+            ]);
+            const selectedRows = [
+                ...localBroadcastRows,
+                ...localSocialLineRows,
+                ...localRadioRows,
+                ...localStaticRows,
+            ].filter((row) => selectedRowIds.has(row.id));
+
+            if (
+                selectedRows.some((row) => frozenStatuses.has(row.status))
+            ) {
+                toast.warning(
+                    'Cannot update assignees on cancelled or revision-requested lines.',
+                );
+                return;
+            }
+
+            const userIds = assigned.map((user) => user.id);
+            const results = await Promise.allSettled(
+                [...selectedRowIds].map((rowId) =>
+                    syncOrderItemAssignees(Number(rowId), userIds),
+                ),
+            );
+
+            const succeeded = results.filter(
+                (result) => result.status === 'fulfilled',
+            ).length;
+            const failed = results.length - succeeded;
+
+            if (succeeded === results.length) {
+                toast.success('Assignees updated.');
+                setAssigneeSaveError(undefined);
+                setAssignedModalOpen(false);
+            } else if (succeeded > 0) {
+                toast.warning(
+                    `Assigned staff to ${succeeded} item(s), but failed on ${failed} item(s).`,
+                );
+                setAssigneeSaveError(undefined);
+                setAssignedModalOpen(false);
+            } else {
+                const firstRejected = results.find(
+                    (result) => result.status === 'rejected',
+                ) as PromiseRejectedResult | undefined;
+                const reason = firstRejected?.reason;
+
+                if (reason instanceof OrderItemApiError) {
+                    const validationMessage = reason.errors
+                        ? Object.values(reason.errors).flat()[0]
+                        : undefined;
+                    const message =
+                        reason.status === 403
+                            ? (reason.message ||
+                              'You do not have permission to update assignees.')
+                            : (validationMessage ?? reason.message);
+                    setAssigneeSaveError(message);
+                    toast.error(message);
+                } else {
+                    const message = 'Could not update assignees.';
+                    setAssigneeSaveError(message);
+                    toast.error(message);
+                }
+            }
+
+            await refreshOpenOrder(openOrder.id);
         },
         [
-            bulkPatchBroadcastRows,
-            bulkPatchSocialLineRows,
-            bulkPatchRadioRows,
-            bulkPatchStaticRows,
+            canEditAssignees,
+            openOrder,
+            localBroadcastRows,
+            localSocialLineRows,
+            localRadioRows,
+            localStaticRows,
             selectedRowIds,
-            apiSlideoutOrderId,
-            notifyIfApiSlideoutReadOnly,
+            refreshOpenOrder,
         ],
     );
 
@@ -724,6 +813,7 @@ function GeneralMediaView({
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
+                    canEditAssignees={canEditAssignees}
                     onAdd={() => {
                         setBroadcastModalMode('add');
                         setBroadcastEditRow(null);
@@ -779,6 +869,7 @@ function GeneralMediaView({
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
+                    canEditAssignees={canEditAssignees}
                     onAdd={() => {
                         setSocialModalMode('add');
                         setSocialEditRow(null);
@@ -819,6 +910,7 @@ function GeneralMediaView({
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
+                    canEditAssignees={canEditAssignees}
                     onAdd={() => {
                         setRadioModalMode('add');
                         setRadioEditRow(null);
@@ -859,6 +951,7 @@ function GeneralMediaView({
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
                     onBulkEditAssignedDoubleClick={openAssignedBulkEdit}
+                    canEditAssignees={canEditAssignees}
                     onPreviewImageClick={openStaticImagePreview}
                     cellEditing={{
                         onCellChange: handleStaticCellChange,
@@ -911,9 +1004,13 @@ function GeneralMediaView({
             />
             <BulkEditAssignedModal
                 isOpen={assignedModalOpen}
-                onClose={() => setAssignedModalOpen(false)}
+                onClose={() => {
+                    setAssignedModalOpen(false);
+                    setAssigneeSaveError(undefined);
+                }}
                 initialAssigned={assignedSeed}
                 onSave={handleAssignedBulkSave}
+                saveError={assigneeSaveError}
             />
             <EditIsciModal
                 key={editIsciRow?.id ?? 'closed'}

@@ -1,6 +1,8 @@
 import { getCsrfHeaders } from '@/lib/forms/csrf';
+import { staffEmbedToUser } from '@/lib/user-for-avatar';
+import type { User } from '@/types';
 import type { OrderCatalogMenu } from '@/types/order-catalog';
-import type { OrderItem } from '@/types/orders-api';
+import type { OrderItem, StaffWireUser } from '@/types/orders-api';
 import type { StoreOrderItemPayload } from '@/lib/orders/slideout/legacy-venue-row-to-api-item';
 
 export type OrderItemMutationResponse = {
@@ -51,6 +53,81 @@ async function parseMutationResponse(
     }
 
     return body;
+}
+
+type AssigneeMutationResponse = {
+    message: string;
+    assignees: StaffWireUser[];
+};
+
+type StaffIndexResponse = {
+    staff: StaffWireUser[];
+};
+
+function mapStaffWireUsers(rows: StaffWireUser[] | undefined): User[] {
+    return (rows ?? []).map((row) => staffEmbedToUser(row));
+}
+
+async function parseAssigneeMutationResponse(
+    response: Response,
+): Promise<AssigneeMutationResponse> {
+    const body = (await response.json()) as AssigneeMutationResponse &
+        OrderItemValidationError;
+
+    if (!response.ok) {
+        throw new OrderItemApiError(
+            body.message ?? 'Could not complete assignee request.',
+            response.status,
+            body.errors,
+        );
+    }
+
+    return body;
+}
+
+/** GET /api/staff — internal GTC staff roster (organisation_id = 1). */
+export async function fetchStaffRoster(
+    signal?: AbortSignal,
+): Promise<User[]> {
+    const response = await fetch('/api/staff', {
+        headers: { Accept: 'application/json' },
+        credentials: 'same-origin',
+        signal,
+    });
+
+    if (!response.ok) {
+        const body = (await response.json()) as OrderItemValidationError;
+        throw new OrderItemApiError(
+            body.message ?? 'Could not load staff roster.',
+            response.status,
+            body.errors,
+        );
+    }
+
+    const body = (await response.json()) as StaffIndexResponse;
+
+    return mapStaffWireUsers(body.staff);
+}
+
+/** POST /api/order-items/{itemId}/assignees — sync assignees for a line item. */
+export async function syncOrderItemAssignees(
+    orderItemId: number,
+    userIds: number[],
+    signal?: AbortSignal,
+): Promise<User[]> {
+    const headers = getCsrfHeaders();
+
+    const response = await fetch(`/api/order-items/${orderItemId}/assignees`, {
+        method: 'POST',
+        headers,
+        credentials: 'same-origin',
+        signal,
+        body: JSON.stringify({ user_ids: userIds }),
+    });
+
+    const parsed = await parseAssigneeMutationResponse(response);
+
+    return mapStaffWireUsers(parsed.assignees);
 }
 
 export async function fetchOrderCatalogMenu(

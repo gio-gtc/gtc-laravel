@@ -48,6 +48,7 @@ export default function MediaTable({
     onRowSelectToggle,
     onBulkEditDueDateDoubleClick,
     onBulkEditAssignedDoubleClick,
+    canEditAssignees = false,
     orderItemStatusSelectOptions,
 }: MediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -112,6 +113,8 @@ export default function MediaTable({
                                         const rowEditsLocked =
                                             isDisabledRow &&
                                             !allowEditInactiveRows;
+                                        const assigneeEditsLocked =
+                                            isDisabledRow || !canEditAssignees;
                                         return (
                                             <TableRow
                                                 key={row.id}
@@ -380,7 +383,7 @@ export default function MediaTable({
                                                     <div
                                                         className={cn(
                                                             'flex min-h-[30px] align-middle',
-                                                            !isDisabledRow &&
+                                                            !assigneeEditsLocked &&
                                                                 'cursor-pointer',
                                                         )}
                                                         onDoubleClick={(e) => {
@@ -389,7 +392,7 @@ export default function MediaTable({
                                                                 !selectedRowIds?.has(
                                                                     row.id,
                                                                 ) ||
-                                                                isDisabledRow ||
+                                                                assigneeEditsLocked ||
                                                                 !onBulkEditAssignedDoubleClick
                                                             )
                                                                 return;

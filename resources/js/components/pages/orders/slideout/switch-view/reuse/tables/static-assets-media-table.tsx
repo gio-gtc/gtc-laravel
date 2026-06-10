@@ -32,6 +32,7 @@ export default function StaticAssetsMediaTable({
     onRowSelectToggle,
     onBulkEditDueDateDoubleClick,
     onBulkEditAssignedDoubleClick,
+    canEditAssignees = false,
     onPreviewImageClick,
     orderItemStatusSelectOptions,
     artPackageTypeSelectOptions = VENUE_ITEM_ART_PACKAGE_TYPES.map((value) => ({
@@ -89,6 +90,8 @@ export default function StaticAssetsMediaTable({
                                         const rowEditsLocked =
                                             isDisabledRow &&
                                             !allowEditInactiveRows;
+                                        const assigneeEditsLocked =
+                                            isDisabledRow || !canEditAssignees;
                                         return (
                                             <TableRow
                                                 key={row.id}
@@ -257,7 +260,7 @@ export default function StaticAssetsMediaTable({
                                                     <div
                                                         className={cn(
                                                             'min-h-[inherit]',
-                                                            !isDisabledRow &&
+                                                            !assigneeEditsLocked &&
                                                                 'cursor-pointer',
                                                         )}
                                                         onDoubleClick={(e) => {
@@ -266,7 +269,7 @@ export default function StaticAssetsMediaTable({
                                                                 !selectedRowIds?.has(
                                                                     row.id,
                                                                 ) ||
-                                                                isDisabledRow ||
+                                                                assigneeEditsLocked ||
                                                                 !onBulkEditAssignedDoubleClick
                                                             )
                                                                 return;
