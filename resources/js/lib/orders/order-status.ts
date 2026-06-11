@@ -1,9 +1,5 @@
 import { ClipBoardPlusIcon } from '@/components/ui/icons';
-import type {
-    ApiOrderWireStatus,
-    OrderStatus,
-    OrderStatusFilterValue,
-} from '@/types/orders-api';
+import type { OrderStatusFilterValue } from '@/types/orders-api';
 import {
     CircleCheck,
     type LucideIcon,
@@ -16,7 +12,7 @@ export const ORDER_STATUS_LABELS: Record<OrderStatusFilterValue, string> = {
     'In Progress': 'In Progress',
     'Client Review': 'Client Review',
     Complete: 'Complete',
-    Canceled: 'Canceled',
+    Cancelled: 'Cancelled',
 };
 
 type OrderStatusIconConfig = {
@@ -44,7 +40,7 @@ const ORDER_STATUS_ICON_MAP: Record<
         icon: CircleCheck,
         containerClass: 'bg-green-500',
     },
-    Canceled: {
+    Cancelled: {
         icon: Pause,
         containerClass: 'bg-red-500',
     },
@@ -52,23 +48,28 @@ const ORDER_STATUS_ICON_MAP: Record<
 
 const DEFAULT_ORDER_STATUS_ICON: OrderStatusIconConfig = {
     icon: MessageCircleQuestion,
-    containerClass: 'bg-brand-gtc-red',
+    containerClass: 'bg-red-500',
 };
 
-/** Whether /orders table should render a container status icon. */
-export function indexOrderShowsStatusIcon(
-    status: ApiOrderWireStatus,
-): status is OrderStatus {
-    return status !== 'Still In Cart';
+/** Normalize legacy wire spellings to icon map keys. */
+function normalizeOrderStatusName(status: string): string {
+    if (status === 'Canceled') {
+        return 'Cancelled';
+    }
+    return status;
 }
 
 export function orderStatusDisplayLabel(status: string): string {
-    return ORDER_STATUS_LABELS[status as OrderStatusFilterValue] ?? status;
+    const normalized = normalizeOrderStatusName(status);
+    return (
+        ORDER_STATUS_LABELS[normalized as OrderStatusFilterValue] ?? status
+    );
 }
 
 export function orderStatusIconConfig(status: string): OrderStatusIconConfig {
+    const normalized = normalizeOrderStatusName(status);
     return (
-        ORDER_STATUS_ICON_MAP[status as OrderStatusFilterValue] ??
+        ORDER_STATUS_ICON_MAP[normalized as OrderStatusFilterValue] ??
         DEFAULT_ORDER_STATUS_ICON
     );
 }

@@ -42,6 +42,19 @@ function sampleStaffWireUser(int $id = 12): array
     ];
 }
 
+function sampleParentOrderUpdate(int $orderId = 1): array
+{
+    return [
+        'id' => $orderId,
+        'statuses' => [
+            ['id' => 2, 'name' => 'In Progress'],
+            ['id' => 5, 'name' => 'Cancelled'],
+        ],
+        'tags' => ['Art', 'Audio'],
+        'updated_at' => '2026-06-11T11:17:10.000000Z',
+    ];
+}
+
 function samplePolymorphicBroadcastOrderItem(int $id = 200): array
 {
     return [

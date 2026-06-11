@@ -22,7 +22,6 @@ import {
     defaultSocialSpotType,
 } from '@/lib/orders/order-item-venue-defaults';
 import { venueItemTypeFromCategoryId } from '@/lib/orders/order-menu-categories';
-import { collectTourVenueStatuses } from '@/lib/orders/order-status-tour-venue-icons';
 import type {
     OrderItemAssigned,
     OrderItemsArtRow,
@@ -98,7 +97,7 @@ function apiOrderToTourVenue(order: ApiOrder): TourVenue {
         end_date: end,
         client: order.client?.id ?? order.ordered_by_id ?? 0,
         created_at: order.created_at,
-        status: collectTourVenueStatuses(order),
+        status: null,
     };
 }
 

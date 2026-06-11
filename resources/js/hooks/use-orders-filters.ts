@@ -1,6 +1,6 @@
 import { sanitizeFilterUserIds } from '@/lib/orders/orders-filter-users';
 import type { User } from '@/types';
-import type { AwaitingAssetTag, OrderStatus } from '@/types/orders-api';
+import type { OrderStatus, OrderTag } from '@/types/orders-api';
 import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'gtc-orders-filters';
@@ -11,7 +11,9 @@ const LEGACY_STATUS_SLUG_TO_WIRE: Record<string, OrderStatus> = {
     'in progress': 'In Progress',
     'client review': 'Client Review',
     complete: 'Complete',
-    canceled: 'Canceled',
+    canceled: 'Cancelled',
+    cancelled: 'Cancelled',
+    Canceled: 'Cancelled',
 };
 
 function migrateStoredStatus(
@@ -54,7 +56,7 @@ export type OrdersFilterState = {
     collaboratorIds: number[];
     myCollaborators: boolean;
     statuses: OrderStatus[];
-    assetTags: AwaitingAssetTag[];
+    assetTags: OrderTag[];
     country: { us: boolean; international: boolean };
 };
 
@@ -71,24 +73,24 @@ type LoadFiltersOptions = {
     validStatuses: OrderStatus[];
 };
 
-const VALID_ASSET_TAGS: AwaitingAssetTag[] = ['Voice Over', 'Audio', 'Art'];
+const VALID_ASSET_TAGS: OrderTag[] = ['Audio', 'Art'];
 
-function normalizeStoredAssetTags(raw: unknown): AwaitingAssetTag[] {
+function normalizeStoredAssetTags(raw: unknown): OrderTag[] {
     if (!Array.isArray(raw)) {
         return [];
     }
 
-    const seen = new Set<AwaitingAssetTag>();
-    const result: AwaitingAssetTag[] = [];
+    const seen = new Set<OrderTag>();
+    const result: OrderTag[] = [];
 
     for (const entry of raw) {
         if (
             typeof entry === 'string' &&
-            VALID_ASSET_TAGS.includes(entry as AwaitingAssetTag) &&
-            !seen.has(entry as AwaitingAssetTag)
+            VALID_ASSET_TAGS.includes(entry as OrderTag) &&
+            !seen.has(entry as OrderTag)
         ) {
-            seen.add(entry as AwaitingAssetTag);
-            result.push(entry as AwaitingAssetTag);
+            seen.add(entry as OrderTag);
+            result.push(entry as OrderTag);
         }
     }
 

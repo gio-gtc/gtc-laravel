@@ -73,12 +73,14 @@ export async function runSequentialOrderItemCreate<TForm>(
         const draft = drafts[index]!;
 
         try {
-            const created = await createOrderItem(
+            const result = await createOrderItem(
                 order.id,
                 adapter.toStorePayload(draft),
             );
 
-            setOpenOrder((prev) => (prev ? upsertOrderItem(prev, created) : prev));
+            setOpenOrder((prev) =>
+                prev ? upsertOrderItem(prev, result.order_item) : prev,
+            );
             setExtraVenueItems((prev) =>
                 prev.filter((row) => String(row.id) !== draft.pendingId),
             );

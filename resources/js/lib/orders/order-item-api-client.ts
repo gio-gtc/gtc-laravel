@@ -2,12 +2,28 @@ import { getCsrfHeaders } from '@/lib/forms/csrf';
 import { staffEmbedToUser } from '@/lib/user-for-avatar';
 import type { User } from '@/types';
 import type { OrderCatalogMenu } from '@/types/order-catalog';
-import type { OrderItem, StaffWireUser } from '@/types/orders-api';
+import type {
+    OrderItem,
+    ParentOrderUpdate,
+    StaffWireUser,
+} from '@/types/orders-api';
 import type { StoreOrderItemPayload } from '@/lib/orders/slideout/legacy-venue-row-to-api-item';
 
 export type OrderItemMutationResponse = {
     message: string;
     order_item: OrderItem;
+    parent_order_update?: ParentOrderUpdate;
+};
+
+export type AssigneeMutationResponse = {
+    message: string;
+    assignees: StaffWireUser[];
+    parent_order_update?: ParentOrderUpdate;
+};
+
+export type AssigneeSyncResult = {
+    users: User[];
+    parent_order_update?: ParentOrderUpdate;
 };
 
 export type OrderItemValidationError = {
@@ -54,11 +70,6 @@ async function parseMutationResponse(
 
     return body;
 }
-
-type AssigneeMutationResponse = {
-    message: string;
-    assignees: StaffWireUser[];
-};
 
 type StaffIndexResponse = {
     staff: StaffWireUser[];
@@ -114,7 +125,7 @@ export async function syncOrderItemAssignees(
     orderItemId: number,
     userIds: number[],
     signal?: AbortSignal,
-): Promise<User[]> {
+): Promise<AssigneeSyncResult> {
     const headers = getCsrfHeaders();
 
     const response = await fetch(`/api/order-items/${orderItemId}/assignees`, {
@@ -127,7 +138,36 @@ export async function syncOrderItemAssignees(
 
     const parsed = await parseAssigneeMutationResponse(response);
 
-    return mapStaffWireUsers(parsed.assignees);
+    return {
+        users: mapStaffWireUsers(parsed.assignees),
+        parent_order_update: parsed.parent_order_update,
+    };
+}
+
+/** DELETE /api/order-items/{itemId}/assignees/{userId} — remove one assignee. */
+export async function removeOrderItemAssignee(
+    orderItemId: number,
+    userId: number,
+    signal?: AbortSignal,
+): Promise<AssigneeSyncResult> {
+    const headers = getCsrfHeaders();
+
+    const response = await fetch(
+        `/api/order-items/${orderItemId}/assignees/${userId}`,
+        {
+            method: 'DELETE',
+            headers,
+            credentials: 'same-origin',
+            signal,
+        },
+    );
+
+    const parsed = await parseAssigneeMutationResponse(response);
+
+    return {
+        users: mapStaffWireUsers(parsed.assignees),
+        parent_order_update: parsed.parent_order_update,
+    };
 }
 
 export async function fetchOrderCatalogMenu(
@@ -163,7 +203,7 @@ export async function createOrderItem(
     orderId: number,
     payload: StoreOrderItemPayload,
     signal?: AbortSignal,
-): Promise<OrderItem> {
+): Promise<OrderItemMutationResponse> {
     const headers = getCsrfHeaders();
 
     const response = await fetch(`/api/orders/${orderId}/items`, {
@@ -174,8 +214,7 @@ export async function createOrderItem(
         body: JSON.stringify(payload),
     });
 
-    const parsed = await parseMutationResponse(response);
-    return parsed.order_item;
+    return parseMutationResponse(response);
 }
 
 /** PATCH /api/order-items/{itemId} — update cart line specifications. */
@@ -183,7 +222,7 @@ export async function updateOrderItem(
     orderItemId: number,
     payload: Pick<StoreOrderItemPayload, 'due_date' | 'specifications'>,
     signal?: AbortSignal,
-): Promise<OrderItem> {
+): Promise<OrderItemMutationResponse> {
     const headers = getCsrfHeaders();
 
     const response = await fetch(`/api/order-items/${orderItemId}`, {
@@ -194,15 +233,14 @@ export async function updateOrderItem(
         body: JSON.stringify(payload),
     });
 
-    const parsed = await parseMutationResponse(response);
-    return parsed.order_item;
+    return parseMutationResponse(response);
 }
 
 /** DELETE /api/order-items/{itemId} — soft-cancel cart line. */
 export async function deleteOrderItem(
     orderItemId: number,
     signal?: AbortSignal,
-): Promise<OrderItem> {
+): Promise<OrderItemMutationResponse> {
     const headers = getCsrfHeaders();
 
     const response = await fetch(`/api/order-items/${orderItemId}`, {
@@ -212,6 +250,5 @@ export async function deleteOrderItem(
         signal,
     });
 
-    const parsed = await parseMutationResponse(response);
-    return parsed.order_item;
+    return parseMutationResponse(response);
 }

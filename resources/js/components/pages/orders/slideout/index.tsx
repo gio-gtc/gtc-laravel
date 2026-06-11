@@ -9,6 +9,7 @@ import {
     formatVenueDateRangeForHeader,
 } from '@/lib/orders/format-order-show-dates';
 import { apiOrderClientToUser } from '@/lib/orders/orders-filter-users';
+import { resolveOrderBadges } from '@/lib/orders/resolve-order-badges';
 import { cn } from '@/lib/utils';
 import { type Tour, type TourVenue, type User, type Venue } from '@/types';
 import type { ApiOrder } from '@/types/orders-api';
@@ -70,6 +71,10 @@ export default function OrderDetailSlideout({
     }, [apiOrder?.show_dates, formatEventDates]);
 
     const isApiBacked = apiOrder != null;
+    const headerBadges = useMemo(
+        () => (apiOrder ? resolveOrderBadges(apiOrder) : null),
+        [apiOrder],
+    );
 
     const [attachModalOpen, setAttachModalOpen] = useState(false);
     const [attachModalContext, setAttachModalContext] =
@@ -146,7 +151,8 @@ export default function OrderDetailSlideout({
                     client={client}
                     venue={orderItem?.venue?.name ?? 'Demo'}
                     state={orderItem?.venue?.state ?? ''}
-                    status={orderItem?.orderVenue?.status ?? null}
+                    statuses={headerBadges?.statuses}
+                    tags={headerBadges?.tags}
                     city={orderItem?.venue?.city}
                     eventDates={isDemo ? undefined : eventDates}
                     apiOrder={isApiBacked ? apiOrder : null}

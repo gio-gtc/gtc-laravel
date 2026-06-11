@@ -19,7 +19,7 @@ final class OrdersAssembler
         'In Progress',
         'Client Review',
         'Complete',
-        'Canceled',
+        'Cancelled',
     ];
 
     /** Query keys forwarded from browser to gtc-api tour endpoints. */

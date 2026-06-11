@@ -1,18 +1,16 @@
 import { TableCell, TableRow } from '@/components/ui/table';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
-import { indexOrderMissingAssetTags } from '@/lib/orders/awaiting-asset-tags';
 import {
     indexOrderAssigneesToUsers,
     resolveClientForIndexOrder,
 } from '@/lib/orders/index-order-helpers';
-import { indexOrderShowsStatusIcon } from '@/lib/orders/order-status';
 import { cn } from '@/lib/utils';
 import type { User } from '@/types';
 import type { IndexOrder } from '@/types/orders-api';
 import { ChevronRight } from 'lucide-react';
-import AwaitingAssetsIconGroup from '../awaiting-assets-icons';
-import OrderStatusLabel from '../order-status-label';
+import { resolveOrderBadges } from '@/lib/orders/resolve-order-badges';
+import OrderBadgesRow from '../order-badges-row';
 
 type OrdersTableOrderRowProps = {
     order: IndexOrder;
@@ -36,11 +34,11 @@ export default function OrdersTableOrderRow({
     const venue = order.venue;
     const client = resolveClientForIndexOrder(order, clientRoster);
     const assignees = indexOrderAssigneesToUsers(order, collaboratorRoster);
-    const missingAssetTags = indexOrderMissingAssetTags(order);
     const region =
         venue?.city && venue?.state
             ? `${venue.city}, ${venue.state}`
             : venue?.city || venue?.state || '';
+    const badges = resolveOrderBadges(order);
 
     return (
         <TableRow
@@ -82,12 +80,11 @@ export default function OrdersTableOrderRow({
             </TableCell>
 
             <TableCell className="flex items-center gap-1 px-2 py-0.5">
-                {indexOrderShowsStatusIcon(order.status) && (
-                    <OrderStatusLabel status={order.status} />
-                )}
-                <AwaitingAssetsIconGroup
-                    tags={missingAssetTags}
-                    iconClassName="size-3"
+                <OrderBadgesRow
+                    statuses={badges.statuses}
+                    tags={badges.tags}
+                    tagIconClassName="size-3"
+                    statusIconClassName="size-4"
                 />
             </TableCell>
         </TableRow>

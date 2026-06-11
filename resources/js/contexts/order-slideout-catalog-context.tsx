@@ -3,6 +3,7 @@ import {
     useOrdersCatalog,
 } from '@/contexts/orders-catalog-context';
 import { runSequentialOrderItemCreate } from '@/hooks/use-sequential-order-item-create';
+import { applyParentOrderUpdate } from '@/lib/orders/apply-parent-order-update';
 import { mergeApiOrderUpdate } from '@/lib/orders/merge-api-order-update';
 import {
     deleteOrderItem,
@@ -25,7 +26,12 @@ import {
 import type { OrderCatalogMenu } from '@/types/order-catalog';
 import type { OrderItemsRow, SharedData } from '@/types';
 import type { OrdersCatalogValue } from '@/types/inertia-pages';
-import type { ApiOrder, OrderItem, OrderMenuCategoryId } from '@/types/orders-api';
+import type {
+    ApiOrder,
+    OrderItem,
+    OrderMenuCategoryId,
+    ParentOrderUpdate,
+} from '@/types/orders-api';
 import { router, usePage } from '@inertiajs/react';
 import {
     createContext,
@@ -53,6 +59,9 @@ type OrderSlideoutCatalogContextValue = {
         | null;
     legacyEventDates: string | undefined;
     updateOpenOrder: (order: ApiOrder) => void;
+    applyParentOrderBadgeUpdate: (
+        patch: ParentOrderUpdate | undefined,
+    ) => void;
     refreshOpenOrder: (orderId: number) => Promise<ApiOrder | null>;
     submitOpenOrder: () => void;
     registerTourOrdersInvalidator: (fn: TourOrdersInvalidator) => void;
@@ -141,6 +150,30 @@ export function OrderSlideoutCatalogProvider({
             return null;
         }
     }, []);
+
+    const applyParentOrderBadgeUpdate = useCallback(
+        (patch: ParentOrderUpdate | undefined) => {
+            if (!patch) {
+                return;
+            }
+
+            setOpenOrder((prev) => {
+                if (!prev || prev.id !== patch.id) {
+                    return prev;
+                }
+
+                const merged = applyParentOrderUpdate(prev, patch);
+                setOrdersDetailCache((cache) => ({
+                    ...cache,
+                    [merged.id]: merged,
+                }));
+                tourInvalidatorRef.current?.(merged.tour_id);
+
+                return merged;
+            });
+        },
+        [],
+    );
 
     const updateOpenOrder = useCallback(
         (order: ApiOrder) => {
@@ -356,12 +389,15 @@ export function OrderSlideoutCatalogProvider({
             }
 
             try {
-                const updated = await deleteOrderItem(orderItemId);
+                const result = await deleteOrderItem(orderItemId);
                 setOpenOrder((prev) =>
-                    prev ? upsertOrderItem(prev, updated) : prev,
+                    prev ? upsertOrderItem(prev, result.order_item) : prev,
                 );
+                applyParentOrderBadgeUpdate(result.parent_order_update);
                 toast.success('Line item removed from cart.');
-                void refreshOpenOrder(openOrder.id);
+                if (!result.parent_order_update) {
+                    void refreshOpenOrder(openOrder.id);
+                }
                 return true;
             } catch (error) {
                 toast.error(
@@ -372,7 +408,7 @@ export function OrderSlideoutCatalogProvider({
                 return false;
             }
         },
-        [openOrder, refreshOpenOrder],
+        [openOrder, applyParentOrderBadgeUpdate, refreshOpenOrder],
     );
 
     const slideoutCatalog = useMemo((): OrdersCatalogValue => {
@@ -435,6 +471,7 @@ export function OrderSlideoutCatalogProvider({
             legacyVenueItem: legacyPayload?.venueItem ?? null,
             legacyEventDates: legacyPayload?.eventDates,
             updateOpenOrder,
+            applyParentOrderBadgeUpdate,
             refreshOpenOrder,
             submitOpenOrder,
             registerTourOrdersInvalidator,
@@ -453,6 +490,7 @@ export function OrderSlideoutCatalogProvider({
             legacyPayload?.venueItem,
             legacyPayload?.eventDates,
             updateOpenOrder,
+            applyParentOrderBadgeUpdate,
             refreshOpenOrder,
             submitOpenOrder,
             registerTourOrdersInvalidator,

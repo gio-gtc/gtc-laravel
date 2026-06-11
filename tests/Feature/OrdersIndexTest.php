@@ -39,6 +39,10 @@ function sampleApiOrderPayload(): array
         'local_deliverable_email' => 'client@example.com',
         'status' => 'New Order',
         'item_statuses' => ['New Order'],
+        'statuses' => [
+            ['id' => 1, 'name' => 'New Order'],
+        ],
+        'tags' => ['Art'],
         'is_awaiting_assets' => false,
         'is_international' => false,
         'ticket_outlets' => 'Ticketmaster',
@@ -133,7 +137,7 @@ it('proxies tours index to gtc-api and renders list inertia props', function () 
             ->where('tours_pagination.total', 30)
             ->has('order_status_options', 5)
             ->where('order_status_options.0.value', 'New Order')
-            ->where('order_status_options.4.value', 'Canceled')
+            ->where('order_status_options.4.value', 'Cancelled')
             ->has('venue_item_status')
             ->has('venue_item_language')
             ->has('venue_item_encoding')

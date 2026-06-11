@@ -2,8 +2,8 @@ import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import NavOptionButton from '@/components/ui/slideout/nav-option-button';
 import Divider from '@/components/utils/divider';
 import { ORDER_HEADER_DESCRIPTION_FIELDS } from '@/lib/orders/order-header-descriptions';
-import { User, type TourVenueStatusValue } from '@/types';
-import type { ApiOrder } from '@/types/orders-api';
+import { User } from '@/types';
+import type { ApiOrder, OrderStatusRef, OrderTag } from '@/types/orders-api';
 import {
     ArrowRightToLine,
     ExpandIcon,
@@ -12,14 +12,15 @@ import {
     SendIcon,
     ShrinkIcon,
 } from 'lucide-react';
-import StatusIconGroup from '../status-icon';
+import OrderBadgesRow from '../order-badges-row';
 
 interface OrderSlideoutHeaderProps {
     tour: string;
     client: User | undefined;
     venue: string;
     state: string;
-    status: TourVenueStatusValue[] | null;
+    statuses?: OrderStatusRef[];
+    tags?: OrderTag[];
     city?: string;
     eventDates?: string;
     apiOrder?: ApiOrder | null;
@@ -36,7 +37,8 @@ export default function OrderSlideoutHeader({
     client,
     venue,
     state,
-    status,
+    statuses,
+    tags,
     city,
     eventDates,
     apiOrder = null,
@@ -70,8 +72,13 @@ export default function OrderSlideoutHeader({
     return (
         <SheetHeader className="relative gap-0 p-0">
             <div className="slide-out-container flex items-center justify-between shadow-lg">
-                <div className="flex gap-0.5">
-                    <StatusIconGroup status={status} />
+                <div className="flex min-w-0 flex-1 gap-0.5">
+                    <OrderBadgesRow
+                        statuses={statuses}
+                        tags={tags}
+                        tagIconClassName="size-4"
+                        statusIconClassName="size-4"
+                    />
                 </div>
 
                 <div className="flex items-center gap-0.5">

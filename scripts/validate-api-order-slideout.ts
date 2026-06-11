@@ -29,6 +29,8 @@ const sampleOrder: ApiOrder = {
     updated_at: '2026-05-27T20:00:00.000000Z',
     status: 'New Order',
     item_statuses: ['Still In Cart'],
+    statuses: [{ id: 1, name: 'New Order' }],
+    tags: ['Art', 'Audio'],
     is_awaiting_assets: false,
     tour: { id: 12, name: 'Eras Tour 2026' },
     venue: {
@@ -78,6 +80,7 @@ const payload = apiOrderToLegacySlideout(sampleOrder);
 assert(payload.tour.id === 12, 'tour id');
 assert(payload.tour.name === 'Eras Tour 2026', 'tour name');
 assert(payload.venueItem.orderVenue.id === 1, 'tour venue id uses order id');
+assert(payload.venueItem.orderVenue.status === null, 'legacy venue status unused');
 assert(payload.venueItem.venue?.name === 'SoFi Stadium', 'venue name');
 assert(
     payload.catalogExtensions.venue_items?.length === 1,

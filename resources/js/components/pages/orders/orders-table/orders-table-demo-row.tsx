@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils';
 import type { User } from '@/types';
 import type { IndexOrder } from '@/types/orders-api';
 import { ChevronRight } from 'lucide-react';
+import { resolveOrderBadges } from '@/lib/orders/resolve-order-badges';
+import OrderBadgesRow from '../order-badges-row';
 
 type OrdersTableDemoRowProps = {
     demoOrder: IndexOrder;
@@ -25,6 +27,7 @@ export default function OrdersTableDemoRow({
         demoOrder,
         collaboratorRoster,
     );
+    const badges = resolveOrderBadges(demoOrder);
 
     return (
         <TableRow
@@ -54,7 +57,14 @@ export default function OrdersTableDemoRow({
             <TableCell className="px-2 py-0.5">
                 {assignees.length > 0 && <UserAvatarsStack users={assignees} />}
             </TableCell>
-            <TableCell className="px-2 py-0.5" />
+            <TableCell className="flex items-center gap-1 px-2 py-0.5">
+                <OrderBadgesRow
+                    statuses={badges.statuses}
+                    tags={badges.tags}
+                    tagIconClassName="size-3"
+                    statusIconClassName="size-4"
+                />
+            </TableCell>
         </TableRow>
     );
 }

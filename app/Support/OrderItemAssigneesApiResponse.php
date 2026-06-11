@@ -42,10 +42,17 @@ final class OrderItemAssigneesApiResponse
     ): JsonResponse {
         $message = $data['message'] ?? $fallbackMessage;
 
-        return response()->json([
+        $payload = [
             'message' => is_string($message) ? $message : $fallbackMessage,
             'assignees' => self::extractAssignees($data),
-        ], $status);
+        ];
+
+        $parentOrderUpdate = OrderItemApiResponse::extractParentOrderUpdate($data);
+        if ($parentOrderUpdate !== null) {
+            $payload['parent_order_update'] = $parentOrderUpdate;
+        }
+
+        return response()->json($payload, $status);
     }
 
     /**

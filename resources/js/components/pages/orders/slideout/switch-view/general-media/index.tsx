@@ -116,6 +116,7 @@ function GeneralMediaView({
         openOrder,
         setOpenOrder,
         refreshOpenOrder,
+        applyParentOrderBadgeUpdate,
         removeOrderItemFromCart,
     } = useOrderSlideoutCatalog();
     const slideout = resolveSlideoutCatalog(catalog);
@@ -453,11 +454,14 @@ function GeneralMediaView({
 
             try {
                 const payload = broadcastRowToUpdatePayload(row, openOrder);
-                const updated = await updateOrderItem(Number(row.id), payload);
-                setOpenOrder(upsertOrderItem(openOrder, updated));
+                const result = await updateOrderItem(Number(row.id), payload);
+                setOpenOrder(upsertOrderItem(openOrder, result.order_item));
+                applyParentOrderBadgeUpdate(result.parent_order_update);
                 toast.success('Line item updated.');
                 closeBroadcastModal();
-                void refreshOpenOrder(openOrder.id);
+                if (!result.parent_order_update) {
+                    void refreshOpenOrder(openOrder.id);
+                }
             } catch (error) {
                 if (
                     error instanceof OrderItemApiError &&
@@ -475,7 +479,13 @@ function GeneralMediaView({
                 return { failed: true };
             }
         },
-        [openOrder, setOpenOrder, refreshOpenOrder, closeBroadcastModal],
+        [
+            openOrder,
+            setOpenOrder,
+            applyParentOrderBadgeUpdate,
+            refreshOpenOrder,
+            closeBroadcastModal,
+        ],
     );
 
     const handleSocialEditSave = useCallback(
@@ -692,9 +702,17 @@ function GeneralMediaView({
                 ),
             );
 
-            const succeeded = results.filter(
-                (result) => result.status === 'fulfilled',
-            ).length;
+            const fulfilled = results.filter(
+                (result): result is PromiseFulfilledResult<
+                    Awaited<ReturnType<typeof syncOrderItemAssignees>>
+                > => result.status === 'fulfilled',
+            );
+            const succeeded = fulfilled.length;
+            const latestParentUpdate = fulfilled
+                .map((result) => result.value.parent_order_update)
+                .filter(Boolean)
+                .at(-1);
+            applyParentOrderBadgeUpdate(latestParentUpdate);
             const failed = results.length - succeeded;
 
             if (succeeded === results.length) {
@@ -731,7 +749,9 @@ function GeneralMediaView({
                 }
             }
 
-            await refreshOpenOrder(openOrder.id);
+            if (!latestParentUpdate) {
+                await refreshOpenOrder(openOrder.id);
+            }
         },
         [
             canEditAssignees,
@@ -741,6 +761,7 @@ function GeneralMediaView({
             localRadioRows,
             localStaticRows,
             selectedRowIds,
+            applyParentOrderBadgeUpdate,
             refreshOpenOrder,
         ],
     );

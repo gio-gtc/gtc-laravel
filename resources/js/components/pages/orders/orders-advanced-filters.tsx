@@ -14,7 +14,7 @@ import {
     DEFAULT_FILTERS,
 } from '@/hooks/use-orders-filters';
 import { cn } from '@/lib/utils';
-import type { AwaitingAssetTag, OrderStatus } from '@/types/orders-api';
+import type { OrderStatus, OrderTag } from '@/types/orders-api';
 import { usePage } from '@inertiajs/react';
 import { Filter, X } from 'lucide-react';
 import { useMemo } from 'react';
@@ -71,7 +71,7 @@ export default function OrdersAdvancedFilters({
         );
     }, [filter]);
 
-    const toggleAssetTag = (tag: AwaitingAssetTag) => {
+    const toggleAssetTag = (tag: OrderTag) => {
         const isSelected = filter.assetTags.includes(tag);
         onFilterChange({
             ...filter,
@@ -81,8 +81,7 @@ export default function OrdersAdvancedFilters({
         });
     };
 
-    const assetTagOptions: { value: AwaitingAssetTag; label: string }[] = [
-        { value: 'Voice Over', label: 'Voice Over' },
+    const assetTagOptions: { value: OrderTag; label: string }[] = [
         { value: 'Audio', label: 'Audio' },
         { value: 'Art', label: 'Art' },
     ];

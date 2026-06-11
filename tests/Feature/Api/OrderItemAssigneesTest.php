@@ -70,18 +70,37 @@ it('proxies json index order item assignees to gtc-api', function () {
     });
 });
 
+it('forwards parent_order_update from gtc-api on assignee sync', function () {
+    Http::fake([
+        apiOrderItemAssigneesUrl(200) => Http::response([
+            'message' => 'Line item assignees synced successfully.',
+            'data' => [sampleStaffWireUser(12)],
+            'parent_order_update' => sampleParentOrderUpdate(),
+        ], 200),
+    ]);
+
+    $this->actingAsBff()
+        ->postJson(route('api.order-items.assignees.sync', ['orderItem' => 200]), [
+            'user_ids' => [12],
+        ])
+        ->assertOk()
+        ->assertJsonPath('parent_order_update.statuses.1.name', 'Cancelled');
+});
+
 it('proxies json destroy order item assignee to gtc-api', function () {
     Http::fake([
         apiOrderItemAssigneeDestroyUrl(200, 12) => Http::response([
             'message' => 'Assignee detached from line item successfully.',
             'data' => [sampleStaffWireUser(15)],
+            'parent_order_update' => sampleParentOrderUpdate(),
         ], 200),
     ]);
 
     $this->actingAsBff()
         ->deleteJson(route('api.order-items.assignees.destroy', ['orderItem' => 200, 'user' => 12]))
         ->assertOk()
-        ->assertJsonPath('assignees.0.id', 15);
+        ->assertJsonPath('assignees.0.id', 15)
+        ->assertJsonPath('parent_order_update.tags.0', 'Art');
 
     Http::assertSent(function ($request) {
         return $request->url() === apiOrderItemAssigneeDestroyUrl(200, 12)

@@ -1,22 +1,12 @@
+import { orderTagIconConfig } from '@/lib/orders/order-tag-icons';
 import { cn } from '@/lib/utils';
-import { Image, Mic, Volume2 } from 'lucide-react';
+import { Mic } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-const TAG_ICON_MAP: Record<string, { icon: LucideIcon; containerClass: string }> =
-    {
-        Audio: {
-            icon: Volume2,
-            containerClass: 'bg-yellow-500',
-        },
-        'Voice Over': {
-            icon: Mic,
-            containerClass: 'bg-yellow-500',
-        },
-        Art: {
-            icon: Image,
-            containerClass: 'bg-yellow-500',
-        },
-    };
+const VOICE_OVER_ICON = {
+    icon: Mic,
+    containerClass: 'bg-yellow-500',
+} satisfies { icon: LucideIcon; containerClass: string };
 
 interface AwaitingAssetIconProps {
     tag: string;
@@ -29,10 +19,10 @@ function AwaitingAssetIcon({
     className,
     iconClassName,
 }: AwaitingAssetIconProps) {
-    const config = TAG_ICON_MAP[tag] ?? {
-        icon: Volume2,
-        containerClass: 'bg-gray-400',
-    };
+    const config =
+        tag === 'Voice Over'
+            ? VOICE_OVER_ICON
+            : orderTagIconConfig(tag);
     const Icon = config.icon;
 
     return (

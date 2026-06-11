@@ -30,6 +30,21 @@ final class OrderItemApiResponse
 
     /**
      * @param  array<string, mixed>  $data
+     * @return array<string, mixed>|null
+     */
+    public static function extractParentOrderUpdate(array $data): ?array
+    {
+        $patch = $data['parent_order_update'] ?? null;
+
+        if (! is_array($patch) || ! isset($patch['id'])) {
+            return null;
+        }
+
+        return $patch;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
      */
     public static function successJson(
         array $data,
@@ -43,10 +58,17 @@ final class OrderItemApiResponse
             return response()->json(['message' => 'Invalid order item response from API.'], 502);
         }
 
-        return response()->json([
+        $payload = [
             'message' => is_string($message) ? $message : $fallbackMessage,
             'order_item' => OrderItemNormalizer::normalizeItem($item),
-        ], $status);
+        ];
+
+        $parentOrderUpdate = self::extractParentOrderUpdate($data);
+        if ($parentOrderUpdate !== null) {
+            $payload['parent_order_update'] = $parentOrderUpdate;
+        }
+
+        return response()->json($payload, $status);
     }
 
     /**

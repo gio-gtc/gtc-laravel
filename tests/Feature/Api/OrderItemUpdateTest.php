@@ -54,6 +54,32 @@ it('proxies json update order item to gtc-api', function () {
     });
 });
 
+it('forwards parent_order_update from gtc-api on order item update', function () {
+    Http::fake([
+        apiOrderItemUrl(200) => Http::response([
+            'message' => 'Line item updated.',
+            'data' => samplePolymorphicBroadcastOrderItem(),
+            'parent_order_update' => sampleParentOrderUpdate(),
+        ], 200),
+    ]);
+
+    $this->actingAsBff()
+        ->patchJson(route('api.order-items.update', ['orderItem' => 200]), [
+            'due_date' => '2026-08-20',
+            'specifications' => [
+                'type' => 'Generic',
+                'cut' => 'Week of',
+                'duration_seconds' => 15,
+                'language' => 'Spanish',
+                'encoding' => 'Station MP4 (Broadcast)',
+            ],
+        ])
+        ->assertOk()
+        ->assertJsonPath('parent_order_update.id', 1)
+        ->assertJsonPath('parent_order_update.statuses.0.name', 'In Progress')
+        ->assertJsonPath('parent_order_update.tags', ['Art', 'Audio']);
+});
+
 it('normalizes canceled status lookup to cancelled in update response', function () {
     $item = samplePolymorphicBroadcastOrderItem();
     $item['status_lookup']['name'] = 'Canceled';

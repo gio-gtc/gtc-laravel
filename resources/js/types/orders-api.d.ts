@@ -1,14 +1,32 @@
+/** Parent order status names from gtc-api `statuses[].name`. */
+export type OrderStatusName =
+    | 'New Order'
+    | 'In Progress'
+    | 'Client Review'
+    | 'Complete'
+    | 'Cancelled';
+
+export interface OrderStatusRef {
+    id: number;
+    name: OrderStatusName;
+}
+
+/** Production discipline tags on parent orders (`tags[]`). */
+export type OrderTag = 'Art' | 'Audio';
+
+export interface ParentOrderUpdate {
+    id: number;
+    statuses: OrderStatusRef[];
+    tags: OrderTag[];
+    updated_at: string;
+}
+
 /**
  * Parent order status (virtual `orders.status` accessor) for list/table UI.
  * API may still emit `Still In Cart` when every line is in cart — map that on the
  * orders index table only; line-level `Still In Cart` stays in the slideout.
  */
-export type OrderStatus =
-    | 'New Order'
-    | 'In Progress'
-    | 'Client Review'
-    | 'Complete'
-    | 'Canceled';
+export type OrderStatus = OrderStatusName;
 
 /** Order container statuses shown in /orders filters and status icons. */
 export type OrderStatusFilterValue = OrderStatus;
@@ -255,6 +273,10 @@ export interface ApiOrder {
     item_statuses: string[];
     /** Legacy index hint — derive missing-asset icons from line `asset_tracking`, not this flag. */
     is_awaiting_assets?: boolean;
+    /** Bottom-up parent statuses from order pivot (badge icons). */
+    statuses?: OrderStatusRef[];
+    /** Production discipline tags required by order items (badge icons). */
+    tags?: OrderTag[];
 
     tour?: ApiOrderTour;
     venue?: ApiOrderVenue | null;
@@ -336,6 +358,8 @@ export interface IndexOrder {
     status: ApiOrderWireStatus;
     item_statuses: string[];
     is_awaiting_assets?: boolean;
+    statuses?: OrderStatusRef[];
+    tags?: OrderTag[];
     is_international: boolean;
     venue?: IndexOrderVenue | null;
     show_dates?: OrderShowDate[];
@@ -365,7 +389,7 @@ export interface GlobalDashboardFilters {
     client_ids?: number[];
     assignee_ids?: number[];
     statuses?: OrderStatusFilterValue[];
-    asset_tags?: AwaitingAssetTag[];
+    asset_tags?: OrderTag[];
     is_international?: boolean;
     filter?: 'my-tasks' | null;
 }
