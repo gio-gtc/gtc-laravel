@@ -82,7 +82,7 @@ export default function OrdersTableOrderRow({
             <TableCell className="flex items-center gap-1 px-2 py-0.5">
                 <OrderBadgesRow
                     statuses={badges.statuses}
-                    tags={badges.tags}
+                    tags={order.tags}
                     tagIconClassName="size-3"
                     statusIconClassName="size-4"
                 />

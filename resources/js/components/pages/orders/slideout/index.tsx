@@ -152,7 +152,7 @@ export default function OrderDetailSlideout({
                     venue={orderItem?.venue?.name ?? 'Demo'}
                     state={orderItem?.venue?.state ?? ''}
                     statuses={headerBadges?.statuses}
-                    tags={headerBadges?.tags}
+                    tags={apiOrder?.tags}
                     city={orderItem?.venue?.city}
                     eventDates={isDemo ? undefined : eventDates}
                     apiOrder={isApiBacked ? apiOrder : null}

@@ -8,6 +8,8 @@ import { orderTagIconConfig } from '@/lib/orders/order-tag-icons';
 import { cn } from '@/lib/utils';
 import type { OrderStatusRef, OrderTag } from '@/types/orders-api';
 
+const TAG_ORDER: OrderTag[] = ['Art', 'Audio'];
+
 type OrderBadgesRowProps = {
     statuses?: OrderStatusRef[];
     tags?: OrderTag[];
@@ -25,54 +27,17 @@ export default function OrderBadgesRow({
     tagIconClassName = 'size-3',
     statusIconClassName = 'size-4',
 }: OrderBadgesRowProps) {
+    const sortedTags = tags
+        ? [...tags].sort(
+              (a, b) => TAG_ORDER.indexOf(a) - TAG_ORDER.indexOf(b),
+          )
+        : undefined;
     const statusCount = statuses?.length ?? 0;
-    const tagCount = tags?.length ?? 0;
+    const tagCount = sortedTags?.length ?? 0;
 
     if (statusCount + tagCount === 0) {
-        // #region agent log
-        fetch('http://127.0.0.1:7931/ingest/c0ac6aac-d62f-4a9b-bc25-db6bcf617bbb', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Debug-Session-Id': '3df27b',
-            },
-            body: JSON.stringify({
-                sessionId: '3df27b',
-                runId: 'post-fix-tags',
-                hypothesisId: 'C',
-                location: 'order-badges-row.tsx:empty',
-                message: 'OrderBadgesRow render skipped — no badges',
-                data: { statusCount, tagCount },
-                timestamp: Date.now(),
-            }),
-        }).catch(() => {});
-        // #endregion
         return null;
     }
-
-    // #region agent log
-    fetch('http://127.0.0.1:7931/ingest/c0ac6aac-d62f-4a9b-bc25-db6bcf617bbb', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Debug-Session-Id': '3df27b',
-        },
-        body: JSON.stringify({
-            sessionId: '3df27b',
-            runId: 'post-fix-tags',
-            hypothesisId: 'D',
-            location: 'order-badges-row.tsx:render',
-            message: 'OrderBadgesRow rendering badges',
-            data: {
-                statusCount,
-                tagCount,
-                statusNames: statuses?.map((s) => s.name),
-                tags,
-            },
-            timestamp: Date.now(),
-        }),
-    }).catch(() => {});
-    // #endregion
 
     return (
         <div
@@ -109,7 +74,7 @@ export default function OrderBadgesRow({
                     </Tooltip>
                 );
             })}
-            {tags?.map((tag, index) => {
+            {sortedTags?.map((tag, index) => {
                 const { icon: Icon, containerClass } =
                     orderTagIconConfig(tag);
 
