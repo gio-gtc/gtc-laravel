@@ -1,38 +1,132 @@
-import { isMediaTableRowStillInCart } from '@/lib/orders/order-item-table-rows';
-import type { MediaTableRow } from '@/types';
+import {
+    isCancelledStatusId,
+    isClientReviewStatusId,
+    isRevisionRequestStatusId,
+    isStillInCartStatusId,
+    orderItemStatusLabelToId,
+} from '@/lib/orders/order-item-statuses';
+import { isGtcAdminUser } from '@/lib/user-roles';
+import { isGtcStaffUser, isExternalClientUser } from '@/lib/user-organisation';
+import type { MediaTableRow, User } from '@/types';
 
-const ORDER_LINE_ITEM_ADMIN_ROLES = ['Super Admin', 'Admin'] as const;
+type WritableRow = Pick<MediaTableRow, 'status' | 'status_id'>;
 
-/** Admin and Super Admin may edit line items regardless of pipeline status. */
-export function isOrderLineItemAdmin(roles: readonly string[]): boolean {
-    return roles.some((role) =>
-        (ORDER_LINE_ITEM_ADMIN_ROLES as readonly string[]).includes(role),
+function rowStatusId(row: WritableRow): number | undefined {
+    if (typeof row.status_id === 'number') {
+        return row.status_id;
+    }
+    if (!row.status) {
+        return undefined;
+    }
+    return orderItemStatusLabelToId(row.status);
+}
+
+function isInactivePipelineRow(statusId: number | undefined): boolean {
+    return (
+        isCancelledStatusId(statusId) || isRevisionRequestStatusId(statusId)
     );
+}
+
+/** GTC staff may edit line items; cancelled/revision rows require admin override. */
+export function canEditOrderLineItem(
+    user: User,
+    row: WritableRow,
+    roles: readonly string[] = [],
+): boolean {
+    const statusId = rowStatusId(row);
+    if (isInactivePipelineRow(statusId) && !isGtcAdminUser(roles)) {
+        return false;
+    }
+    if (isGtcStaffUser(user)) {
+        return true;
+    }
+    return isStillInCartStatusId(statusId);
+}
+
+/** Staff inline status changes; cancelled/revision rows require admin override. */
+export function canEditOrderLineItemStatus(
+    user: User,
+    row: WritableRow,
+    roles: readonly string[] = [],
+): boolean {
+    if (!isGtcStaffUser(user)) {
+        return false;
+    }
+    const statusId = rowStatusId(row);
+    if (isInactivePipelineRow(statusId)) {
+        return isGtcAdminUser(roles);
+    }
+    return true;
+}
+
+/** Client revision action — external client while item is in Client Review. */
+export function canRequestRevision(user: User, row: WritableRow): boolean {
+    return (
+        isExternalClientUser(user) &&
+        isClientReviewStatusId(rowStatusId(row))
+    );
+}
+
+/** Admin / Super Admin override for cancelled and revision-request row edits. */
+export function canStaffOverrideInactiveRowEdits(
+    roles: readonly string[],
+): boolean {
+    return isGtcAdminUser(roles);
 }
 
 export function isOrderLineItemEditDisabled(
-    row: Pick<MediaTableRow, 'status' | 'status_id'>,
-    roles: readonly string[],
-    apiSlideoutOrderId?: number,
+    row: WritableRow,
+    user: User,
+    roles: readonly string[] = [],
 ): boolean {
-    if (isOrderLineItemAdmin(roles)) {
-        return false;
-    }
-
-    if (apiSlideoutOrderId != null) {
-        return !isMediaTableRowStillInCart(row);
-    }
-
-    return row.status_id !== 1;
+    return !canEditOrderLineItem(user, row, roles);
 }
 
 export function canEditOrderItemAssignees(
-    roles: readonly string[],
-    row: Pick<MediaTableRow, 'status'>,
+    user: User,
+    row: Pick<MediaTableRow, 'status' | 'status_id'>,
+    roles: readonly string[] = [],
 ): boolean {
-    return (
-        isOrderLineItemAdmin(roles) &&
-        row.status !== 'Cancelled' &&
-        row.status !== 'Revision Requested'
-    );
+    if (!isGtcStaffUser(user)) {
+        return false;
+    }
+    const statusId = rowStatusId(row);
+    if (isInactivePipelineRow(statusId)) {
+        return isGtcAdminUser(roles);
+    }
+    return true;
+}
+
+export type BulkSelectionWritableResult =
+    | { ok: true }
+    | { ok: false; message: string };
+
+/** Pre-check before bulk-update; cancelled/revision rows require admin override. */
+export function assertBulkSelectionWritable(
+    rows: readonly WritableRow[],
+    user: User,
+    roles: readonly string[] = [],
+): BulkSelectionWritableResult {
+    if (
+        !isGtcAdminUser(roles) &&
+        rows.some((row) => isInactivePipelineRow(rowStatusId(row)))
+    ) {
+        return {
+            ok: false,
+            message:
+                'Cannot bulk-edit cancelled or revision-requested line items. Deselect those rows or sign in as an admin.',
+        };
+    }
+
+    if (
+        !isGtcStaffUser(user) &&
+        rows.some((row) => !isStillInCartStatusId(rowStatusId(row)))
+    ) {
+        return {
+            ok: false,
+            message: 'You can only edit line items that are still in cart.',
+        };
+    }
+
+    return { ok: true };
 }

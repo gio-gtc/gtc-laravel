@@ -49,6 +49,7 @@ export default function MediaTable({
     onBulkEditDueDateDoubleClick,
     onBulkEditAssignedDoubleClick,
     canEditAssignees = false,
+    canEditStatus = false,
     orderItemStatusSelectOptions,
 }: MediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -107,12 +108,19 @@ export default function MediaTable({
                             <TableBody>
                                 {data.length > 0 ? (
                                     data.map((row) => {
+                                        const isCancelledRow =
+                                            row.status === 'Cancelled';
+                                        const isRevisionRequestedRow =
+                                            row.status === 'Revision Request';
+                                        const isInactiveRow =
+                                            isCancelledRow ||
+                                            isRevisionRequestedRow;
                                         const isDisabledRow =
-                                            row.status === 'Cancelled' ||
-                                            row.status === 'Revision Requested';
-                                        const rowEditsLocked =
-                                            isDisabledRow &&
+                                            isInactiveRow &&
                                             !allowEditInactiveRows;
+                                        const rowEditsLocked = isDisabledRow;
+                                        const statusEditsLocked =
+                                            rowEditsLocked || !canEditStatus;
                                         const assigneeEditsLocked =
                                             isDisabledRow || !canEditAssignees;
                                         return (
@@ -464,7 +472,9 @@ export default function MediaTable({
                                                                 'status',
                                                                 editScope,
                                                             )}
-                                                            disabled={false}
+                                                            disabled={
+                                                                statusEditsLocked
+                                                            }
                                                         />
                                                     ) : (
                                                         <VenueItemStatusBadge

@@ -14,6 +14,7 @@ import type {
     OrderItemCreateAdapter,
     OrderItemCreateDraft,
     OrderItemExpandContext,
+    OrderItemUpdateAdapter,
 } from './types';
 
 function buildBroadcastSpecifications(
@@ -68,6 +69,21 @@ export function broadcastRowToUpdatePayload(
         specifications: broadcastUpdateSpecifications(row),
     };
 }
+
+export const broadcastUpdateAdapter: OrderItemUpdateAdapter<OrderItemsBroadcastRow> =
+    {
+        categoryId: ORDER_MENU_CATEGORY_QUADRANTS.broadcast,
+        rowToFullBulkPatch: (row, order) => ({
+            due_date: dueDateIso(order, row),
+            specifications: broadcastUpdateSpecifications(row),
+        }),
+        durationPatch: (seconds) => ({
+            specifications: { duration_seconds: Math.trunc(Number(seconds)) },
+        }),
+        statusPatch: (statusId) => ({
+            order_item_status_id: statusId,
+        }),
+    };
 
 export function expandBroadcastCreateDrafts(
     form: AddBroadcastStreamingFormValues,

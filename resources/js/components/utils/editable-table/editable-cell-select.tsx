@@ -61,6 +61,7 @@ export function EditableCellSelect({
     variant = 'default',
 }: EditableCellSelectProps) {
     const [open, setOpen] = React.useState(false);
+    const closedFromValueChangeRef = React.useRef(false);
 
     const effectiveOptions = React.useMemo(
         () => mergeOptionsForValue(value, options),
@@ -99,11 +100,16 @@ export function EditableCellSelect({
                     onOpenChange={(next) => {
                         setOpen(next);
                         if (!next) {
+                            if (closedFromValueChangeRef.current) {
+                                closedFromValueChangeRef.current = false;
+                                return;
+                            }
                             onBlur();
                         }
                     }}
                     onValueChange={(v) => {
                         onChange(itemId, field, v);
+                        closedFromValueChangeRef.current = true;
                         setOpen(false);
                         onBlur();
                     }}

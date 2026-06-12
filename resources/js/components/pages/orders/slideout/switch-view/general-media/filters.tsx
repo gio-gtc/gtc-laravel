@@ -5,6 +5,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import Divider from '@/components/utils/divider';
+import { ORDER_ITEM_STATUSES } from '@/lib/orders/order-item-statuses';
 import { cn } from '@/lib/utils';
 import { type MediaTableRow } from '@/types';
 import { ArrowDown, ArrowUp, ArrowUpDown, Filter, X } from 'lucide-react';
@@ -12,15 +13,10 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Filter, X } from 'lucide-react';
 const MEDIA_STATUS_OPTIONS: {
     value: MediaTableRow['status'];
     label: string;
-}[] = [
-    { value: 'Still in Cart', label: 'Still in Cart' },
-    { value: 'Client Review', label: 'Client Review' },
-    { value: 'In Production', label: 'In Production' },
-    { value: 'Out for Delivery', label: 'Out for Delivery' },
-    { value: 'Cancelled', label: 'Cancelled' },
-    { value: 'Revision Requested', label: 'Revision Requested' },
-    { value: 'Unassigned', label: 'Unassigned' },
-];
+}[] = ORDER_ITEM_STATUSES.map((s) => ({
+    value: s.name,
+    label: s.name,
+}));
 
 export type MediaStatusFilter = MediaTableRow['status'][];
 export type SortDirection = 'asc' | 'desc' | null;

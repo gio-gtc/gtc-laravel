@@ -138,7 +138,6 @@ it('proxies tours index to gtc-api and renders list inertia props', function () 
             ->has('order_status_options', 5)
             ->where('order_status_options.0.value', 'New Order')
             ->where('order_status_options.4.value', 'Cancelled')
-            ->has('venue_item_status')
             ->has('venue_item_language')
             ->has('venue_item_encoding')
             ->missing('orders')
@@ -196,7 +195,6 @@ it('returns empty tours and flashes error when gtc-api fails', function () {
             ->where('tours', [])
             ->where('tours_pagination.total', 0)
             ->has('order_status_options', 5)
-            ->has('venue_item_status')
         );
 
     Log::shouldHaveReceived('error')

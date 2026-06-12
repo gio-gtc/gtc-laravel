@@ -18,7 +18,6 @@ import type {
     VenueItemEncoding,
     VenueItemLanguage,
     VenueItemNote,
-    VenueItemStatus,
     VenueItemsRow,
 } from './index';
 
@@ -112,7 +111,6 @@ export interface OrdersSlideoutCatalogExtensions {
     venue_items?: VenueItemsRow[];
     venue_item_assigned?: VenueItemAssigned[];
     venue_item_notes?: VenueItemNote[];
-    venue_item_status?: VenueItemStatus[];
     venue_item_language?: VenueItemLanguage[];
     venue_item_encoding?: VenueItemEncoding[];
     invoices?: Invoice[];

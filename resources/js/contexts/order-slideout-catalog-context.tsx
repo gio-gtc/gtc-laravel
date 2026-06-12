@@ -3,7 +3,9 @@ import {
     useOrdersCatalog,
 } from '@/contexts/orders-catalog-context';
 import { runSequentialOrderItemCreate } from '@/hooks/use-sequential-order-item-create';
-import { applyParentOrderUpdate } from '@/lib/orders/apply-parent-order-update';
+import { commitOrderItemBulkWrite as runCommitOrderItemBulkWrite } from '@/lib/orders/order-item-bulk-write';
+import type { OrderItemBulkPatch } from '@/lib/orders/order-item-adapters/types';
+import type { CommitOrderItemBulkWriteResult } from '@/lib/orders/order-item-bulk-write';
 import { mergeApiOrderUpdate } from '@/lib/orders/merge-api-order-update';
 import {
     deleteOrderItem,
@@ -75,6 +77,11 @@ type OrderSlideoutCatalogContextValue = {
         form: TForm,
     ) => Promise<SequentialCreateResult>;
     removeOrderItemFromCart: (orderItemId: number) => Promise<boolean>;
+    commitOrderItemBulkWrite: (
+        orderItemIds: number[],
+        patch: OrderItemBulkPatch,
+        successMessage?: string,
+    ) => Promise<CommitOrderItemBulkWriteResult>;
 };
 
 const OrderSlideoutCatalogContext =
@@ -411,6 +418,31 @@ export function OrderSlideoutCatalogProvider({
         [openOrder, applyParentOrderBadgeUpdate, refreshOpenOrder],
     );
 
+    const commitOrderItemBulkWrite = useCallback(
+        async (
+            orderItemIds: number[],
+            patch: OrderItemBulkPatch,
+            successMessage?: string,
+        ): Promise<CommitOrderItemBulkWriteResult> => {
+            if (!openOrder) {
+                toast.error('Open an order before updating line items.');
+                return {
+                    ok: false,
+                    message: 'Open an order before updating line items.',
+                };
+            }
+
+            return runCommitOrderItemBulkWrite({
+                orderId: openOrder.id,
+                orderItemIds,
+                patch,
+                refreshOpenOrder,
+                successMessage,
+            });
+        },
+        [openOrder, refreshOpenOrder],
+    );
+
     const slideoutCatalog = useMemo((): OrdersCatalogValue => {
         if (!legacyPayload) {
             return {
@@ -480,6 +512,7 @@ export function OrderSlideoutCatalogProvider({
             getMenuItemForCategory,
             createOrderItemsFromForm,
             removeOrderItemFromCart,
+            commitOrderItemBulkWrite,
         }),
         [
             openOrder,
@@ -499,6 +532,7 @@ export function OrderSlideoutCatalogProvider({
             getMenuItemForCategory,
             createOrderItemsFromForm,
             removeOrderItemFromCart,
+            commitOrderItemBulkWrite,
         ],
     );
 

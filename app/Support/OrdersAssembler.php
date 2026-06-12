@@ -156,7 +156,6 @@ final class OrdersAssembler
 
         return [
             'venue_items' => $localizedItems,
-            'venue_item_status' => config('mockdata.venue_item_status', []),
             'venue_item_language' => config('mockdata.venue_item_language', []),
             'venue_item_encoding' => config('mockdata.venue_item_encoding', []),
             'venue_item_assigned' => [],

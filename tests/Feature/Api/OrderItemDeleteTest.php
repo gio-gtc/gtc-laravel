@@ -6,10 +6,10 @@ require_once __DIR__.'/OrderItemFixtures.php';
 
 it('proxies json delete order item to gtc-api', function () {
     $item = samplePolymorphicBroadcastOrderItem();
-    $item['order_item_status_id'] = 5;
+    $item['order_item_status_id'] = 7;
     $item['status_lookup'] = [
-        'id' => 5,
-        'name' => 'Canceled',
+        'id' => 7,
+        'name' => 'Cancelled',
         'order_status_id' => 5,
     ];
 

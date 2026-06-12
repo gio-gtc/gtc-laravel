@@ -4,6 +4,7 @@ import {
     useRef,
     useState,
     type KeyboardEvent,
+    type RefObject,
 } from 'react';
 
 type TableCellKeyboardEvent = KeyboardEvent<HTMLElement>;
@@ -55,6 +56,8 @@ interface UseEditableTableReturn<T> {
         ids: ReadonlySet<string | number>,
         patch: Partial<T>,
     ) => void;
+    /** Synchronous read of latest row values (use on blur before state re-render). */
+    localDataRef: React.RefObject<T[]>;
 }
 
 export function useEditableTable<T extends object>({
@@ -232,5 +235,6 @@ export function useEditableTable<T extends object>({
         removeItem,
         startEditing,
         bulkPatchByIds,
+        localDataRef: localDataRef as RefObject<T[]>,
     };
 }

@@ -45,6 +45,7 @@ export type OrderItemStatus =
     | 'Unassigned'
     | 'In Production'
     | 'Client Review'
+    | 'Revision Request'
     | 'Out For Delivery'
     | 'Cancelled';
 

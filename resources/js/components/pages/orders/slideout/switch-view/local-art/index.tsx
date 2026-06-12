@@ -54,13 +54,11 @@ function LocalArtView({
             venue_items: slideout.venue_items,
             venue_item_assigned: slideout.venue_item_assigned,
             venue_item_notes: slideout.venue_item_notes,
-            venue_item_status: slideout.venue_item_status,
         };
     }, [
         slideout.venue_items,
         slideout.venue_item_assigned,
         slideout.venue_item_notes,
-        slideout.venue_item_status,
     ]);
 
     const [notesModalRow, setNotesModalRow] =

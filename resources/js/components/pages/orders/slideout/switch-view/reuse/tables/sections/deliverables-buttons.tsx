@@ -187,7 +187,7 @@ export function DeliverablesCell({
         );
     }
 
-    if (status === 'Out for Delivery') {
+    if (status === 'Out For Delivery') {
         return (
             <DownloadButtons
                 onReject={deliverables?.onReject}

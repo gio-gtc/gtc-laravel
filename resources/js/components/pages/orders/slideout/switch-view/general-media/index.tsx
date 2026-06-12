@@ -9,30 +9,38 @@ import { buildOrderItemStatusSelectOptions } from '@/components/utils/editable-t
 import {
     getAssignedUsersForVenueItem,
     venueItemStatusIdToLabel,
+    venueItemStatusLabelToId,
     venueItemsArtTableRow,
     venueItemsMediaTableRow,
     type OrdersVenueLineCatalog,
 } from '@/components/utils/venue-items';
 import { useOrderSlideoutCatalog } from '@/contexts/order-slideout-catalog-context';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
-import { broadcastCreateAdapter } from '@/lib/orders/order-item-adapters';
-import { broadcastRowToUpdatePayload } from '@/lib/orders/order-item-adapters/broadcast';
+import { isGtcStaffUser } from '@/lib/user-organisation';
+import {
+    broadcastCreateAdapter,
+    broadcastUpdateAdapter,
+} from '@/lib/orders/order-item-adapters';
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
 import {
     OrderItemApiError,
+    reviseOrderItem,
     syncOrderItemAssignees,
-    updateOrderItem,
 } from '@/lib/orders/order-item-api-client';
 import { orderItemAssigneesToUsers } from '@/lib/orders/orders-filter-users';
 import {
-    isOrderLineItemAdmin,
+    assertBulkSelectionWritable,
+    canEditOrderItemAssignees,
+    canEditOrderLineItem,
+    canEditOrderLineItemStatus,
+    canRequestRevision,
+    canStaffOverrideInactiveRowEdits,
     isOrderLineItemEditDisabled,
 } from '@/lib/orders/order-line-item-write-access';
 import {
-    apiBroadcastRowTableStatus,
+    apiOrderItemTableStatus,
     isMediaTableRowStillInCart,
 } from '@/lib/orders/order-item-table-rows';
-import { upsertOrderItem } from '@/lib/orders/slideout/order-mutations';
 import { useChat } from '@/hooks/use-chat';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
@@ -55,7 +63,7 @@ import {
 } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { format, isValid, parse, parseISO } from 'date-fns';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { ChatThread } from '../reuse/chat';
 import BulkEditAssignedModal from '../reuse/modals/bulk-edit-assigned-modal';
@@ -108,6 +116,7 @@ function GeneralMediaView({
     onOpenAttachModal,
 }: GeneralMediaViewProps) {
     const { auth } = usePage<SharedData>().props;
+    const userRoles = auth.roles ?? [];
     const catalog = useOrdersCatalog();
     const {
         createOrderItemsFromForm,
@@ -118,14 +127,18 @@ function GeneralMediaView({
         refreshOpenOrder,
         applyParentOrderBadgeUpdate,
         removeOrderItemFromCart,
+        commitOrderItemBulkWrite,
     } = useOrderSlideoutCatalog();
     const slideout = resolveSlideoutCatalog(catalog);
     const broadcastMenuItem = getMenuItemForCategory(
         ORDER_MENU_CATEGORY_QUADRANTS.broadcast,
     );
     const apiSlideoutOrderId = catalog.slideoutApiOrderId;
-    const canAdminEditLineItems = isOrderLineItemAdmin(auth.roles ?? []);
-    const canEditAssignees = canAdminEditLineItems;
+    const canAdminEditInactiveRows = canStaffOverrideInactiveRowEdits(
+        userRoles,
+    );
+    const canEditAssignees = canAdminEditInactiveRows;
+    const canEditStatus = isGtcStaffUser(auth.user);
     const { replaceVenueItem } = slideout;
     const usersWithFallback = useUsersWithFallback();
 
@@ -134,13 +147,11 @@ function GeneralMediaView({
             venue_items: slideout.venue_items,
             venue_item_assigned: slideout.venue_item_assigned,
             venue_item_notes: slideout.venue_item_notes,
-            venue_item_status: slideout.venue_item_status,
         };
     }, [
         slideout.venue_items,
         slideout.venue_item_assigned,
         slideout.venue_item_notes,
-        slideout.venue_item_status,
     ]);
 
     const existingBroadcastRows = useMemo((): OrderItemsBroadcastRow[] => {
@@ -156,8 +167,8 @@ function GeneralMediaView({
     }, [orderItem, slideout.venue_items]);
 
     const orderItemStatusSelectOptions = useMemo(
-        () => buildOrderItemStatusSelectOptions(slideout.venue_item_status),
-        [slideout.venue_item_status],
+        () => buildOrderItemStatusSelectOptions(),
+        [],
     );
     const artPackageTypeSelectOptions = useMemo(
         () =>
@@ -178,6 +189,27 @@ function GeneralMediaView({
     } = useChat(chatChannelId, auth.user.id);
 
     const [revisionModalOpen, setRevisionModalOpen] = useState(false);
+    const [revisionTargetRow, setRevisionTargetRow] =
+        useState<MediaTableRow | null>(null);
+    const [revisionTableName, setRevisionTableName] = useState('');
+    const inlineOriginalRef = useRef<{
+        itemId: string | number;
+        field: string;
+        value: string | number;
+    } | null>(null);
+    const cellPersistGuardRef = useRef<string | null>(null);
+
+    const openRevisionModal = useCallback(
+        (row: MediaTableRow, tableName: string) => {
+            if (!canRequestRevision(auth.user, row)) {
+                return;
+            }
+            setRevisionTargetRow(row);
+            setRevisionTableName(tableName);
+            setRevisionModalOpen(true);
+        },
+        [auth.user],
+    );
     const [statusFilter, setStatusFilter] = useState<MediaStatusFilter>([]);
     const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
@@ -205,24 +237,18 @@ function GeneralMediaView({
     );
 
     const mapBroadcastRadioSocialRow = useCallback(
-        (row: OrderItemsBroadcastRadioSocialRow) => {
-            const statusOverride =
-                apiSlideoutOrderId && row.type === 'broadcast'
-                    ? apiBroadcastRowTableStatus(row.id, openOrder)
-                    : undefined;
+        (row: OrderItemsBroadcastRadioSocialRow, tableName: string) => {
+            const statusOverride = apiSlideoutOrderId
+                ? apiOrderItemTableStatus(row.id, openOrder)
+                : undefined;
 
             const mediaRow = venueItemsMediaTableRow(
                 row,
                 resolveAssignedForRow(row.id),
-                slideout.venue_item_status,
                 statusOverride,
             );
             const resolvedStatus =
-                statusOverride ??
-                venueItemStatusIdToLabel(
-                    row.status_id,
-                    slideout.venue_item_status,
-                );
+                statusOverride ?? venueItemStatusIdToLabel(row.status_id);
             const showDeliverables =
                 row.has_deliverable_actions ??
                 resolvedStatus === 'Client Review';
@@ -231,7 +257,7 @@ function GeneralMediaView({
                 deliverables: showDeliverables
                     ? {
                           onReject: () => {
-                              setRevisionModalOpen(true);
+                              openRevisionModal(mediaRow, tableName);
                           },
                       }
                     : undefined,
@@ -240,8 +266,8 @@ function GeneralMediaView({
         [
             apiSlideoutOrderId,
             openOrder,
-            slideout.venue_item_status,
             resolveAssignedForRow,
+            openRevisionModal,
         ],
     );
 
@@ -253,7 +279,12 @@ function GeneralMediaView({
                     r.type === 'broadcast' &&
                     r.tour_venue_id === orderItem.orderVenue.id,
             )
-            .map(mapBroadcastRadioSocialRow);
+            .map((row) =>
+                mapBroadcastRadioSocialRow(
+                    row,
+                    'Broadcast & Streaming Video',
+                ),
+            );
     }, [orderItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
 
     const venueSocialLineWithCallbacks = useMemo(() => {
@@ -264,7 +295,9 @@ function GeneralMediaView({
                     r.type === 'social' &&
                     r.tour_venue_id === orderItem.orderVenue.id,
             )
-            .map(mapBroadcastRadioSocialRow);
+            .map((row) =>
+                mapBroadcastRadioSocialRow(row, 'Social Video'),
+            );
     }, [orderItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
 
     const venueRadioWithCallbacks = useMemo(() => {
@@ -275,7 +308,7 @@ function GeneralMediaView({
                     r.type === 'radio' &&
                     r.tour_venue_id === orderItem.orderVenue.id,
             )
-            .map(mapBroadcastRadioSocialRow);
+            .map((row) => mapBroadcastRadioSocialRow(row, 'Radio'));
     }, [orderItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
 
     const venueArtWithCallbacks = useMemo(() => {
@@ -287,15 +320,16 @@ function GeneralMediaView({
                     r.tour_venue_id === orderItem.orderVenue.id,
             )
             .map((row) => {
+                const statusOverride = apiSlideoutOrderId
+                    ? apiOrderItemTableStatus(row.id, openOrder)
+                    : undefined;
                 const staticRow = venueItemsArtTableRow(
                     row,
                     resolveAssignedForRow(row.id),
-                    slideout.venue_item_status,
                 );
-                const resolvedStatus = venueItemStatusIdToLabel(
-                    row.status_id,
-                    slideout.venue_item_status,
-                );
+                const resolvedStatus =
+                    statusOverride ??
+                    venueItemStatusIdToLabel(row.status_id);
                 const showDeliverables =
                     row.has_deliverable_actions ??
                     resolvedStatus === 'Client Review';
@@ -304,7 +338,14 @@ function GeneralMediaView({
                     deliverables: showDeliverables
                         ? {
                               onReject: () => {
-                                  setRevisionModalOpen(true);
+                                  openRevisionModal(
+                                      {
+                                          ...staticRow,
+                                          status: resolvedStatus,
+                                          status_id: row.status_id,
+                                      },
+                                      'Key Art & Static Assets',
+                                  );
                               },
                           }
                         : undefined,
@@ -313,18 +354,22 @@ function GeneralMediaView({
     }, [
         orderItem,
         slideout.venue_items,
-        slideout.venue_item_status,
+        apiSlideoutOrderId,
+        openOrder,
         resolveAssignedForRow,
+        openRevisionModal,
     ]);
 
     const {
         localData: localBroadcastRows,
+        editingCell: broadcastEditingCell,
         handleDoubleClick: handleBroadcastCellDoubleClick,
         handleCellChange: handleBroadcastCellChange,
         handleCellBlur: handleBroadcastCellBlur,
         handleCellKeyDown: handleBroadcastCellKeyDown,
         isEditing: isBroadcastCellEditing,
         bulkPatchByIds: bulkPatchBroadcastRows,
+        localDataRef: broadcastLocalDataRef,
     } = useEditableTable<MediaTableRow>({
         data: venueBroadcastWithCallbacks,
         getId: (r) => r.id,
@@ -332,12 +377,14 @@ function GeneralMediaView({
 
     const {
         localData: localSocialLineRows,
+        editingCell: socialLineEditingCell,
         handleDoubleClick: handleSocialLineCellDoubleClick,
         handleCellChange: handleSocialLineCellChange,
         handleCellBlur: handleSocialLineCellBlur,
         handleCellKeyDown: handleSocialLineCellKeyDown,
         isEditing: isSocialLineCellEditing,
         bulkPatchByIds: bulkPatchSocialLineRows,
+        localDataRef: socialLineLocalDataRef,
     } = useEditableTable<MediaTableRow>({
         data: venueSocialLineWithCallbacks,
         getId: (r) => r.id,
@@ -345,12 +392,14 @@ function GeneralMediaView({
 
     const {
         localData: localRadioRows,
+        editingCell: radioEditingCell,
         handleDoubleClick: handleRadioCellDoubleClick,
         handleCellChange: handleRadioCellChange,
         handleCellBlur: handleRadioCellBlur,
         handleCellKeyDown: handleRadioCellKeyDown,
         isEditing: isRadioCellEditing,
         bulkPatchByIds: bulkPatchRadioRows,
+        localDataRef: radioLocalDataRef,
     } = useEditableTable<MediaTableRow>({
         data: venueRadioWithCallbacks,
         getId: (r) => r.id,
@@ -358,12 +407,14 @@ function GeneralMediaView({
 
     const {
         localData: localStaticRows,
+        editingCell: staticEditingCell,
         handleDoubleClick: handleStaticCellDoubleClick,
         handleCellChange: handleStaticCellChange,
         handleCellBlur: handleStaticCellBlur,
         handleCellKeyDown: handleStaticCellKeyDown,
         isEditing: isStaticCellEditing,
         bulkPatchByIds: bulkPatchStaticRows,
+        localDataRef: staticLocalDataRef,
     } = useEditableTable<StaticAssetsTableRow>({
         data: venueArtWithCallbacks,
         getId: (r) => r.id,
@@ -450,40 +501,38 @@ function GeneralMediaView({
                 return { failed: true };
             }
 
-            setBroadcastFieldErrors(undefined);
-
-            try {
-                const payload = broadcastRowToUpdatePayload(row, openOrder);
-                const result = await updateOrderItem(Number(row.id), payload);
-                setOpenOrder(upsertOrderItem(openOrder, result.order_item));
-                applyParentOrderBadgeUpdate(result.parent_order_update);
-                toast.success('Line item updated.');
-                closeBroadcastModal();
-                if (!result.parent_order_update) {
-                    void refreshOpenOrder(openOrder.id);
-                }
-            } catch (error) {
-                if (
-                    error instanceof OrderItemApiError &&
-                    error.errors &&
-                    Object.keys(error.errors).length > 0
-                ) {
-                    setBroadcastFieldErrors(error.errors);
-                    return { failed: true };
-                }
-                toast.error(
-                    error instanceof OrderItemApiError
-                        ? error.message
-                        : 'Failed to update line item.',
-                );
+            if (!canEditOrderLineItem(auth.user, row, userRoles)) {
+                toast.error('You do not have permission to edit this line.');
                 return { failed: true };
             }
+
+            setBroadcastFieldErrors(undefined);
+
+            const patch = broadcastUpdateAdapter.rowToFullBulkPatch(
+                row,
+                openOrder,
+            );
+            const result = await commitOrderItemBulkWrite(
+                [Number(row.id)],
+                patch,
+                'Line item updated.',
+            );
+
+            if (!result.ok) {
+                if (result.errors && Object.keys(result.errors).length > 0) {
+                    setBroadcastFieldErrors(result.errors);
+                    return { failed: true };
+                }
+                return { failed: true };
+            }
+
+            closeBroadcastModal();
+            return { failed: false };
         },
         [
             openOrder,
-            setOpenOrder,
-            applyParentOrderBadgeUpdate,
-            refreshOpenOrder,
+            auth.user,
+            commitOrderItemBulkWrite,
             closeBroadcastModal,
         ],
     );
@@ -633,34 +682,254 @@ function GeneralMediaView({
         ],
     );
 
-    const notifyIfApiSlideoutReadOnly = useCallback(() => {
-        if (apiSlideoutOrderId != null) {
-            toast.info(
-                'Inline edits are not saved to the API yet. Use add/edit modals for supported changes.',
-            );
-        }
-    }, [apiSlideoutOrderId]);
+    const handleCellDoubleClickWithOriginal = useCallback(
+        (
+            rows: readonly (MediaTableRow | StaticAssetsTableRow)[],
+            handleDoubleClick: (
+                itemId: string | number,
+                field: string,
+                scope?: string,
+            ) => void,
+            itemId: string | number,
+            field: string,
+            scope?: string,
+        ) => {
+            const row = rows.find((r) => r.id === itemId);
+            if (row) {
+                if (field === 'duration_seconds' && 'duration_seconds' in row) {
+                    inlineOriginalRef.current = {
+                        itemId,
+                        field,
+                        value: row.duration_seconds,
+                    };
+                } else if (field === 'status') {
+                    inlineOriginalRef.current = {
+                        itemId,
+                        field,
+                        value: row.status,
+                    };
+                }
+            }
+            handleDoubleClick(itemId, field, scope);
+        },
+        [],
+    );
 
-    const handleDueDateBulkSave = useCallback(
-        ({ dueDateIso }: { dueDateIso: string }) => {
-            if (apiSlideoutOrderId != null) {
-                notifyIfApiSlideoutReadOnly();
+    const handleTableCellBlurWithPersist = useCallback(
+        async (
+            tableScope: 'broadcast' | 'socialLine' | 'radio' | 'static',
+        ) => {
+            const ctxByScope = {
+                broadcast: {
+                    editing: broadcastEditingCell,
+                    dataRef: broadcastLocalDataRef,
+                    handleBlur: handleBroadcastCellBlur,
+                    handleChange: handleBroadcastCellChange,
+                },
+                socialLine: {
+                    editing: socialLineEditingCell,
+                    dataRef: socialLineLocalDataRef,
+                    handleBlur: handleSocialLineCellBlur,
+                    handleChange: handleSocialLineCellChange,
+                },
+                radio: {
+                    editing: radioEditingCell,
+                    dataRef: radioLocalDataRef,
+                    handleBlur: handleRadioCellBlur,
+                    handleChange: handleRadioCellChange,
+                },
+                static: {
+                    editing: staticEditingCell,
+                    dataRef: staticLocalDataRef,
+                    handleBlur: handleStaticCellBlur,
+                    handleChange: handleStaticCellChange,
+                },
+            } as const;
+
+            const ctx = ctxByScope[tableScope];
+            const editing = ctx.editing;
+            const row =
+                editing != null
+                    ? ctx.dataRef.current.find(
+                          (r) => String(r.id) === String(editing.itemId),
+                      )
+                    : undefined;
+
+            const scopeMatches =
+                tableScope === 'static'
+                    ? editing?.scope == null
+                    : editing?.scope === tableScope;
+
+            if (!editing || !scopeMatches || !row || !openOrder) {
+                ctx.handleBlur();
                 return;
             }
-            const dueDate = format(parseISO(dueDateIso), 'M/d/yy');
-            bulkPatchBroadcastRows(selectedRowIds, { dueDate });
-            bulkPatchSocialLineRows(selectedRowIds, { dueDate });
-            bulkPatchRadioRows(selectedRowIds, { dueDate });
-            bulkPatchStaticRows(selectedRowIds, { dueDate });
+
+            const guardKey = `${tableScope}:${editing.itemId}:${editing.field}`;
+            if (cellPersistGuardRef.current === guardKey) {
+                ctx.handleBlur();
+                return;
+            }
+            cellPersistGuardRef.current = guardKey;
+            ctx.handleBlur();
+
+            if (editing.field === 'duration_seconds') {
+                if (tableScope !== 'broadcast') {
+                    cellPersistGuardRef.current = null;
+                    return;
+                }
+                if (!canEditOrderLineItem(auth.user, row, userRoles)) {
+                    cellPersistGuardRef.current = null;
+                    return;
+                }
+                const original = inlineOriginalRef.current;
+                const result = await commitOrderItemBulkWrite(
+                    [Number(row.id)],
+                    broadcastUpdateAdapter.durationPatch(
+                        (row as MediaTableRow).duration_seconds,
+                    ),
+                );
+                if (
+                    !result.ok &&
+                    original?.itemId === row.id &&
+                    original.field === 'duration_seconds'
+                ) {
+                    ctx.handleChange(
+                        row.id,
+                        'duration_seconds',
+                        original.value,
+                    );
+                }
+                inlineOriginalRef.current = null;
+                cellPersistGuardRef.current = null;
+                return;
+            }
+
+            if (editing.field === 'status') {
+                if (!canEditOrderLineItemStatus(auth.user, row, userRoles)) {
+                    cellPersistGuardRef.current = null;
+                    return;
+                }
+                const statusId = venueItemStatusLabelToId(row.status);
+                const selectedIds = [...selectedRowIds];
+                const bulkTargetIds =
+                    selectedIds.length > 1 && selectedIds.includes(row.id)
+                        ? selectedIds.map((id) => Number(id))
+                        : [Number(row.id)];
+                if (statusId == null) {
+                    cellPersistGuardRef.current = null;
+                    return;
+                }
+                const original = inlineOriginalRef.current;
+                const result = await commitOrderItemBulkWrite(
+                    bulkTargetIds,
+                    broadcastUpdateAdapter.statusPatch(statusId),
+                );
+                if (
+                    !result.ok &&
+                    original?.itemId === row.id &&
+                    original.field === 'status'
+                ) {
+                    ctx.handleChange(row.id, 'status', original.value);
+                }
+                inlineOriginalRef.current = null;
+                cellPersistGuardRef.current = null;
+            }
         },
         [
-            bulkPatchBroadcastRows,
-            bulkPatchSocialLineRows,
-            bulkPatchRadioRows,
-            bulkPatchStaticRows,
+            broadcastEditingCell,
+            broadcastLocalDataRef,
+            handleBroadcastCellBlur,
+            handleBroadcastCellChange,
+            socialLineEditingCell,
+            socialLineLocalDataRef,
+            handleSocialLineCellBlur,
+            handleSocialLineCellChange,
+            radioEditingCell,
+            radioLocalDataRef,
+            handleRadioCellBlur,
+            handleRadioCellChange,
+            staticEditingCell,
+            staticLocalDataRef,
+            handleStaticCellBlur,
+            handleStaticCellChange,
+            openOrder,
+            auth.user,
+            userRoles,
+            commitOrderItemBulkWrite,
             selectedRowIds,
-            apiSlideoutOrderId,
-            notifyIfApiSlideoutReadOnly,
+        ],
+    );
+
+    const handleTableCellKeyDownWithPersist = useCallback(
+        (
+            tableScope: 'broadcast' | 'socialLine' | 'radio' | 'static',
+            handleCellKeyDown: (
+                e: React.KeyboardEvent<HTMLElement>,
+                itemId: string | number,
+                field: string,
+                scope?: string,
+            ) => void,
+        ) =>
+            (
+                e: React.KeyboardEvent<HTMLElement>,
+                itemId: string | number,
+                field: string,
+                scope?: string,
+            ) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    void handleTableCellBlurWithPersist(tableScope);
+                    return;
+                }
+                handleCellKeyDown(e, itemId, field, scope);
+            },
+        [handleTableCellBlurWithPersist],
+    );
+
+    const handleDueDateBulkSave = useCallback(
+        async ({ dueDateIso }: { dueDateIso: string }) => {
+            if (!openOrder) {
+                toast.error('Open an order before updating due dates.');
+                return;
+            }
+
+            const selectedRows = [
+                ...localBroadcastRows,
+                ...localSocialLineRows,
+                ...localRadioRows,
+                ...localStaticRows,
+            ].filter((row) => selectedRowIds.has(row.id));
+
+            const writable = assertBulkSelectionWritable(
+                selectedRows,
+                auth.user,
+                userRoles,
+            );
+            if (!writable.ok) {
+                toast.warning(writable.message);
+                return;
+            }
+
+            const orderItemIds = selectedRows.map((row) => Number(row.id));
+            const result = await commitOrderItemBulkWrite(
+                orderItemIds,
+                { due_date: dueDateIso },
+            );
+            if (result.ok) {
+                setDueDateModalOpen(false);
+            }
+        },
+        [
+            openOrder,
+            localBroadcastRows,
+            localSocialLineRows,
+            localRadioRows,
+            localStaticRows,
+            selectedRowIds,
+            auth.user,
+            userRoles,
+            commitOrderItemBulkWrite,
         ],
     );
 
@@ -677,7 +946,7 @@ function GeneralMediaView({
 
             const frozenStatuses = new Set([
                 'Cancelled',
-                'Revision Requested',
+                'Revision Request',
             ]);
             const selectedRows = [
                 ...localBroadcastRows,
@@ -687,6 +956,7 @@ function GeneralMediaView({
             ].filter((row) => selectedRowIds.has(row.id));
 
             if (
+                !canAdminEditInactiveRows &&
                 selectedRows.some((row) => frozenStatuses.has(row.status))
             ) {
                 toast.warning(
@@ -755,6 +1025,7 @@ function GeneralMediaView({
         },
         [
             canEditAssignees,
+            canAdminEditInactiveRows,
             openOrder,
             localBroadcastRows,
             localSocialLineRows,
@@ -766,27 +1037,115 @@ function GeneralMediaView({
         ],
     );
 
+    const handleRevisionSubmit = useCallback(
+        async (
+            revisionMessage: string,
+            targetRow: MediaTableRow,
+            tableName: string,
+        ) => {
+            const message = revisionMessage.trim();
+            if (!message) {
+                toast.error('Please enter a revision comment.');
+                return;
+            }
+            if (!openOrder) {
+                return;
+            }
+
+            try {
+                await reviseOrderItem(Number(targetRow.id), message);
+                sendChatMessage(plainTextToChatDoc(message), {
+                    message_type: 'revision_request',
+                    metadata: {
+                        tableName,
+                        isci: targetRow.isci,
+                    },
+                });
+                await refreshOpenOrder(openOrder.id);
+                toast.success('Revision request submitted.');
+                setRevisionTargetRow(null);
+                setRevisionTableName('');
+                setRevisionModalOpen(false);
+            } catch (error) {
+                toast.error(
+                    error instanceof OrderItemApiError
+                        ? error.message
+                        : 'Failed to submit revision request.',
+                );
+            }
+        },
+        [openOrder, sendChatMessage, refreshOpenOrder],
+    );
+
     const sharedBroadcastCellEditing = {
         onCellChange: handleBroadcastCellChange,
-        onCellDoubleClick: handleBroadcastCellDoubleClick,
-        onCellBlur: handleBroadcastCellBlur,
-        onCellKeyDown: handleBroadcastCellKeyDown,
+        onCellDoubleClick: (
+            itemId: string | number,
+            field: string,
+            scope?: string,
+        ) =>
+            handleCellDoubleClickWithOriginal(
+                localBroadcastRows,
+                handleBroadcastCellDoubleClick,
+                itemId,
+                field,
+                scope,
+            ),
+        onCellBlur: () => {
+            void handleTableCellBlurWithPersist('broadcast');
+        },
+        onCellKeyDown: handleTableCellKeyDownWithPersist(
+            'broadcast',
+            handleBroadcastCellKeyDown,
+        ),
         isCellEditing: isBroadcastCellEditing,
     };
 
     const sharedSocialLineCellEditing = {
         onCellChange: handleSocialLineCellChange,
-        onCellDoubleClick: handleSocialLineCellDoubleClick,
-        onCellBlur: handleSocialLineCellBlur,
-        onCellKeyDown: handleSocialLineCellKeyDown,
+        onCellDoubleClick: (
+            itemId: string | number,
+            field: string,
+            scope?: string,
+        ) =>
+            handleCellDoubleClickWithOriginal(
+                localSocialLineRows,
+                handleSocialLineCellDoubleClick,
+                itemId,
+                field,
+                scope,
+            ),
+        onCellBlur: () => {
+            void handleTableCellBlurWithPersist('socialLine');
+        },
+        onCellKeyDown: handleTableCellKeyDownWithPersist(
+            'socialLine',
+            handleSocialLineCellKeyDown,
+        ),
         isCellEditing: isSocialLineCellEditing,
     };
 
     const sharedRadioCellEditing = {
         onCellChange: handleRadioCellChange,
-        onCellDoubleClick: handleRadioCellDoubleClick,
-        onCellBlur: handleRadioCellBlur,
-        onCellKeyDown: handleRadioCellKeyDown,
+        onCellDoubleClick: (
+            itemId: string | number,
+            field: string,
+            scope?: string,
+        ) =>
+            handleCellDoubleClickWithOriginal(
+                localRadioRows,
+                handleRadioCellDoubleClick,
+                itemId,
+                field,
+                scope,
+            ),
+        onCellBlur: () => {
+            void handleTableCellBlurWithPersist('radio');
+        },
+        onCellKeyDown: handleTableCellKeyDownWithPersist(
+            'radio',
+            handleRadioCellKeyDown,
+        ),
         isCellEditing: isRadioCellEditing,
     };
 
@@ -828,7 +1187,8 @@ function GeneralMediaView({
                     data={filteredBroadcastData}
                     cellEditing={sharedBroadcastCellEditing}
                     editScope="broadcast"
-                    allowEditInactiveRows={canAdminEditLineItems}
+                    allowEditInactiveRows={canAdminEditInactiveRows}
+                    canEditStatus={canEditStatus}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
@@ -848,11 +1208,7 @@ function GeneralMediaView({
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     isEditLineDisabled={(row) =>
-                        isOrderLineItemEditDisabled(
-                            row,
-                            auth.roles ?? [],
-                            apiSlideoutOrderId,
-                        )
+                        isOrderLineItemEditDisabled(row, auth.user, userRoles)
                     }
                     canRemoveFromCart={
                         apiSlideoutOrderId
@@ -884,7 +1240,7 @@ function GeneralMediaView({
                     data={filteredSocialLineData}
                     cellEditing={sharedSocialLineCellEditing}
                     editScope="socialLine"
-                    allowEditInactiveRows={canAdminEditLineItems}
+                    allowEditInactiveRows={canAdminEditInactiveRows}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
@@ -901,11 +1257,7 @@ function GeneralMediaView({
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     isEditLineDisabled={(row) =>
-                        isOrderLineItemEditDisabled(
-                            row,
-                            auth.roles ?? [],
-                            apiSlideoutOrderId,
-                        )
+                        isOrderLineItemEditDisabled(row, auth.user, userRoles)
                     }
                     onEditLineInModal={(row) => {
                         const raw = slideout.venue_items.find(
@@ -925,7 +1277,7 @@ function GeneralMediaView({
                     data={filteredRadioData}
                     cellEditing={sharedRadioCellEditing}
                     editScope="radio"
-                    allowEditInactiveRows={canAdminEditLineItems}
+                    allowEditInactiveRows={canAdminEditInactiveRows}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
@@ -943,11 +1295,7 @@ function GeneralMediaView({
                     }
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     isEditLineDisabled={(row) =>
-                        isOrderLineItemEditDisabled(
-                            row,
-                            auth.roles ?? [],
-                            apiSlideoutOrderId,
-                        )
+                        isOrderLineItemEditDisabled(row, auth.user, userRoles)
                     }
                     onEditLineInModal={(row) => {
                         const raw = slideout.venue_items.find(
@@ -965,7 +1313,7 @@ function GeneralMediaView({
                 <StaticAssetsMediaTable
                     title="Key Art & Static Assets"
                     data={filteredStaticAssetsData}
-                    allowEditInactiveRows={canAdminEditLineItems}
+                    allowEditInactiveRows={canAdminEditInactiveRows}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     artPackageTypeSelectOptions={artPackageTypeSelectOptions}
                     selectedRowIds={selectedRowIds}
@@ -976,9 +1324,25 @@ function GeneralMediaView({
                     onPreviewImageClick={openStaticImagePreview}
                     cellEditing={{
                         onCellChange: handleStaticCellChange,
-                        onCellDoubleClick: handleStaticCellDoubleClick,
-                        onCellBlur: handleStaticCellBlur,
-                        onCellKeyDown: handleStaticCellKeyDown,
+                        onCellDoubleClick: (
+                            itemId: string | number,
+                            field: string,
+                            scope?: string,
+                        ) =>
+                            handleCellDoubleClickWithOriginal(
+                                localStaticRows,
+                                handleStaticCellDoubleClick,
+                                itemId,
+                                field,
+                                scope,
+                            ),
+                        onCellBlur: () => {
+                            void handleTableCellBlurWithPersist('static');
+                        },
+                        onCellKeyDown: handleTableCellKeyDownWithPersist(
+                            'static',
+                            handleStaticCellKeyDown,
+                        ),
                         isCellEditing: isStaticCellEditing,
                     }}
                     onAdd={() => setKeyArtModalOpen(true)}
@@ -1103,10 +1467,17 @@ function GeneralMediaView({
                 isOpen={revisionModalOpen}
                 onClose={() => {
                     setRevisionModalOpen(false);
+                    setRevisionTargetRow(null);
+                    setRevisionTableName('');
                 }}
                 onSubmit={(revisionMessage) => {
-                    const message = revisionMessage.trim();
-                    console.log(message);
+                    if (revisionTargetRow) {
+                        void handleRevisionSubmit(
+                            revisionMessage,
+                            revisionTargetRow,
+                            revisionTableName,
+                        );
+                    }
                 }}
             />
             <Dialog
@@ -1154,16 +1525,24 @@ function GeneralMediaView({
                         console.log(`approve: ${videoPreviewRow.isci}`);
                     }
                 }}
-                onClientReviewReject={() => setRevisionModalOpen(true)}
+                onClientReviewReject={() => {
+                    if (videoPreviewRow) {
+                        openRevisionModal(
+                            videoPreviewRow,
+                            videoPreviewTableTitle ||
+                                'Broadcast & Streaming Video',
+                        );
+                    }
+                }}
                 onClientReviewCommentSubmit={(text) => {
-                    if (!videoPreviewRow) return;
-                    sendChatMessage(plainTextToChatDoc(text), {
-                        message_type: 'revision_request',
-                        metadata: {
-                            tableName: videoPreviewTableTitle,
-                            isci: videoPreviewRow.isci,
-                        },
-                    });
+                    if (videoPreviewRow) {
+                        void handleRevisionSubmit(
+                            text,
+                            videoPreviewRow,
+                            videoPreviewTableTitle ||
+                                'Broadcast & Streaming Video',
+                        );
+                    }
                 }}
             />
         </>

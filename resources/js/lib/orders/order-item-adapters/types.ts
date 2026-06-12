@@ -1,5 +1,14 @@
 import type { StoreOrderItemPayload } from '@/lib/orders/slideout/legacy-venue-row-to-api-item';
 import type { OrderMenuCategoryId } from '@/types/orders-api';
+import type { ApiOrder } from '@/types/orders-api';
+import type { OrderItemsRow } from '@/types';
+
+export type OrderItemBulkPatch = {
+    due_date?: string;
+    order_item_status_id?: number;
+    assignee_ids?: number[];
+    specifications?: Record<string, unknown>;
+};
 
 export type OrderItemCreateDraft = {
     pendingId: string;
@@ -31,3 +40,10 @@ export type SequentialCreateResult = {
     errors?: Record<string, string[]>;
     stoppedAtIndex?: number;
 };
+
+export interface OrderItemUpdateAdapter<TVenueRow extends OrderItemsRow> {
+    categoryId: OrderMenuCategoryId;
+    rowToFullBulkPatch: (row: TVenueRow, order: ApiOrder) => OrderItemBulkPatch;
+    durationPatch: (seconds: number) => OrderItemBulkPatch;
+    statusPatch: (statusId: number) => OrderItemBulkPatch;
+}

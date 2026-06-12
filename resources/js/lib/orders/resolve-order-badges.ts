@@ -149,33 +149,6 @@ export function resolveOrderBadges(order: OrderBadgeSource): {
         apiTags.length === 0 &&
         (statuses.length > 0 || tags.length > 0);
 
-    // #region agent log
-    fetch('http://127.0.0.1:7931/ingest/c0ac6aac-d62f-4a9b-bc25-db6bcf617bbb', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Debug-Session-Id': '3df27b',
-        },
-        body: JSON.stringify({
-            sessionId: '3df27b',
-            runId: 'post-fix-tags',
-            hypothesisId: 'E',
-            location: 'resolve-order-badges.ts:resolve',
-            message: 'resolved order badges',
-            data: {
-                apiStatusCount: apiStatuses.length,
-                apiTagCount: apiTags.length,
-                resolvedStatusNames: statuses.map((s) => s.name),
-                resolvedTags: tags,
-                derivedItemTags: tagsFromOrderItems(order),
-                missingAssetTags: tagsFromMissingAssets(order),
-                usedLegacyFallback,
-            },
-            timestamp: Date.now(),
-        }),
-    }).catch(() => {});
-    // #endregion
-
     return {
         statuses,
         tags,

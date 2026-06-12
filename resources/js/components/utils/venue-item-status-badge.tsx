@@ -16,16 +16,16 @@ export function VenueItemStatusBadge({
     let colorClasses = '';
 
     switch (status) {
-        case 'Still in Cart':
+        case 'Still In Cart':
         case 'Client Review':
             colorClasses = 'border-yellow-400 bg-yellow-50';
             break;
         case 'In Production':
-        case 'Out for Delivery':
+        case 'Out For Delivery':
             colorClasses = 'border-green-400 bg-green-50';
             break;
         case 'Cancelled':
-        case 'Revision Requested':
+        case 'Revision Request':
             colorClasses = 'border-gray-400 bg-gray-50';
             break;
         case 'Unassigned':

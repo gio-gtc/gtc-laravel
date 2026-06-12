@@ -15,7 +15,6 @@ export function resolveSlideoutCatalog(catalog: OrdersCatalogValue) {
         venue_items: catalog.venue_items ?? [],
         venue_item_assigned: catalog.venue_item_assigned ?? [],
         venue_item_notes: catalog.venue_item_notes ?? [],
-        venue_item_status: catalog.venue_item_status ?? [],
         venue_item_language: catalog.venue_item_language ?? [],
         venue_item_encoding: catalog.venue_item_encoding ?? [],
         invoices: catalog.invoices ?? [],

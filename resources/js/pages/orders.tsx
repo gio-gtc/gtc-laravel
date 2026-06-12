@@ -11,7 +11,6 @@ import {
     type OrderItemLanguage,
     type OrderItemNote,
     type OrderItemsRow,
-    type OrderItemStatus,
     type SharedData,
 } from '@/types';
 import {
@@ -35,9 +34,6 @@ export default function Orders() {
         tours_pagination: props.tours_pagination,
         order_status_options: props.order_status_options,
         venue_items: props.venue_items as OrderItemsRow[] | undefined,
-        venue_item_status: props.venue_item_status as
-            | OrderItemStatus[]
-            | undefined,
         venue_item_language: props.venue_item_language as
             | OrderItemLanguage[]
             | undefined,

@@ -253,13 +253,13 @@ export interface OrderItemAssigned {
 export interface OrderItemStatus {
     id: number;
     type:
-        | 'Still in Cart'
-        | 'Client Review'
+        | 'Still In Cart'
+        | 'Unassigned'
         | 'In Production'
-        | 'Out for Delivery'
-        | 'Cancelled'
-        | 'Revision Requested'
-        | 'Unassigned';
+        | 'Client Review'
+        | 'Revision Request'
+        | 'Out For Delivery'
+        | 'Cancelled';
 }
 
 export interface OrderItemLanguage {
@@ -331,6 +331,8 @@ export interface MediaTableProps {
     onBulkEditAssignedDoubleClick?: (rowId: string | number) => void;
     /** Admin-only — gates Assigned cell double-click. */
     canEditAssignees?: boolean;
+    /** Staff-only — gates inline status dropdown edits. */
+    canEditStatus?: boolean;
     orderItemStatusSelectOptions: { value: string; label: string }[];
 }
 
@@ -342,6 +344,8 @@ export interface StaticAssetsTableRow {
     dueDate: string; // e.g., "1/15/25"
     assigned: User[];
     status: OrderItemStatus['type'];
+    /** Physical FK for write-access gating on bulk edits. */
+    status_id?: number;
     /** Full-size image URL for key-art preview when present. */
     previewImageUrl?: string | null;
     deliverables?: {

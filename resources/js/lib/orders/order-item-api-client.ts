@@ -252,3 +252,80 @@ export async function deleteOrderItem(
 
     return parseMutationResponse(response);
 }
+
+export type OrderItemBulkUpdatePayload = {
+    order_item_ids: number[];
+    due_date?: string;
+    order_item_status_id?: number;
+    assignee_ids?: number[];
+    specifications?: Record<string, unknown>;
+};
+
+export type OrderItemBulkUpdateResponse = {
+    message: string;
+    meta: {
+        updated_items_count: number;
+        affected_orders: number[];
+    };
+};
+
+async function parseBulkUpdateResponse(
+    response: Response,
+): Promise<OrderItemBulkUpdateResponse> {
+    const body = (await response.json()) as OrderItemBulkUpdateResponse &
+        OrderItemValidationError;
+
+    if (!response.ok) {
+        throw new OrderItemApiError(
+            body.message ?? 'Could not complete bulk order item update.',
+            response.status,
+            body.errors,
+        );
+    }
+
+    if (!body.meta) {
+        throw new OrderItemApiError(
+            'Invalid bulk update response from server.',
+            502,
+        );
+    }
+
+    return body;
+}
+
+/** POST /api/order-items/bulk-update — batch or single dirty-field updates. */
+export async function bulkUpdateOrderItems(
+    payload: OrderItemBulkUpdatePayload,
+    signal?: AbortSignal,
+): Promise<OrderItemBulkUpdateResponse> {
+    const headers = getCsrfHeaders();
+
+    const response = await fetch('/api/order-items/bulk-update', {
+        method: 'POST',
+        headers,
+        credentials: 'same-origin',
+        signal,
+        body: JSON.stringify(payload),
+    });
+
+    return parseBulkUpdateResponse(response);
+}
+
+/** POST /api/order-items/{itemId}/revise — client revision request. */
+export async function reviseOrderItem(
+    orderItemId: number,
+    comment: string,
+    signal?: AbortSignal,
+): Promise<OrderItemMutationResponse> {
+    const headers = getCsrfHeaders();
+
+    const response = await fetch(`/api/order-items/${orderItemId}/revise`, {
+        method: 'POST',
+        headers,
+        credentials: 'same-origin',
+        signal,
+        body: JSON.stringify({ comment }),
+    });
+
+    return parseMutationResponse(response);
+}

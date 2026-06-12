@@ -453,35 +453,5 @@
             "id": 6,
             "type": "Connect TV"
         }
-    ],
-    "venue_item_status": [
-        {
-            "id": 1,
-            "type": "Still in Cart"
-        },
-        {
-            "id": 2,
-            "type": "Client Review"
-        },
-        {
-            "id": 3,
-            "type": "In Production"
-        },
-        {
-            "id": 4,
-            "type": "Out for Delivery"
-        },
-        {
-            "id": 5,
-            "type": "Cancelled"
-        },
-        {
-            "id": 6,
-            "type": "Revision Requested"
-        },
-        {
-            "id": 7,
-            "type": "Unassigned"
-        }
     ]
 }

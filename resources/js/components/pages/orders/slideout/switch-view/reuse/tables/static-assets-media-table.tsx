@@ -85,11 +85,11 @@ export default function StaticAssetsMediaTable({
                                 {data.length > 0 ? (
                                     data.map((row) => {
                                         const isDisabledRow =
-                                            row.status === 'Cancelled' ||
-                                            row.status === 'Revision Requested';
-                                        const rowEditsLocked =
-                                            isDisabledRow &&
+                                            (row.status === 'Cancelled' ||
+                                                row.status ===
+                                                    'Revision Request') &&
                                             !allowEditInactiveRows;
+                                        const rowEditsLocked = isDisabledRow;
                                         const assigneeEditsLocked =
                                             isDisabledRow || !canEditAssignees;
                                         return (

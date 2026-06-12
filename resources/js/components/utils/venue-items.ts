@@ -1,4 +1,8 @@
 import { VENUE_ITEM_ART_PACKAGE_TYPES } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
+import {
+    orderItemStatusIdToLabel,
+    orderItemStatusLabelToId,
+} from '@/lib/orders/order-item-statuses';
 import type {
     LocalizedArtTableRow,
     MediaTableRow,
@@ -10,7 +14,6 @@ import type {
     OrderItemsBroadcastRadioSocialRow,
     OrderItemsLocalizedRow,
     OrderItemsRow,
-    OrderItemStatus,
     StaticAssetsTableRow,
     User,
 } from '@/types';
@@ -19,7 +22,6 @@ export type OrdersVenueLineCatalog = {
     venue_items: OrderItemsRow[];
     venue_item_assigned: OrderItemAssigned[];
     venue_item_notes: OrderItemNote[];
-    venue_item_status: OrderItemStatus[];
 };
 
 /** Non-deleted notes for a venue item, sorted oldest → newest. */
@@ -39,10 +41,12 @@ type VenueLineItemStatusLabel = MediaTableRow['status'];
 
 export function venueItemStatusIdToLabel(
     statusId: number,
-    venueItemStatus: OrderItemStatus[],
 ): VenueLineItemStatusLabel {
-    const found = venueItemStatus.find((s) => s.id === statusId);
-    return (found?.type ?? 'Still in Cart') as VenueLineItemStatusLabel;
+    return orderItemStatusIdToLabel(statusId);
+}
+
+export function venueItemStatusLabelToId(label: string): number | undefined {
+    return orderItemStatusLabelToId(label);
 }
 
 export function venueItemLanguageIdToLabel(
@@ -128,7 +132,6 @@ export function getAssignedUsersForVenueItem(
 export function venueItemsMediaTableRow(
     row: OrderItemsBroadcastRadioSocialRow,
     assigned: User[],
-    venueItemStatus: OrderItemStatus[],
     statusOverride?: VenueLineItemStatusLabel,
 ): MediaTableRow {
     const {
@@ -162,8 +165,7 @@ export function venueItemsMediaTableRow(
         cutName: venueItemMediaLineLabel(spot_type, cut),
         assigned,
         status:
-            statusOverride ??
-            venueItemStatusIdToLabel(status_id, venueItemStatus),
+            statusOverride ?? venueItemStatusIdToLabel(status_id),
         status_id,
         previewVideoUrl,
         previewImageUrl,
@@ -174,7 +176,6 @@ export function venueItemsMediaTableRow(
 export function venueItemsArtTableRow(
     row: OrderItemsArtRow,
     assigned: User[],
-    venueItemStatus: OrderItemStatus[],
 ): StaticAssetsTableRow {
     const {
         label,
@@ -199,7 +200,8 @@ export function venueItemsArtTableRow(
         ...rest,
         cutName: normalizedPackageType ?? label,
         assigned,
-        status: venueItemStatusIdToLabel(status_id, venueItemStatus),
+        status: venueItemStatusIdToLabel(status_id),
+        status_id,
         previewImageUrl,
     };
 }

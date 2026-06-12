@@ -1,4 +1,5 @@
 import { staffEmbedToUser, type PersonEmbed } from '@/lib/user-for-avatar';
+import { orderItemStatusToDisplayLabel } from '@/lib/orders/order-item-statuses';
 import {
     orderItemCutLabel,
     orderItemDueDateDisplay,
@@ -13,27 +14,19 @@ import type { OrderAssignee, OrderItem } from '@/types/orders-api';
 
 type TableStatus = MediaTableRow['status'];
 
-const WIRE_STATUS_TO_TABLE_STATUS: Record<string, TableStatus> = {
-    'Still In Cart': 'Still in Cart',
-    Unassigned: 'Unassigned',
-    'In Production': 'In Production',
-    'Client Review': 'Client Review',
-    'Out For Delivery': 'Out for Delivery',
-    Canceled: 'Cancelled',
-    Cancelled: 'Cancelled',
-};
-
-/** Map API Title Case item status → legacy table badge labels. */
+/** Map API wire status → canonical table badge label. */
 export function orderItemStatusToTableStatus(status: string): TableStatus {
-    return WIRE_STATUS_TO_TABLE_STATUS[status] ?? 'Still in Cart';
+    return orderItemStatusToDisplayLabel(status);
 }
 
-export function isMediaTableRowStillInCart(row: Pick<MediaTableRow, 'status'>): boolean {
-    return row.status === 'Still in Cart';
+export function isMediaTableRowStillInCart(
+    row: Pick<MediaTableRow, 'status'>,
+): boolean {
+    return row.status === 'Still In Cart';
 }
 
-/** Wire status for a broadcast row when the slideout is backed by openOrder. */
-export function apiBroadcastRowTableStatus(
+/** Wire status for a line when the slideout is backed by openOrder. */
+export function apiOrderItemTableStatus(
     rowId: string | number,
     openOrder: { order_items?: OrderItem[] } | null,
 ): TableStatus | undefined {
@@ -60,6 +53,7 @@ export function orderItemToMediaTableRow(item: OrderItem): MediaTableRow {
         dueDate: orderItemDueDateDisplay(item),
         assigned: assigneesToUsers(item.assignees),
         status: orderItemStatusToTableStatus(orderItemWireStatus(item)),
+        status_id: item.order_item_status_id,
         created_date: item.created_at,
     };
 }
@@ -78,6 +72,7 @@ export function orderItemToStaticAssetsTableRow(
         dueDate: orderItemDueDateDisplay(item),
         assigned: assigneesToUsers(item.assignees),
         status: orderItemStatusToTableStatus(orderItemWireStatus(item)),
+        status_id: item.order_item_status_id,
         created_date: item.created_at,
     };
 }

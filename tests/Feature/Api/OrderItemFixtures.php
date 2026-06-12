@@ -15,6 +15,16 @@ function apiOrderItemUrl(int $orderItemId): string
     return gtcApiBaseUrl()."/api/order-items/{$orderItemId}";
 }
 
+function apiOrderItemsBulkUpdateUrl(): string
+{
+    return gtcApiBaseUrl().'/api/order-items/bulk-update';
+}
+
+function apiOrderItemReviseUrl(int $orderItemId): string
+{
+    return gtcApiBaseUrl()."/api/order-items/{$orderItemId}/revise";
+}
+
 function apiStaffUrl(): string
 {
     return gtcApiBaseUrl().'/api/staff';
