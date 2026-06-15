@@ -14,6 +14,7 @@ import {
     NetflixIcon,
 } from '@/components/ui/icons';
 import { cn } from '@/lib/utils';
+import type { MouseEvent } from 'react';
 import {
     Check,
     CloudDownloadIcon,
@@ -61,11 +62,21 @@ const DOWNLOAD_OPTIONS = [
 ] as const;
 
 export interface ApprovalButtonsProps {
+    onRevise?: () => void;
     onReject?: () => void;
     onApprove?: () => void;
 }
 
-export function ApprovalButtons({ onReject, onApprove }: ApprovalButtonsProps) {
+export function ApprovalButtons({
+    onRevise,
+    onReject,
+    onApprove,
+}: ApprovalButtonsProps) {
+    const handleReviseClick = (e: MouseEvent) => {
+        e.stopPropagation();
+        (onRevise ?? onReject)?.();
+    };
+
     return (
         <div className="flex w-full items-center justify-center gap-2.5 md:gap-1.5">
             <Button
@@ -74,7 +85,7 @@ export function ApprovalButtons({ onReject, onApprove }: ApprovalButtonsProps) {
                 className={cn(
                     'red-400-hover size-4 cursor-pointer rounded-full border-2',
                 )}
-                onClick={onReject}
+                onClick={handleReviseClick}
             >
                 <X className="size-3" strokeWidth={3} />
             </Button>
@@ -102,6 +113,7 @@ export function ApprovalButtons({ onReject, onApprove }: ApprovalButtonsProps) {
 }
 
 export interface DownloadButtonsProps {
+    onRevise?: () => void;
     onReject?: () => void;
     /** Called when user selects "All" (e.g. for approve/receive flow) */
     onApprove?: () => void;
@@ -110,6 +122,7 @@ export interface DownloadButtonsProps {
 }
 
 export function DownloadButtons({
+    onRevise,
     onReject,
     onApprove,
     onDownload,
@@ -121,6 +134,11 @@ export function DownloadButtons({
         onDownload?.(optionId);
     };
 
+    const handleReviseSelect = (e: Event) => {
+        e.stopPropagation();
+        onRevise?.();
+    };
+
     return (
         <div className="flex items-center justify-center gap-2 md:gap-0.5">
             <DropdownMenu>
@@ -129,12 +147,15 @@ export function DownloadButtons({
                         variant="ghost"
                         size="icon"
                         className="red-400-hover size-5.5 cursor-pointer rounded-full"
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <RotateCwIcon className="size-[24px]" />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="min-w-[7rem]">
-                    <DropdownMenuItem>Revise</DropdownMenuItem>
+                    <DropdownMenuItem onSelect={handleReviseSelect}>
+                        Revise
+                    </DropdownMenuItem>
                     <DropdownMenuItem>Cancel</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -169,6 +190,7 @@ export interface DeliverablesCellProps {
     status: string;
     deliverables?: {
         onReject?: () => void;
+        onRevise?: () => void;
         onApprove?: () => void;
         onDownload?: (optionId: string) => void;
     };
@@ -181,7 +203,7 @@ export function DeliverablesCell({
     if (status === 'Client Review') {
         return (
             <ApprovalButtons
-                onReject={deliverables?.onReject}
+                onRevise={deliverables?.onRevise}
                 onApprove={deliverables?.onApprove}
             />
         );
@@ -190,6 +212,7 @@ export function DeliverablesCell({
     if (status === 'Out For Delivery') {
         return (
             <DownloadButtons
+                onRevise={deliverables?.onRevise}
                 onReject={deliverables?.onReject}
                 onApprove={deliverables?.onApprove}
                 onDownload={deliverables?.onDownload}

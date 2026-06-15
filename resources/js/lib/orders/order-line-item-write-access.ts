@@ -1,6 +1,7 @@
 import {
     isCancelledStatusId,
     isClientReviewStatusId,
+    isOutForDeliveryStatusId,
     isRevisionRequestStatusId,
     isStillInCartStatusId,
     orderItemStatusLabelToId,
@@ -59,12 +60,32 @@ export function canEditOrderLineItemStatus(
     return true;
 }
 
-/** Client revision action — external client while item is in Client Review. */
-export function canRequestRevision(user: User, row: WritableRow): boolean {
+function isRevisionEligibleStatusId(statusId: number | undefined): boolean {
     return (
-        isExternalClientUser(user) &&
-        isClientReviewStatusId(rowStatusId(row))
+        isClientReviewStatusId(statusId) ||
+        isOutForDeliveryStatusId(statusId)
     );
+}
+
+/** Deliverables revise — external client or Admin/Super Admin while Client Review or Out For Delivery. */
+export function canInitiateOrderItemRevision(
+    user: User,
+    row: WritableRow,
+    roles: readonly string[] = [],
+): boolean {
+    if (!isRevisionEligibleStatusId(rowStatusId(row))) {
+        return false;
+    }
+    return isExternalClientUser(user) || isGtcAdminUser(roles);
+}
+
+/** @deprecated Use canInitiateOrderItemRevision */
+export function canRequestRevision(
+    user: User,
+    row: WritableRow,
+    roles: readonly string[] = [],
+): boolean {
+    return canInitiateOrderItemRevision(user, row, roles);
 }
 
 /** Admin / Super Admin override for cancelled and revision-request row edits. */

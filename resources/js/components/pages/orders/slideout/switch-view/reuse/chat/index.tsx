@@ -12,7 +12,7 @@ export interface ChatThreadProps {
     sendMessage: (
         content: unknown,
         options?: SendMessageOptions,
-    ) => void | Promise<void>;
+    ) => void | Promise<void | boolean>;
     editMessage: (id: string, content: unknown) => void | Promise<void>;
     deleteMessage: (id: string) => void | Promise<void>;
     currentUserId: number;

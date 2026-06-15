@@ -128,7 +128,10 @@ export function useChat(channelId: string, currentUserId: number) {
                         m.id === tempId ? { ...m, status: 'error' } : m,
                     ),
                 );
+                return false;
             }
+
+            return true;
         },
         [channelId, currentUserId],
     );

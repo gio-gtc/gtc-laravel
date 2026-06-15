@@ -127,7 +127,8 @@ export function mapApiOrderItemToVenueRow(
     const isci = orderItemIsci(item);
     const statusId = item.order_item_status_id;
     const wireStatus = orderItemWireStatus(item);
-    const hasDeliverables = wireStatus === 'Client Review';
+    const hasDeliverables =
+        wireStatus === 'Client Review' || wireStatus === 'Out For Delivery';
     const base = baseRowFields(order, item);
 
     if (venueType === 'broadcast') {

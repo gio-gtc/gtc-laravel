@@ -288,6 +288,7 @@ export interface MediaTableRow {
     previewImageUrl?: string | null;
     deliverables?: {
         onReject?: () => void;
+        onRevise?: () => void;
         onApprove?: () => void;
         onDownload?: (optionId: string) => void;
     };
@@ -350,6 +351,7 @@ export interface StaticAssetsTableRow {
     previewImageUrl?: string | null;
     deliverables?: {
         onReject?: () => void;
+        onRevise?: () => void;
         onApprove?: () => void;
         onDownload?: (optionId: string) => void;
     };

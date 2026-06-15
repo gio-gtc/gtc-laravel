@@ -80,6 +80,10 @@ export function isClientReviewStatusId(statusId: number | undefined): boolean {
     return statusId === ORDER_ITEM_STATUS_ID.clientReview;
 }
 
+export function isOutForDeliveryStatusId(statusId: number | undefined): boolean {
+    return statusId === ORDER_ITEM_STATUS_ID.outForDelivery;
+}
+
 export function isRevisionRequestStatusId(
     statusId: number | undefined,
 ): boolean {

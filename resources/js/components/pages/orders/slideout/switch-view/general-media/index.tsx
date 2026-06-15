@@ -33,7 +33,7 @@ import {
     canEditOrderItemAssignees,
     canEditOrderLineItem,
     canEditOrderLineItemStatus,
-    canRequestRevision,
+    canInitiateOrderItemRevision,
     canStaffOverrideInactiveRowEdits,
     isOrderLineItemEditDisabled,
 } from '@/lib/orders/order-line-item-write-access';
@@ -106,6 +106,39 @@ function tableDueDateDisplayToIso(display: string): string | undefined {
     const d = parse(trimmed, 'M/d/yy', new Date());
     if (!isValid(d)) return undefined;
     return format(d, 'yyyy-MM-dd');
+}
+
+type RevisionTargetRow = MediaTableRow | StaticAssetsTableRow;
+
+const DELIVERABLE_STATUSES = ['Client Review', 'Out For Delivery'] as const;
+
+type DeliverableStatus = (typeof DELIVERABLE_STATUSES)[number];
+
+function rowShowsDeliverables(
+    hasDeliverableActions: boolean | undefined,
+    resolvedStatus: string,
+): boolean {
+    return (
+        hasDeliverableActions ??
+        DELIVERABLE_STATUSES.includes(resolvedStatus as DeliverableStatus)
+    );
+}
+
+function buildDeliverableCallbacks(
+    resolvedStatus: string,
+    openRevision: (row: RevisionTargetRow, tableName: string) => void,
+    row: RevisionTargetRow,
+    tableName: string,
+): MediaTableRow['deliverables'] | undefined {
+    if (
+        resolvedStatus === 'Client Review' ||
+        resolvedStatus === 'Out For Delivery'
+    ) {
+        return {
+            onRevise: () => openRevision(row, tableName),
+        };
+    }
+    return undefined;
 }
 
 function GeneralMediaView({
@@ -190,7 +223,7 @@ function GeneralMediaView({
 
     const [revisionModalOpen, setRevisionModalOpen] = useState(false);
     const [revisionTargetRow, setRevisionTargetRow] =
-        useState<MediaTableRow | null>(null);
+        useState<RevisionTargetRow | null>(null);
     const [revisionTableName, setRevisionTableName] = useState('');
     const inlineOriginalRef = useRef<{
         itemId: string | number;
@@ -200,15 +233,18 @@ function GeneralMediaView({
     const cellPersistGuardRef = useRef<string | null>(null);
 
     const openRevisionModal = useCallback(
-        (row: MediaTableRow, tableName: string) => {
-            if (!canRequestRevision(auth.user, row)) {
+        (row: RevisionTargetRow, tableName: string) => {
+            if (!canInitiateOrderItemRevision(auth.user, row, userRoles)) {
+                toast.warning(
+                    'You do not have permission to request a revision on this line item.',
+                );
                 return;
             }
             setRevisionTargetRow(row);
             setRevisionTableName(tableName);
             setRevisionModalOpen(true);
         },
-        [auth.user],
+        [auth.user, userRoles],
     );
     const [statusFilter, setStatusFilter] = useState<MediaStatusFilter>([]);
     const [sortDirection, setSortDirection] = useState<SortDirection>(null);
@@ -249,17 +285,20 @@ function GeneralMediaView({
             );
             const resolvedStatus =
                 statusOverride ?? venueItemStatusIdToLabel(row.status_id);
-            const showDeliverables =
-                row.has_deliverable_actions ??
-                resolvedStatus === 'Client Review';
+            const showDeliverables = rowShowsDeliverables(
+                row.has_deliverable_actions,
+                resolvedStatus,
+            );
             return {
                 ...mediaRow,
+                status: resolvedStatus,
                 deliverables: showDeliverables
-                    ? {
-                          onReject: () => {
-                              openRevisionModal(mediaRow, tableName);
-                          },
-                      }
+                    ? buildDeliverableCallbacks(
+                          resolvedStatus,
+                          openRevisionModal,
+                          mediaRow,
+                          tableName,
+                      )
                     : undefined,
             };
         },
@@ -323,31 +362,31 @@ function GeneralMediaView({
                 const statusOverride = apiSlideoutOrderId
                     ? apiOrderItemTableStatus(row.id, openOrder)
                     : undefined;
+                const resolvedStatus =
+                    statusOverride ??
+                    venueItemStatusIdToLabel(row.status_id);
                 const staticRow = venueItemsArtTableRow(
                     row,
                     resolveAssignedForRow(row.id),
                 );
-                const resolvedStatus =
-                    statusOverride ??
-                    venueItemStatusIdToLabel(row.status_id);
-                const showDeliverables =
-                    row.has_deliverable_actions ??
-                    resolvedStatus === 'Client Review';
-                return {
+                const showDeliverables = rowShowsDeliverables(
+                    row.has_deliverable_actions,
+                    resolvedStatus,
+                );
+                const rowForRevision: StaticAssetsTableRow = {
                     ...staticRow,
+                    status: resolvedStatus,
+                    status_id: row.status_id,
+                };
+                return {
+                    ...rowForRevision,
                     deliverables: showDeliverables
-                        ? {
-                              onReject: () => {
-                                  openRevisionModal(
-                                      {
-                                          ...staticRow,
-                                          status: resolvedStatus,
-                                          status_id: row.status_id,
-                                      },
-                                      'Key Art & Static Assets',
-                                  );
-                              },
-                          }
+                        ? buildDeliverableCallbacks(
+                              resolvedStatus,
+                              openRevisionModal,
+                              rowForRevision,
+                              'Key Art & Static Assets',
+                          )
                         : undefined,
                 };
             });
@@ -1040,7 +1079,7 @@ function GeneralMediaView({
     const handleRevisionSubmit = useCallback(
         async (
             revisionMessage: string,
-            targetRow: MediaTableRow,
+            targetRow: RevisionTargetRow,
             tableName: string,
         ) => {
             const message = revisionMessage.trim();
@@ -1052,17 +1091,31 @@ function GeneralMediaView({
                 return;
             }
 
+            const isci =
+                'isci' in targetRow && targetRow.isci
+                    ? targetRow.isci
+                    : targetRow.cutName;
+
             try {
                 await reviseOrderItem(Number(targetRow.id), message);
-                sendChatMessage(plainTextToChatDoc(message), {
-                    message_type: 'revision_request',
-                    metadata: {
-                        tableName,
-                        isci: targetRow.isci,
+                const chatPosted = await sendChatMessage(
+                    plainTextToChatDoc(message),
+                    {
+                        message_type: 'revision_request',
+                        metadata: {
+                            tableName,
+                            isci,
+                        },
                     },
-                });
+                );
                 await refreshOpenOrder(openOrder.id);
-                toast.success('Revision request submitted.');
+                if (chatPosted) {
+                    toast.success('Revision request submitted.');
+                } else {
+                    toast.warning(
+                        'Revision saved, but comment could not be posted to chat.',
+                    );
+                }
                 setRevisionTargetRow(null);
                 setRevisionTableName('');
                 setRevisionModalOpen(false);
@@ -1472,7 +1525,7 @@ function GeneralMediaView({
                 }}
                 onSubmit={(revisionMessage) => {
                     if (revisionTargetRow) {
-                        void handleRevisionSubmit(
+                        return handleRevisionSubmit(
                             revisionMessage,
                             revisionTargetRow,
                             revisionTableName,
@@ -1517,33 +1570,6 @@ function GeneralMediaView({
                         ? `${videoPreviewRow.isci} – ${videoPreviewRow.cutName}`
                         : undefined
                 }
-                clientReviewActions={
-                    videoPreviewRow?.status === 'Client Review'
-                }
-                onClientReviewApprove={() => {
-                    if (videoPreviewRow) {
-                        console.log(`approve: ${videoPreviewRow.isci}`);
-                    }
-                }}
-                onClientReviewReject={() => {
-                    if (videoPreviewRow) {
-                        openRevisionModal(
-                            videoPreviewRow,
-                            videoPreviewTableTitle ||
-                                'Broadcast & Streaming Video',
-                        );
-                    }
-                }}
-                onClientReviewCommentSubmit={(text) => {
-                    if (videoPreviewRow) {
-                        void handleRevisionSubmit(
-                            text,
-                            videoPreviewRow,
-                            videoPreviewTableTitle ||
-                                'Broadcast & Streaming Video',
-                        );
-                    }
-                }}
             />
         </>
     );

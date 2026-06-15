@@ -16,8 +16,23 @@ interface OrderModalLayoutProps {
     primaryLabel: string;
     onPrimaryClick: () => void;
     primaryDisabled?: boolean;
+    primaryLoading?: boolean;
     modalClasses?: string;
     children: React.ReactNode;
+}
+
+function PrimaryButtonLoadingDots() {
+    return (
+        <span className="inline-flex items-center gap-0.5" aria-hidden>
+            {[0, 150, 300].map((delayMs) => (
+                <span
+                    key={delayMs}
+                    className="inline-block size-1 animate-bounce rounded-full bg-current"
+                    style={{ animationDelay: `${delayMs}ms` }}
+                />
+            ))}
+        </span>
+    );
 }
 
 export default function OrderModalLayout({
@@ -27,6 +42,7 @@ export default function OrderModalLayout({
     primaryLabel,
     onPrimaryClick,
     primaryDisabled = false,
+    primaryLoading = false,
     modalClasses = '',
     children,
 }: OrderModalLayoutProps) {
@@ -49,6 +65,7 @@ export default function OrderModalLayout({
                     <Button
                         variant="outline"
                         onClick={onClose}
+                        disabled={primaryLoading}
                         className={orderModalStyles.cancelButton}
                     >
                         Cancel
@@ -56,9 +73,14 @@ export default function OrderModalLayout({
                     <Button
                         className={orderModalStyles.primaryButton}
                         onClick={onPrimaryClick}
-                        disabled={primaryDisabled}
+                        disabled={primaryDisabled || primaryLoading}
+                        aria-busy={primaryLoading}
                     >
-                        {primaryLabel}
+                        {primaryLoading ? (
+                            <PrimaryButtonLoadingDots />
+                        ) : (
+                            primaryLabel
+                        )}
                     </Button>
                 </DialogFooter>
             </DialogContent>
