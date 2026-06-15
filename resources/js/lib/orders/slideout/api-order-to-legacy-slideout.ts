@@ -17,6 +17,7 @@ import {
 } from '@/lib/orders/order-item-specifications';
 import {
     defaultArtPackage,
+    defaultAudioSpotType,
     defaultBroadcastSpotType,
     defaultSocialCut,
     defaultSocialSpotType,
@@ -179,7 +180,7 @@ export function mapApiOrderItemToVenueRow(
             isci,
             duration_seconds: orderItemDurationSeconds(specs as Record<string, unknown>),
             status_id: statusId,
-            spot_type: defaultBroadcastSpotType(specs as Record<string, unknown>),
+            spot_type: defaultAudioSpotType(specs as Record<string, unknown>),
             cut: orderItemDefaultCut(item) as OrderItemsRadioRow['cut'],
             has_deliverable_actions: hasDeliverables,
             order_id: order.id,

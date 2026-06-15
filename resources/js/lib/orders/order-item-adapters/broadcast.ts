@@ -131,7 +131,7 @@ export function draftToPendingBroadcastRow(
         type: 'broadcast',
         created_date: new Date().toISOString(),
         dueDate: formatShortUsDate(draft.due_date),
-        spot_type: spotType as OrderItemsBroadcastRow['spot_type'],
+        spot_type: spotType,
         cut: cut as OrderItemsBroadcastRow['cut'],
         isci: 'Adding…',
         duration_seconds: durationSeconds,

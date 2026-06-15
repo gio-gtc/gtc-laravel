@@ -58,7 +58,7 @@ export function expandBroadcastRowsFromForm(
     form: AddBroadcastStreamingFormValues,
     catalogs: VenueItemExpandCatalogs,
 ): OrderItemsBroadcastRow[] {
-    const spotType = form.type as OrderItemsBroadcastRow['spot_type'];
+    const spotType = form.type;
     const rows: OrderItemsBroadcastRow[] = [];
 
     for (const enc of form.encodings) {

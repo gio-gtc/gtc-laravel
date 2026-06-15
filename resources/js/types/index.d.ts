@@ -1,8 +1,6 @@
 import type {
     AllAudioCuts,
-    AllBroadcastCuts,
     AudioSpotType,
-    BroadcastSpotType,
     OrderItemArtPackageType,
     OrderItemSocialCardHolder,
     SocialCutOption,
@@ -445,8 +443,8 @@ export interface OrderItemsBroadcastRow
     extends OrderItemsRowBase,
         OrderItemsMediaLineShared {
     type: 'broadcast';
-    spot_type: BroadcastSpotType;
-    cut: AllBroadcastCuts;
+    spot_type: string;
+    cut: string;
     asset_tracking?: AssetTrackingMap;
     missingAssetTags?: string[];
 }

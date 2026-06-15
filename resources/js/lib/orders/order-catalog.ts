@@ -233,14 +233,30 @@ export function pillToBlueprintDuration(pill: string): number {
     const trimmed = pill.trim();
     if (trimmed.startsWith(':')) {
         const n = Number.parseInt(trimmed.slice(1), 10);
-        return Number.isFinite(n) ? n : 0;
+        return Number.isFinite(n) ? Math.max(0, n) : 0;
+    }
+    const parts = trimmed.split(':');
+    if (parts.length === 2) {
+        const m = Number.parseInt(parts[0] || '0', 10);
+        const s = Number.parseInt(parts[1] || '0', 10);
+        if (Number.isFinite(m) && Number.isFinite(s)) {
+            return Math.max(0, m * 60 + s);
+        }
     }
     const parsed = Number.parseInt(trimmed, 10);
-    return Number.isFinite(parsed) ? parsed : 0;
+    return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
 }
 
 export function isInternationalSpotType(type: string): boolean {
     return type === INTERNATIONAL_SPOT_TYPE;
+}
+
+/** Blueprint/options lookup key for unknown or custom broadcast spot types. */
+export function broadcastOptionsTypeKey(
+    type: string,
+    knownTypeKeys: readonly string[],
+): string {
+    return knownTypeKeys.includes(type) ? type : 'Generic';
 }
 
 export interface InternationalLockedSelection {

@@ -37,3 +37,28 @@ export function durationSecondsToModalPillLabel(
     }
     return formatDurationSeconds(s);
 }
+
+/** Parse a custom duration field (whole seconds) from user text input. */
+export function parseCustomDurationSecondsInput(raw: string): number | null {
+    const trimmed = raw.trim();
+    if (trimmed === '') {
+        return null;
+    }
+    const parsed = Number.parseInt(trimmed, 10);
+    if (!Number.isFinite(parsed) || parsed < 0) {
+        return null;
+    }
+    return parsed;
+}
+
+/** Map validated seconds input to modal duration pill label. */
+export function customDurationInputToPillLabel(
+    raw: string,
+    kind: ModalDurationKind,
+): string | null {
+    const seconds = parseCustomDurationSecondsInput(raw);
+    if (seconds === null) {
+        return null;
+    }
+    return durationSecondsToModalPillLabel(seconds, kind);
+}

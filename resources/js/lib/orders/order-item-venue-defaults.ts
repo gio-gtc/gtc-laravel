@@ -3,6 +3,7 @@ import {
     SOCIAL_CUT_OPTIONS,
     SOCIAL_VIDEO_TYPE_OPTIONS,
     VENUE_ITEM_ART_PACKAGE_TYPES,
+    type AudioSpotType,
     type BroadcastSpotType,
     type SocialCutOption,
     type SocialVideoLayoutType,
@@ -15,10 +16,23 @@ import {
 
 export function defaultBroadcastSpotType(
     specs: OrderItemSpecRecord,
-): BroadcastSpotType {
+): string {
     const type = specString(specs, 'type');
     if (BROADCAST_SPOT_TYPES.includes(type as BroadcastSpotType)) {
         return type as BroadcastSpotType;
+    }
+    if (type.trim() !== '') {
+        return type;
+    }
+    return 'Generic';
+}
+
+export function defaultAudioSpotType(
+    specs: OrderItemSpecRecord,
+): AudioSpotType {
+    const type = specString(specs, 'type');
+    if (BROADCAST_SPOT_TYPES.includes(type as AudioSpotType)) {
+        return type as AudioSpotType;
     }
     return 'Generic';
 }
