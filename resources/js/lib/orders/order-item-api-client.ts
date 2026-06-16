@@ -236,11 +236,11 @@ export async function updateOrderItem(
     return parseMutationResponse(response);
 }
 
-/** DELETE /api/order-items/{itemId} — soft-cancel cart line. */
+/** DELETE /api/order-items/{itemId} — hard-delete cart line (Still In Cart only). */
 export async function deleteOrderItem(
     orderItemId: number,
     signal?: AbortSignal,
-): Promise<OrderItemMutationResponse> {
+): Promise<{ message: string; order_item?: OrderItem }> {
     const headers = getCsrfHeaders();
 
     const response = await fetch(`/api/order-items/${orderItemId}`, {
@@ -250,7 +250,21 @@ export async function deleteOrderItem(
         signal,
     });
 
-    return parseMutationResponse(response);
+    const body = (await response.json()) as OrderItemMutationResponse &
+        OrderItemValidationError;
+
+    if (!response.ok) {
+        throw new OrderItemApiError(
+            body.message ?? 'Could not remove order item.',
+            response.status,
+            body.errors,
+        );
+    }
+
+    return {
+        message: body.message ?? 'Line item removed.',
+        order_item: body.order_item,
+    };
 }
 
 export type OrderItemBulkUpdatePayload = {

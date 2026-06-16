@@ -8,4 +8,8 @@ export {
     venueRowToStoreItemPayload,
     type StoreOrderItemPayload,
 } from '@/lib/orders/slideout/legacy-venue-row-to-api-item';
-export { upsertOrderItem, replaceOrderItemInOrder } from '@/lib/orders/slideout/order-mutations';
+export {
+    upsertOrderItem,
+    replaceOrderItemInOrder,
+    removeOrderItemFromOrder,
+} from '@/lib/orders/slideout/order-mutations';

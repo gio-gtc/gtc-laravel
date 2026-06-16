@@ -1,4 +1,5 @@
 import { formatDurationSeconds } from '@/helper-functions/format-time';
+import { parseDurationWireAsSeconds } from '@/lib/orders/broadcast-spec-wire';
 
 export type ModalDurationKind = 'broadcast' | 'social' | 'audio';
 
@@ -14,9 +15,16 @@ export function getDefaultDurationSecondsForModal(
 }
 
 export function isNonDefaultModalDuration(
-    seconds: number,
+    seconds: number | string,
     kind: ModalDurationKind,
 ): boolean {
+    if (typeof seconds === 'string') {
+        const parsed = parseDurationWireAsSeconds(seconds);
+        if (parsed === null) {
+            return true;
+        }
+        return isNonDefaultModalDuration(parsed, kind);
+    }
     const s = Math.max(0, Math.floor(seconds));
     const defs = getDefaultDurationSecondsForModal(kind);
     return !defs.some((d) => d === s);
@@ -24,12 +32,20 @@ export function isNonDefaultModalDuration(
 
 /**
  * Canonical pill label for `duration` state: colon shorthand for default
- * lengths, otherwise table-aligned `formatDurationSeconds`.
+ * lengths, otherwise table-aligned `formatDurationSeconds` or raw wire text.
  */
 export function durationSecondsToModalPillLabel(
-    seconds: number,
+    seconds: number | string,
     kind: ModalDurationKind,
 ): string {
+    if (typeof seconds === 'string') {
+        const trimmed = seconds.trim();
+        const parsed = parseDurationWireAsSeconds(trimmed);
+        if (parsed !== null) {
+            return durationSecondsToModalPillLabel(parsed, kind);
+        }
+        return trimmed;
+    }
     const s = Math.max(0, Math.floor(seconds));
     const defs = getDefaultDurationSecondsForModal(kind);
     if (defs.some((d) => d === s)) {

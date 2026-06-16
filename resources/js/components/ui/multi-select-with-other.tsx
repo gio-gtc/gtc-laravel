@@ -226,7 +226,7 @@ export function MultiSelectWithOther({
                                 })
                             )}
                         </div>
-                        <ChevronDown className="size-4 shrink-0 opacity-50" />
+                        <ChevronDown className="size-4 shrink-0 text-muted-foreground opacity-50" />
                     </div>
                 </PopoverTrigger>
                 <PopoverContent

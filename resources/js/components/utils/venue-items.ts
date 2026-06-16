@@ -1,4 +1,5 @@
 import { VENUE_ITEM_ART_PACKAGE_TYPES } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
+import { parseDurationWireAsSeconds } from '@/lib/orders/broadcast-spec-wire';
 import {
     orderItemStatusIdToLabel,
     orderItemStatusLabelToId,
@@ -157,11 +158,32 @@ export function venueItemsMediaTableRow(
             ? {
                   asset_tracking: row.asset_tracking,
                   missingAssetTags: row.missingAssetTags,
+                  duration_wire:
+                      typeof row.duration_seconds === 'string'
+                          ? row.duration_seconds
+                          : String(row.duration_seconds),
+                  duration_seconds:
+                      parseDurationWireAsSeconds(
+                          typeof row.duration_seconds === 'string'
+                              ? row.duration_seconds
+                              : String(row.duration_seconds),
+                      ) ??
+                      (typeof row.duration_seconds === 'number'
+                          ? row.duration_seconds
+                          : 0),
               }
             : {};
 
+    const durationSecondsForRow =
+        row.type === 'broadcast'
+            ? (broadcastExtras as { duration_seconds: number }).duration_seconds
+            : typeof row.duration_seconds === 'number'
+              ? row.duration_seconds
+              : Number(row.duration_seconds) || 0;
+
     return {
         ...rest,
+        duration_seconds: durationSecondsForRow,
         cutName: venueItemMediaLineLabel(spot_type, cut),
         assigned,
         status:

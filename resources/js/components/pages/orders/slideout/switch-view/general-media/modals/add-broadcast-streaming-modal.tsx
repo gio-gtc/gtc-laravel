@@ -39,6 +39,12 @@ import {
 } from '@/lib/orders/broadcast-add-form-complete';
 import { hasBroadcastFormDuplicates } from '@/lib/orders/broadcast-duplicate-check';
 import {
+    assertInternationalDuration,
+    durationWireFromPill,
+    encodingWireFromRowLabel,
+    primaryEncodingLabel,
+} from '@/lib/orders/broadcast-spec-wire';
+import {
     applyInternationalLocks,
     broadcastOptionsTypeKey,
     getAllBroadcastDurationPills,
@@ -194,14 +200,7 @@ export default function AddBroadcastStreamingModal({
             'broadcast',
         );
         setEditDuration(pill);
-        setEditCustomDurationDraft(
-            isNonDefaultModalDuration(
-                initialVenueRow.duration_seconds,
-                'broadcast',
-            )
-                ? String(Math.floor(initialVenueRow.duration_seconds))
-                : '',
-        );
+        setEditCustomDurationDraft('');
         const langLabel = venueItemLanguageIdToLabel(
             initialVenueRow.language_id ?? -1,
             venue_item_language,
@@ -210,17 +209,23 @@ export default function AddBroadcastStreamingModal({
             initialVenueRow.language ??
                 (langLabel || venue_item_language[0]?.type || ''),
         );
-        if (
-            initialVenueRow.encoding_custom != null &&
-            initialVenueRow.encoding_custom !== ''
-        ) {
+        const encodingLabels = Array.isArray(initialVenueRow.encoding)
+            ? initialVenueRow.encoding
+            : initialVenueRow.encoding_label
+              ? [initialVenueRow.encoding_label]
+              : [];
+        const primaryLabel = primaryEncodingLabel(encodingLabels);
+        const catalogMatch = venue_item_encoding.find(
+            (entry) => entry.type === primaryLabel,
+        );
+        if (encodingLabels.length > 0 && !catalogMatch) {
             setEditEncodingCustom(true);
-            setEditEncodingCustomText(initialVenueRow.encoding_custom);
+            setEditEncodingCustomText(primaryLabel);
             setEditEncodingId(ENCODING_UNSET);
-        } else if (initialVenueRow.encoding) {
+        } else if (catalogMatch) {
             setEditEncodingCustom(false);
             setEditEncodingCustomText('');
-            setEditEncodingId(initialVenueRow.encoding);
+            setEditEncodingId(String(catalogMatch.id));
         } else if (initialVenueRow.encoding_id != null) {
             setEditEncodingCustom(false);
             setEditEncodingCustomText('');
@@ -231,7 +236,13 @@ export default function AddBroadcastStreamingModal({
             setEditEncodingId(ENCODING_UNSET);
         }
         /* eslint-enable react-hooks/set-state-in-effect */
-    }, [isOpen, isEdit, initialVenueRow, venue_item_language]);
+    }, [
+        isOpen,
+        isEdit,
+        initialVenueRow,
+        venue_item_language,
+        venue_item_encoding,
+    ]);
 
     useEffect(() => {
         if (!isOpen || isEdit) return;
@@ -567,6 +578,7 @@ export default function AddBroadcastStreamingModal({
             return;
         }
         setEditDuration(pill);
+        setEditCustomDurationDraft('');
     }, [editCustomDurationDraft]);
 
     const resetForm = (typeKey: string = type) => {
@@ -743,16 +755,21 @@ export default function AddBroadcastStreamingModal({
         const langId = languageTypeToId(venue_item_language, editLanguage);
         if (langId === undefined) return;
 
-        const durationSeconds = modalDurationPillToSeconds(
-            editDuration,
-            'broadcast',
+        const durationWire = durationWireFromPill(editDuration);
+        const intlCheck = assertInternationalDuration(
+            durationWire,
+            editType,
+            editCut,
         );
+        if (!intlCheck.ok) {
+            return;
+        }
 
         const baseRow: OrderItemsBroadcastRow = {
             ...initialVenueRow,
             spot_type: editType,
             cut: editCut,
-            duration_seconds: durationSeconds,
+            duration_seconds: durationWire,
             language_id: langId,
             language: editLanguage,
         };
@@ -765,11 +782,12 @@ export default function AddBroadcastStreamingModal({
             if (editEncodingCustom) {
                 const text = editEncodingCustomText.trim();
                 if (!text) return;
+                const encoding = encodingWireFromRowLabel(text);
                 result = await onEditSave({
                     ...baseRow,
-                    encoding_custom: text,
+                    encoding,
+                    encoding_label: primaryEncodingLabel(encoding),
                     encoding_id: undefined,
-                    encoding: undefined,
                 });
             } else {
                 if (editEncodingId === ENCODING_UNSET) return;
@@ -780,13 +798,14 @@ export default function AddBroadcastStreamingModal({
                           encodingId,
                           venue_item_encoding,
                       );
+                const encoding = encodingWireFromRowLabel(encodingLabel);
                 result = await onEditSave({
                     ...baseRow,
-                    encoding: encodingLabel || undefined,
+                    encoding,
+                    encoding_label: encodingLabel || undefined,
                     encoding_id: Number.isNaN(encodingId)
                         ? undefined
                         : encodingId,
-                    encoding_custom: undefined,
                 });
             }
 
@@ -908,7 +927,7 @@ export default function AddBroadcastStreamingModal({
                                     >
                                         Duration
                                     </Label>
-                                    <div className="flex flex-col gap-2">
+                                    <div className="flex max-w-[55px] flex-col gap-2">
                                         {allDurationPills.map((d) => {
                                             const isDisabled =
                                                 isEditInternationalLocked ||

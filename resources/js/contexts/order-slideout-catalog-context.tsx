@@ -21,6 +21,7 @@ import { fetchOrderShow } from '@/lib/orders/orders-api-client';
 import {
     apiOrderToLegacySlideout,
     mergeSlideoutVenueItems,
+    removeOrderItemFromOrder,
     replaceOrderItemInOrder,
     upsertOrderItem,
     venueRowToStoreItemPayload,
@@ -396,15 +397,12 @@ export function OrderSlideoutCatalogProvider({
             }
 
             try {
-                const result = await deleteOrderItem(orderItemId);
+                await deleteOrderItem(orderItemId);
                 setOpenOrder((prev) =>
-                    prev ? upsertOrderItem(prev, result.order_item) : prev,
+                    prev ? removeOrderItemFromOrder(prev, orderItemId) : prev,
                 );
-                applyParentOrderBadgeUpdate(result.parent_order_update);
                 toast.success('Line item removed from cart.');
-                if (!result.parent_order_update) {
-                    void refreshOpenOrder(openOrder.id);
-                }
+                void refreshOpenOrder(openOrder.id);
                 return true;
             } catch (error) {
                 toast.error(
@@ -415,7 +413,7 @@ export function OrderSlideoutCatalogProvider({
                 return false;
             }
         },
-        [openOrder, applyParentOrderBadgeUpdate, refreshOpenOrder],
+        [openOrder, refreshOpenOrder],
     );
 
     const commitOrderItemBulkWrite = useCallback(

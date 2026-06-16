@@ -1,4 +1,8 @@
 import { formatShortUsDate } from '@/lib/format/date';
+import {
+    durationWireFromSpecValue,
+    encodingLabelsFromWire,
+} from '@/lib/orders/broadcast-spec-wire';
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
 import type {
     ApiOrder,
@@ -100,11 +104,32 @@ export function initialAssetTrackingFromCatalogTags(
     return Object.fromEntries(tags.map((tag) => [tag, false]));
 }
 
+export function orderItemDurationWire(specs: OrderItemSpecRecord): string {
+    return durationWireFromSpecValue(specs.duration_seconds);
+}
+
+/** Whole seconds when wire value is a plain integer string or legacy number. */
 export function orderItemDurationSeconds(specs: OrderItemSpecRecord): number {
+    const wire = orderItemDurationWire(specs);
+    if (/^\d+$/.test(wire)) {
+        return Number.parseInt(wire, 10);
+    }
     if (typeof specs.duration_seconds === 'number') {
         return specs.duration_seconds;
     }
     return 0;
+}
+
+export function orderItemEncodingLabels(specs: OrderItemSpecRecord): string[] {
+    const fromArray = encodingLabelsFromWire(specs.encoding);
+    if (fromArray.length > 0) {
+        return fromArray;
+    }
+    const legacyCustom = specString(specs, 'encoding_custom');
+    if (legacyCustom) {
+        return [legacyCustom];
+    }
+    return encodingLabelsFromWire(specs.encoding);
 }
 
 export function parseOrderItemDimensions(

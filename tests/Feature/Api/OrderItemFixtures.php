@@ -81,10 +81,9 @@ function samplePolymorphicBroadcastOrderItem(int $id = 200): array
             'id' => 14,
             'type' => 'Generic',
             'cut' => 'On Sale Now',
-            'duration_seconds' => 30,
+            'duration_seconds' => '30',
             'language' => 'English',
-            'encoding' => 'Station MP4 (Broadcast)',
-            'encoding_custom' => null,
+            'encoding' => ['Station MP4 (Broadcast)'],
             'isci' => 'ISCI-ABCDEFGH',
             'asset_tracking' => [
                 'Voice Over' => false,
@@ -97,5 +96,6 @@ function samplePolymorphicBroadcastOrderItem(int $id = 200): array
             'name' => 'Still In Cart',
             'order_status_id' => 1,
         ],
+        'revision_instructions' => null,
     ];
 }

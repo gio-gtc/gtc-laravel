@@ -19,14 +19,14 @@ it('proxies json add order item to gtc-api', function () {
             'specifications' => [
                 'type' => 'Generic',
                 'cut' => 'On Sale Now',
-                'duration_seconds' => 30,
+                'duration_seconds' => '30',
                 'language' => 'English',
-                'encoding' => 'Station MP4 (Broadcast)',
+                'encoding' => ['Station MP4 (Broadcast)'],
             ],
         ])
         ->assertCreated()
         ->assertJsonPath('order_item.id', 200)
-        ->assertJsonPath('order_item.specifiable.encoding', 'Station MP4 (Broadcast)')
+        ->assertJsonPath('order_item.specifiable.encoding.0', 'Station MP4 (Broadcast)')
         ->assertJsonPath('order_item.status_lookup.name', 'Still In Cart')
         ->assertJsonPath('order_item.specifiable.asset_tracking.Voice Over', false);
 
@@ -39,7 +39,8 @@ it('proxies json add order item to gtc-api', function () {
 
         return $body['order_menu_item_id'] === 1
             && $body['due_date'] === '2026-07-25'
-            && $body['specifications']['duration_seconds'] === 30
+            && $body['specifications']['duration_seconds'] === '30'
+            && $body['specifications']['encoding'] === ['Station MP4 (Broadcast)']
             && $body['specifications']['language'] === 'English';
     });
 });
@@ -49,7 +50,7 @@ it('forwards 422 validation errors from gtc-api for json order item store', func
         apiOrderItemsStoreUrl(1) => Http::response([
             'message' => 'The given data was invalid.',
             'errors' => [
-                'specifications.encoding' => ['Encoding is required when encoding_custom is absent.'],
+                'specifications.encoding' => ['The encoding field is required.'],
             ],
         ], 422),
     ]);
@@ -61,14 +62,14 @@ it('forwards 422 validation errors from gtc-api for json order item store', func
             'specifications' => [
                 'type' => 'Generic',
                 'cut' => 'On Sale Now',
-                'duration_seconds' => 30,
+                'duration_seconds' => '30',
                 'language' => 'English',
             ],
         ])
         ->assertUnprocessable()
         ->assertJsonFragment([
             'specifications.encoding' => [
-                'Encoding is required when encoding_custom is absent.',
+                'The encoding field is required.',
             ],
         ]);
 });

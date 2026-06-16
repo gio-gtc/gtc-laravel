@@ -12,6 +12,18 @@ export function upsertOrderItem(order: ApiOrder, created: OrderItem): ApiOrder {
     return { ...order, order_items: items };
 }
 
+export function removeOrderItemFromOrder(
+    order: ApiOrder,
+    orderItemId: number,
+): ApiOrder {
+    return {
+        ...order,
+        order_items: (order.order_items ?? []).filter(
+            (item) => item.id !== orderItemId,
+        ),
+    };
+}
+
 export function replaceOrderItemInOrder(
     order: ApiOrder,
     row: OrderItemsRow,

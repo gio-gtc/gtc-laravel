@@ -9,12 +9,15 @@ import {
     orderItemDefaultCut,
     orderItemDueDateDisplay,
     orderItemDurationSeconds,
+    orderItemDurationWire,
+    orderItemEncodingLabels,
     orderItemIsci,
     orderItemSpecRecord,
     orderItemWireStatus,
     parseOrderItemDimensions,
     specString,
 } from '@/lib/orders/order-item-specifications';
+import { primaryEncodingLabel } from '@/lib/orders/broadcast-spec-wire';
 import {
     defaultArtPackage,
     defaultAudioSpotType,
@@ -134,20 +137,23 @@ export function mapApiOrderItemToVenueRow(
 
     if (venueType === 'broadcast') {
         const specs = orderItemSpecRecord(item);
-        const encodingCustom = specString(specs, 'encoding_custom');
-        const encoding = specString(specs, 'encoding');
+        const durationWire = orderItemDurationWire(specs);
+        const encodingLabels = orderItemEncodingLabels(specs);
         const assetTracking = orderItemAssetTracking(item);
         const row: OrderItemsBroadcastRow = {
             ...base,
             type: 'broadcast',
             isci,
-            duration_seconds: orderItemDurationSeconds(specs),
+            duration_seconds: durationWire,
             status_id: statusId,
             spot_type: defaultBroadcastSpotType(specs),
             cut: orderItemDefaultCut(item) as OrderItemsBroadcastRow['cut'],
             language: specString(specs, 'language') || undefined,
-            encoding: encoding || undefined,
-            encoding_custom: encodingCustom || undefined,
+            encoding: encodingLabels.length > 0 ? encodingLabels : undefined,
+            encoding_label:
+                encodingLabels.length > 0
+                    ? primaryEncodingLabel(encodingLabels)
+                    : undefined,
             asset_tracking: assetTracking,
             missingAssetTags: missingAssetTagsFromItem(item),
             has_deliverable_actions: hasDeliverables,

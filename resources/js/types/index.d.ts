@@ -295,6 +295,8 @@ export interface MediaTableRow {
     /** Tags with missing required assets (`asset_tracking[tag] === false`). */
     missingAssetTags?: string[];
     asset_tracking?: AssetTrackingMap;
+    /** Broadcast wire duration for display/inline edit (API string). */
+    duration_wire?: string;
 }
 
 export interface MediaTableProps {
@@ -413,18 +415,18 @@ export type OrderItemMediaKind = 'video' | 'audio' | 'image';
 /** Shared fields for broadcast / radio / social venue line items. */
 export interface OrderItemsMediaLineShared {
     isci: string;
-    duration_seconds: number;
+    duration_seconds: number | string;
     status_id: number;
     /** Present on broadcast, social, and radio mock rows when supplied. */
     language_id?: number;
     /** Present on broadcast mock rows only when supplied. */
     encoding_id?: number;
-    /** Free-form encoding when not using `encoding_id` (broadcast). */
-    encoding_custom?: string;
     /** Wire language string from API specs (broadcast). */
     language?: string;
-    /** Wire catalog encoding string from API specs (broadcast). */
-    encoding?: string;
+    /** Wire encoding array from API specs (broadcast). */
+    encoding?: string[];
+    /** Primary encoding label for catalog UI convenience (derived from `encoding[0]`). */
+    encoding_label?: string;
     /** Optimistic add — row awaiting POST resolution. */
     is_pending?: boolean;
     create_error?: string;

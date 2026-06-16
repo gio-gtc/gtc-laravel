@@ -21,11 +21,21 @@ class OrderItemDeleteController extends Controller
         $result = $client->delete("/api/order-items/{$orderItem}");
 
         if ($result['ok']) {
-            return OrderItemApiResponse::successJson(
-                $result['data'],
-                200,
-                'Line item removed.',
-            );
+            $item = OrderItemApiResponse::extractOrderItem($result['data']);
+
+            if ($item !== null) {
+                return OrderItemApiResponse::successJson(
+                    $result['data'],
+                    200,
+                    'Line item removed.',
+                );
+            }
+
+            $message = $result['data']['message'] ?? 'Line item removed.';
+
+            return response()->json([
+                'message' => is_string($message) ? $message : 'Line item removed.',
+            ], 200);
         }
 
         return OrderItemApiResponse::errorJson($result);

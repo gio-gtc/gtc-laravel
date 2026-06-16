@@ -52,7 +52,7 @@ it('proxies partial specifications bulk update to gtc-api', function () {
         ->postJson(route('api.order-items.bulk-update'), [
             'order_item_ids' => [101],
             'specifications' => [
-                'duration_seconds' => 30,
+                'duration_seconds' => '30',
             ],
         ])
         ->assertOk();
@@ -61,7 +61,7 @@ it('proxies partial specifications bulk update to gtc-api', function () {
         $body = $request->data();
 
         return $body['order_item_ids'] === [101]
-            && $body['specifications']['duration_seconds'] === 30;
+            && $body['specifications']['duration_seconds'] === '30';
     });
 });
 

@@ -13,6 +13,11 @@ import type {
     OrderItemsSocialRow,
 } from '@/types';
 import {
+    durationWireFromPill,
+    encodingWireFromRowLabel,
+    primaryEncodingLabel,
+} from '@/lib/orders/broadcast-spec-wire';
+import {
     encodingLabelToId,
     languageTypeToId,
     modalDurationPillToSeconds,
@@ -71,6 +76,7 @@ export function expandBroadcastRowsFromForm(
         if (enc.encodingMode === 'custom') {
             const text = enc.encoding.trim();
             if (!text) continue;
+            const encoding = encodingWireFromRowLabel(text);
 
             rows.push({
                 id: ctx.nextId(),
@@ -81,13 +87,11 @@ export function expandBroadcastRowsFromForm(
                 spot_type: spotType,
                 cut: asBroadcastCut(enc.cut),
                 isci: ctx.nextIsci(),
-                duration_seconds: modalDurationPillToSeconds(
-                    enc.duration,
-                    BROADCAST_DURATION_KIND,
-                ),
+                duration_seconds: durationWireFromPill(enc.duration),
                 status_id: ctx.statusId,
                 language_id: languageId,
-                encoding_custom: text,
+                encoding,
+                encoding_label: primaryEncodingLabel(encoding),
             });
             continue;
         }
@@ -107,13 +111,12 @@ export function expandBroadcastRowsFromForm(
             spot_type: spotType,
             cut: asBroadcastCut(enc.cut),
             isci: ctx.nextIsci(),
-            duration_seconds: modalDurationPillToSeconds(
-                enc.duration,
-                BROADCAST_DURATION_KIND,
-            ),
+            duration_seconds: durationWireFromPill(enc.duration),
             status_id: ctx.statusId,
             language_id: languageId,
             encoding_id: encodingId,
+            encoding: encodingWireFromRowLabel(enc.encoding),
+            encoding_label: enc.encoding,
         });
     }
 

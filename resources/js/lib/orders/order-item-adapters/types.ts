@@ -44,6 +44,6 @@ export type SequentialCreateResult = {
 export interface OrderItemUpdateAdapter<TVenueRow extends OrderItemsRow> {
     categoryId: OrderMenuCategoryId;
     rowToFullBulkPatch: (row: TVenueRow, order: ApiOrder) => OrderItemBulkPatch;
-    durationPatch: (seconds: number) => OrderItemBulkPatch;
+    durationPatch: (wire: number | string) => OrderItemBulkPatch;
     statusPatch: (statusId: number) => OrderItemBulkPatch;
 }

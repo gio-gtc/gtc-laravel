@@ -18,9 +18,9 @@ it('proxies add order item to gtc-api', function () {
             'specifications' => [
                 'type' => 'Generic',
                 'cut' => 'On Sale Now',
-                'duration_seconds' => 30,
+                'duration_seconds' => '30',
                 'language' => 'English',
-                'encoding' => 'Station MP4 (Broadcast)',
+                'encoding' => ['Station MP4 (Broadcast)'],
             ],
         ])
         ->assertRedirect(route('orders'))
@@ -29,7 +29,7 @@ it('proxies add order item to gtc-api', function () {
 
     $created = session('created_order_item');
     expect($created)->toBeArray()
-        ->and($created['specifiable']['encoding'])->toBe('Station MP4 (Broadcast)')
+        ->and($created['specifiable']['encoding'])->toBe(['Station MP4 (Broadcast)'])
         ->and($created['status_lookup']['name'])->toBe('Still In Cart')
         ->and($created['specifiable']['asset_tracking']['Voice Over'])->toBeFalse();
 
@@ -42,7 +42,7 @@ it('proxies add order item to gtc-api', function () {
 
         return $body['order_menu_item_id'] === 1
             && $body['due_date'] === '2026-07-25'
-            && $body['specifications']['duration_seconds'] === 30;
+            && $body['specifications']['duration_seconds'] === '30';
     });
 });
 
@@ -63,9 +63,9 @@ it('normalizes canceled status lookup to cancelled in legacy store flash', funct
             'specifications' => [
                 'type' => 'Generic',
                 'cut' => 'On Sale Now',
-                'duration_seconds' => 30,
+                'duration_seconds' => '30',
                 'language' => 'English',
-                'encoding' => 'Station MP4 (Broadcast)',
+                'encoding' => ['Station MP4 (Broadcast)'],
             ],
         ])
         ->assertRedirect(route('orders'));

@@ -15,10 +15,16 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
+import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
 import { EditableCellSelect } from '@/components/utils/editable-table/editable-cell-select';
 import { durationSelectOptionsForMediaTable } from '@/components/utils/editable-table/media-duration-options';
 import { VenueItemStatusBadge } from '@/components/utils/venue-item-status-badge';
 import { formatDurationSeconds } from '@/helper-functions/format-time';
+import {
+    durationDisplayLabel,
+    durationWireFromNumericInput,
+    parseDurationWireAsSeconds,
+} from '@/lib/orders/broadcast-spec-wire';
 import { toggleRowSelectionOnRowClick } from '@/lib/row-select-toggle';
 import { cn } from '@/lib/utils';
 import { MediaTableProps, MediaTableRow } from '@/types';
@@ -284,7 +290,93 @@ export default function MediaTable({
                                                     {/* )} */}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {cellEditing ? (
+                                                    {cellEditing &&
+                                                    editScope === 'broadcast' ? (
+                                                        <EditableCellInput
+                                                            variant="orderSlideoutTableCells"
+                                                            type="number"
+                                                            min={0}
+                                                            step={1}
+                                                            value={
+                                                                parseDurationWireAsSeconds(
+                                                                    row.duration_wire ??
+                                                                        String(
+                                                                            row.duration_seconds,
+                                                                        ),
+                                                                ) ??
+                                                                row.duration_seconds
+                                                            }
+                                                            itemId={row.id}
+                                                            field="duration_seconds"
+                                                            formatValue={() =>
+                                                                durationDisplayLabel(
+                                                                    row.duration_wire ??
+                                                                        String(
+                                                                            row.duration_seconds,
+                                                                        ),
+                                                                )
+                                                            }
+                                                            onChange={(
+                                                                itemId,
+                                                                field,
+                                                                value,
+                                                            ) => {
+                                                                const seconds =
+                                                                    typeof value ===
+                                                                    'number'
+                                                                        ? value
+                                                                        : Number(
+                                                                              value,
+                                                                          ) ||
+                                                                          0;
+                                                                cellEditing.onCellChange(
+                                                                    itemId,
+                                                                    field,
+                                                                    seconds,
+                                                                );
+                                                                cellEditing.onCellChange(
+                                                                    itemId,
+                                                                    'duration_wire',
+                                                                    durationWireFromNumericInput(
+                                                                        seconds,
+                                                                    ),
+                                                                );
+                                                            }}
+                                                            onDoubleClick={(
+                                                                id,
+                                                                field,
+                                                            ) =>
+                                                                cellEditing.onCellDoubleClick(
+                                                                    id,
+                                                                    field,
+                                                                    editScope,
+                                                                )
+                                                            }
+                                                            onBlur={
+                                                                cellEditing.onCellBlur
+                                                            }
+                                                            onKeyDown={(
+                                                                e,
+                                                                id,
+                                                                field,
+                                                            ) =>
+                                                                cellEditing.onCellKeyDown(
+                                                                    e,
+                                                                    id,
+                                                                    field,
+                                                                    editScope,
+                                                                )
+                                                            }
+                                                            isEditing={cellEditing.isCellEditing(
+                                                                row.id,
+                                                                'duration_seconds',
+                                                                editScope,
+                                                            )}
+                                                            disabled={
+                                                                rowEditsLocked
+                                                            }
+                                                        />
+                                                    ) : cellEditing ? (
                                                         <EditableCellSelect
                                                             variant="orderSlideoutTableCells"
                                                             value={String(
@@ -354,6 +446,14 @@ export default function MediaTable({
                                                                 rowEditsLocked
                                                             }
                                                         />
+                                                    ) : editScope ===
+                                                      'broadcast' ? (
+                                                        durationDisplayLabel(
+                                                            row.duration_wire ??
+                                                                String(
+                                                                    row.duration_seconds,
+                                                                ),
+                                                        )
                                                     ) : (
                                                         formatDurationSeconds(
                                                             row.duration_seconds,

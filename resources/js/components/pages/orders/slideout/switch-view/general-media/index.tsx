@@ -739,7 +739,10 @@ function GeneralMediaView({
                     inlineOriginalRef.current = {
                         itemId,
                         field,
-                        value: row.duration_seconds,
+                        value:
+                            'duration_wire' in row && row.duration_wire
+                                ? row.duration_wire
+                                : String(row.duration_seconds),
                     };
                 } else if (field === 'status') {
                     inlineOriginalRef.current = {
@@ -822,21 +825,30 @@ function GeneralMediaView({
                     return;
                 }
                 const original = inlineOriginalRef.current;
+                const mediaRow = row as MediaTableRow;
+                const durationWire =
+                    mediaRow.duration_wire ??
+                    String(mediaRow.duration_seconds);
                 const result = await commitOrderItemBulkWrite(
                     [Number(row.id)],
-                    broadcastUpdateAdapter.durationPatch(
-                        (row as MediaTableRow).duration_seconds,
-                    ),
+                    broadcastUpdateAdapter.durationPatch(durationWire),
                 );
                 if (
                     !result.ok &&
                     original?.itemId === row.id &&
                     original.field === 'duration_seconds'
                 ) {
+                    const revertedSeconds =
+                        Number.parseInt(String(original.value), 10) || 0;
+                    ctx.handleChange(
+                        row.id,
+                        'duration_wire',
+                        String(original.value),
+                    );
                     ctx.handleChange(
                         row.id,
                         'duration_seconds',
-                        original.value,
+                        revertedSeconds,
                     );
                 }
                 inlineOriginalRef.current = null;

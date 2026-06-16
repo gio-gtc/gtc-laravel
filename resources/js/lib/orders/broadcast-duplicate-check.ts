@@ -3,7 +3,11 @@ import {
     venueItemEncodingIdToLabel,
     venueItemLanguageIdToLabel,
 } from '@/components/utils/venue-items';
-import { pillToBlueprintDuration } from '@/lib/orders/order-catalog';
+import {
+    durationWireFromPill,
+    encodingFingerprint,
+    encodingWireFromRowLabel,
+} from '@/lib/orders/broadcast-spec-wire';
 import type {
     OrderItemEncoding,
     OrderItemLanguage,
@@ -13,18 +17,13 @@ import type {
 export type BroadcastCombinationParts = {
     spot_type: string;
     cut: string;
-    duration_seconds: number;
+    duration_seconds: string;
     language: string;
-    encoding_custom?: string;
-    encoding?: string;
+    encoding: string[];
 };
 
 function normalizeEncoding(parts: BroadcastCombinationParts): string {
-    const custom = parts.encoding_custom?.trim();
-    if (custom) {
-        return `custom:${custom.toLowerCase()}`;
-    }
-    return `catalog:${(parts.encoding ?? '').trim()}`;
+    return encodingFingerprint(parts.encoding);
 }
 
 /** Stable fingerprint for one broadcast line (type + cut + duration + language + encoding). */
@@ -34,7 +33,7 @@ export function broadcastCombinationKey(
     return [
         parts.spot_type,
         parts.cut,
-        String(parts.duration_seconds),
+        parts.duration_seconds,
         parts.language,
         normalizeEncoding(parts),
     ].join('|');
@@ -62,20 +61,32 @@ export function broadcastRowCombinationKey(
         return null;
     }
 
-    const encodingCustom = row.encoding_custom?.trim();
-    const encoding =
-        row.encoding?.trim() ||
-        (row.encoding_id != null
-            ? venueItemEncodingIdToLabel(row.encoding_id, encodingCatalog)
-            : '');
+    let encodingLabels: string[] = [];
+    if (Array.isArray(row.encoding) && row.encoding.length > 0) {
+        encodingLabels = row.encoding;
+    } else if (row.encoding_label?.trim()) {
+        encodingLabels = [row.encoding_label.trim()];
+    } else if (row.encoding_id != null) {
+        const label = venueItemEncodingIdToLabel(
+            row.encoding_id,
+            encodingCatalog,
+        );
+        if (label) {
+            encodingLabels = [label];
+        }
+    }
+
+    const durationWire =
+        typeof row.duration_seconds === 'string'
+            ? row.duration_seconds.trim()
+            : String(row.duration_seconds);
 
     return broadcastCombinationKey({
         spot_type: row.spot_type,
         cut: row.cut,
-        duration_seconds: row.duration_seconds,
+        duration_seconds: durationWire,
         language,
-        encoding_custom: encodingCustom || undefined,
-        encoding: encodingCustom ? undefined : encoding || undefined,
+        encoding: encodingLabels,
     });
 }
 
@@ -88,31 +99,21 @@ function encodingRowToCombinationParts(
         return null;
     }
 
-    if (enc.encodingMode === 'custom') {
-        const text = enc.encoding.trim();
-        if (!text) {
-            return null;
-        }
-        return {
-            spot_type: form.type,
-            cut: enc.cut,
-            duration_seconds: pillToBlueprintDuration(enc.duration),
-            language,
-            encoding_custom: text,
-        };
-    }
+    const encoding =
+        enc.encodingMode === 'custom'
+            ? encodingWireFromRowLabel(enc.encoding)
+            : encodingWireFromRowLabel(enc.encoding);
 
-    const catalogEncoding = enc.encoding?.trim();
-    if (!catalogEncoding) {
+    if (encoding.length === 0) {
         return null;
     }
 
     return {
         spot_type: form.type,
         cut: enc.cut,
-        duration_seconds: pillToBlueprintDuration(enc.duration),
+        duration_seconds: durationWireFromPill(enc.duration),
         language,
-        encoding: catalogEncoding,
+        encoding,
     };
 }
 

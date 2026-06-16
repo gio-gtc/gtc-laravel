@@ -15,7 +15,7 @@ it('proxies json update order item to gtc-api', function () {
                     samplePolymorphicBroadcastOrderItem()['specifiable'],
                     [
                         'cut' => 'Week of',
-                        'duration_seconds' => 15,
+                        'duration_seconds' => '15',
                         'language' => 'Spanish',
                         'isci' => 'ISCI-ABCDEFGHR1',
                     ],
@@ -30,9 +30,9 @@ it('proxies json update order item to gtc-api', function () {
             'specifications' => [
                 'type' => 'Generic',
                 'cut' => 'Week of',
-                'duration_seconds' => 15,
+                'duration_seconds' => '15',
                 'language' => 'Spanish',
-                'encoding' => 'Station MP4 (Broadcast)',
+                'encoding' => ['Station MP4 (Broadcast)'],
             ],
         ])
         ->assertOk()
@@ -49,7 +49,7 @@ it('proxies json update order item to gtc-api', function () {
         $body = $request->data();
 
         return $body['due_date'] === '2026-08-20'
-            && $body['specifications']['duration_seconds'] === 15
+            && $body['specifications']['duration_seconds'] === '15'
             && $body['specifications']['language'] === 'Spanish';
     });
 });
@@ -69,9 +69,9 @@ it('forwards parent_order_update from gtc-api on order item update', function ()
             'specifications' => [
                 'type' => 'Generic',
                 'cut' => 'Week of',
-                'duration_seconds' => 15,
+                'duration_seconds' => '15',
                 'language' => 'Spanish',
-                'encoding' => 'Station MP4 (Broadcast)',
+                'encoding' => ['Station MP4 (Broadcast)'],
             ],
         ])
         ->assertOk()
@@ -97,9 +97,9 @@ it('normalizes canceled status lookup to cancelled in update response', function
             'specifications' => [
                 'type' => 'Generic',
                 'cut' => 'Week of',
-                'duration_seconds' => 15,
+                'duration_seconds' => '15',
                 'language' => 'Spanish',
-                'encoding' => 'Station MP4 (Broadcast)',
+                'encoding' => ['Station MP4 (Broadcast)'],
             ],
         ])
         ->assertOk()
@@ -111,7 +111,7 @@ it('forwards 422 validation errors from gtc-api for json order item update', fun
         apiOrderItemUrl(200) => Http::response([
             'message' => 'The given data was invalid.',
             'errors' => [
-                'specifications.encoding' => ['Encoding is required when encoding_custom is absent.'],
+                'specifications.encoding' => ['The encoding field is required.'],
             ],
         ], 422),
     ]);
@@ -122,14 +122,14 @@ it('forwards 422 validation errors from gtc-api for json order item update', fun
             'specifications' => [
                 'type' => 'Generic',
                 'cut' => 'Week of',
-                'duration_seconds' => 15,
+                'duration_seconds' => '15',
                 'language' => 'Spanish',
             ],
         ])
         ->assertUnprocessable()
         ->assertJsonFragment([
             'specifications.encoding' => [
-                'Encoding is required when encoding_custom is absent.',
+                'The encoding field is required.',
             ],
         ]);
 });

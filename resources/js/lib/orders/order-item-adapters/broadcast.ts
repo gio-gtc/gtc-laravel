@@ -1,6 +1,14 @@
 import type { AddBroadcastStreamingFormValues } from '@/components/pages/orders/slideout/switch-view/general-media/modals/add-broadcast-streaming-modal';
+import {
+    assertInternationalDuration,
+    durationWireFromNumericInput,
+    durationWireFromPill,
+    durationWireFromSpecValue,
+    encodingLabelsFromWire,
+    encodingWireFromRowLabel,
+    primaryEncodingLabel,
+} from '@/lib/orders/broadcast-spec-wire';
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
-import { pillToBlueprintDuration } from '@/lib/orders/order-catalog';
 import {
     initialAssetTrackingFromCatalogTags,
     missingAssetTagsFromTrackingMap,
@@ -17,47 +25,82 @@ import type {
     OrderItemUpdateAdapter,
 } from './types';
 
+function encodingWireFromFormEncoding(
+    enc: AddBroadcastStreamingFormValues['encodings'][number],
+): string[] {
+    if (enc.encodingMode === 'custom') {
+        return encodingWireFromRowLabel(enc.encoding);
+    }
+    return encodingWireFromRowLabel(enc.encoding);
+}
+
 function buildBroadcastSpecifications(
     form: AddBroadcastStreamingFormValues,
     enc: AddBroadcastStreamingFormValues['encodings'][number],
 ): Record<string, unknown> {
+    const durationWire = durationWireFromPill(enc.duration);
+    const encoding = encodingWireFromFormEncoding(enc);
+
     const specs: Record<string, unknown> = {
         type: form.type,
         cut: enc.cut,
-        duration_seconds: pillToBlueprintDuration(enc.duration),
+        duration_seconds: durationWire,
         language: enc.language,
     };
 
-    if (enc.encodingMode === 'custom') {
-        const text = enc.encoding.trim();
-        if (text) {
-            specs.encoding_custom = text;
-        }
-    } else if (enc.encoding) {
-        specs.encoding = enc.encoding;
+    if (encoding.length > 0) {
+        specs.encoding = encoding;
     }
 
     return specs;
 }
 
+function broadcastRowDurationWire(row: OrderItemsBroadcastRow): string {
+    if (typeof row.duration_seconds === 'string') {
+        return row.duration_seconds.trim();
+    }
+    return durationWireFromNumericInput(row.duration_seconds);
+}
+
+function broadcastRowEncodingWire(row: OrderItemsBroadcastRow): string[] {
+    if (Array.isArray(row.encoding) && row.encoding.length > 0) {
+        return row.encoding;
+    }
+    if (row.encoding_label?.trim()) {
+        return encodingWireFromRowLabel(row.encoding_label);
+    }
+    return [];
+}
+
 function broadcastUpdateSpecifications(
     row: OrderItemsBroadcastRow,
 ): Record<string, unknown> {
+    const durationWire = broadcastRowDurationWire(row);
+    const encoding = broadcastRowEncodingWire(row);
+
     const specs: Record<string, unknown> = {
         type: row.spot_type,
         cut: row.cut,
-        duration_seconds: Math.trunc(Number(row.duration_seconds)),
+        duration_seconds: durationWire,
         language: row.language ?? '',
     };
 
-    const custom = row.encoding_custom?.trim();
-    if (custom) {
-        specs.encoding_custom = custom;
-    } else if (row.encoding) {
-        specs.encoding = row.encoding;
+    if (encoding.length > 0) {
+        specs.encoding = encoding;
     }
 
     return specs;
+}
+
+export function validateBroadcastRowSpecifications(
+    row: OrderItemsBroadcastRow,
+): { ok: true } | { ok: false; message: string } {
+    const durationWire = broadcastRowDurationWire(row);
+    return assertInternationalDuration(
+        durationWire,
+        row.spot_type,
+        row.cut,
+    );
 }
 
 export function broadcastRowToUpdatePayload(
@@ -77,8 +120,13 @@ export const broadcastUpdateAdapter: OrderItemUpdateAdapter<OrderItemsBroadcastR
             due_date: dueDateIso(order, row),
             specifications: broadcastUpdateSpecifications(row),
         }),
-        durationPatch: (seconds) => ({
-            specifications: { duration_seconds: Math.trunc(Number(seconds)) },
+        durationPatch: (wire) => ({
+            specifications: {
+                duration_seconds:
+                    typeof wire === 'string'
+                        ? wire.trim()
+                        : durationWireFromNumericInput(wire),
+            },
         }),
         statusPatch: (statusId) => ({
             order_item_status_id: statusId,
@@ -96,6 +144,16 @@ export function expandBroadcastCreateDrafts(
             continue;
         }
         if (enc.encodingMode === 'catalog' && !enc.encoding) {
+            continue;
+        }
+
+        const durationWire = durationWireFromPill(enc.duration);
+        const intlCheck = assertInternationalDuration(
+            durationWire,
+            form.type,
+            enc.cut,
+        );
+        if (!intlCheck.ok) {
             continue;
         }
 
@@ -118,10 +176,8 @@ export function draftToPendingBroadcastRow(
     const specs = draft.specifications;
     const spotType = String(specs.type ?? 'Generic');
     const cut = String(specs.cut ?? '');
-    const durationSeconds =
-        typeof specs.duration_seconds === 'number'
-            ? specs.duration_seconds
-            : Number(specs.duration_seconds) || 0;
+    const durationWire = durationWireFromSpecValue(specs.duration_seconds);
+    const encodingLabels = encodingLabelsFromWire(specs.encoding);
     const assetTracking = initialAssetTrackingFromCatalogTags(catalogTags);
     const missingAssetTags = missingAssetTagsFromTrackingMap(assetTracking);
 
@@ -134,15 +190,14 @@ export function draftToPendingBroadcastRow(
         spot_type: spotType,
         cut: cut as OrderItemsBroadcastRow['cut'],
         isci: 'Adding…',
-        duration_seconds: durationSeconds,
+        duration_seconds: durationWire,
         status_id: 1,
         language:
             typeof specs.language === 'string' ? specs.language : undefined,
-        encoding:
-            typeof specs.encoding === 'string' ? specs.encoding : undefined,
-        encoding_custom:
-            typeof specs.encoding_custom === 'string'
-                ? specs.encoding_custom
+        encoding: encodingLabels.length > 0 ? encodingLabels : undefined,
+        encoding_label:
+            encodingLabels.length > 0
+                ? primaryEncodingLabel(encodingLabels)
                 : undefined,
         asset_tracking: assetTracking,
         missingAssetTags,

@@ -103,12 +103,18 @@ export interface OrderItemBroadcastSpecification {
     id: number;
     type: string;
     cut: string;
-    duration_seconds: number;
+    duration_seconds: string;
     language: string;
-    encoding?: string | null;
-    encoding_custom?: string | null;
+    encoding: string[];
     isci: string;
     asset_tracking?: AssetTrackingMap;
+}
+
+/** Audit feedback on Status 5 (Revision Request) rows only. */
+export interface OrderItemRevisionInstructions {
+    id: number;
+    new_order_item_id: number;
+    comment: string;
 }
 
 export interface OrderItem {
@@ -135,6 +141,8 @@ export interface OrderItem {
     updated_at: string;
     order_menu_item?: OrderMenuItem;
     assignees?: OrderAssignee[];
+    /** Present on Status 5 rows; null on all other statuses. */
+    revision_instructions?: OrderItemRevisionInstructions | null;
 }
 
 export interface ApiOrderVenue {

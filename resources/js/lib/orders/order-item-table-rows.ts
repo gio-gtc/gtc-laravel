@@ -1,14 +1,16 @@
-import { staffEmbedToUser, type PersonEmbed } from '@/lib/user-for-avatar';
+import { parseDurationWireAsSeconds } from '@/lib/orders/broadcast-spec-wire';
 import { orderItemStatusToDisplayLabel } from '@/lib/orders/order-item-statuses';
 import {
     orderItemCutLabel,
     orderItemDueDateDisplay,
     orderItemDurationSeconds,
+    orderItemDurationWire,
     orderItemIsci,
     orderItemSpecRecord,
     orderItemWireStatus,
     parseOrderItemDimensions,
 } from '@/lib/orders/order-item-specifications';
+import { staffEmbedToUser, type PersonEmbed } from '@/lib/user-for-avatar';
 import type { MediaTableRow, StaticAssetsTableRow, User } from '@/types';
 import type { OrderAssignee, OrderItem } from '@/types/orders-api';
 
@@ -45,11 +47,14 @@ function assigneesToUsers(assignees: OrderAssignee[] | undefined): User[] {
 
 export function orderItemToMediaTableRow(item: OrderItem): MediaTableRow {
     const specs = orderItemSpecRecord(item);
+    const durationWire = orderItemDurationWire(specs);
+    const parsedSeconds = parseDurationWireAsSeconds(durationWire);
     return {
         id: item.id,
         isci: orderItemIsci(item),
         cutName: orderItemCutLabel(item),
-        duration_seconds: orderItemDurationSeconds(specs),
+        duration_seconds: parsedSeconds ?? orderItemDurationSeconds(specs),
+        duration_wire: durationWire || undefined,
         dueDate: orderItemDueDateDisplay(item),
         assigned: assigneesToUsers(item.assignees),
         status: orderItemStatusToTableStatus(orderItemWireStatus(item)),
