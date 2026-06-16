@@ -23,7 +23,8 @@ export const orderModalStyles = {
     /** Pill-shaped field — unselected pill look without hover. */
     pillInput:
         'w-fit rounded-md border border-gray-300 bg-white text-gray-900 text-xs max-h-[30px] shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 placeholder:text-gray-400',
-    pillInputSelected: 'border-brand-gtc-red/70 bg-brand-gtc-red/70 text-white placeholder:text-white/70',
+    pillInputSelected:
+        'border-brand-gtc-red/70 bg-brand-gtc-red/70 text-white placeholder:text-white/70',
     cancelButton:
         'border-gray-300 bg-white text-gray-900 hover:bg-gray-50 hover:text-gray-900',
     primaryButton: 'bg-brand-gtc-red text-white hover:bg-brand-gtc-red/70',

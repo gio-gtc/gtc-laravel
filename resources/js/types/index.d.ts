@@ -425,7 +425,7 @@ export interface OrderItemsMediaLineShared {
     language?: string;
     /** Wire encoding array from API specs (broadcast). */
     encoding?: string[];
-    /** Primary encoding label for catalog UI convenience (derived from `encoding[0]`). */
+    /** Display label derived from full `encoding` array (joined with ·). */
     encoding_label?: string;
     /** Optimistic add — row awaiting POST resolution. */
     is_pending?: boolean;

@@ -6,7 +6,7 @@ import {
 import {
     durationWireFromPill,
     encodingFingerprint,
-    encodingWireFromRowLabel,
+    normalizeEncodingLabels,
 } from '@/lib/orders/broadcast-spec-wire';
 import type {
     OrderItemEncoding,
@@ -99,10 +99,7 @@ function encodingRowToCombinationParts(
         return null;
     }
 
-    const encoding =
-        enc.encodingMode === 'custom'
-            ? encodingWireFromRowLabel(enc.encoding)
-            : encodingWireFromRowLabel(enc.encoding);
+    const encoding = normalizeEncodingLabels(enc.encoding);
 
     if (encoding.length === 0) {
         return null;

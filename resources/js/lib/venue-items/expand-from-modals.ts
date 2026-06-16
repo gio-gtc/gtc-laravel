@@ -14,11 +14,10 @@ import type {
 } from '@/types';
 import {
     durationWireFromPill,
-    encodingWireFromRowLabel,
+    normalizeEncodingLabels,
     primaryEncodingLabel,
 } from '@/lib/orders/broadcast-spec-wire';
 import {
-    encodingLabelToId,
     languageTypeToId,
     modalDurationPillToSeconds,
 } from './modal-mappers';
@@ -73,34 +72,8 @@ export function expandBroadcastRowsFromForm(
         );
         if (languageId === undefined) continue;
 
-        if (enc.encodingMode === 'custom') {
-            const text = enc.encoding.trim();
-            if (!text) continue;
-            const encoding = encodingWireFromRowLabel(text);
-
-            rows.push({
-                id: ctx.nextId(),
-                tour_venue_id: ctx.tourVenueId,
-                type: 'broadcast',
-                created_date: new Date().toISOString(),
-                dueDate: ctx.dueDate,
-                spot_type: spotType,
-                cut: asBroadcastCut(enc.cut),
-                isci: ctx.nextIsci(),
-                duration_seconds: durationWireFromPill(enc.duration),
-                status_id: ctx.statusId,
-                language_id: languageId,
-                encoding,
-                encoding_label: primaryEncodingLabel(encoding),
-            });
-            continue;
-        }
-
-        const encodingId = encodingLabelToId(
-            catalogs.venue_item_encoding,
-            enc.encoding,
-        );
-        if (encodingId === undefined) continue;
+        const encoding = normalizeEncodingLabels(enc.encoding);
+        if (encoding.length === 0) continue;
 
         rows.push({
             id: ctx.nextId(),
@@ -114,9 +87,8 @@ export function expandBroadcastRowsFromForm(
             duration_seconds: durationWireFromPill(enc.duration),
             status_id: ctx.statusId,
             language_id: languageId,
-            encoding_id: encodingId,
-            encoding: encodingWireFromRowLabel(enc.encoding),
-            encoding_label: enc.encoding,
+            encoding,
+            encoding_label: primaryEncodingLabel(encoding),
         });
     }
 

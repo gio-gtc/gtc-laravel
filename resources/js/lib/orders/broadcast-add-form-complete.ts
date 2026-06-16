@@ -1,5 +1,3 @@
-export const BROADCAST_ENCODING_UNSET = '__none__';
-
 export type BroadcastEncodingMatrixRow = {
     key: string;
     cut: string;
@@ -15,15 +13,12 @@ export type BroadcastAddFormCompleteInput = {
     duration: string[];
     language: string[];
     encodingRows: BroadcastEncodingMatrixRow[];
-    encodingByRowKey: Record<string, string>;
-    encodingCustomEnabled: Record<string, boolean>;
-    encodingCustomText: Record<string, string>;
+    encodingByRowKey: Record<string, string[]>;
     /** When true, skip membership checks (values come from applyInternationalLocks). */
     isInternationalLocked?: boolean;
     enabledCuts?: readonly string[];
     enabledDurationPills?: readonly string[];
     enabledLanguages?: readonly string[];
-    encodingUnset?: string;
 };
 
 export type BroadcastEditFormCompleteInput = {
@@ -31,15 +26,12 @@ export type BroadcastEditFormCompleteInput = {
     cut: string;
     duration: string;
     language: string;
-    encodingCustom: boolean;
-    encodingCustomText: string;
-    encodingId: string;
+    editEncodings: string[];
     /** When true, skip membership checks (values come from applyInternationalLocks). */
     isInternationalLocked?: boolean;
     enabledCuts?: readonly string[];
     enabledDurationPills?: readonly string[];
     enabledLanguages?: readonly string[];
-    encodingUnset?: string;
 };
 
 function everyInSet(
@@ -66,13 +58,10 @@ export function isBroadcastAddFormComplete(
         language,
         encodingRows,
         encodingByRowKey,
-        encodingCustomEnabled,
-        encodingCustomText,
         isInternationalLocked = false,
         enabledCuts,
         enabledDurationPills,
         enabledLanguages,
-        encodingUnset = BROADCAST_ENCODING_UNSET,
     } = input;
 
     if (!catalogReady) {
@@ -104,11 +93,8 @@ export function isBroadcastAddFormComplete(
     }
 
     return encodingRows.every((row) => {
-        if (encodingCustomEnabled[row.key]) {
-            return (encodingCustomText[row.key] ?? '').trim() !== '';
-        }
-        const value = encodingByRowKey[row.key];
-        return Boolean(value && value !== encodingUnset);
+        const values = encodingByRowKey[row.key];
+        return Array.isArray(values) && values.length > 0;
     });
 }
 
@@ -123,14 +109,11 @@ export function isBroadcastEditFormComplete(
         cut,
         duration,
         language,
-        encodingCustom,
-        encodingCustomText,
-        encodingId,
+        editEncodings,
         isInternationalLocked = false,
         enabledCuts,
         enabledDurationPills,
         enabledLanguages,
-        encodingUnset = BROADCAST_ENCODING_UNSET,
     } = input;
 
     if (!type.trim() || !cut.trim() || !duration.trim() || !language.trim()) {
@@ -157,9 +140,5 @@ export function isBroadcastEditFormComplete(
         }
     }
 
-    if (encodingCustom) {
-        return encodingCustomText.trim() !== '';
-    }
-
-    return Boolean(encodingId && encodingId !== encodingUnset);
+    return editEncodings.length > 0;
 }

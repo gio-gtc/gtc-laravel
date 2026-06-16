@@ -10,6 +10,14 @@ export type InternationalDurationError = {
     message: string;
 };
 
+/** Trim and drop empty encoding labels from modal or wire payloads. */
+export function normalizeEncodingLabels(labels: readonly string[]): string[] {
+    return labels
+        .filter((entry): entry is string => typeof entry === 'string')
+        .map((entry) => entry.trim())
+        .filter(Boolean);
+}
+
 /** Single catalog or custom label → API `encoding` array. */
 export function encodingWireFromRowLabel(label: string): string[] {
     const text = label.trim();

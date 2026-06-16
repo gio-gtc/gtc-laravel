@@ -6,6 +6,7 @@ import {
     durationWireFromSpecValue,
     encodingLabelsFromWire,
     encodingWireFromRowLabel,
+    normalizeEncodingLabels,
     primaryEncodingLabel,
 } from '@/lib/orders/broadcast-spec-wire';
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
@@ -28,10 +29,7 @@ import type {
 function encodingWireFromFormEncoding(
     enc: AddBroadcastStreamingFormValues['encodings'][number],
 ): string[] {
-    if (enc.encodingMode === 'custom') {
-        return encodingWireFromRowLabel(enc.encoding);
-    }
-    return encodingWireFromRowLabel(enc.encoding);
+    return normalizeEncodingLabels(enc.encoding);
 }
 
 function buildBroadcastSpecifications(
@@ -140,10 +138,7 @@ export function expandBroadcastCreateDrafts(
     const drafts: OrderItemCreateDraft[] = [];
 
     for (const enc of form.encodings) {
-        if (enc.encodingMode === 'custom' && !enc.encoding.trim()) {
-            continue;
-        }
-        if (enc.encodingMode === 'catalog' && !enc.encoding) {
+        if (normalizeEncodingLabels(enc.encoding).length === 0) {
             continue;
         }
 
