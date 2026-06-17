@@ -40,6 +40,7 @@ export default function StaticAssetsMediaTable({
         label: value,
     })),
     allowEditInactiveRows = false,
+    isDeliverableUpdating,
 }: StaticAssetsMediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -347,6 +348,11 @@ export default function StaticAssetsMediaTable({
                                                         deliverables={
                                                             row.deliverables
                                                         }
+                                                        isUpdating={Boolean(
+                                                            isDeliverableUpdating?.(
+                                                                row.id,
+                                                            ),
+                                                        )}
                                                     />
                                                 </TableCell>
                                             </TableRow>

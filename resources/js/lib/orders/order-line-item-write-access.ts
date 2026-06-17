@@ -67,6 +67,18 @@ function isRevisionEligibleStatusId(statusId: number | undefined): boolean {
     );
 }
 
+/** Deliverables approve — external client or Admin/Super Admin while Client Review. */
+export function canApproveOrderItemDeliverable(
+    user: User,
+    row: WritableRow,
+    roles: readonly string[] = [],
+): boolean {
+    if (!isClientReviewStatusId(rowStatusId(row))) {
+        return false;
+    }
+    return isExternalClientUser(user) || isGtcAdminUser(roles);
+}
+
 /** Deliverables revise — external client or Admin/Super Admin while Client Review or Out For Delivery. */
 export function canInitiateOrderItemRevision(
     user: User,

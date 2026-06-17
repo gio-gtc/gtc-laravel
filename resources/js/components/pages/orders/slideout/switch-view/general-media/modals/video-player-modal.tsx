@@ -110,6 +110,7 @@ interface VideoPlayerModalProps {
     onClientReviewReject?: (message: string) => void;
     onClientReviewApprove?: () => void;
     onClientReviewCommentSubmit?: (text: string) => void | Promise<void>;
+    clientReviewUpdating?: boolean;
 }
 
 export default function VideoPlayerModal({
@@ -123,6 +124,7 @@ export default function VideoPlayerModal({
     onClientReviewReject,
     onClientReviewApprove,
     onClientReviewCommentSubmit,
+    clientReviewUpdating = false,
 }: VideoPlayerModalProps) {
     const videoJsContainerRef = useRef<HTMLDivElement>(null);
     const playerRef = useRef<ReturnType<typeof videojs> | null>(null);
@@ -390,6 +392,7 @@ export default function VideoPlayerModal({
                             <ApprovalButtons
                                 onReject={handleClientReviewReject}
                                 onApprove={onClientReviewApprove}
+                                isUpdating={clientReviewUpdating}
                             />
                         </div>
                         <form

@@ -30,6 +30,7 @@ import {
 import { orderItemAssigneesToUsers } from '@/lib/orders/orders-filter-users';
 import {
     assertBulkSelectionWritable,
+    canApproveOrderItemDeliverable,
     canEditOrderItemAssignees,
     canEditOrderLineItem,
     canEditOrderLineItemStatus,
@@ -37,6 +38,7 @@ import {
     canStaffOverrideInactiveRowEdits,
     isOrderLineItemEditDisabled,
 } from '@/lib/orders/order-line-item-write-access';
+import { ORDER_ITEM_STATUS_ID } from '@/lib/orders/order-item-statuses';
 import {
     canShowMediaPreview,
     MEDIA_PREVIEW_STATUSES,
@@ -132,6 +134,7 @@ function rowShowsDeliverables(
 function buildDeliverableCallbacks(
     resolvedStatus: string,
     openRevision: (row: RevisionTargetRow, tableName: string) => void,
+    onApprove: ((row: RevisionTargetRow) => void) | undefined,
     row: RevisionTargetRow,
     tableName: string,
 ): MediaTableRow['deliverables'] | undefined {
@@ -141,6 +144,9 @@ function buildDeliverableCallbacks(
     ) {
         return {
             onRevise: () => openRevision(row, tableName),
+            ...(resolvedStatus === 'Client Review' && onApprove
+                ? { onApprove: () => onApprove(row) }
+                : {}),
         };
     }
     return undefined;
@@ -255,6 +261,52 @@ function GeneralMediaView({
         },
         [auth.user, userRoles],
     );
+
+    const [deliverableUpdatingRowIds, setDeliverableUpdatingRowIds] =
+        useState<ReadonlySet<string>>(() => new Set());
+
+    const isDeliverableUpdating = useCallback(
+        (rowId: string | number) =>
+            deliverableUpdatingRowIds.has(String(rowId)),
+        [deliverableUpdatingRowIds],
+    );
+
+    const handleApproveDeliverable = useCallback(
+        async (row: RevisionTargetRow): Promise<boolean> => {
+            if (!openOrder) {
+                toast.error('Open an order before approving deliverables.');
+                return false;
+            }
+            if (!canApproveOrderItemDeliverable(auth.user, row, userRoles)) {
+                toast.warning(
+                    'You do not have permission to approve this deliverable.',
+                );
+                return false;
+            }
+
+            const rowKey = String(row.id);
+            setDeliverableUpdatingRowIds((prev) => new Set(prev).add(rowKey));
+            try {
+                const result = await commitOrderItemBulkWrite(
+                    [Number(row.id)],
+                    {
+                        order_item_status_id:
+                            ORDER_ITEM_STATUS_ID.outForDelivery,
+                    },
+                    'Deliverable approved.',
+                );
+
+                return result.ok;
+            } finally {
+                setDeliverableUpdatingRowIds((prev) => {
+                    const next = new Set(prev);
+                    next.delete(rowKey);
+                    return next;
+                });
+            }
+        },
+        [openOrder, auth.user, userRoles, commitOrderItemBulkWrite],
+    );
     const [statusFilter, setStatusFilter] = useState<MediaStatusFilter>([]);
     const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
@@ -298,6 +350,9 @@ function GeneralMediaView({
                 row.has_deliverable_actions,
                 resolvedStatus,
             );
+            const canApprove =
+                resolvedStatus === 'Client Review' &&
+                canApproveOrderItemDeliverable(auth.user, mediaRow, userRoles);
             return {
                 ...mediaRow,
                 status: resolvedStatus,
@@ -305,6 +360,7 @@ function GeneralMediaView({
                     ? buildDeliverableCallbacks(
                           resolvedStatus,
                           openRevisionModal,
+                          canApprove ? handleApproveDeliverable : undefined,
                           mediaRow,
                           tableName,
                       )
@@ -316,6 +372,9 @@ function GeneralMediaView({
             openOrder,
             resolveAssignedForRow,
             openRevisionModal,
+            handleApproveDeliverable,
+            auth.user,
+            userRoles,
         ],
     );
 
@@ -387,12 +446,20 @@ function GeneralMediaView({
                     status: resolvedStatus,
                     status_id: row.status_id,
                 };
+                const canApprove =
+                    resolvedStatus === 'Client Review' &&
+                    canApproveOrderItemDeliverable(
+                        auth.user,
+                        rowForRevision,
+                        userRoles,
+                    );
                 return {
                     ...rowForRevision,
                     deliverables: showDeliverables
                         ? buildDeliverableCallbacks(
                               resolvedStatus,
                               openRevisionModal,
+                              canApprove ? handleApproveDeliverable : undefined,
                               rowForRevision,
                               'Key Art & Static Assets',
                           )
@@ -406,6 +473,9 @@ function GeneralMediaView({
         openOrder,
         resolveAssignedForRow,
         openRevisionModal,
+        handleApproveDeliverable,
+        auth.user,
+        userRoles,
     ]);
 
     const {
@@ -1302,6 +1372,7 @@ function GeneralMediaView({
                     allowEditInactiveRows={canAdminEditInactiveRows}
                     canEditStatus={canEditStatus}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
+                    isDeliverableUpdating={isDeliverableUpdating}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
@@ -1354,6 +1425,7 @@ function GeneralMediaView({
                     editScope="socialLine"
                     allowEditInactiveRows={canAdminEditInactiveRows}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
+                    isDeliverableUpdating={isDeliverableUpdating}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
@@ -1391,6 +1463,7 @@ function GeneralMediaView({
                     editScope="radio"
                     allowEditInactiveRows={canAdminEditInactiveRows}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
+                    isDeliverableUpdating={isDeliverableUpdating}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
                     onBulkEditDueDateDoubleClick={openDueDateBulkEdit}
@@ -1427,6 +1500,7 @@ function GeneralMediaView({
                     data={filteredStaticAssetsData}
                     allowEditInactiveRows={canAdminEditInactiveRows}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
+                    isDeliverableUpdating={isDeliverableUpdating}
                     artPackageTypeSelectOptions={artPackageTypeSelectOptions}
                     selectedRowIds={selectedRowIds}
                     onRowSelectToggle={onRowSelectToggle}
@@ -1628,6 +1702,34 @@ function GeneralMediaView({
                 label={
                     videoPreviewRow
                         ? `${videoPreviewRow.isci} – ${videoPreviewRow.cutName}`
+                        : undefined
+                }
+                clientReviewActions={
+                    videoPreviewRow?.status === 'Client Review' &&
+                    canApproveOrderItemDeliverable(
+                        auth.user,
+                        videoPreviewRow,
+                        userRoles,
+                    )
+                }
+                clientReviewUpdating={
+                    videoPreviewRow
+                        ? isDeliverableUpdating(videoPreviewRow.id)
+                        : false
+                }
+                onClientReviewApprove={
+                    videoPreviewRow
+                        ? () => {
+                              void handleApproveDeliverable(
+                                  videoPreviewRow,
+                              ).then((ok) => {
+                                  if (ok) {
+                                      setVideoPlayerModalOpen(false);
+                                      setVideoPreviewRow(null);
+                                      setVideoPreviewTableTitle('');
+                                  }
+                              });
+                          }
                         : undefined
                 }
             />

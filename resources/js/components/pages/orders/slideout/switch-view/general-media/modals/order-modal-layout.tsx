@@ -6,6 +6,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { LoadingDots } from '@/components/ui/loading-dots';
 import Divider from '@/components/utils/divider';
 import { orderModalStyles } from './shared';
 
@@ -19,20 +20,6 @@ interface OrderModalLayoutProps {
     primaryLoading?: boolean;
     modalClasses?: string;
     children: React.ReactNode;
-}
-
-function PrimaryButtonLoadingDots() {
-    return (
-        <span className="inline-flex items-center gap-0.5" aria-hidden>
-            {[0, 150, 300].map((delayMs) => (
-                <span
-                    key={delayMs}
-                    className="inline-block size-1 animate-bounce rounded-full bg-current"
-                    style={{ animationDelay: `${delayMs}ms` }}
-                />
-            ))}
-        </span>
-    );
 }
 
 export default function OrderModalLayout({
@@ -77,7 +64,7 @@ export default function OrderModalLayout({
                         aria-busy={primaryLoading}
                     >
                         {primaryLoading ? (
-                            <PrimaryButtonLoadingDots />
+                            <LoadingDots />
                         ) : (
                             primaryLabel
                         )}

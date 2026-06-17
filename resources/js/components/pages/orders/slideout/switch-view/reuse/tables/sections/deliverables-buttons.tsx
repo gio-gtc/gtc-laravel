@@ -13,6 +13,7 @@ import {
     MPEG2Icon,
     NetflixIcon,
 } from '@/components/ui/icons';
+import { LoadingDots } from '@/components/ui/loading-dots';
 import { cn } from '@/lib/utils';
 import type { MouseEvent } from 'react';
 import {
@@ -65,17 +66,31 @@ export interface ApprovalButtonsProps {
     onRevise?: () => void;
     onReject?: () => void;
     onApprove?: () => void;
+    isUpdating?: boolean;
 }
 
 export function ApprovalButtons({
     onRevise,
     onReject,
     onApprove,
+    isUpdating = false,
 }: ApprovalButtonsProps) {
     const handleReviseClick = (e: MouseEvent) => {
         e.stopPropagation();
         (onRevise ?? onReject)?.();
     };
+
+    if (isUpdating) {
+        return (
+            <div
+                className="flex w-full items-center justify-center gap-2.5 md:gap-1.5"
+                aria-busy="true"
+                aria-label="Updating status"
+            >
+                <LoadingDots className="text-muted-foreground" />
+            </div>
+        );
+    }
 
     return (
         <div className="flex w-full items-center justify-center gap-2.5 md:gap-1.5">
@@ -119,6 +134,7 @@ export interface DownloadButtonsProps {
     onApprove?: () => void;
     /** Called when user selects any option (optionId). For format-specific downloads. */
     onDownload?: (optionId: string) => void;
+    isUpdating?: boolean;
 }
 
 export function DownloadButtons({
@@ -126,7 +142,20 @@ export function DownloadButtons({
     onReject,
     onApprove,
     onDownload,
+    isUpdating = false,
 }: DownloadButtonsProps) {
+    if (isUpdating) {
+        return (
+            <div
+                className="flex items-center justify-center gap-2 md:gap-0.5"
+                aria-busy="true"
+                aria-label="Updating status"
+            >
+                <LoadingDots className="text-muted-foreground" />
+            </div>
+        );
+    }
+
     const handleOptionSelect = (optionId: string) => {
         if (optionId === 'all' && onApprove) {
             onApprove();
@@ -194,17 +223,20 @@ export interface DeliverablesCellProps {
         onApprove?: () => void;
         onDownload?: (optionId: string) => void;
     };
+    isUpdating?: boolean;
 }
 
 export function DeliverablesCell({
     status,
     deliverables,
+    isUpdating = false,
 }: DeliverablesCellProps) {
     if (status === 'Client Review') {
         return (
             <ApprovalButtons
                 onRevise={deliverables?.onRevise}
                 onApprove={deliverables?.onApprove}
+                isUpdating={isUpdating}
             />
         );
     }
@@ -216,6 +248,7 @@ export function DeliverablesCell({
                 onReject={deliverables?.onReject}
                 onApprove={deliverables?.onApprove}
                 onDownload={deliverables?.onDownload}
+                isUpdating={isUpdating}
             />
         );
     }

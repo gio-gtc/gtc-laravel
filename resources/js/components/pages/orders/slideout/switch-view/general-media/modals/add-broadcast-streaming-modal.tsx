@@ -8,6 +8,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { LoadingDots } from '@/components/ui/loading-dots';
 import {
     mergeComboboxOptionsWithCustoms,
     MultiSelectWithOther,
@@ -787,16 +788,9 @@ export default function AddBroadcastStreamingModal({
                         ? 'Edit Broadcast & Streaming Video'
                         : 'Add Broadcast & Streaming Video'
                 }
-                primaryLabel={
-                    isEdit
-                        ? isSubmitting
-                            ? 'Saving…'
-                            : 'Save changes'
-                        : isSubmitting
-                          ? 'Adding…'
-                          : 'Add to Order'
-                }
+                primaryLabel={isEdit ? 'Save changes' : 'Add to Order'}
                 onPrimaryClick={isEdit ? handleEditSave : handleAddToOrder}
+                primaryLoading={isSubmitting}
                 primaryDisabled={
                     isEdit
                         ? !canSubmitEdit || isSubmitting
@@ -1384,8 +1378,9 @@ export default function AddBroadcastStreamingModal({
                             className={orderModalStyles.primaryButton}
                             onClick={() => void handleConfirmDuplicate()}
                             disabled={isSubmitting}
+                            aria-busy={isSubmitting}
                         >
-                            {isSubmitting ? 'Adding…' : 'Add anyway'}
+                            {isSubmitting ? <LoadingDots /> : 'Add Duplicate'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

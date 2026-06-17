@@ -338,6 +338,8 @@ export interface MediaTableProps {
     canEditAssignees?: boolean;
     /** Staff-only — gates inline status dropdown edits. */
     canEditStatus?: boolean;
+    /** When true for a row id, deliverables actions show an updating indicator. */
+    isDeliverableUpdating?: (rowId: string | number) => boolean;
     orderItemStatusSelectOptions: { value: string; label: string }[];
 }
 
@@ -382,6 +384,8 @@ export interface StaticAssetsMediaTableProps {
     artPackageTypeSelectOptions?: { value: string; label: string }[];
     /** Admin override — allow inline edits on cancelled / revision rows. */
     allowEditInactiveRows?: boolean;
+    /** When true for a row id, deliverables actions show an updating indicator. */
+    isDeliverableUpdating?: (rowId: string | number) => boolean;
 }
 
 export interface OrderItemNote {

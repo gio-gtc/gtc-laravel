@@ -59,6 +59,7 @@ export default function MediaTable({
     onBulkEditAssignedDoubleClick,
     canEditAssignees = false,
     canEditStatus = false,
+    isDeliverableUpdating,
     orderItemStatusSelectOptions,
 }: MediaTableProps) {
     const [isOpen, setIsOpen] = useState(defaultOpen);
@@ -604,6 +605,11 @@ export default function MediaTable({
                                                         deliverables={
                                                             row.deliverables
                                                         }
+                                                        isUpdating={Boolean(
+                                                            isDeliverableUpdating?.(
+                                                                row.id,
+                                                            ),
+                                                        )}
                                                     />
                                                 </TableCell>
                                             </TableRow>
