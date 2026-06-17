@@ -10,9 +10,12 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ToastHost } from '@/components/toast-host';
+import { installBffAuthFetchGuard } from '@/lib/bff-auth-fetch-guard';
 import { initializeTheme } from './hooks/use-appearance';
 
 const appName = 'Global Tour Creatives';
+
+installBffAuthFetchGuard();
 
 createInertiaApp({
     title: (title) => (title ? `${title} - ${appName}` : appName),

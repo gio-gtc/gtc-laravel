@@ -54,7 +54,6 @@ class HandleInertiaRequests extends Middleware
                     : $sessionUser,
                 'roles' => self::sessionStringList($request->session()->get('roles')),
                 'permissions' => self::sessionStringList($request->session()->get('permissions')),
-                'token' => $request->session()->get('api_token'),
             ],
             'name' => config('app.name'),
             'assetCdnBaseUrl' => config('services.assets.cdn_base_url') ?: null,

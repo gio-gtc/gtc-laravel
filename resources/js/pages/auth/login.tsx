@@ -3,6 +3,7 @@ import LoginSignupFlip, {
 } from '@/components/auth/login-signup-flip';
 import ForgotPasswordModal from '@/components/modals/forgot-password-modal';
 import AuthVideoLayout from '@/layouts/auth/auth-video-layout';
+import { SESSION_EXPIRED_MESSAGE } from '@/lib/session-expired-message';
 import type { SharedData } from '@/types';
 import { Head, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
@@ -58,6 +59,17 @@ export default function Login({ status, error, authFaceHint }: LoginProps) {
             }
         }, 100);
     }, [flash]);
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (!params.has('session_expired')) {
+            return;
+        }
+        toast.error(SESSION_EXPIRED_MESSAGE, {
+            toastId: 'session-expired',
+        });
+        window.history.replaceState({}, '', '/login');
+    }, []);
 
     return (
         <AuthVideoLayout

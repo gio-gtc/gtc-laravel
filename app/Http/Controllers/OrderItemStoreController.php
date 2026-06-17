@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\BffAuthSession;
 use App\Support\GtcApiClient;
 use App\Support\OrderItemApiResponse;
 use App\Support\OrderItemNormalizer;
@@ -18,7 +19,7 @@ final class OrderItemStoreController extends Controller
         if ($client === null) {
             return redirect()
                 ->route('login')
-                ->with('error', 'Your session has expired. Please sign in again.');
+                ->with('error', BffAuthSession::EXPIRED_MESSAGE);
         }
 
         $validated = $request->validate([

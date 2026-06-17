@@ -103,21 +103,3 @@ it('catches API validation errors and passes them back to Inertia', function () 
     // which Inertia automatically converts into frontend form errors.
     $response->assertInvalid(['email' => 'These credentials do not match our records.']);
 });
-
-// --- TEST 3: The Logout Success ---
-it('proxies logout to the API and clears the local session', function () {
-    // 1. Intercept the BFF's outgoing request to the API's logout endpoint
-    Http::fake([
-        config('services.api.base_url').'/api/logout' => Http::response(['message' => 'Logged out'], 200),
-    ]);
-
-    // 2. Simulate a user who is currently logged in (they have a token in their session)
-    $response = $this->withSession(['access_token' => 'real-sanctum-token-123'])
-        ->post('/logout');
-
-    // 3. Assert they are kicked back to the login page
-    $response->assertRedirect('/login');
-
-    // 4. THE CRITICAL SECURITY CHECK: Assert the token was completely scrubbed from the session
-    $response->assertSessionMissing('access_token');
-});

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\BffAuthSession;
 use App\Support\GtcApiClient;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ final class OrderSubmitController extends Controller
         if ($client === null) {
             return redirect()
                 ->route('login')
-                ->with('error', 'Your session has expired. Please sign in again.');
+                ->with('error', BffAuthSession::EXPIRED_MESSAGE);
         }
 
         $result = $client->post("/api/orders/{$order}/submit", []);

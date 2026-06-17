@@ -1,7 +1,7 @@
 <?php
 
 it('redirects unauthenticated users back to login', function () {
-    // 1. Attempt to visit a protected route WITHOUT an access_token in the session
+    // 1. Attempt to visit a protected route WITHOUT an api_token in the session
     $response = $this->get('/dashboard');
 
     // 2. Assert your custom middleware caught them and redirected to the login page

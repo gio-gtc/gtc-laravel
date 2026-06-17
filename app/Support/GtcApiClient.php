@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Exceptions\BffApiUnauthorizedException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Log;
  */
 final class GtcApiClient
 {
+    private ?Request $boundRequest = null;
+
     public function __construct(
         private readonly ?string $token,
         private readonly string $baseUrl,
@@ -28,7 +31,10 @@ final class GtcApiClient
 
         $baseUrl = rtrim((string) config('services.api.base_url'), '/');
 
-        return new self($token, $baseUrl);
+        $client = new self($token, $baseUrl);
+        $client->boundRequest = $request;
+
+        return $client;
     }
 
     /**
@@ -128,6 +134,11 @@ final class GtcApiClient
             'status' => $response->status(),
             'body' => $response->body(),
         ]);
+
+        if ($response->status() === 401 && $this->boundRequest !== null) {
+            BffAuthSession::clear($this->boundRequest);
+            throw new BffApiUnauthorizedException(BffAuthSession::EXPIRED_MESSAGE);
+        }
 
         $json = $response->json();
 

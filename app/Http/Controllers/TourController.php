@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\BffAuthSession;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -16,7 +17,7 @@ class TourController extends Controller
         if (! is_string($token) || $token === '') {
             return redirect()
                 ->route('login')
-                ->with('error', 'Your session has expired. Please sign in again.');
+                ->with('error', BffAuthSession::EXPIRED_MESSAGE);
         }
 
         $baseUrl = rtrim((string) config('services.api.base_url'), '/');

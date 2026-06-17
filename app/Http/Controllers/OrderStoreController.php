@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\BffAuthSession;
 use App\Support\GtcApiClient;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ final class OrderStoreController extends Controller
         if ($client === null) {
             return redirect()
                 ->route('login')
-                ->with('error', 'Your session has expired. Please sign in again.');
+                ->with('error', BffAuthSession::EXPIRED_MESSAGE);
         }
 
         $isStaff = self::sessionUserIsStaff($request);
@@ -28,7 +29,7 @@ final class OrderStoreController extends Controller
         if (! $isStaff && $sessionUserId === null) {
             return redirect()
                 ->route('login')
-                ->with('error', 'Your session has expired. Please sign in again.');
+                ->with('error', BffAuthSession::EXPIRED_MESSAGE);
         }
 
         $apiPayload = self::mapApiPayload($validated, $isStaff, $sessionUserId);
