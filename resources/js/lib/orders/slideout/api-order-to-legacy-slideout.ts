@@ -117,6 +117,11 @@ function baseRowFields(
     };
 }
 
+function orderItemAssetPath(item: OrderItem): string | undefined {
+    const path = item.asset_path?.trim();
+    return path || undefined;
+}
+
 export function mapApiOrderItemToVenueRow(
     order: ApiOrder,
     item: OrderItem,
@@ -134,6 +139,7 @@ export function mapApiOrderItemToVenueRow(
     const hasDeliverables =
         wireStatus === 'Client Review' || wireStatus === 'Out For Delivery';
     const base = baseRowFields(order, item);
+    const assetPath = orderItemAssetPath(item);
 
     if (venueType === 'broadcast') {
         const specs = orderItemSpecRecord(item);
@@ -157,6 +163,7 @@ export function mapApiOrderItemToVenueRow(
             asset_tracking: assetTracking,
             missingAssetTags: missingAssetTagsFromItem(item),
             has_deliverable_actions: hasDeliverables,
+            asset_path: assetPath,
             order_id: order.id,
         };
         return row;
@@ -174,6 +181,7 @@ export function mapApiOrderItemToVenueRow(
             spot_type: defaultSocialSpotType(specs as Record<string, unknown>),
             cut: defaultSocialCut(specs as Record<string, unknown>),
             has_deliverable_actions: hasDeliverables,
+            asset_path: assetPath,
             order_id: order.id,
         };
         return row;
@@ -189,6 +197,7 @@ export function mapApiOrderItemToVenueRow(
             spot_type: defaultAudioSpotType(specs as Record<string, unknown>),
             cut: orderItemDefaultCut(item) as OrderItemsRadioRow['cut'],
             has_deliverable_actions: hasDeliverables,
+            asset_path: assetPath,
             order_id: order.id,
         };
         return row;

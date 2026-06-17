@@ -25,11 +25,14 @@ import {
     durationWireFromNumericInput,
     parseDurationWireAsSeconds,
 } from '@/lib/orders/broadcast-spec-wire';
+import {
+    canShowMediaPreview,
+    mediaTableRowAssetPath,
+} from '@/lib/orders/media-preview';
 import { toggleRowSelectionOnRowClick } from '@/lib/row-select-toggle';
 import { cn } from '@/lib/utils';
 import { MediaTableProps, MediaTableRow } from '@/types';
 import { useState } from 'react';
-import AwaitingAssetsIconGroup from '@/components/pages/orders/awaiting-assets-icons';
 import { CollapsibleTableSectionHeader } from './collapsible-table-section-header';
 import { DeliverablesCell } from './sections/deliverables-buttons';
 import { MediaPreviewCell } from './sections/media-preview-cell';
@@ -62,8 +65,6 @@ export default function MediaTable({
 
     const durationVariant =
         previewKind === 'audio' ? 'audio' : 'broadcastSocial';
-
-    const showAssetTrackingColumn = editScope === 'broadcast';
 
     return (
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
@@ -98,11 +99,6 @@ export default function MediaTable({
                                     <TableHead className="w-full max-w-[18%] text-center">
                                         Status
                                     </TableHead>
-                                    {showAssetTrackingColumn ? (
-                                        <TableHead className="w-full max-w-[8%] text-center">
-                                            Assets
-                                        </TableHead>
-                                    ) : null}
                                     <TableHead className="w-full max-w-[8%] text-center">
                                         Preview
                                     </TableHead>
@@ -583,23 +579,15 @@ export default function MediaTable({
                                                     )}
                                                 </TableCell>
 
-                                                {showAssetTrackingColumn ? (
-                                                    <TableCell>
-                                                        <div className="flex justify-center gap-1">
-                                                            <AwaitingAssetsIconGroup
-                                                                tags={
-                                                                    row.missingAssetTags
-                                                                }
-                                                                iconClassName="size-3"
-                                                            />
-                                                        </div>
-                                                    </TableCell>
-                                                ) : null}
-
                                                 <TableCell>
                                                     <MediaPreviewCell
                                                         kind={previewKind}
-                                                        disabled={isDisabledRow}
+                                                        visible={canShowMediaPreview(
+                                                            row.status,
+                                                            mediaTableRowAssetPath(
+                                                                row,
+                                                            ),
+                                                        )}
                                                         onPreviewClick={(
                                                             iconIndex,
                                                         ) =>

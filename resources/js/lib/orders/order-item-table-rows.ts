@@ -49,6 +49,7 @@ export function orderItemToMediaTableRow(item: OrderItem): MediaTableRow {
     const specs = orderItemSpecRecord(item);
     const durationWire = orderItemDurationWire(specs);
     const parsedSeconds = parseDurationWireAsSeconds(durationWire);
+    const assetPath = item.asset_path?.trim() || undefined;
     return {
         id: item.id,
         isci: orderItemIsci(item),
@@ -60,6 +61,7 @@ export function orderItemToMediaTableRow(item: OrderItem): MediaTableRow {
         status: orderItemStatusToTableStatus(orderItemWireStatus(item)),
         status_id: item.order_item_status_id,
         created_date: item.created_at,
+        asset_path: assetPath,
     };
 }
 

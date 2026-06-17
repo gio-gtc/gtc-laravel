@@ -91,6 +91,8 @@ export interface SharedData {
         [key: string]: unknown;
     }>;
     sidebarOpen: boolean;
+    /** Public CDN base for resolving order item `asset_path` to preview URLs. */
+    assetCdnBaseUrl?: string | null;
     [key: string]: unknown;
 }
 
@@ -280,7 +282,9 @@ export interface MediaTableRow {
     status: OrderItemStatus['type'];
     /** Physical FK for gating edit actions (e.g. cart-only edit). */
     status_id?: number;
-    /** Optional video URL for the preview modal. When absent, a default placeholder video is used. */
+    /** Relative deliverable path from gtc-api (`order_items.asset_path`). */
+    asset_path?: string | null;
+    /** Resolved or legacy video URL for the preview modal. */
     previewVideoUrl?: string | null;
     /** When set, preview opens a full-image dialog instead of video (e.g. social image cutdown). */
     previewImageUrl?: string | null;
@@ -421,6 +425,8 @@ export interface OrderItemsMediaLineShared {
     language_id?: number;
     /** Present on broadcast mock rows only when supplied. */
     encoding_id?: number;
+    /** Relative deliverable path from gtc-api when slideout is API-backed. */
+    asset_path?: string | null;
     /** Wire language string from API specs (broadcast). */
     language?: string;
     /** Wire encoding array from API specs (broadcast). */

@@ -148,10 +148,15 @@ export function venueItemsMediaTableRow(
     } = row;
     void has_deliverable_actions;
     void deliverables;
+    const isApiBackedRow = row.order_id != null;
+    const legacyMediaUrl = isApiBackedRow
+        ? null
+        : (mediaUrl ?? row.previewVideoUrl ?? null);
     const previewImageUrl =
-        kind === 'image' ? (mediaUrl ?? thumbnailUrl ?? null) : null;
-    const previewVideoUrl =
-        kind === 'image' ? null : (mediaUrl ?? row.previewVideoUrl ?? null);
+        kind === 'image'
+            ? (legacyMediaUrl ?? (!isApiBackedRow ? thumbnailUrl : null))
+            : null;
+    const previewVideoUrl = kind === 'image' ? null : legacyMediaUrl;
 
     const broadcastExtras =
         row.type === 'broadcast'

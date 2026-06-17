@@ -102,6 +102,8 @@ interface VideoPlayerModalProps {
     label?: string;
     /** When true, use the placeholder tune as the playing content (e.g. when opening from Audio table). */
     useAudioPlaceholder?: boolean;
+    /** When false, do not fall back to built-in placeholder media (order slideout). */
+    allowPlaceholder?: boolean;
     /** Show X / approve controls (same as table deliverables) when row is in client review. */
     clientReviewActions?: boolean;
     /** Current comment field value is passed when the user taps reject (X). */
@@ -116,6 +118,7 @@ export default function VideoPlayerModal({
     videoSrc,
     label,
     useAudioPlaceholder = false,
+    allowPlaceholder = false,
     clientReviewActions = false,
     onClientReviewReject,
     onClientReviewApprove,
@@ -135,10 +138,19 @@ export default function VideoPlayerModal({
         useState(false);
 
     const effectiveSrc = useAudioPlaceholder
-        ? AUDIO_PLACEHOLDER_SRC
-        : (videoSrc ?? PLACEHOLDER_VIDEO_SRC);
+        ? allowPlaceholder
+            ? AUDIO_PLACEHOLDER_SRC
+            : null
+        : videoSrc?.trim()
+          ? videoSrc.trim()
+          : allowPlaceholder
+            ? PLACEHOLDER_VIDEO_SRC
+            : null;
     const hasVideo = Boolean(effectiveSrc);
-    const isAudio = useAudioPlaceholder || isAudioSrc(effectiveSrc);
+    const isAudio = Boolean(
+        effectiveSrc &&
+            (useAudioPlaceholder || isAudioSrc(effectiveSrc)),
+    );
 
     const capturePosterFrame = useCallback((videoEl: HTMLVideoElement) => {
         const w = videoEl.videoWidth;

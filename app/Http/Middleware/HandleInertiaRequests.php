@@ -57,6 +57,7 @@ class HandleInertiaRequests extends Middleware
                 'token' => $request->session()->get('api_token'),
             ],
             'name' => config('app.name'),
+            'assetCdnBaseUrl' => config('services.assets.cdn_base_url') ?: null,
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'users' => $users,
             'ApiReferenceData' => function () use ($request): array {

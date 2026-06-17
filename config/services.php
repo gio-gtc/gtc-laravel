@@ -47,4 +47,8 @@ return [
         'contacts_invite_path' => env('API_CONTACTS_INVITE_PATH', 'api/users/invite'),
     ],
 
+    'assets' => [
+        'cdn_base_url' => rtrim((string) env('ASSET_CDN_BASE_URL', env('AWS_URL', '')), '/'),
+    ],
+
 ];

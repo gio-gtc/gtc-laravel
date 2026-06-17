@@ -38,6 +38,13 @@ import {
     isOrderLineItemEditDisabled,
 } from '@/lib/orders/order-line-item-write-access';
 import {
+    canShowMediaPreview,
+    MEDIA_PREVIEW_STATUSES,
+    mediaTableRowAssetPath,
+    resolveAssetPreviewUrl,
+    type MediaPreviewStatus,
+} from '@/lib/orders/media-preview';
+import {
     apiOrderItemTableStatus,
     isMediaTableRowStillInCart,
 } from '@/lib/orders/order-item-table-rows';
@@ -110,9 +117,7 @@ function tableDueDateDisplayToIso(display: string): string | undefined {
 
 type RevisionTargetRow = MediaTableRow | StaticAssetsTableRow;
 
-const DELIVERABLE_STATUSES = ['Client Review', 'Out For Delivery'] as const;
-
-type DeliverableStatus = (typeof DELIVERABLE_STATUSES)[number];
+type DeliverableStatus = MediaPreviewStatus;
 
 function rowShowsDeliverables(
     hasDeliverableActions: boolean | undefined,
@@ -120,7 +125,7 @@ function rowShowsDeliverables(
 ): boolean {
     return (
         hasDeliverableActions ??
-        DELIVERABLE_STATUSES.includes(resolvedStatus as DeliverableStatus)
+        MEDIA_PREVIEW_STATUSES.includes(resolvedStatus as DeliverableStatus)
     );
 }
 
@@ -148,8 +153,12 @@ function GeneralMediaView({
     onRowSelectToggle,
     onOpenAttachModal,
 }: GeneralMediaViewProps) {
-    const { auth } = usePage<SharedData>().props;
+    const { auth, assetCdnBaseUrl } = usePage<SharedData>().props;
     const userRoles = auth.roles ?? [];
+    const assetCdnBase =
+        typeof assetCdnBaseUrl === 'string' && assetCdnBaseUrl.trim() !== ''
+            ? assetCdnBaseUrl.trim()
+            : null;
     const catalog = useOrdersCatalog();
     const {
         createOrderItemsFromForm,
@@ -594,38 +603,76 @@ function GeneralMediaView({
 
     const handleVideoSectionPreviewClick = useCallback(
         (row: MediaTableRow, iconIndex: number) => {
-            if (iconIndex === 0) {
-                if (row.previewImageUrl) {
-                    setImagePreview({
-                        src: row.previewImageUrl,
-                        title: `${row.isci} – ${row.cutName}`,
-                    });
+            const assetPath = mediaTableRowAssetPath(row);
+            if (!canShowMediaPreview(row.status, assetPath)) {
+                return;
+            }
+
+            if (iconIndex === 1) {
+                if (!assetPath) {
                     return;
                 }
-                setVideoPreviewRow(row);
-                setAudioPlaceholderMode(false);
-                setVideoPlayerModalOpen(true);
+                void navigator.clipboard.writeText(assetPath).catch(() => {
+                    toast.error('Could not copy asset path.');
+                });
+                return;
             }
+
+            if (iconIndex !== 0) {
+                return;
+            }
+
+            if (row.previewImageUrl) {
+                setImagePreview({
+                    src: row.previewImageUrl,
+                    title: `${row.isci} – ${row.cutName}`,
+                });
+                return;
+            }
+
+            const url = resolveAssetPreviewUrl(assetPath, assetCdnBase);
+            if (!url) {
+                toast.error('Preview is unavailable.');
+                return;
+            }
+
+            setVideoPreviewRow({ ...row, previewVideoUrl: url });
+            setAudioPlaceholderMode(false);
+            setVideoPlayerModalOpen(true);
         },
-        [],
+        [assetCdnBase],
     );
 
     const handleAudioSectionPreviewClick = useCallback(
         (row: MediaTableRow, iconIndex: number) => {
-            if (iconIndex === 0) {
-                if (row.previewImageUrl) {
-                    setImagePreview({
-                        src: row.previewImageUrl,
-                        title: `${row.isci} – ${row.cutName}`,
-                    });
-                    return;
-                }
-                setVideoPreviewRow(row);
-                setAudioPlaceholderMode(true);
-                setVideoPlayerModalOpen(true);
+            const assetPath = mediaTableRowAssetPath(row);
+            if (!canShowMediaPreview(row.status, assetPath)) {
+                return;
             }
+
+            if (iconIndex !== 0) {
+                return;
+            }
+
+            if (row.previewImageUrl) {
+                setImagePreview({
+                    src: row.previewImageUrl,
+                    title: `${row.isci} – ${row.cutName}`,
+                });
+                return;
+            }
+
+            const url = resolveAssetPreviewUrl(assetPath, assetCdnBase);
+            if (!url) {
+                toast.error('Preview is unavailable.');
+                return;
+            }
+
+            setVideoPreviewRow({ ...row, previewVideoUrl: url });
+            setAudioPlaceholderMode(false);
+            setVideoPlayerModalOpen(true);
         },
-        [],
+        [assetCdnBase],
     );
 
     const openBroadcastVideoPreview = useCallback(
@@ -1576,7 +1623,8 @@ function GeneralMediaView({
                     setAudioPlaceholderMode(false);
                 }}
                 videoSrc={videoPreviewRow?.previewVideoUrl ?? undefined}
-                useAudioPlaceholder={audioPlaceholderMode}
+                useAudioPlaceholder={false}
+                allowPlaceholder={false}
                 label={
                     videoPreviewRow
                         ? `${videoPreviewRow.isci} – ${videoPreviewRow.cutName}`

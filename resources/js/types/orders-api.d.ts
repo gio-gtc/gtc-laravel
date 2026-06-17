@@ -143,6 +143,8 @@ export interface OrderItem {
     assignees?: OrderAssignee[];
     /** Present on Status 5 rows; null on all other statuses. */
     revision_instructions?: OrderItemRevisionInstructions | null;
+    /** Relative storage path for current deliverable file (nullable until uploaded). */
+    asset_path?: string | null;
 }
 
 export interface ApiOrderVenue {
