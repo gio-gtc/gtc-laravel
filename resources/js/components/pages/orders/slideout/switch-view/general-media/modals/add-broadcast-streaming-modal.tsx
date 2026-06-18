@@ -182,6 +182,7 @@ export default function AddBroadcastStreamingModal({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [duplicateConfirmOpen, setDuplicateConfirmOpen] = useState(false);
     const [sessionCustomCuts, setSessionCustomCuts] = useState<string[]>([]);
+    const [sessionCustomTypes, setSessionCustomTypes] = useState<string[]>([]);
     const [sessionCustomEncodings, setSessionCustomEncodings] = useState<
         string[]
     >([]);
@@ -196,6 +197,20 @@ export default function AddBroadcastStreamingModal({
     const [editDuration, setEditDuration] = useState('');
     const [editLanguage, setEditLanguage] = useState('');
     const [editEncodings, setEditEncodings] = useState<string[]>([]);
+
+    const addTypeOptions = useMemo(
+        () => mergeComboboxOptionsWithCustoms(typeKeys, sessionCustomTypes),
+        [typeKeys, sessionCustomTypes],
+    );
+
+    const editTypeOptions = useMemo(
+        () =>
+            mergeComboboxOptionsWithCustoms(typeKeys, [
+                ...sessionCustomTypes,
+                ...(editType && !typeKeys.includes(editType) ? [editType] : []),
+            ]),
+        [typeKeys, sessionCustomTypes, editType],
+    );
 
     useEffect(() => {
         if (!isOpen || !isEdit || !initialVenueRow) return;
@@ -546,6 +561,12 @@ export default function AddBroadcastStreamingModal({
         );
     }, []);
 
+    const handleCustomTypeAdded = useCallback((spotType: string) => {
+        setSessionCustomTypes((prev) =>
+            prev.includes(spotType) ? prev : [...prev, spotType],
+        );
+    }, []);
+
     const handleCustomEncodingAdded = useCallback((encoding: string) => {
         setSessionCustomEncodings((prev) =>
             prev.includes(encoding) ? prev : [...prev, encoding],
@@ -660,6 +681,7 @@ export default function AddBroadcastStreamingModal({
         setIsSubmitting(false);
         setDuplicateConfirmOpen(false);
         setSessionCustomCuts([]);
+        setSessionCustomTypes([]);
         setSessionCustomEncodings([]);
         setSessionCustomDurations([]);
         setCustomDurationDraft('');
@@ -822,17 +844,14 @@ export default function AddBroadcastStreamingModal({
                                 </p>
                                 <SelectWithOther
                                     id="edit-broadcast-type"
-                                    options={typeKeys}
+                                    options={editTypeOptions}
                                     value={editType}
                                     onValueChange={handleEditTypeChange}
                                     allowOther={allowFieldOther}
+                                    onCustomOptionAdded={handleCustomTypeAdded}
                                     placeholder="Select the type of Spot"
                                     otherInputPlaceholder="Enter spot type"
-                                    selectTriggerVariant="orderSlideoutpopup"
                                     triggerClassName={
-                                        orderModalStyles.selectTrigger
-                                    }
-                                    otherInputClassName={
                                         orderModalStyles.selectTrigger
                                     }
                                 />
@@ -858,14 +877,12 @@ export default function AddBroadcastStreamingModal({
                                             : setEditCut
                                     }
                                     allowOther={allowFieldOther}
+                                    onCustomOptionAdded={handleCustomCutAdded}
                                     disabled={isEditInternationalLocked}
                                     placeholder="Select Cuts"
                                     otherInputPlaceholder="Enter custom cut"
-                                    selectTriggerVariant="orderSlideoutpopup"
+                                    emptyMessage="No cuts found."
                                     triggerClassName={
-                                        orderModalStyles.selectTrigger
-                                    }
-                                    otherInputClassName={
                                         orderModalStyles.selectTrigger
                                     }
                                 />
@@ -1078,17 +1095,14 @@ export default function AddBroadcastStreamingModal({
                                 </p>
                                 <SelectWithOther
                                     id="type"
-                                    options={typeKeys}
+                                    options={addTypeOptions}
                                     value={type}
                                     onValueChange={handleTypeChange}
                                     allowOther={allowFieldOther}
+                                    onCustomOptionAdded={handleCustomTypeAdded}
                                     placeholder="Select the type of Spot"
                                     otherInputPlaceholder="Enter spot type"
-                                    selectTriggerVariant="orderSlideoutpopup"
                                     triggerClassName={
-                                        orderModalStyles.selectTrigger
-                                    }
-                                    otherInputClassName={
                                         orderModalStyles.selectTrigger
                                     }
                                 />

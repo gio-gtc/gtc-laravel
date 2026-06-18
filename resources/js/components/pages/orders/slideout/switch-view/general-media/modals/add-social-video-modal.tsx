@@ -112,6 +112,7 @@ export default function AddSocialVideoModal({
     const [editLanguage, setEditLanguage] = useState('');
 
     const [sessionCustomCuts, setSessionCustomCuts] = useState<string[]>([]);
+    const [sessionCustomTypes, setSessionCustomTypes] = useState<string[]>([]);
     const [sessionCustomCardHolders, setSessionCustomCardHolders] = useState<
         string[]
     >([]);
@@ -150,6 +151,23 @@ export default function AddSocialVideoModal({
                     : sessionCustomCuts,
             ),
         [editCut, sessionCustomCuts],
+    );
+
+    const editTypeOptions = useMemo(
+        () =>
+            mergeComboboxOptionsWithCustoms(
+                [...SOCIAL_VIDEO_TYPE_OPTIONS],
+                [
+                    ...sessionCustomTypes,
+                    ...(editLayout &&
+                    !(SOCIAL_VIDEO_TYPE_OPTIONS as readonly string[]).includes(
+                        editLayout,
+                    )
+                        ? [editLayout]
+                        : []),
+                ],
+            ),
+        [editLayout, sessionCustomTypes],
     );
 
     const defaultDurationPills = useMemo(
@@ -278,6 +296,7 @@ export default function AddSocialVideoModal({
         setDuration([]);
         setLanguage(defaultVenueItemLanguageLabels(venue_item_language));
         setSessionCustomCuts([]);
+        setSessionCustomTypes([]);
         setSessionCustomCardHolders([]);
         setSessionCustomDurations([]);
         setCustomDurationDraft('');
@@ -295,6 +314,12 @@ export default function AddSocialVideoModal({
 
     const handleCustomCutAdded = useCallback((value: string) => {
         setSessionCustomCuts((prev) =>
+            prev.includes(value) ? prev : [...prev, value],
+        );
+    }, []);
+
+    const handleCustomTypeAdded = useCallback((value: string) => {
+        setSessionCustomTypes((prev) =>
             prev.includes(value) ? prev : [...prev, value],
         );
     }, []);
@@ -465,17 +490,14 @@ export default function AddSocialVideoModal({
                                 </p>
                                 <SelectWithOther
                                     id="edit-social-type"
-                                    options={[...SOCIAL_VIDEO_TYPE_OPTIONS]}
+                                    options={editTypeOptions}
                                     value={editLayout}
                                     onValueChange={setEditLayout}
                                     allowOther={allowFieldOther}
+                                    onCustomOptionAdded={handleCustomTypeAdded}
                                     placeholder="Select Type"
                                     otherInputPlaceholder="Enter layout type"
-                                    selectTriggerVariant="orderSlideoutpopup"
                                     triggerClassName={
-                                        orderModalStyles.selectTrigger
-                                    }
-                                    otherInputClassName={
                                         orderModalStyles.selectTrigger
                                     }
                                 />
@@ -497,13 +519,11 @@ export default function AddSocialVideoModal({
                                     value={editCut}
                                     onValueChange={setEditCut}
                                     allowOther={allowFieldOther}
+                                    onCustomOptionAdded={handleCustomCutAdded}
                                     placeholder="Select Cuts"
                                     otherInputPlaceholder="Enter custom cut"
-                                    selectTriggerVariant="orderSlideoutpopup"
+                                    emptyMessage="No cuts found."
                                     triggerClassName={
-                                        orderModalStyles.selectTrigger
-                                    }
-                                    otherInputClassName={
                                         orderModalStyles.selectTrigger
                                     }
                                 />
