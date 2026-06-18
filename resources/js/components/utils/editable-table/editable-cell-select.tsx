@@ -30,7 +30,8 @@ interface EditableCellSelectProps {
     isEditing: boolean;
     className?: string;
     disabled?: boolean;
-    /** Read-mode display; default is plain text. */
+    /** Muted read-mode styling for cancelled rows */
+    inactive?: boolean;
     renderDisplay?: (value: string) => React.ReactNode;
     variant?: InputVariants;
 }
@@ -57,6 +58,7 @@ export function EditableCellSelect({
     isEditing,
     className,
     disabled = false,
+    inactive = false,
     renderDisplay,
     variant = 'default',
 }: EditableCellSelectProps) {
@@ -147,9 +149,10 @@ export function EditableCellSelect({
             onDoubleClick={handleDoubleClick}
             onKeyDownCapture={handleEscape}
             className={cn(
-                disabled
-                    ? 'cursor-default'
-                    : 'xs-gray-500-weight-600 cursor-pointer',
+                disabled ? 'cursor-default' : 'cursor-pointer',
+                inactive
+                    ? 'xs-gray-300-weight-600'
+                    : !disabled && 'xs-gray-500-weight-600',
                 className,
             )}
         >

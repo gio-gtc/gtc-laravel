@@ -26,7 +26,8 @@ interface EditableCellInputProps {
     min?: number;
     step?: number;
     disabled?: boolean;
-    /** When value equals this, show empty in display/edit mode with placeholder. Use 0 for quantity/price so 0 doesn't block typing. */
+    /** Muted read-mode styling for cancelled rows */
+    inactive?: boolean;
     emptyValue?: number | string;
     /** Placeholder shown in input when value is empty. Defaults to String(emptyValue) when emptyValue is set. */
     emptyPlaceholder?: string;
@@ -49,6 +50,7 @@ export function EditableCellInput({
     min,
     step,
     disabled = false,
+    inactive = false,
     emptyValue,
     emptyPlaceholder,
     variant = 'default',
@@ -120,11 +122,14 @@ export function EditableCellInput({
             onDoubleClick={handleDoubleClick}
             className={cn(
                 'flex h-full items-center truncate',
-                disabled
-                    ? 'cursor-default'
-                    : 'xs-gray-500-weight-600 cursor-pointer',
+                disabled ? 'cursor-default' : 'cursor-pointer',
+                inactive
+                    ? 'xs-gray-300-weight-600'
+                    : !disabled && 'xs-gray-500-weight-600',
                 alignmentClasses[align],
-                variant === 'invoiceSlideout' && 'xs-gray-500-weight-600',
+                variant === 'invoiceSlideout' &&
+                    !inactive &&
+                    'xs-gray-500-weight-600',
                 className,
             )}
         >

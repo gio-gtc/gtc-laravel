@@ -132,7 +132,7 @@ export default function MediaTable({
                                                 key={row.id}
                                                 className={cn(
                                                     'xs-gray-500-weight-600 hover:bg-gray-100',
-                                                    isDisabledRow &&
+                                                    isCancelledRow &&
                                                         'xs-gray-300-weight-600',
                                                     selectedRowIds?.has(
                                                         row.id,
@@ -377,6 +377,9 @@ export default function MediaTable({
                                                             disabled={
                                                                 rowEditsLocked
                                                             }
+                                                            inactive={
+                                                                isCancelledRow
+                                                            }
                                                         />
                                                     ) : cellEditing ? (
                                                         <EditableCellSelect
@@ -446,6 +449,9 @@ export default function MediaTable({
                                                             )}
                                                             disabled={
                                                                 rowEditsLocked
+                                                            }
+                                                            inactive={
+                                                                isCancelledRow
                                                             }
                                                         />
                                                     ) : editScope ===

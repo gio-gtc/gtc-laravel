@@ -85,10 +85,13 @@ export default function StaticAssetsMediaTable({
                             <TableBody>
                                 {data.length > 0 ? (
                                     data.map((row) => {
+                                        const isCancelledRow =
+                                            row.status === 'Cancelled';
+                                        const isInactiveRow =
+                                            isCancelledRow ||
+                                            row.status === 'Revision Request';
                                         const isDisabledRow =
-                                            (row.status === 'Cancelled' ||
-                                                row.status ===
-                                                    'Revision Request') &&
+                                            isInactiveRow &&
                                             !allowEditInactiveRows;
                                         const rowEditsLocked = isDisabledRow;
                                         const assigneeEditsLocked =
@@ -98,7 +101,7 @@ export default function StaticAssetsMediaTable({
                                                 key={row.id}
                                                 className={cn(
                                                     'xs-gray-500-weight-600',
-                                                    isDisabledRow &&
+                                                    isCancelledRow &&
                                                         'xs-gray-300-weight-600 hover:bg-gray-100',
                                                     selectedRowIds?.has(
                                                         row.id,
