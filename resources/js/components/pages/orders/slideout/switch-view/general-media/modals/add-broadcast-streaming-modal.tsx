@@ -66,7 +66,7 @@ import type {
 import type { OrderMenuFormBlueprint } from '@/types/order-catalog';
 import { usePage } from '@inertiajs/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import DurationPillInput from './duration-pill-input';
+import TextPillInput from './text-pill-input';
 import {
     customDurationInputToPillLabel,
     durationSecondsToModalPillLabel,
@@ -949,8 +949,9 @@ export default function AddBroadcastStreamingModal({
                                                 {editExtraDurationLabel}
                                             </PillButton>
                                         )}
-                                        <DurationPillInput
+                                        <TextPillInput
                                             id="edit-custom-duration"
+                                            numericOnly
                                             value={editCustomDurationDraft}
                                             onChange={
                                                 setEditCustomDurationDraft
@@ -1219,8 +1220,9 @@ export default function AddBroadcastStreamingModal({
                                                     {d}
                                                 </PillButton>
                                             ))}
-                                        <DurationPillInput
+                                        <TextPillInput
                                             id="add-custom-duration"
+                                            numericOnly
                                             value={customDurationDraft}
                                             onChange={setCustomDurationDraft}
                                             onCommit={

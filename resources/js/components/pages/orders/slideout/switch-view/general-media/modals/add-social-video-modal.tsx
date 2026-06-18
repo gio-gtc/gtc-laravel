@@ -27,10 +27,13 @@ import { hasSocialFormDuplicates } from '@/lib/orders/social-duplicate-check';
 import { isGtcAdminUser } from '@/lib/user-roles';
 import { cn } from '@/lib/utils';
 import { languageTypeToId } from '@/lib/venue-items/modal-mappers';
-import type { OrderItemLanguage, OrderItemsSocialRow, SharedData } from '@/types';
+import type {
+    OrderItemLanguage,
+    OrderItemsSocialRow,
+    SharedData,
+} from '@/types';
 import { usePage } from '@inertiajs/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import DurationPillInput from './duration-pill-input';
 import {
     customDurationInputToPillLabel,
     durationSecondsToModalPillLabel,
@@ -45,8 +48,13 @@ import {
     SOCIAL_VIDEO_TYPE_OPTIONS,
     VENUE_ITEM_SOCIAL_CARD_HOLDERS,
 } from './spot-type-cuts-options';
+import TextPillInput from './text-pill-input';
 
 const CARD_HOLDER_BASE_OPTIONS = [...VENUE_ITEM_SOCIAL_CARD_HOLDERS];
+
+function isBaseCardHolder(value: string): boolean {
+    return (CARD_HOLDER_BASE_OPTIONS as readonly string[]).includes(value);
+}
 
 export interface AddSocialVideoFormValues {
     type: string[];
@@ -112,6 +120,9 @@ export default function AddSocialVideoModal({
     >([]);
     const [customDurationDraft, setCustomDurationDraft] = useState('');
     const [editCustomDurationDraft, setEditCustomDurationDraft] = useState('');
+    const [customCardHolderDraft, setCustomCardHolderDraft] = useState('');
+    const [editCustomCardHolderDraft, setEditCustomCardHolderDraft] =
+        useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [duplicateConfirmOpen, setDuplicateConfirmOpen] = useState(false);
 
@@ -134,41 +145,15 @@ export default function AddSocialVideoModal({
             mergeComboboxOptionsWithCustoms(
                 [...SOCIAL_CUT_OPTIONS],
                 editCut &&
-                !(SOCIAL_CUT_OPTIONS as readonly string[]).includes(editCut)
+                    !(SOCIAL_CUT_OPTIONS as readonly string[]).includes(editCut)
                     ? [editCut]
                     : sessionCustomCuts,
             ),
         [editCut, sessionCustomCuts],
     );
 
-    const addCardHolderOptions = useMemo(
-        () =>
-            mergeComboboxOptionsWithCustoms(
-                CARD_HOLDER_BASE_OPTIONS,
-                sessionCustomCardHolders,
-            ),
-        [sessionCustomCardHolders],
-    );
-
-    const editCardHolderOptions = useMemo(() => {
-        const customs =
-            editCardHolder &&
-            !CARD_HOLDER_BASE_OPTIONS.includes(
-                editCardHolder as (typeof CARD_HOLDER_BASE_OPTIONS)[number],
-            )
-                ? [editCardHolder]
-                : sessionCustomCardHolders;
-        return mergeComboboxOptionsWithCustoms(
-            CARD_HOLDER_BASE_OPTIONS,
-            customs,
-        );
-    }, [editCardHolder, sessionCustomCardHolders]);
-
     const defaultDurationPills = useMemo(
-        () =>
-            getDefaultDurationSecondsForModal('social').map(
-                (s) => `:${s}`,
-            ),
+        () => getDefaultDurationSecondsForModal('social').map((s) => `:${s}`),
         [],
     );
 
@@ -179,6 +164,23 @@ export default function AddSocialVideoModal({
         ];
         return [...new Set([...defaultDurationPills, ...extras])];
     }, [defaultDurationPills, sessionCustomDurations, duration]);
+
+    const allCardHolderPills = useMemo(() => {
+        const extras = [
+            ...sessionCustomCardHolders,
+            ...cardHolder.filter((holder) => !isBaseCardHolder(holder)),
+        ];
+        return [...new Set([...CARD_HOLDER_BASE_OPTIONS, ...extras])];
+    }, [sessionCustomCardHolders, cardHolder]);
+
+    const editAllCardHolderPills = useMemo(() => {
+        const trimmed = editCardHolder.trim();
+        const extras = [
+            ...sessionCustomCardHolders,
+            ...(trimmed && !isBaseCardHolder(trimmed) ? [trimmed] : []),
+        ];
+        return [...new Set([...CARD_HOLDER_BASE_OPTIONS, ...extras])];
+    }, [sessionCustomCardHolders, editCardHolder]);
 
     const editSocialDurationSeconds = useMemo(() => {
         const parsed = durationWireFromPill(editDuration);
@@ -197,9 +199,7 @@ export default function AddSocialVideoModal({
             : null;
 
     const editAllDurationPills = useMemo(() => {
-        const extras = editExtraDurationLabel
-            ? [editExtraDurationLabel]
-            : [];
+        const extras = editExtraDurationLabel ? [editExtraDurationLabel] : [];
         return [...new Set([...defaultDurationPills, ...extras])];
     }, [defaultDurationPills, editExtraDurationLabel]);
 
@@ -224,6 +224,7 @@ export default function AddSocialVideoModal({
         );
         setEditCardHolder(initialVenueRow.card_holder?.trim() ?? '');
         setEditCustomDurationDraft('');
+        setEditCustomCardHolderDraft('');
         /* eslint-enable react-hooks/set-state-in-effect */
     }, [isOpen, isEdit, initialVenueRow, venue_item_language]);
 
@@ -281,6 +282,8 @@ export default function AddSocialVideoModal({
         setSessionCustomDurations([]);
         setCustomDurationDraft('');
         setEditCustomDurationDraft('');
+        setCustomCardHolderDraft('');
+        setEditCustomCardHolderDraft('');
     };
 
     const handleClose = () => {
@@ -292,12 +295,6 @@ export default function AddSocialVideoModal({
 
     const handleCustomCutAdded = useCallback((value: string) => {
         setSessionCustomCuts((prev) =>
-            prev.includes(value) ? prev : [...prev, value],
-        );
-    }, []);
-
-    const handleCustomCardHolderAdded = useCallback((value: string) => {
-        setSessionCustomCardHolders((prev) =>
             prev.includes(value) ? prev : [...prev, value],
         );
     }, []);
@@ -328,6 +325,30 @@ export default function AddSocialVideoModal({
         setEditCustomDurationDraft('');
         setEditDuration(pill);
     }, [editCustomDurationDraft]);
+
+    const handleAddCustomCardHolderCommit = useCallback(() => {
+        const value = customCardHolderDraft.trim();
+        if (!value || !allowFieldOther) {
+            return;
+        }
+        setSessionCustomCardHolders((prev) =>
+            prev.includes(value) ? prev : [...prev, value],
+        );
+        setCardHolder((prev) => toggleInArray(prev, value));
+        setCustomCardHolderDraft('');
+    }, [allowFieldOther, customCardHolderDraft]);
+
+    const handleEditCustomCardHolderCommit = useCallback(() => {
+        const value = editCustomCardHolderDraft.trim();
+        if (!value || !allowFieldOther) {
+            return;
+        }
+        setSessionCustomCardHolders((prev) =>
+            prev.includes(value) ? prev : [...prev, value],
+        );
+        setEditCustomCardHolderDraft('');
+        setEditCardHolder(value);
+    }, [allowFieldOther, editCustomCardHolderDraft]);
 
     const buildAddFormValues = (): AddSocialVideoFormValues => ({
         type,
@@ -487,40 +508,61 @@ export default function AddSocialVideoModal({
                                     }
                                 />
                             </div>
+                        </div>
 
-                            <div className="flex flex-3 flex-col gap-1.5">
+                        <div className="flex flex-row gap-2 text-xs">
+                            <div className="flex flex-col gap-2 sm:max-w-[85px]">
                                 <Label
-                                    htmlFor="edit-social-card-holder"
-                                    className={orderModalStyles.label}
+                                    className={cn(
+                                        'pb-4',
+                                        orderModalStyles.label,
+                                    )}
                                 >
                                     Card Holder
                                 </Label>
-                                <p className={orderModalStyles.helper}>
-                                    Select card holder
-                                </p>
-                                <SelectWithOther
-                                    id="edit-social-card-holder"
-                                    options={editCardHolderOptions}
-                                    value={editCardHolder}
-                                    onValueChange={setEditCardHolder}
-                                    allowOther={allowFieldOther}
-                                    placeholder="Select card holder"
-                                    otherInputPlaceholder="Enter card holder"
-                                    selectTriggerVariant="orderSlideoutpopup"
-                                    triggerClassName={
-                                        orderModalStyles.selectTrigger
-                                    }
-                                    otherInputClassName={
-                                        orderModalStyles.selectTrigger
-                                    }
-                                />
+                                <div className="flex flex-col gap-2">
+                                    {editAllCardHolderPills.map((holder) => (
+                                        <PillButton
+                                            key={holder}
+                                            className="w-full"
+                                            selected={editCardHolder === holder}
+                                            onClick={() => {
+                                                setEditCustomCardHolderDraft(
+                                                    '',
+                                                );
+                                                setEditCardHolder(holder);
+                                            }}
+                                        >
+                                            {holder}
+                                        </PillButton>
+                                    ))}
+                                    {allowFieldOther && (
+                                        <TextPillInput
+                                            id="edit-social-custom-card-holder"
+                                            value={editCustomCardHolderDraft}
+                                            onChange={
+                                                setEditCustomCardHolderDraft
+                                            }
+                                            onCommit={
+                                                handleEditCustomCardHolderCommit
+                                            }
+                                            selected={
+                                                editCustomCardHolderDraft.trim() !==
+                                                    '' &&
+                                                editCardHolder ===
+                                                    editCustomCardHolderDraft.trim()
+                                            }
+                                            className="w-full"
+                                        />
+                                    )}
+                                </div>
                             </div>
-                        </div>
-
-                        <div className="flex flex-row justify-around gap-2 text-xs sm:justify-center">
                             <div className="flex flex-col gap-2">
                                 <Label
-                                    className={cn('pb-4', orderModalStyles.label)}
+                                    className={cn(
+                                        'pb-4',
+                                        orderModalStyles.label,
+                                    )}
                                 >
                                     Duration
                                 </Label>
@@ -561,11 +603,14 @@ export default function AddSocialVideoModal({
                                                 {editExtraDurationLabel}
                                             </PillButton>
                                         )}
-                                    <DurationPillInput
+                                    <TextPillInput
                                         id="edit-social-custom-duration"
+                                        numericOnly
                                         value={editCustomDurationDraft}
                                         onChange={setEditCustomDurationDraft}
-                                        onCommit={handleEditCustomDurationCommit}
+                                        onCommit={
+                                            handleEditCustomDurationCommit
+                                        }
                                         selected={
                                             editCustomDurationDraft.trim() !==
                                                 '' &&
@@ -579,19 +624,24 @@ export default function AddSocialVideoModal({
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-2">
+                            <div className="flex min-w-[100px] flex-1 flex-col gap-2">
                                 <Label
-                                    className={cn('pb-4', orderModalStyles.label)}
+                                    className={cn(
+                                        'pb-4',
+                                        orderModalStyles.label,
+                                    )}
                                 >
                                     Language
                                 </Label>
-                                <div className="flex flex-col gap-2">
+                                <div className="flex w-full flex-col gap-2">
                                     {languageOptions.map((lang) => (
                                         <PillButton
                                             key={lang}
                                             className="w-full"
                                             selected={editLanguage === lang}
-                                            onClick={() => setEditLanguage(lang)}
+                                            onClick={() =>
+                                                setEditLanguage(lang)
+                                            }
                                         >
                                             {lang}
                                         </PillButton>
@@ -653,40 +703,61 @@ export default function AddSocialVideoModal({
                                     }
                                 />
                             </div>
+                        </div>
 
-                            <div className="flex flex-3 flex-col gap-1.5">
+                        <div className="flex flex-row gap-2 text-xs">
+                            <div className="flex flex-col gap-2 sm:max-w-[85px]">
                                 <Label
-                                    htmlFor="card-holder"
-                                    className={orderModalStyles.label}
+                                    className={cn(
+                                        'pb-4',
+                                        orderModalStyles.label,
+                                    )}
                                 >
                                     Card Holder
                                 </Label>
-                                <p className={orderModalStyles.helper}>
-                                    Select card holder
-                                </p>
-                                <MultiSelectWithOther
-                                    id="card-holder"
-                                    options={addCardHolderOptions}
-                                    value={cardHolder}
-                                    onValueChange={setCardHolder}
-                                    onCustomOptionAdded={
-                                        handleCustomCardHolderAdded
-                                    }
-                                    allowOther={allowFieldOther}
-                                    placeholder="Select card holder"
-                                    emptyMessage="No card holders found."
-                                    otherInputPlaceholder="Enter card holder"
-                                    triggerClassName={
-                                        orderModalStyles.selectTrigger
-                                    }
-                                />
+                                <div className="flex flex-col gap-2">
+                                    {allCardHolderPills.map((holder) => (
+                                        <PillButton
+                                            key={holder}
+                                            className="w-full"
+                                            selected={cardHolder.includes(
+                                                holder,
+                                            )}
+                                            onClick={() =>
+                                                setCardHolder((prev) =>
+                                                    toggleInArray(prev, holder),
+                                                )
+                                            }
+                                        >
+                                            {holder}
+                                        </PillButton>
+                                    ))}
+                                    {allowFieldOther && (
+                                        <TextPillInput
+                                            id="add-social-custom-card-holder"
+                                            value={customCardHolderDraft}
+                                            onChange={setCustomCardHolderDraft}
+                                            onCommit={
+                                                handleAddCustomCardHolderCommit
+                                            }
+                                            selected={
+                                                customCardHolderDraft.trim() !==
+                                                    '' &&
+                                                cardHolder.includes(
+                                                    customCardHolderDraft.trim(),
+                                                )
+                                            }
+                                            className="w-full"
+                                        />
+                                    )}
+                                </div>
                             </div>
-                        </div>
-
-                        <div className="flex flex-row justify-around gap-2 text-xs sm:justify-center">
                             <div className="flex flex-col gap-2">
                                 <Label
-                                    className={cn('pb-4', orderModalStyles.label)}
+                                    className={cn(
+                                        'pb-4',
+                                        orderModalStyles.label,
+                                    )}
                                 >
                                     Duration
                                 </Label>
@@ -727,8 +798,9 @@ export default function AddSocialVideoModal({
                                                 {extraDurationLabel}
                                             </PillButton>
                                         )}
-                                    <DurationPillInput
+                                    <TextPillInput
                                         id="add-social-custom-duration"
+                                        numericOnly
                                         value={customDurationDraft}
                                         onChange={setCustomDurationDraft}
                                         onCommit={handleAddCustomDurationCommit}
@@ -750,25 +822,31 @@ export default function AddSocialVideoModal({
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-2">
+                            <div className="flex min-w-[100px] flex-1 flex-col gap-2">
                                 <Label
-                                    className={cn('pb-4', orderModalStyles.label)}
+                                    className={cn(
+                                        'pb-4',
+                                        orderModalStyles.label,
+                                    )}
                                 >
                                     Language
                                 </Label>
-                                <MultiSelectWithOther
-                                    id="language"
-                                    options={languageOptions}
-                                    value={language}
-                                    onValueChange={setLanguage}
-                                    allowOther={allowFieldOther}
-                                    placeholder="Select language"
-                                    emptyMessage="No languages found."
-                                    otherInputPlaceholder="Enter language"
-                                    triggerClassName={
-                                        orderModalStyles.selectTrigger
-                                    }
-                                />
+                                <div className="flex w-full flex-col gap-2">
+                                    {languageOptions.map((lang) => (
+                                        <PillButton
+                                            key={lang}
+                                            className="w-full"
+                                            selected={language.includes(lang)}
+                                            onClick={() =>
+                                                setLanguage((prev) =>
+                                                    toggleInArray(prev, lang),
+                                                )
+                                            }
+                                        >
+                                            {lang}
+                                        </PillButton>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

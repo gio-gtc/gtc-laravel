@@ -2,7 +2,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { orderModalStyles } from './shared';
 
-interface DurationPillInputProps {
+interface TextPillInputProps {
     id?: string;
     value: string;
     onChange: (value: string) => void;
@@ -11,18 +11,22 @@ interface DurationPillInputProps {
     selected?: boolean;
     placeholder?: string;
     className?: string;
+    numericOnly?: boolean;
 }
 
-export default function DurationPillInput({
+export default function TextPillInput({
     id,
     value,
     onChange,
     onCommit,
     disabled = false,
     selected = false,
-    placeholder = 'Sec',
+    placeholder,
     className,
-}: DurationPillInputProps) {
+    numericOnly = false,
+}: TextPillInputProps) {
+    const resolvedPlaceholder = placeholder ?? (numericOnly ? 'Sec' : 'Custom');
+
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             event.preventDefault();
@@ -30,19 +34,22 @@ export default function DurationPillInput({
         }
     };
 
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const raw = event.target.value;
+        onChange(numericOnly ? raw.replace(/[^\d]/g, '') : raw);
+    };
+
     return (
         <Input
             id={id}
             type="text"
-            inputMode="numeric"
+            inputMode={numericOnly ? 'numeric' : undefined}
             value={value}
-            onChange={(event) =>
-                onChange(event.target.value.replace(/[^\d]/g, ''))
-            }
+            onChange={handleChange}
             onKeyDown={handleKeyDown}
             onBlur={onCommit}
             disabled={disabled}
-            placeholder={placeholder}
+            placeholder={resolvedPlaceholder}
             variant="orderSlideoutpopup"
             className={cn(
                 orderModalStyles.pillInput,

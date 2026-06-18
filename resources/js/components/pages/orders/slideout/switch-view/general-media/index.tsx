@@ -1565,7 +1565,6 @@ function GeneralMediaView({
                     editScope="socialLine"
                     allowEditInactiveRows={canAdminEditInactiveRows}
                     canEditStatus={canEditStatus}
-                    showEditIsci={false}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     isDeliverableUpdating={isDeliverableUpdating}
                     selectedRowIds={selectedRowIds}
@@ -1581,6 +1580,7 @@ function GeneralMediaView({
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
+                    onEditIsciRow={(row) => setEditIsciRow(row)}
                     isEditLineDisabled={(row) =>
                         isOrderLineItemEditDisabled(row, auth.user, userRoles)
                     }
