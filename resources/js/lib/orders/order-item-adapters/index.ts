@@ -8,6 +8,7 @@ export {
     socialCreateAdapter,
     socialUpdateAdapter,
 } from './social';
+export { radioUpdateAdapter } from './radio';
 export type {
     OrderItemBulkPatch,
     OrderItemCreateAdapter,

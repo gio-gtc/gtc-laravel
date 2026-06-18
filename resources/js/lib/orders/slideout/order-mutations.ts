@@ -1,5 +1,10 @@
 import type { OrderItemsRow } from '@/types';
 import type { ApiOrder, OrderItem } from '@/types/orders-api';
+import {
+    isBroadcastOrderItem,
+    isSocialOrderItem,
+    orderItemSpecRecord,
+} from '@/lib/orders/order-item-specifications';
 
 export function upsertOrderItem(order: ApiOrder, created: OrderItem): ApiOrder {
     const items = [...(order.order_items ?? [])];
@@ -39,5 +44,47 @@ export function replaceOrderItemInOrder(
                 'status_id' in row ? row.status_id : item.order_item_status_id,
         };
     });
+    return { ...order, order_items: items };
+}
+
+/** Merge partial specification fields onto matching order items (optimistic inline edit). */
+export function patchOrderItemSpecificationsInOrder(
+    order: ApiOrder,
+    orderItemIds: number[],
+    specifications: Record<string, unknown>,
+): ApiOrder {
+    if (orderItemIds.length === 0 || Object.keys(specifications).length === 0) {
+        return order;
+    }
+
+    const idSet = new Set(orderItemIds.map((id) => Number(id)));
+    const items = (order.order_items ?? []).map((item) => {
+        if (!idSet.has(item.id)) {
+            return item;
+        }
+
+        if (
+            item.specifiable != null &&
+            (isBroadcastOrderItem(item) || isSocialOrderItem(item))
+        ) {
+            return {
+                ...item,
+                specifiable: {
+                    ...(item.specifiable as Record<string, unknown>),
+                    ...specifications,
+                },
+            };
+        }
+
+        const existingSpecs = orderItemSpecRecord(item);
+        return {
+            ...item,
+            specifications: {
+                ...existingSpecs,
+                ...specifications,
+            },
+        };
+    });
+
     return { ...order, order_items: items };
 }

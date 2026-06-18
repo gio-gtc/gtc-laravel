@@ -129,6 +129,12 @@ export const broadcastUpdateAdapter: OrderItemUpdateAdapter<OrderItemsBroadcastR
         statusPatch: (statusId) => ({
             order_item_status_id: statusId,
         }),
+        typePatch: (type) => ({
+            specifications: { type: type.trim() },
+        }),
+        cutPatch: (cut) => ({
+            specifications: { cut: cut.trim() },
+        }),
     };
 
 export function expandBroadcastCreateDrafts(

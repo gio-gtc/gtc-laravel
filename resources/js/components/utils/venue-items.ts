@@ -194,6 +194,8 @@ export function venueItemsMediaTableRow(
     return {
         ...rest,
         duration_seconds: durationSecondsForRow,
+        spot_type,
+        cut,
         cutName: venueItemMediaLineLabel(spot_type, cut),
         assigned,
         status:

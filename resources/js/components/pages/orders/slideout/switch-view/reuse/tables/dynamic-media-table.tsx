@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
 import { EditableCellInput } from '@/components/utils/editable-table/editable-cell-input';
+import { EditableCutNameCell } from '@/components/utils/editable-table/editable-cut-name-cell';
 import { EditableCellSelect } from '@/components/utils/editable-table/editable-cell-select';
 import { durationSelectOptionsForMediaTable } from '@/components/utils/editable-table/media-duration-options';
 import { VenueItemStatusBadge } from '@/components/utils/venue-item-status-badge';
@@ -241,53 +242,30 @@ export default function MediaTable({
 
                                                 {/* Cut Name Section */}
                                                 <TableCell className="truncate">
-                                                    {/* {cellEditing ? (
-                                                        <EditableCellInput
-                                                            value={row.cutName}
+                                                    {cellEditing ? (
+                                                        <EditableCutNameCell
                                                             itemId={row.id}
-                                                            field="cutName"
-                                                            type="text"
-                                                            variant="orderSlideoutTableCells"
-                                                            onChange={
-                                                                cellEditing.onCellChange
+                                                            spotType={
+                                                                row.spot_type ??
+                                                                ''
                                                             }
-                                                            onDoubleClick={(
-                                                                id,
-                                                                field,
-                                                            ) =>
-                                                                cellEditing.onCellDoubleClick(
-                                                                    id,
-                                                                    field,
-                                                                    editScope,
-                                                                )
+                                                            cut={row.cut ?? ''}
+                                                            cellEditing={
+                                                                cellEditing
                                                             }
-                                                            onBlur={
-                                                                cellEditing.onCellBlur
+                                                            editScope={
+                                                                editScope
                                                             }
-                                                            onKeyDown={(
-                                                                e,
-                                                                id,
-                                                                field,
-                                                            ) =>
-                                                                cellEditing.onCellKeyDown(
-                                                                    e,
-                                                                    id,
-                                                                    field,
-                                                                    editScope,
-                                                                )
-                                                            }
-                                                            isEditing={cellEditing.isCellEditing(
-                                                                row.id,
-                                                                'cutName',
-                                                                editScope,
-                                                            )}
                                                             disabled={
                                                                 rowEditsLocked
                                                             }
+                                                            inactive={
+                                                                isInactiveRow
+                                                            }
                                                         />
-                                                    ) : ( */}
-                                                    {row.cutName}
-                                                    {/* )} */}
+                                                    ) : (
+                                                        row.cutName
+                                                    )}
                                                 </TableCell>
                                                 <TableCell>
                                                     {cellEditing &&

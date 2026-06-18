@@ -12,4 +12,5 @@ export {
     upsertOrderItem,
     replaceOrderItemInOrder,
     removeOrderItemFromOrder,
+    patchOrderItemSpecificationsInOrder,
 } from '@/lib/orders/slideout/order-mutations';

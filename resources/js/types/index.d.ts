@@ -275,6 +275,10 @@ export interface MediaTableRow {
     id: string | number;
     isci: string;
     cutName: string;
+    /** Broadcast/radio/social spot type (inline edit). */
+    spot_type?: string;
+    /** Broadcast/radio/social cut label (inline edit). */
+    cut?: string;
     duration_seconds: number;
     dueDate: string;
     assigned: User[];

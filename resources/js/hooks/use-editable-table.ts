@@ -56,6 +56,11 @@ interface UseEditableTableReturn<T> {
         ids: ReadonlySet<string | number>,
         patch: Partial<T>,
     ) => void;
+    /** Update multiple fields on one row without ending the active edit session. */
+    patchRowFields: (
+        itemId: number | string,
+        patch: Partial<T>,
+    ) => void;
     /** Synchronous read of latest row values (use on blur before state re-render). */
     localDataRef: React.RefObject<T[]>;
 }
@@ -83,11 +88,26 @@ export function useEditableTable<T extends object>({
     // Ref to track latest data for onChange callbacks
     const localDataRef = useRef<T[]>(data);
 
-    // Update local data when source data changes
+    // Update local data when source data changes; preserve the row being edited.
     useEffect(() => {
-        setLocalData(data);
-        localDataRef.current = data;
-    }, [data]);
+        if (!editingCell) {
+            setLocalData(data);
+            localDataRef.current = data;
+            return;
+        }
+
+        const localById = new Map(
+            localDataRef.current.map((item) => [getId(item), item] as const),
+        );
+        const merged = data.map((item) => {
+            if (getId(item) === editingCell.itemId) {
+                return localById.get(editingCell.itemId) ?? item;
+            }
+            return item;
+        });
+        setLocalData(merged);
+        localDataRef.current = merged;
+    }, [data, editingCell, getId]);
 
     // Handle double-click to start editing
     const handleDoubleClick = (
@@ -223,6 +243,19 @@ export function useEditableTable<T extends object>({
         [getId, onChange],
     );
 
+    const patchRowFields = useCallback(
+        (itemId: number | string, patch: Partial<T>) => {
+            setLocalData((prev) => {
+                const updated = prev.map((item) =>
+                    getId(item) === itemId ? { ...item, ...patch } : item,
+                );
+                localDataRef.current = updated;
+                return updated;
+            });
+        },
+        [getId],
+    );
+
     return {
         editingCell,
         localData,
@@ -235,6 +268,7 @@ export function useEditableTable<T extends object>({
         removeItem,
         startEditing,
         bulkPatchByIds,
+        patchRowFields,
         localDataRef: localDataRef as RefObject<T[]>,
     };
 }

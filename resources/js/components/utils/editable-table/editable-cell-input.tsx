@@ -1,6 +1,12 @@
 import { Input, InputVariants } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import * as React from 'react';
+import { useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react';
+
+const INPUT_VARIANT_MEASURE_CLASSES: Partial<Record<InputVariants, string>> = {
+    default: 'text-sm',
+    orderSlideoutTableCells: 'xs-gray-500-weight-600',
+    invoiceSlideout: 'xs-gray-500-weight-600',
+};
 
 interface EditableCellInputProps {
     value: string | number;
@@ -16,7 +22,7 @@ interface EditableCellInputProps {
     onDoubleClick: (itemId: number | string, field: string) => void;
     onBlur: () => void;
     onKeyDown: (
-        e: React.KeyboardEvent<HTMLInputElement>,
+        e: KeyboardEvent<HTMLInputElement>,
         itemId: number | string,
         field: string,
     ) => void;
@@ -32,6 +38,8 @@ interface EditableCellInputProps {
     /** Placeholder shown in input when value is empty. Defaults to String(emptyValue) when emptyValue is set. */
     emptyPlaceholder?: string;
     variant?: InputVariants;
+    /** When editing, size the input to measured text width × 1.2. */
+    fitContentWidth?: boolean;
 }
 
 export function EditableCellInput({
@@ -54,6 +62,7 @@ export function EditableCellInput({
     emptyValue,
     emptyPlaceholder,
     variant = 'default',
+    fitContentWidth = false,
 }: EditableCellInputProps) {
     const isEmpty =
         emptyValue !== undefined &&
@@ -67,7 +76,7 @@ export function EditableCellInput({
         onChange(itemId, field, newValue);
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (disabled) return;
         onKeyDown(e, itemId, field);
     };
@@ -94,26 +103,63 @@ export function EditableCellInput({
         center: 'text-center',
     };
 
+    const measureRef = useRef<HTMLSpanElement>(null);
+    const [fitWidthPx, setFitWidthPx] = useState<number | undefined>();
+    const measureText =
+        inputValue === '' ? (inputPlaceholder ?? '') : String(inputValue);
+
+    useLayoutEffect(() => {
+        if (!isEditing || !fitContentWidth) {
+            setFitWidthPx(undefined);
+            return;
+        }
+        const measured = measureRef.current?.offsetWidth ?? 0;
+        const padded = Math.ceil(measured * 1.05);
+        setFitWidthPx(Math.max(padded, 24));
+    }, [fitContentWidth, isEditing, measureText, variant]);
+
     if (isEditing && !disabled) {
         return (
-            <Input
-                type={type}
-                value={inputValue}
-                placeholder={inputPlaceholder}
-                onChange={handleChange}
-                onBlur={onBlur}
-                onKeyDown={handleKeyDown}
-                autoFocus
-                min={min}
-                step={step}
-                disabled={disabled}
-                variant={variant}
-                className={cn(
-                    'w-full min-w-[60px] p-0.5',
-                    alignmentClasses[align],
-                    className,
-                )}
-            />
+            <span className="relative inline-flex max-w-full min-w-0">
+                {fitContentWidth ? (
+                    <span
+                        ref={measureRef}
+                        aria-hidden
+                        className={cn(
+                            'pointer-events-none invisible absolute px-2.5 py-1 whitespace-pre',
+                            INPUT_VARIANT_MEASURE_CLASSES[variant],
+                            alignmentClasses[align],
+                        )}
+                    >
+                        {measureText || '\u00a0'}
+                    </span>
+                ) : null}
+                <Input
+                    type={type}
+                    value={inputValue}
+                    placeholder={inputPlaceholder}
+                    onChange={handleChange}
+                    onBlur={onBlur}
+                    onKeyDown={handleKeyDown}
+                    autoFocus
+                    min={min}
+                    step={step}
+                    disabled={disabled}
+                    variant={variant}
+                    style={
+                        fitContentWidth && fitWidthPx
+                            ? { width: fitWidthPx }
+                            : undefined
+                    }
+                    className={cn(
+                        fitContentWidth
+                            ? 'w-auto min-w-[24px] p-0.5'
+                            : 'w-full min-w-[60px] p-0.5',
+                        alignmentClasses[align],
+                        className,
+                    )}
+                />
+            </span>
         );
     }
 

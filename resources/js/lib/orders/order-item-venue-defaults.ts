@@ -31,28 +31,39 @@ export function defaultBroadcastSpotType(
 
 export function defaultAudioSpotType(
     specs: OrderItemSpecRecord,
-): AudioSpotType {
+): AudioSpotType | string {
     const type = specString(specs, 'type');
     if (BROADCAST_SPOT_TYPES.includes(type as AudioSpotType)) {
         return type as AudioSpotType;
+    }
+    if (type.trim() !== '') {
+        return type;
     }
     return 'Generic';
 }
 
 export function defaultSocialSpotType(
     specs: OrderItemSpecRecord,
-): SocialVideoLayoutType {
+): SocialVideoLayoutType | string {
     const type = specString(specs, 'type');
     if (SOCIAL_VIDEO_TYPE_OPTIONS.includes(type as SocialVideoLayoutType)) {
         return type as SocialVideoLayoutType;
     }
+    if (type.trim() !== '') {
+        return type;
+    }
     return 'Social - 16:9';
 }
 
-export function defaultSocialCut(specs: OrderItemSpecRecord): SocialCutOption {
+export function defaultSocialCut(
+    specs: OrderItemSpecRecord,
+): SocialCutOption | string {
     const cut = specString(specs, 'cut');
     if (SOCIAL_CUT_OPTIONS.includes(cut as SocialCutOption)) {
         return cut as SocialCutOption;
+    }
+    if (cut.trim() !== '') {
+        return cut;
     }
     return 'On Sale Now';
 }

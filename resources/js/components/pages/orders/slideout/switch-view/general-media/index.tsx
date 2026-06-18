@@ -8,6 +8,7 @@ import {
 import { buildOrderItemStatusSelectOptions } from '@/components/utils/editable-table/venue-item-status-options';
 import {
     getAssignedUsersForVenueItem,
+    venueItemMediaLineLabel,
     venueItemStatusIdToLabel,
     venueItemStatusLabelToId,
     venueItemsArtTableRow,
@@ -20,9 +21,11 @@ import { isGtcStaffUser } from '@/lib/user-organisation';
 import {
     broadcastCreateAdapter,
     broadcastUpdateAdapter,
+    radioUpdateAdapter,
     socialCreateAdapter,
     socialUpdateAdapter,
 } from '@/lib/orders/order-item-adapters';
+import type { OrderItemUpdateAdapter } from '@/lib/orders/order-item-adapters/types';
 import { validateSocialRowSpecifications } from '@/lib/orders/order-item-adapters/social';
 import {
     isInlineDurationUnchanged,
@@ -63,6 +66,7 @@ import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { plainTextToChatDoc } from '@/lib/chat-utils';
 import { resolveSlideoutCatalog } from '@/lib/orders/slideout-catalog-defaults';
+import { patchOrderItemSpecificationsInOrder } from '@/lib/orders/slideout/order-mutations';
 import {
     OrderItemsArtRow,
     OrderItemsBroadcastRadioSocialRow,
@@ -80,7 +84,7 @@ import {
 } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { format, isValid, parse, parseISO } from 'date-fns';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState, type RefObject } from 'react';
 import { toast } from 'react-toastify';
 import { ChatThread } from '../reuse/chat';
 import BulkEditAssignedModal from '../reuse/modals/bulk-edit-assigned-modal';
@@ -125,6 +129,125 @@ function tableDueDateDisplayToIso(display: string): string | undefined {
     const d = parse(trimmed, 'M/d/yy', new Date());
     if (!isValid(d)) return undefined;
     return format(d, 'yyyy-MM-dd');
+}
+
+function mediaLineUpdateAdapterForScope(
+    tableScope: 'broadcast' | 'socialLine' | 'radio',
+): Pick<OrderItemUpdateAdapter<OrderItemsBroadcastRow>, 'typePatch' | 'cutPatch'> {
+    switch (tableScope) {
+        case 'broadcast':
+            return broadcastUpdateAdapter;
+        case 'socialLine':
+            return socialUpdateAdapter;
+        case 'radio':
+            return radioUpdateAdapter;
+    }
+}
+
+function createMediaLineCellChangeHandler(
+    handleCellChange: (
+        itemId: number | string,
+        field: string,
+        value: string | number,
+    ) => void,
+    patchRowFields: (
+        itemId: number | string,
+        patch: Partial<MediaTableRow>,
+    ) => void,
+    dataRef: RefObject<MediaTableRow[]>,
+) {
+    return (
+        itemId: number | string,
+        field: string,
+        value: string | number,
+    ) => {
+        if (field === 'spot_type' || field === 'cut') {
+            const row = dataRef.current.find(
+                (r) => String(r.id) === String(itemId),
+            );
+            if (!row) {
+                return;
+            }
+            const spot_type =
+                field === 'spot_type' ? String(value) : (row.spot_type ?? '');
+            const cut = field === 'cut' ? String(value) : (row.cut ?? '');
+            patchRowFields(itemId, {
+                spot_type,
+                cut,
+                cutName: venueItemMediaLineLabel(spot_type, cut),
+            });
+            return;
+        }
+        handleCellChange(itemId, field, value);
+    };
+}
+
+function createMediaLineCellKeyDownHandler(
+    handleCellKeyDown: (
+        e: React.KeyboardEvent<HTMLElement>,
+        itemId: number | string,
+        field: string,
+        scope?: string,
+    ) => void,
+    patchRowFields: (
+        itemId: number | string,
+        patch: Partial<MediaTableRow>,
+    ) => void,
+    dataRef: RefObject<MediaTableRow[]>,
+) {
+    return (
+        e: React.KeyboardEvent<HTMLElement>,
+        itemId: number | string,
+        field: string,
+        scope?: string,
+    ) => {
+        handleCellKeyDown(e, itemId, field, scope);
+        if (
+            e.key === 'Escape' &&
+            (field === 'spot_type' || field === 'cut')
+        ) {
+            queueMicrotask(() => {
+                const row = dataRef.current.find(
+                    (r) => String(r.id) === String(itemId),
+                );
+                if (!row) {
+                    return;
+                }
+                patchRowFields(itemId, {
+                    cutName: venueItemMediaLineLabel(
+                        row.spot_type ?? '',
+                        row.cut ?? '',
+                    ),
+                });
+            });
+        }
+    };
+}
+
+function applyOptimisticMediaLineBulkPatch(
+    bulkTargetIds: number[],
+    field: 'spot_type' | 'cut',
+    value: string,
+    dataRef: RefObject<MediaTableRow[]>,
+    patchRowFields: (
+        itemId: number | string,
+        patch: Partial<MediaTableRow>,
+    ) => void,
+) {
+    const idSet = new Set(bulkTargetIds.map((id) => String(id)));
+    for (const row of dataRef.current) {
+        if (!idSet.has(String(row.id))) {
+            continue;
+        }
+        const spot_type =
+            field === 'spot_type' ? value : (row.spot_type ?? '');
+        const cut = field === 'cut' ? value : (row.cut ?? '');
+        patchRowFields(row.id, {
+            spot_type,
+            cut,
+            cutName: venueItemMediaLineLabel(spot_type, cut),
+        });
+    }
 }
 
 type RevisionTargetRow = MediaTableRow | StaticAssetsTableRow;
@@ -509,6 +632,7 @@ function GeneralMediaView({
         handleCellKeyDown: handleBroadcastCellKeyDown,
         isEditing: isBroadcastCellEditing,
         bulkPatchByIds: bulkPatchBroadcastRows,
+        patchRowFields: patchBroadcastRowFields,
         localDataRef: broadcastLocalDataRef,
     } = useEditableTable<MediaTableRow>({
         data: venueBroadcastWithCallbacks,
@@ -524,6 +648,7 @@ function GeneralMediaView({
         handleCellKeyDown: handleSocialLineCellKeyDown,
         isEditing: isSocialLineCellEditing,
         bulkPatchByIds: bulkPatchSocialLineRows,
+        patchRowFields: patchSocialLineRowFields,
         localDataRef: socialLineLocalDataRef,
     } = useEditableTable<MediaTableRow>({
         data: venueSocialLineWithCallbacks,
@@ -539,6 +664,7 @@ function GeneralMediaView({
         handleCellKeyDown: handleRadioCellKeyDown,
         isEditing: isRadioCellEditing,
         bulkPatchByIds: bulkPatchRadioRows,
+        patchRowFields: patchRadioRowFields,
         localDataRef: radioLocalDataRef,
     } = useEditableTable<MediaTableRow>({
         data: venueRadioWithCallbacks,
@@ -947,6 +1073,17 @@ function GeneralMediaView({
                         field,
                         value: row.status,
                     };
+                } else if (field === 'spot_type' || field === 'cut') {
+                    const mediaRow = row as MediaTableRow;
+                    inlineOriginalRef.current = {
+                        itemId,
+                        field,
+                        value: String(
+                            field === 'spot_type'
+                                ? (mediaRow.spot_type ?? '')
+                                : (mediaRow.cut ?? ''),
+                        ),
+                    };
                 }
             }
             handleDoubleClick(itemId, field, scope);
@@ -964,24 +1101,28 @@ function GeneralMediaView({
                     dataRef: broadcastLocalDataRef,
                     handleBlur: handleBroadcastCellBlur,
                     handleChange: handleBroadcastCellChange,
+                    patchRowFields: patchBroadcastRowFields,
                 },
                 socialLine: {
                     editing: socialLineEditingCell,
                     dataRef: socialLineLocalDataRef,
                     handleBlur: handleSocialLineCellBlur,
                     handleChange: handleSocialLineCellChange,
+                    patchRowFields: patchSocialLineRowFields,
                 },
                 radio: {
                     editing: radioEditingCell,
                     dataRef: radioLocalDataRef,
                     handleBlur: handleRadioCellBlur,
                     handleChange: handleRadioCellChange,
+                    patchRowFields: patchRadioRowFields,
                 },
                 static: {
                     editing: staticEditingCell,
                     dataRef: staticLocalDataRef,
                     handleBlur: handleStaticCellBlur,
                     handleChange: handleStaticCellChange,
+                    patchRowFields: undefined,
                 },
             } as const;
 
@@ -1077,6 +1218,91 @@ function GeneralMediaView({
                 return;
             }
 
+            if (editing.field === 'spot_type' || editing.field === 'cut') {
+                if (tableScope === 'static') {
+                    cellPersistGuardRef.current = null;
+                    return;
+                }
+                if (!canEditOrderLineItem(auth.user, row, userRoles)) {
+                    cellPersistGuardRef.current = null;
+                    return;
+                }
+                const mediaRow = row as MediaTableRow;
+                const currentValue =
+                    editing.field === 'spot_type'
+                        ? (mediaRow.spot_type ?? '')
+                        : (mediaRow.cut ?? '');
+                const original = inlineOriginalRef.current;
+                if (
+                    original?.itemId === row.id &&
+                    original.field === editing.field &&
+                    String(original.value) === currentValue
+                ) {
+                    inlineOriginalRef.current = null;
+                    cellPersistGuardRef.current = null;
+                    return;
+                }
+                const lineAdapter = mediaLineUpdateAdapterForScope(tableScope);
+                const patch =
+                    editing.field === 'spot_type'
+                        ? lineAdapter.typePatch(currentValue)
+                        : lineAdapter.cutPatch(currentValue);
+                const selectedIds = [...selectedRowIds];
+                const bulkTargetIds =
+                    selectedIds.length > 1 && selectedIds.includes(row.id)
+                        ? selectedIds.map((id) => Number(id))
+                        : [Number(row.id)];
+                const result = await commitOrderItemBulkWrite(
+                    bulkTargetIds,
+                    patch,
+                );
+                if (result.ok) {
+                    if (ctx.patchRowFields) {
+                        applyOptimisticMediaLineBulkPatch(
+                            bulkTargetIds,
+                            editing.field,
+                            currentValue,
+                            ctx.dataRef,
+                            ctx.patchRowFields,
+                        );
+                    }
+                    if (openOrder) {
+                        setOpenOrder(
+                            patchOrderItemSpecificationsInOrder(
+                                openOrder,
+                                bulkTargetIds,
+                                patch.specifications ?? {},
+                            ),
+                        );
+                    }
+                } else if (
+                    !result.ok &&
+                    original?.itemId === row.id &&
+                    original.field === editing.field &&
+                    ctx.patchRowFields
+                ) {
+                    const revertedSpotType =
+                        original.field === 'spot_type'
+                            ? String(original.value)
+                            : (mediaRow.spot_type ?? '');
+                    const revertedCut =
+                        original.field === 'cut'
+                            ? String(original.value)
+                            : (mediaRow.cut ?? '');
+                    ctx.patchRowFields(row.id, {
+                        spot_type: revertedSpotType,
+                        cut: revertedCut,
+                        cutName: venueItemMediaLineLabel(
+                            revertedSpotType,
+                            revertedCut,
+                        ),
+                    });
+                }
+                inlineOriginalRef.current = null;
+                cellPersistGuardRef.current = null;
+                return;
+            }
+
             if (editing.field === 'status') {
                 if (!canEditOrderLineItemStatus(auth.user, row, userRoles)) {
                     cellPersistGuardRef.current = null;
@@ -1129,14 +1355,17 @@ function GeneralMediaView({
             broadcastLocalDataRef,
             handleBroadcastCellBlur,
             handleBroadcastCellChange,
+            patchBroadcastRowFields,
             socialLineEditingCell,
             socialLineLocalDataRef,
             handleSocialLineCellBlur,
             handleSocialLineCellChange,
+            patchSocialLineRowFields,
             radioEditingCell,
             radioLocalDataRef,
             handleRadioCellBlur,
             handleRadioCellChange,
+            patchRadioRowFields,
             staticEditingCell,
             staticLocalDataRef,
             handleStaticCellBlur,
@@ -1146,6 +1375,7 @@ function GeneralMediaView({
             userRoles,
             commitOrderItemBulkWrite,
             selectedRowIds,
+            setOpenOrder,
         ],
     );
 
@@ -1400,7 +1630,11 @@ function GeneralMediaView({
     );
 
     const sharedBroadcastCellEditing = {
-        onCellChange: handleBroadcastCellChange,
+        onCellChange: createMediaLineCellChangeHandler(
+            handleBroadcastCellChange,
+            patchBroadcastRowFields,
+            broadcastLocalDataRef,
+        ),
         onCellDoubleClick: (
             itemId: string | number,
             field: string,
@@ -1418,13 +1652,21 @@ function GeneralMediaView({
         },
         onCellKeyDown: handleTableCellKeyDownWithPersist(
             'broadcast',
-            handleBroadcastCellKeyDown,
+            createMediaLineCellKeyDownHandler(
+                handleBroadcastCellKeyDown,
+                patchBroadcastRowFields,
+                broadcastLocalDataRef,
+            ),
         ),
         isCellEditing: isBroadcastCellEditing,
     };
 
     const sharedSocialLineCellEditing = {
-        onCellChange: handleSocialLineCellChange,
+        onCellChange: createMediaLineCellChangeHandler(
+            handleSocialLineCellChange,
+            patchSocialLineRowFields,
+            socialLineLocalDataRef,
+        ),
         onCellDoubleClick: (
             itemId: string | number,
             field: string,
@@ -1442,13 +1684,21 @@ function GeneralMediaView({
         },
         onCellKeyDown: handleTableCellKeyDownWithPersist(
             'socialLine',
-            handleSocialLineCellKeyDown,
+            createMediaLineCellKeyDownHandler(
+                handleSocialLineCellKeyDown,
+                patchSocialLineRowFields,
+                socialLineLocalDataRef,
+            ),
         ),
         isCellEditing: isSocialLineCellEditing,
     };
 
     const sharedRadioCellEditing = {
-        onCellChange: handleRadioCellChange,
+        onCellChange: createMediaLineCellChangeHandler(
+            handleRadioCellChange,
+            patchRadioRowFields,
+            radioLocalDataRef,
+        ),
         onCellDoubleClick: (
             itemId: string | number,
             field: string,
@@ -1466,7 +1716,11 @@ function GeneralMediaView({
         },
         onCellKeyDown: handleTableCellKeyDownWithPersist(
             'radio',
-            handleRadioCellKeyDown,
+            createMediaLineCellKeyDownHandler(
+                handleRadioCellKeyDown,
+                patchRadioRowFields,
+                radioLocalDataRef,
+            ),
         ),
         isCellEditing: isRadioCellEditing,
     };

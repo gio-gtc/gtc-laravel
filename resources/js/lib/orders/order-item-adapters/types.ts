@@ -46,4 +46,6 @@ export interface OrderItemUpdateAdapter<TVenueRow extends OrderItemsRow> {
     rowToFullBulkPatch: (row: TVenueRow, order: ApiOrder) => OrderItemBulkPatch;
     durationPatch: (wire: number | string) => OrderItemBulkPatch;
     statusPatch: (statusId: number) => OrderItemBulkPatch;
+    typePatch: (type: string) => OrderItemBulkPatch;
+    cutPatch: (cut: string) => OrderItemBulkPatch;
 }
