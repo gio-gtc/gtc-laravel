@@ -110,6 +110,7 @@ export interface OrderItemBroadcastSpecification {
     asset_tracking?: AssetTrackingMap;
 }
 
+/** gtc-api wire shape for `App\Models\OrderItemSocialSpecs` specifiable. */
 export interface OrderItemSocialSpecification {
     id: number;
     type: string;

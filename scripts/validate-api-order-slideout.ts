@@ -177,7 +177,7 @@ const socialSpecifiableOrder: ApiOrder = {
             due_date: '2026-10-15',
             created_at: '2026-05-27T20:00:00.000000Z',
             updated_at: '2026-05-27T20:00:00.000000Z',
-            specifiable_type: 'App\\Models\\OrderItemSocialSpecification',
+            specifiable_type: 'App\\Models\\OrderItemSocialSpecs',
             specifiable: {
                 id: 1,
                 type: 'TikTok',

@@ -3,10 +3,13 @@ import {
     OrderItemApiError,
 } from '@/lib/orders/order-item-api-client';
 import { draftToPendingBroadcastRow } from '@/lib/orders/order-item-adapters/broadcast';
+import { draftToPendingSocialRow } from '@/lib/orders/order-item-adapters/social';
 import type {
     OrderItemCreateAdapter,
+    OrderItemCreateDraft,
     SequentialCreateResult,
 } from '@/lib/orders/order-item-adapters/types';
+import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
 import { upsertOrderItem } from '@/lib/orders/slideout/order-mutations';
 import type { OrderItemsRow } from '@/types';
 import type { ApiOrder } from '@/types/orders-api';
@@ -39,10 +42,22 @@ function pendingRowsForDrafts<TForm>(
     });
 
     const pendingRows: OrderItemsRow[] = drafts.map((draft) =>
-        draftToPendingBroadcastRow(draft, order.id, catalogTags),
+        draftToPendingRow(adapter, draft, order.id, catalogTags),
     );
 
     return { drafts, pendingRows };
+}
+
+function draftToPendingRow<TForm>(
+    adapter: OrderItemCreateAdapter<TForm>,
+    draft: OrderItemCreateDraft,
+    tourVenueId: number,
+    catalogTags?: string[],
+): OrderItemsRow {
+    if (adapter.categoryId === ORDER_MENU_CATEGORY_QUADRANTS.social) {
+        return draftToPendingSocialRow(draft, tourVenueId);
+    }
+    return draftToPendingBroadcastRow(draft, tourVenueId, catalogTags);
 }
 
 export async function runSequentialOrderItemCreate<TForm>(

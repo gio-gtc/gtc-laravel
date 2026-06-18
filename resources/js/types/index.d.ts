@@ -337,6 +337,8 @@ export interface MediaTableProps {
     canEditAssignees?: boolean;
     /** Staff-only — gates inline status dropdown edits. */
     canEditStatus?: boolean;
+    /** When false, hides "Edit ISCI" from the ISCI column menu (API-generated ISCI). */
+    showEditIsci?: boolean;
     /** When true for a row id, deliverables actions show an updating indicator. */
     isDeliverableUpdating?: (rowId: string | number) => boolean;
     orderItemStatusSelectOptions: { value: string; label: string }[];
@@ -476,8 +478,8 @@ export interface OrderItemsSocialRow
     type: 'social';
     spot_type: SocialVideoLayoutType;
     cut: SocialCutOption;
-    /** When set, matches add-modal card holder selection (reporting / search). */
-    card_holder?: OrderItemSocialCardHolder;
+    /** Required on API lines; catalog values or admin custom text. */
+    card_holder?: OrderItemSocialCardHolder | string;
 }
 
 export type OrderItemsBroadcastRadioSocialRow =

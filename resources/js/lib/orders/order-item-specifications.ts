@@ -14,7 +14,10 @@ import type {
 export const BROADCAST_SPECIFIABLE_TYPE =
     'App\\Models\\OrderItemBroadcastSpecification';
 
-export const SOCIAL_SPECIFIABLE_TYPE =
+export const SOCIAL_SPECIFIABLE_TYPE = 'App\\Models\\OrderItemSocialSpecs';
+
+/** @deprecated Legacy FQCN — still accepted in `isSocialOrderItem`. */
+export const SOCIAL_SPECIFIABLE_TYPE_LEGACY =
     'App\\Models\\OrderItemSocialSpecification';
 
 export type OrderItemSpecRecord = Record<string, unknown>;
@@ -35,7 +38,10 @@ export function isBroadcastOrderItem(item: OrderItem): boolean {
 }
 
 export function isSocialOrderItem(item: OrderItem): boolean {
-    if (item.specifiable_type === SOCIAL_SPECIFIABLE_TYPE) {
+    if (
+        item.specifiable_type === SOCIAL_SPECIFIABLE_TYPE ||
+        item.specifiable_type === SOCIAL_SPECIFIABLE_TYPE_LEGACY
+    ) {
         return true;
     }
     return (

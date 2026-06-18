@@ -20,7 +20,15 @@ import { isGtcStaffUser } from '@/lib/user-organisation';
 import {
     broadcastCreateAdapter,
     broadcastUpdateAdapter,
+    socialCreateAdapter,
+    socialUpdateAdapter,
 } from '@/lib/orders/order-item-adapters';
+import { validateSocialRowSpecifications } from '@/lib/orders/order-item-adapters/social';
+import {
+    isInlineDurationUnchanged,
+    isInlineStatusUnchanged,
+    rowAssigneesUnchanged,
+} from '@/lib/orders/inline-edit-noop';
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
 import {
     OrderItemApiError,
@@ -93,7 +101,9 @@ import AddBroadcastStreamingModal, {
     type AddBroadcastStreamingFormValues,
 } from './modals/add-broadcast-streaming-modal';
 import AddKeyArtStaticAssetsModal from './modals/add-key-art-static-assets-modal';
-import AddSocialVideoModal from './modals/add-social-video-modal';
+import AddSocialVideoModal, {
+    type AddSocialVideoFormValues,
+} from './modals/add-social-video-modal';
 import RevisionRequestModal from './modals/revision-request-modal';
 import { VENUE_ITEM_ART_PACKAGE_TYPES } from './modals/spot-type-cuts-options';
 import VideoPlayerModal from './modals/video-player-modal';
@@ -209,6 +219,18 @@ function GeneralMediaView({
         return slideout.venue_items.filter(
             (r): r is OrderItemsBroadcastRow =>
                 r.type === 'broadcast' &&
+                r.tour_venue_id === orderItem.orderVenue.id &&
+                !r.is_pending,
+        );
+    }, [orderItem, slideout.venue_items]);
+
+    const existingSocialRows = useMemo((): OrderItemsSocialRow[] => {
+        if (!orderItem) {
+            return [];
+        }
+        return slideout.venue_items.filter(
+            (r): r is OrderItemsSocialRow =>
+                r.type === 'social' &&
                 r.tour_venue_id === orderItem.orderVenue.id &&
                 !r.is_pending,
         );
@@ -561,6 +583,9 @@ function GeneralMediaView({
     );
     const [socialEditRow, setSocialEditRow] =
         useState<OrderItemsSocialRow | null>(null);
+    const [socialFieldErrors, setSocialFieldErrors] = useState<
+        Record<string, string[]> | undefined
+    >();
     const [radioModalMode, setRadioModalMode] = useState<'add' | 'edit'>('add');
     const [radioEditRow, setRadioEditRow] = useState<OrderItemsRadioRow | null>(
         null,
@@ -604,7 +629,23 @@ function GeneralMediaView({
         setSocialVideoModalOpen(false);
         setSocialModalMode('add');
         setSocialEditRow(null);
+        setSocialFieldErrors(undefined);
     }, []);
+
+    const handleSocialAdd = useCallback(
+        async (form: AddSocialVideoFormValues) => {
+            setSocialFieldErrors(undefined);
+            const result = await createOrderItemsFromForm(
+                socialCreateAdapter,
+                form,
+            );
+            if (result.failed && result.errors) {
+                setSocialFieldErrors(result.errors);
+            }
+            return result;
+        },
+        [createOrderItemsFromForm],
+    );
 
     const closeAudioModal = useCallback(() => {
         setAudioModalOpen(false);
@@ -656,11 +697,50 @@ function GeneralMediaView({
     );
 
     const handleSocialEditSave = useCallback(
-        (row: OrderItemsSocialRow) => {
-            replaceVenueItem(row);
+        async (row: OrderItemsSocialRow) => {
+            if (!openOrder) {
+                toast.error('Open an order before editing line items.');
+                return { failed: true };
+            }
+
+            if (!canEditOrderLineItem(auth.user, row, userRoles)) {
+                toast.error('You do not have permission to edit this line.');
+                return { failed: true };
+            }
+
+            const validation = validateSocialRowSpecifications(row);
+            if (!validation.ok) {
+                toast.error(validation.message);
+                return { failed: true };
+            }
+
+            setSocialFieldErrors(undefined);
+
+            const patch = socialUpdateAdapter.rowToFullBulkPatch(row, openOrder);
+            const result = await commitOrderItemBulkWrite(
+                [Number(row.id)],
+                patch,
+                'Line item updated.',
+            );
+
+            if (!result.ok) {
+                if (result.errors && Object.keys(result.errors).length > 0) {
+                    setSocialFieldErrors(result.errors);
+                    return { failed: true };
+                }
+                return { failed: true };
+            }
+
             closeSocialVideoModal();
+            return { failed: false };
         },
-        [replaceVenueItem, closeSocialVideoModal],
+        [
+            openOrder,
+            auth.user,
+            userRoles,
+            commitOrderItemBulkWrite,
+            closeSocialVideoModal,
+        ],
     );
 
     const handleRadioEditSave = useCallback(
@@ -933,7 +1013,10 @@ function GeneralMediaView({
             ctx.handleBlur();
 
             if (editing.field === 'duration_seconds') {
-                if (tableScope !== 'broadcast') {
+                if (
+                    tableScope !== 'broadcast' &&
+                    tableScope !== 'socialLine'
+                ) {
                     cellPersistGuardRef.current = null;
                     return;
                 }
@@ -946,9 +1029,30 @@ function GeneralMediaView({
                 const durationWire =
                     mediaRow.duration_wire ??
                     String(mediaRow.duration_seconds);
+                if (
+                    original?.itemId === row.id &&
+                    original.field === 'duration_seconds' &&
+                    isInlineDurationUnchanged(
+                        String(original.value),
+                        durationWire,
+                    )
+                ) {
+                    inlineOriginalRef.current = null;
+                    cellPersistGuardRef.current = null;
+                    return;
+                }
+                const durationAdapter =
+                    tableScope === 'socialLine'
+                        ? socialUpdateAdapter
+                        : broadcastUpdateAdapter;
+                const selectedIds = [...selectedRowIds];
+                const bulkTargetIds =
+                    selectedIds.length > 1 && selectedIds.includes(row.id)
+                        ? selectedIds.map((id) => Number(id))
+                        : [Number(row.id)];
                 const result = await commitOrderItemBulkWrite(
-                    [Number(row.id)],
-                    broadcastUpdateAdapter.durationPatch(durationWire),
+                    bulkTargetIds,
+                    durationAdapter.durationPatch(durationWire),
                 );
                 if (
                     !result.ok &&
@@ -988,10 +1092,26 @@ function GeneralMediaView({
                     cellPersistGuardRef.current = null;
                     return;
                 }
+                const statusAdapter =
+                    tableScope === 'socialLine'
+                        ? socialUpdateAdapter
+                        : broadcastUpdateAdapter;
                 const original = inlineOriginalRef.current;
+                if (
+                    original?.itemId === row.id &&
+                    original.field === 'status' &&
+                    isInlineStatusUnchanged(
+                        String(original.value),
+                        row.status,
+                    )
+                ) {
+                    inlineOriginalRef.current = null;
+                    cellPersistGuardRef.current = null;
+                    return;
+                }
                 const result = await commitOrderItemBulkWrite(
                     bulkTargetIds,
-                    broadcastUpdateAdapter.statusPatch(statusId),
+                    statusAdapter.statusPatch(statusId),
                 );
                 if (
                     !result.ok &&
@@ -1079,7 +1199,17 @@ function GeneralMediaView({
                 return;
             }
 
-            const orderItemIds = selectedRows.map((row) => Number(row.id));
+            const rowsToUpdate = selectedRows.filter((row) => {
+                const currentIso = tableDueDateDisplayToIso(row.dueDate);
+                return currentIso !== dueDateIso;
+            });
+
+            if (rowsToUpdate.length === 0) {
+                setDueDateModalOpen(false);
+                return;
+            }
+
+            const orderItemIds = rowsToUpdate.map((row) => Number(row.id));
             const result = await commitOrderItemBulkWrite(
                 orderItemIds,
                 { due_date: dueDateIso },
@@ -1134,9 +1264,19 @@ function GeneralMediaView({
             }
 
             const userIds = assigned.map((user) => user.id);
+            const rowsToUpdate = selectedRows.filter(
+                (row) => !rowAssigneesUnchanged(row.assigned, userIds),
+            );
+
+            if (rowsToUpdate.length === 0) {
+                setAssigneeSaveError(undefined);
+                setAssignedModalOpen(false);
+                return;
+            }
+
             const results = await Promise.allSettled(
-                [...selectedRowIds].map((rowId) =>
-                    syncOrderItemAssignees(Number(rowId), userIds),
+                rowsToUpdate.map((row) =>
+                    syncOrderItemAssignees(Number(row.id), userIds),
                 ),
             );
 
@@ -1424,6 +1564,8 @@ function GeneralMediaView({
                     cellEditing={sharedSocialLineCellEditing}
                     editScope="socialLine"
                     allowEditInactiveRows={canAdminEditInactiveRows}
+                    canEditStatus={canEditStatus}
+                    showEditIsci={false}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     isDeliverableUpdating={isDeliverableUpdating}
                     selectedRowIds={selectedRowIds}
@@ -1439,9 +1581,20 @@ function GeneralMediaView({
                     onUploadRow={(row) =>
                         onOpenAttachModal?.({ rowId: row.id, isci: row.isci })
                     }
-                    onEditIsciRow={(row) => setEditIsciRow(row)}
                     isEditLineDisabled={(row) =>
                         isOrderLineItemEditDisabled(row, auth.user, userRoles)
+                    }
+                    canRemoveFromCart={
+                        apiSlideoutOrderId
+                            ? isMediaTableRowStillInCart
+                            : undefined
+                    }
+                    onRemoveFromCart={
+                        apiSlideoutOrderId
+                            ? (row) => {
+                                  void removeOrderItemFromCart(Number(row.id));
+                              }
+                            : undefined
                     }
                     onEditLineInModal={(row) => {
                         const raw = slideout.venue_items.find(
@@ -1627,6 +1780,9 @@ function GeneralMediaView({
                 mode={socialModalMode}
                 initialVenueRow={socialEditRow ?? undefined}
                 onEditSave={handleSocialEditSave}
+                onAdd={handleSocialAdd}
+                fieldErrors={socialFieldErrors}
+                existingSocialRows={existingSocialRows}
                 venue_item_language={slideout.venue_item_language}
             />
             <AddAudioModal

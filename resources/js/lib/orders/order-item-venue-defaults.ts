@@ -59,16 +59,17 @@ export function defaultSocialCut(specs: OrderItemSpecRecord): SocialCutOption {
 
 export function defaultSocialCardHolder(
     specs: OrderItemSpecRecord,
-): OrderItemSocialCardHolder | undefined {
+): string | undefined {
     const holder = specString(specs, 'card_holder');
-    if (
-        VENUE_ITEM_SOCIAL_CARD_HOLDERS.includes(
-            holder as OrderItemSocialCardHolder,
-        )
-    ) {
-        return holder as OrderItemSocialCardHolder;
-    }
-    return undefined;
+    return holder || undefined;
+}
+
+export function isKnownSocialCardHolder(
+    value: string,
+): value is OrderItemSocialCardHolder {
+    return VENUE_ITEM_SOCIAL_CARD_HOLDERS.includes(
+        value as OrderItemSocialCardHolder,
+    );
 }
 
 export function defaultArtPackage(

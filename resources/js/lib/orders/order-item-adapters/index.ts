@@ -3,6 +3,11 @@ export {
     broadcastUpdateAdapter,
     draftToPendingBroadcastRow,
 } from './broadcast';
+export {
+    draftToPendingSocialRow,
+    socialCreateAdapter,
+    socialUpdateAdapter,
+} from './social';
 export type {
     OrderItemBulkPatch,
     OrderItemCreateAdapter,

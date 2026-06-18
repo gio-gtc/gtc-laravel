@@ -59,6 +59,7 @@ export default function MediaTable({
     onBulkEditAssignedDoubleClick,
     canEditAssignees = false,
     canEditStatus = false,
+    showEditIsci = true,
     isDeliverableUpdating,
     orderItemStatusSelectOptions,
 }: MediaTableProps) {
@@ -191,6 +192,7 @@ export default function MediaTable({
                                                                     Details
                                                                 </DropdownMenuItem>
                                                             )}
+                                                            {showEditIsci && (
                                                             <DropdownMenuItem
                                                                 disabled={
                                                                     rowEditsLocked
@@ -203,6 +205,7 @@ export default function MediaTable({
                                                             >
                                                                 Edit ISCI
                                                             </DropdownMenuItem>
+                                                            )}
                                                             {onRemoveFromCart &&
                                                             canRemoveFromCart?.(
                                                                 row,
@@ -288,7 +291,9 @@ export default function MediaTable({
                                                 </TableCell>
                                                 <TableCell>
                                                     {cellEditing &&
-                                                    editScope === 'broadcast' ? (
+                                                    (editScope === 'broadcast' ||
+                                                        editScope ===
+                                                            'socialLine') ? (
                                                         <EditableCellInput
                                                             variant="orderSlideoutTableCells"
                                                             type="number"
@@ -444,7 +449,9 @@ export default function MediaTable({
                                                             }
                                                         />
                                                     ) : editScope ===
-                                                      'broadcast' ? (
+                                                          'broadcast' ||
+                                                      editScope ===
+                                                          'socialLine' ? (
                                                         durationDisplayLabel(
                                                             row.duration_wire ??
                                                                 String(
