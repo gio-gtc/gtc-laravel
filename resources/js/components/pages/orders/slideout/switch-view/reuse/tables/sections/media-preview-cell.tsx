@@ -1,4 +1,5 @@
 import { AudioLines, Link, PlayIcon } from 'lucide-react';
+import type { MouseEvent } from 'react';
 
 export type MediaPreviewKind = 'video' | 'audio';
 
@@ -7,6 +8,12 @@ type MediaPreviewCellProps = {
     visible: boolean;
     onPreviewClick?: (iconIndex: number) => void;
 };
+
+const columnShieldProps = {
+    'data-slideout-column-shield': true,
+    onMouseDown: (e: MouseEvent<HTMLDivElement>) => e.preventDefault(),
+    onClick: (e: MouseEvent<HTMLDivElement>) => e.stopPropagation(),
+} as const;
 
 export function MediaPreviewCell({
     kind,
@@ -19,7 +26,10 @@ export function MediaPreviewCell({
 
     if (kind === 'audio') {
         return (
-            <div className="flex items-center justify-center gap-2">
+            <div
+                {...columnShieldProps}
+                className="flex items-center justify-center gap-2"
+            >
                 <button
                     type="button"
                     className="cursor-pointer text-gray-400 hover:text-gray-900"
@@ -35,7 +45,10 @@ export function MediaPreviewCell({
     }
 
     return (
-        <div className="flex items-center justify-center gap-2 text-gray-400">
+        <div
+            {...columnShieldProps}
+            className="flex items-center justify-center gap-2 text-gray-400"
+        >
             <button
                 type="button"
                 className="cursor-pointer hover:text-gray-900"

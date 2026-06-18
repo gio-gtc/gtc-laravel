@@ -112,6 +112,7 @@ export function ApprovalButtons({
                         className={cn(
                             'green-400-hover size-4 cursor-pointer rounded-full border-2',
                         )}
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <Check className="size-3" strokeWidth={3} />
                     </Button>
@@ -259,6 +260,7 @@ export function DownloadButtons({
                         variant="ghost"
                         size="icon"
                         className="green-400-hover size-5.5 cursor-pointer rounded-full"
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <CloudDownloadIcon className="size-[24px]" />
                     </Button>
@@ -298,36 +300,48 @@ export function DeliverablesCell({
     deliverables,
     isUpdating = false,
 }: DeliverablesCellProps) {
+    const shieldProps = {
+        'data-slideout-column-shield': true,
+        onMouseDown: (e: MouseEvent<HTMLDivElement>) => e.preventDefault(),
+        onClick: (e: MouseEvent<HTMLDivElement>) => e.stopPropagation(),
+    } as const;
+
     if (status === 'Client Review') {
         return (
-            <ApprovalButtons
-                onRevise={deliverables?.onRevise}
-                onApprove={deliverables?.onApprove}
-                isUpdating={isUpdating}
-            />
+            <div {...shieldProps}>
+                <ApprovalButtons
+                    onRevise={deliverables?.onRevise}
+                    onApprove={deliverables?.onApprove}
+                    isUpdating={isUpdating}
+                />
+            </div>
         );
     }
 
     if (status === 'Out For Delivery') {
         if (deliverables?.downloadVariant === 'broadcast') {
             return (
-                <DownloadButtons
-                    onRevise={deliverables?.onRevise}
-                    onReject={deliverables?.onReject}
-                    onApprove={deliverables?.onApprove}
-                    onDownload={deliverables?.onDownload}
-                    isUpdating={isUpdating}
-                />
+                <div {...shieldProps}>
+                    <DownloadButtons
+                        onRevise={deliverables?.onRevise}
+                        onReject={deliverables?.onReject}
+                        onApprove={deliverables?.onApprove}
+                        onDownload={deliverables?.onDownload}
+                        isUpdating={isUpdating}
+                    />
+                </div>
             );
         }
 
         return (
-            <SimpleDownloadButtons
-                onRevise={deliverables?.onRevise}
-                onReject={deliverables?.onReject}
-                onDownload={() => deliverables?.onDownload?.('single')}
-                isUpdating={isUpdating}
-            />
+            <div {...shieldProps}>
+                <SimpleDownloadButtons
+                    onRevise={deliverables?.onRevise}
+                    onReject={deliverables?.onReject}
+                    onDownload={() => deliverables?.onDownload?.('single')}
+                    isUpdating={isUpdating}
+                />
+            </div>
         );
     }
 

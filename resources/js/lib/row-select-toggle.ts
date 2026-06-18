@@ -1,7 +1,7 @@
 import type { MouseEvent } from 'react';
 
 const IGNORE_SELECTOR =
-    'button, a, input, textarea, select, [role="menuitem"]';
+    'button, a, input, textarea, select, [role="menuitem"], [data-slideout-column-shield]';
 
 export function toggleRowSelectionOnRowClick(
     e: MouseEvent<HTMLTableRowElement>,
