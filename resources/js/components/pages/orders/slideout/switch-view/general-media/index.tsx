@@ -270,15 +270,32 @@ function buildDeliverableCallbacks(
     onApprove: ((row: RevisionTargetRow) => void) | undefined,
     row: RevisionTargetRow,
     tableName: string,
+    downloadVariant: 'broadcast' | 'simple',
 ): MediaTableRow['deliverables'] | undefined {
     if (
         resolvedStatus === 'Client Review' ||
         resolvedStatus === 'Out For Delivery'
     ) {
+        const isci =
+            'isci' in row && typeof row.isci === 'string' ? row.isci : '';
+
         return {
             onRevise: () => openRevision(row, tableName),
             ...(resolvedStatus === 'Client Review' && onApprove
                 ? { onApprove: () => onApprove(row) }
+                : {}),
+            ...(resolvedStatus === 'Out For Delivery'
+                ? {
+                      downloadVariant,
+                      onDownload:
+                          downloadVariant === 'broadcast'
+                              ? (optionId: string) => {
+                                    console.log(optionId, isci);
+                                }
+                              : (_optionId: string) => {
+                                    console.log(isci);
+                                },
+                  }
                 : {}),
         };
     }
@@ -498,6 +515,8 @@ function GeneralMediaView({
             const canApprove =
                 resolvedStatus === 'Client Review' &&
                 canApproveOrderItemDeliverable(auth.user, mediaRow, userRoles);
+            const downloadVariant =
+                row.type === 'broadcast' ? 'broadcast' : 'simple';
             return {
                 ...mediaRow,
                 status: resolvedStatus,
@@ -508,6 +527,7 @@ function GeneralMediaView({
                           canApprove ? handleApproveDeliverable : undefined,
                           mediaRow,
                           tableName,
+                          downloadVariant,
                       )
                     : undefined,
             };
@@ -607,6 +627,7 @@ function GeneralMediaView({
                               canApprove ? handleApproveDeliverable : undefined,
                               rowForRevision,
                               'Key Art & Static Assets',
+                              'simple',
                           )
                         : undefined,
                 };

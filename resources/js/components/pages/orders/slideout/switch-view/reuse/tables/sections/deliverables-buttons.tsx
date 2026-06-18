@@ -137,6 +137,71 @@ export interface DownloadButtonsProps {
     isUpdating?: boolean;
 }
 
+export interface SimpleDownloadButtonsProps {
+    onRevise?: () => void;
+    onReject?: () => void;
+    onDownload?: () => void;
+    isUpdating?: boolean;
+}
+
+export function SimpleDownloadButtons({
+    onRevise,
+    onReject,
+    onDownload,
+    isUpdating = false,
+}: SimpleDownloadButtonsProps) {
+    if (isUpdating) {
+        return (
+            <div
+                className="flex items-center justify-center gap-2 md:gap-0.5"
+                aria-busy="true"
+                aria-label="Updating status"
+            >
+                <LoadingDots className="text-muted-foreground" />
+            </div>
+        );
+    }
+
+    const handleReviseSelect = (e: Event) => {
+        e.stopPropagation();
+        onRevise?.();
+    };
+
+    return (
+        <div className="flex items-center justify-center gap-2 md:gap-0.5">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="red-400-hover size-5.5 cursor-pointer rounded-full"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <RotateCwIcon className="size-[24px]" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-[7rem]">
+                    <DropdownMenuItem onSelect={handleReviseSelect}>
+                        Revise
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>Cancel</DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+            <Button
+                variant="ghost"
+                size="icon"
+                className="green-400-hover size-5.5 cursor-pointer rounded-full"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onDownload?.();
+                }}
+            >
+                <CloudDownloadIcon className="size-[24px]" />
+            </Button>
+        </div>
+    );
+}
+
 export function DownloadButtons({
     onRevise,
     onReject,
@@ -222,6 +287,8 @@ export interface DeliverablesCellProps {
         onRevise?: () => void;
         onApprove?: () => void;
         onDownload?: (optionId: string) => void;
+        /** Broadcast uses multi-format download menu; other tables use a single download action. */
+        downloadVariant?: 'broadcast' | 'simple';
     };
     isUpdating?: boolean;
 }
@@ -242,12 +309,23 @@ export function DeliverablesCell({
     }
 
     if (status === 'Out For Delivery') {
+        if (deliverables?.downloadVariant === 'broadcast') {
+            return (
+                <DownloadButtons
+                    onRevise={deliverables?.onRevise}
+                    onReject={deliverables?.onReject}
+                    onApprove={deliverables?.onApprove}
+                    onDownload={deliverables?.onDownload}
+                    isUpdating={isUpdating}
+                />
+            );
+        }
+
         return (
-            <DownloadButtons
+            <SimpleDownloadButtons
                 onRevise={deliverables?.onRevise}
                 onReject={deliverables?.onReject}
-                onApprove={deliverables?.onApprove}
-                onDownload={deliverables?.onDownload}
+                onDownload={() => deliverables?.onDownload?.('single')}
                 isUpdating={isUpdating}
             />
         );

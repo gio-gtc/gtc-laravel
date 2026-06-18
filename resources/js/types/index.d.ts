@@ -296,6 +296,8 @@ export interface MediaTableRow {
         onRevise?: () => void;
         onApprove?: () => void;
         onDownload?: (optionId: string) => void;
+        /** Broadcast uses multi-format download menu; other tables use a single download action. */
+        downloadVariant?: 'broadcast' | 'simple';
     };
     /** ISO 8601 UTC — used for General Media sort by created date */
     created_date: string;
@@ -365,6 +367,8 @@ export interface StaticAssetsTableRow {
         onRevise?: () => void;
         onApprove?: () => void;
         onDownload?: (optionId: string) => void;
+        /** Broadcast uses multi-format download menu; other tables use a single download action. */
+        downloadVariant?: 'broadcast' | 'simple';
     };
     /** ISO 8601 UTC — used for General Media sort by created date */
     created_date: string;
