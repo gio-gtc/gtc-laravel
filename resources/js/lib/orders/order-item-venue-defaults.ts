@@ -3,8 +3,10 @@ import {
     SOCIAL_CUT_OPTIONS,
     SOCIAL_VIDEO_TYPE_OPTIONS,
     VENUE_ITEM_ART_PACKAGE_TYPES,
+    VENUE_ITEM_SOCIAL_CARD_HOLDERS,
     type AudioSpotType,
     type BroadcastSpotType,
+    type OrderItemSocialCardHolder,
     type SocialCutOption,
     type SocialVideoLayoutType,
     type VenueItemArtPackageType,
@@ -53,6 +55,20 @@ export function defaultSocialCut(specs: OrderItemSpecRecord): SocialCutOption {
         return cut as SocialCutOption;
     }
     return 'On Sale Now';
+}
+
+export function defaultSocialCardHolder(
+    specs: OrderItemSpecRecord,
+): OrderItemSocialCardHolder | undefined {
+    const holder = specString(specs, 'card_holder');
+    if (
+        VENUE_ITEM_SOCIAL_CARD_HOLDERS.includes(
+            holder as OrderItemSocialCardHolder,
+        )
+    ) {
+        return holder as OrderItemSocialCardHolder;
+    }
+    return undefined;
 }
 
 export function defaultArtPackage(

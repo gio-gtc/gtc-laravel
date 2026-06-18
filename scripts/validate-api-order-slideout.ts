@@ -164,4 +164,54 @@ const afterPartial = apiOrderToLegacySlideout(mergedOrder);
 assert(afterPartial.venueItem.venue?.name === 'SoFi Stadium', 'slideout venue after merge');
 assert(afterPartial.tour.name === 'Eras Tour 2026', 'slideout tour after merge');
 
+const socialSpecifiableOrder: ApiOrder = {
+    ...sampleOrder,
+    order_items: [
+        {
+            id: 200,
+            order_id: 1,
+            order_menu_item_id: 4,
+            order_item_status_id: 1,
+            locked_price: '150.00',
+            status: 'Still In Cart',
+            due_date: '2026-10-15',
+            created_at: '2026-05-27T20:00:00.000000Z',
+            updated_at: '2026-05-27T20:00:00.000000Z',
+            specifiable_type: 'App\\Models\\OrderItemSocialSpecification',
+            specifiable: {
+                id: 1,
+                type: 'TikTok',
+                cut: 'Pre Sale',
+                duration_seconds: '30',
+                language: 'English',
+                isci: 'GTC000200',
+                card_holder: 'Amex',
+            },
+            root_order_item_id: null,
+            revision_number: 1,
+            supersedes_order_item_id: null,
+            invoice_line_id: null,
+            order_menu_item: {
+                id: 4,
+                name: '15s Social Teaser',
+                order_menu_category_id: 2,
+            },
+            assignees: [],
+        },
+    ],
+};
+
+const socialPayload = apiOrderToLegacySlideout(socialSpecifiableOrder);
+const socialRow = socialPayload.catalogExtensions.venue_items?.[0];
+assert(socialRow?.type === 'social', 'social specifiable row type');
+if (socialRow?.type !== 'social') {
+    throw new Error('expected social row');
+}
+assert(socialRow.spot_type === 'TikTok', 'social specifiable spot_type');
+assert(socialRow.cut === 'Pre Sale', 'social specifiable cut');
+assert(socialRow.duration_seconds === '30', 'social specifiable duration wire');
+assert(socialRow.language === 'English', 'social specifiable language');
+assert(socialRow.card_holder === 'Amex', 'social specifiable card_holder');
+assert(socialRow.isci === 'GTC000200', 'social specifiable isci');
+
 console.log('api-order-to-legacy-slideout: ok');

@@ -88,7 +88,10 @@ export default function AddSocialVideoModal({
             initialVenueRow.language_id ?? -1,
             venue_item_language,
         );
-        setEditLanguage(langLabel || venue_item_language[0]?.type || '');
+        setEditLanguage(
+            initialVenueRow.language ??
+                (langLabel || venue_item_language[0]?.type || ''),
+        );
         const ch = initialVenueRow.card_holder;
         setEditCardHolder(
             ch && CARD_HOLDER_OPTIONS.includes(ch as 'Amex' | 'Citi')

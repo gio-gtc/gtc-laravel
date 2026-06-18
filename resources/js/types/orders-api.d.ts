@@ -110,6 +110,16 @@ export interface OrderItemBroadcastSpecification {
     asset_tracking?: AssetTrackingMap;
 }
 
+export interface OrderItemSocialSpecification {
+    id: number;
+    type: string;
+    cut: string;
+    duration_seconds: string;
+    language: string;
+    isci: string;
+    card_holder?: string;
+}
+
 /** Audit feedback on Status 5 (Revision Request) rows only. */
 export interface OrderItemRevisionInstructions {
     id: number;
@@ -131,7 +141,10 @@ export interface OrderItem {
     specifications?: OrderItemSpecifications;
     specifiable_id?: number;
     specifiable_type?: string;
-    specifiable?: OrderItemBroadcastSpecification | Record<string, unknown>;
+    specifiable?:
+        | OrderItemBroadcastSpecification
+        | OrderItemSocialSpecification
+        | Record<string, unknown>;
     status_lookup?: OrderItemStatusLookup;
     root_order_item_id?: number | null;
     revision_number?: number;

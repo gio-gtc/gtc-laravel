@@ -14,6 +14,9 @@ import type {
 export const BROADCAST_SPECIFIABLE_TYPE =
     'App\\Models\\OrderItemBroadcastSpecification';
 
+export const SOCIAL_SPECIFIABLE_TYPE =
+    'App\\Models\\OrderItemSocialSpecification';
+
 export type OrderItemSpecRecord = Record<string, unknown>;
 
 export function specString(specs: OrderItemSpecRecord, key: string): string {
@@ -31,8 +34,21 @@ export function isBroadcastOrderItem(item: OrderItem): boolean {
     );
 }
 
+export function isSocialOrderItem(item: OrderItem): boolean {
+    if (item.specifiable_type === SOCIAL_SPECIFIABLE_TYPE) {
+        return true;
+    }
+    return (
+        item.order_menu_item?.order_menu_category_id ===
+        ORDER_MENU_CATEGORY_QUADRANTS.social
+    );
+}
+
 export function orderItemSpecRecord(item: OrderItem): OrderItemSpecRecord {
-    if (isBroadcastOrderItem(item) && item.specifiable != null) {
+    if (
+        item.specifiable != null &&
+        (isBroadcastOrderItem(item) || isSocialOrderItem(item))
+    ) {
         return item.specifiable as OrderItemSpecRecord;
     }
     return (item.specifications ?? {}) as OrderItemSpecRecord;

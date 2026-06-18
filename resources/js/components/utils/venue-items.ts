@@ -158,11 +158,15 @@ export function venueItemsMediaTableRow(
             : null;
     const previewVideoUrl = kind === 'image' ? null : legacyMediaUrl;
 
-    const broadcastExtras =
-        row.type === 'broadcast'
+    const wireDurationExtras =
+        row.type === 'broadcast' || row.type === 'social'
             ? {
-                  asset_tracking: row.asset_tracking,
-                  missingAssetTags: row.missingAssetTags,
+                  ...(row.type === 'broadcast'
+                      ? {
+                            asset_tracking: row.asset_tracking,
+                            missingAssetTags: row.missingAssetTags,
+                        }
+                      : {}),
                   duration_wire:
                       typeof row.duration_seconds === 'string'
                           ? row.duration_seconds
@@ -180,8 +184,9 @@ export function venueItemsMediaTableRow(
             : {};
 
     const durationSecondsForRow =
-        row.type === 'broadcast'
-            ? (broadcastExtras as { duration_seconds: number }).duration_seconds
+        row.type === 'broadcast' || row.type === 'social'
+            ? (wireDurationExtras as { duration_seconds: number })
+                  .duration_seconds
             : typeof row.duration_seconds === 'number'
               ? row.duration_seconds
               : Number(row.duration_seconds) || 0;
@@ -196,7 +201,7 @@ export function venueItemsMediaTableRow(
         status_id,
         previewVideoUrl,
         previewImageUrl,
-        ...broadcastExtras,
+        ...wireDurationExtras,
     };
 }
 

@@ -1,3 +1,4 @@
+import { primaryEncodingLabel } from '@/lib/orders/broadcast-spec-wire';
 import {
     formatOrderShowDatesForHeader,
     orderShowDateRange,
@@ -17,15 +18,15 @@ import {
     parseOrderItemDimensions,
     specString,
 } from '@/lib/orders/order-item-specifications';
-import { primaryEncodingLabel } from '@/lib/orders/broadcast-spec-wire';
 import {
     defaultArtPackage,
     defaultAudioSpotType,
     defaultBroadcastSpotType,
+    defaultSocialCardHolder,
     defaultSocialCut,
     defaultSocialSpotType,
 } from '@/lib/orders/order-item-venue-defaults';
-import { venueItemTypeFromCategoryId } from '@/lib/orders/order-menu-categories';
+import { orderItemTypeFromCategoryId } from '@/lib/orders/order-menu-categories';
 import type {
     OrderItemAssigned,
     OrderItemsArtRow,
@@ -126,10 +127,10 @@ export function mapApiOrderItemToVenueRow(
     order: ApiOrder,
     item: OrderItem,
 ): OrderItemsRow | null {
-    const venueType = venueItemTypeFromCategoryId(
+    const orderType = orderItemTypeFromCategoryId(
         item.order_menu_item?.order_menu_category_id,
     );
-    if (!venueType) {
+    if (!orderType) {
         return null;
     }
 
@@ -141,7 +142,7 @@ export function mapApiOrderItemToVenueRow(
     const base = baseRowFields(order, item);
     const assetPath = orderItemAssetPath(item);
 
-    if (venueType === 'broadcast') {
+    if (orderType === 'broadcast') {
         const specs = orderItemSpecRecord(item);
         const durationWire = orderItemDurationWire(specs);
         const encodingLabels = orderItemEncodingLabels(specs);
@@ -169,17 +170,20 @@ export function mapApiOrderItemToVenueRow(
         return row;
     }
 
-    const specs = item.specifications ?? {};
-
-    if (venueType === 'social') {
+    if (orderType === 'social') {
+        const specs = orderItemSpecRecord(item);
+        const durationWire = orderItemDurationWire(specs);
+        const cardHolder = defaultSocialCardHolder(specs);
         const row: OrderItemsSocialRow = {
             ...base,
             type: 'social',
             isci,
-            duration_seconds: orderItemDurationSeconds(specs as Record<string, unknown>),
+            duration_seconds: durationWire,
             status_id: statusId,
-            spot_type: defaultSocialSpotType(specs as Record<string, unknown>),
-            cut: defaultSocialCut(specs as Record<string, unknown>),
+            spot_type: defaultSocialSpotType(specs),
+            cut: defaultSocialCut(specs),
+            language: specString(specs, 'language') || undefined,
+            ...(cardHolder ? { card_holder: cardHolder } : {}),
             has_deliverable_actions: hasDeliverables,
             asset_path: assetPath,
             order_id: order.id,
@@ -187,12 +191,16 @@ export function mapApiOrderItemToVenueRow(
         return row;
     }
 
-    if (venueType === 'radio') {
+    const specs = item.specifications ?? {};
+
+    if (orderType === 'radio') {
         const row: OrderItemsRadioRow = {
             ...base,
             type: 'radio',
             isci,
-            duration_seconds: orderItemDurationSeconds(specs as Record<string, unknown>),
+            duration_seconds: orderItemDurationSeconds(
+                specs as Record<string, unknown>,
+            ),
             status_id: statusId,
             spot_type: defaultAudioSpotType(specs as Record<string, unknown>),
             cut: orderItemDefaultCut(item) as OrderItemsRadioRow['cut'],
@@ -203,7 +211,7 @@ export function mapApiOrderItemToVenueRow(
         return row;
     }
 
-    if (venueType === 'art') {
+    if (orderType === 'art') {
         const { width, height } = parseOrderItemDimensions(
             specs as Record<string, unknown>,
         );

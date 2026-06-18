@@ -26,7 +26,7 @@ export const DEFAULT_ORDER_MENU_ITEM_ID_BY_CATEGORY: Record<
     4: 10,
 };
 
-export function venueItemTypeFromCategoryId(
+export function orderItemTypeFromCategoryId(
     categoryId: OrderMenuCategoryId | undefined,
 ): OrderItemsRowType | null {
     switch (categoryId) {
