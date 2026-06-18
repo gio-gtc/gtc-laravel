@@ -121,6 +121,17 @@ export interface OrderItemSocialSpecification {
     card_holder?: string;
 }
 
+/** gtc-api wire shape for `App\Models\OrderItemRadioSpecification` specifiable. */
+export interface OrderItemRadioSpecification {
+    id: number;
+    type: string;
+    cut: string;
+    duration_seconds: string;
+    language: string;
+    isci: string;
+    asset_tracking?: AssetTrackingMap;
+}
+
 /** Audit feedback on Status 5 (Revision Request) rows only. */
 export interface OrderItemRevisionInstructions {
     id: number;
@@ -145,6 +156,7 @@ export interface OrderItem {
     specifiable?:
         | OrderItemBroadcastSpecification
         | OrderItemSocialSpecification
+        | OrderItemRadioSpecification
         | Record<string, unknown>;
     status_lookup?: OrderItemStatusLookup;
     root_order_item_id?: number | null;

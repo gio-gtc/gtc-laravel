@@ -20,6 +20,9 @@ export const SOCIAL_SPECIFIABLE_TYPE = 'App\\Models\\OrderItemSocialSpecs';
 export const SOCIAL_SPECIFIABLE_TYPE_LEGACY =
     'App\\Models\\OrderItemSocialSpecification';
 
+export const RADIO_SPECIFIABLE_TYPE =
+    'App\\Models\\OrderItemRadioSpecification';
+
 export type OrderItemSpecRecord = Record<string, unknown>;
 
 export function specString(specs: OrderItemSpecRecord, key: string): string {
@@ -50,10 +53,22 @@ export function isSocialOrderItem(item: OrderItem): boolean {
     );
 }
 
+export function isRadioOrderItem(item: OrderItem): boolean {
+    if (item.specifiable_type === RADIO_SPECIFIABLE_TYPE) {
+        return true;
+    }
+    return (
+        item.order_menu_item?.order_menu_category_id ===
+        ORDER_MENU_CATEGORY_QUADRANTS.radio
+    );
+}
+
 export function orderItemSpecRecord(item: OrderItem): OrderItemSpecRecord {
     if (
         item.specifiable != null &&
-        (isBroadcastOrderItem(item) || isSocialOrderItem(item))
+        (isBroadcastOrderItem(item) ||
+            isSocialOrderItem(item) ||
+            isRadioOrderItem(item))
     ) {
         return item.specifiable as OrderItemSpecRecord;
     }

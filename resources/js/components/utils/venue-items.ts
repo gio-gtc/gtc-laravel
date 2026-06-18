@@ -158,42 +158,30 @@ export function venueItemsMediaTableRow(
             : null;
     const previewVideoUrl = kind === 'image' ? null : legacyMediaUrl;
 
-    const wireDurationExtras =
-        row.type === 'broadcast' || row.type === 'social'
+    const wireDurationExtras = {
+        ...(row.type === 'broadcast' || row.type === 'radio'
             ? {
-                  ...(row.type === 'broadcast'
-                      ? {
-                            asset_tracking: row.asset_tracking,
-                            missingAssetTags: row.missingAssetTags,
-                        }
-                      : {}),
-                  duration_wire:
-                      typeof row.duration_seconds === 'string'
-                          ? row.duration_seconds
-                          : String(row.duration_seconds),
-                  duration_seconds:
-                      parseDurationWireAsSeconds(
-                          typeof row.duration_seconds === 'string'
-                              ? row.duration_seconds
-                              : String(row.duration_seconds),
-                      ) ??
-                      (typeof row.duration_seconds === 'number'
-                          ? row.duration_seconds
-                          : 0),
+                  asset_tracking: row.asset_tracking,
+                  missingAssetTags: row.missingAssetTags,
               }
-            : {};
-
-    const durationSecondsForRow =
-        row.type === 'broadcast' || row.type === 'social'
-            ? (wireDurationExtras as { duration_seconds: number })
-                  .duration_seconds
-            : typeof row.duration_seconds === 'number'
-              ? row.duration_seconds
-              : Number(row.duration_seconds) || 0;
+            : {}),
+        duration_wire:
+            typeof row.duration_seconds === 'string'
+                ? row.duration_seconds
+                : String(row.duration_seconds),
+        duration_seconds:
+            parseDurationWireAsSeconds(
+                typeof row.duration_seconds === 'string'
+                    ? row.duration_seconds
+                    : String(row.duration_seconds),
+            ) ??
+            (typeof row.duration_seconds === 'number'
+                ? row.duration_seconds
+                : 0),
+    };
 
     return {
         ...rest,
-        duration_seconds: durationSecondsForRow,
         spot_type,
         cut,
         cutName: venueItemMediaLineLabel(spot_type, cut),

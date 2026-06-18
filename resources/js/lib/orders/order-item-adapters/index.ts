@@ -8,7 +8,12 @@ export {
     socialCreateAdapter,
     socialUpdateAdapter,
 } from './social';
-export { radioUpdateAdapter } from './radio';
+export {
+    draftToPendingRadioRow,
+    radioCreateAdapter,
+    radioUpdateAdapter,
+    validateRadioRowSpecifications,
+} from './radio';
 export type {
     OrderItemBulkPatch,
     OrderItemCreateAdapter,

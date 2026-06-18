@@ -9,7 +9,6 @@ import {
     orderItemCutLabel,
     orderItemDefaultCut,
     orderItemDueDateDisplay,
-    orderItemDurationSeconds,
     orderItemDurationWire,
     orderItemEncodingLabels,
     orderItemIsci,
@@ -194,16 +193,22 @@ export function mapApiOrderItemToVenueRow(
     const specs = item.specifications ?? {};
 
     if (orderType === 'radio') {
+        const radioSpecs = orderItemSpecRecord(item);
+        const durationWire = orderItemDurationWire(radioSpecs);
+        const assetTracking = orderItemAssetTracking(item);
         const row: OrderItemsRadioRow = {
             ...base,
             type: 'radio',
             isci,
-            duration_seconds: orderItemDurationSeconds(
-                specs as Record<string, unknown>,
-            ),
+            duration_seconds: durationWire,
             status_id: statusId,
-            spot_type: defaultAudioSpotType(specs as Record<string, unknown>),
+            spot_type: defaultAudioSpotType(
+                radioSpecs,
+            ) as OrderItemsRadioRow['spot_type'],
             cut: orderItemDefaultCut(item) as OrderItemsRadioRow['cut'],
+            language: specString(radioSpecs, 'language') || undefined,
+            asset_tracking: assetTracking,
+            missingAssetTags: missingAssetTagsFromItem(item),
             has_deliverable_actions: hasDeliverables,
             asset_path: assetPath,
             order_id: order.id,

@@ -3,6 +3,7 @@ import {
     OrderItemApiError,
 } from '@/lib/orders/order-item-api-client';
 import { draftToPendingBroadcastRow } from '@/lib/orders/order-item-adapters/broadcast';
+import { draftToPendingRadioRow } from '@/lib/orders/order-item-adapters/radio';
 import { draftToPendingSocialRow } from '@/lib/orders/order-item-adapters/social';
 import type {
     OrderItemCreateAdapter,
@@ -56,6 +57,9 @@ function draftToPendingRow<TForm>(
 ): OrderItemsRow {
     if (adapter.categoryId === ORDER_MENU_CATEGORY_QUADRANTS.social) {
         return draftToPendingSocialRow(draft, tourVenueId);
+    }
+    if (adapter.categoryId === ORDER_MENU_CATEGORY_QUADRANTS.radio) {
+        return draftToPendingRadioRow(draft, tourVenueId, catalogTags);
     }
     return draftToPendingBroadcastRow(draft, tourVenueId, catalogTags);
 }

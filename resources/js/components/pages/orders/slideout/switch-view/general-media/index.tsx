@@ -21,9 +21,11 @@ import { isGtcStaffUser } from '@/lib/user-organisation';
 import {
     broadcastCreateAdapter,
     broadcastUpdateAdapter,
+    radioCreateAdapter,
     radioUpdateAdapter,
     socialCreateAdapter,
     socialUpdateAdapter,
+    validateRadioRowSpecifications,
 } from '@/lib/orders/order-item-adapters';
 import type { OrderItemUpdateAdapter } from '@/lib/orders/order-item-adapters/types';
 import { validateSocialRowSpecifications } from '@/lib/orders/order-item-adapters/social';
@@ -100,7 +102,9 @@ import Filters, {
     type MediaStatusFilter,
     type SortDirection,
 } from './filters';
-import AddAudioModal from './modals/add-audio-modal';
+import AddAudioModal, {
+    type AddAudioFormValues,
+} from './modals/add-audio-modal';
 import AddBroadcastStreamingModal, {
     type AddBroadcastStreamingFormValues,
 } from './modals/add-broadcast-streaming-modal';
@@ -131,9 +135,12 @@ function tableDueDateDisplayToIso(display: string): string | undefined {
     return format(d, 'yyyy-MM-dd');
 }
 
-function mediaLineUpdateAdapterForScope(
+function mediaLinePatchAdapterForScope(
     tableScope: 'broadcast' | 'socialLine' | 'radio',
-): Pick<OrderItemUpdateAdapter<OrderItemsBroadcastRow>, 'typePatch' | 'cutPatch'> {
+): Pick<
+    OrderItemUpdateAdapter<OrderItemsBroadcastRow>,
+    'typePatch' | 'cutPatch' | 'durationPatch' | 'statusPatch'
+> {
     switch (tableScope) {
         case 'broadcast':
             return broadcastUpdateAdapter;
@@ -142,6 +149,12 @@ function mediaLineUpdateAdapterForScope(
         case 'radio':
             return radioUpdateAdapter;
     }
+}
+
+function mediaLineUpdateAdapterForScope(
+    tableScope: 'broadcast' | 'socialLine' | 'radio',
+): Pick<OrderItemUpdateAdapter<OrderItemsBroadcastRow>, 'typePatch' | 'cutPatch'> {
+    return mediaLinePatchAdapterForScope(tableScope);
 }
 
 function createMediaLineCellChangeHandler(
@@ -371,6 +384,18 @@ function GeneralMediaView({
         return slideout.venue_items.filter(
             (r): r is OrderItemsSocialRow =>
                 r.type === 'social' &&
+                r.tour_venue_id === orderItem.orderVenue.id &&
+                !r.is_pending,
+        );
+    }, [orderItem, slideout.venue_items]);
+
+    const existingRadioRows = useMemo((): OrderItemsRadioRow[] => {
+        if (!orderItem) {
+            return [];
+        }
+        return slideout.venue_items.filter(
+            (r): r is OrderItemsRadioRow =>
+                r.type === 'radio' &&
                 r.tour_venue_id === orderItem.orderVenue.id &&
                 !r.is_pending,
         );
@@ -737,6 +762,9 @@ function GeneralMediaView({
     const [radioEditRow, setRadioEditRow] = useState<OrderItemsRadioRow | null>(
         null,
     );
+    const [radioFieldErrors, setRadioFieldErrors] = useState<
+        Record<string, string[]> | undefined
+    >();
     const [keyArtModalOpen, setKeyArtModalOpen] = useState(false);
     const [socialVideoModalOpen, setSocialVideoModalOpen] = useState(false);
     const [videoPlayerModalOpen, setVideoPlayerModalOpen] = useState(false);
@@ -794,10 +822,26 @@ function GeneralMediaView({
         [createOrderItemsFromForm],
     );
 
+    const handleRadioAdd = useCallback(
+        async (form: AddAudioFormValues) => {
+            setRadioFieldErrors(undefined);
+            const result = await createOrderItemsFromForm(
+                radioCreateAdapter,
+                form,
+            );
+            if (result.failed && result.errors) {
+                setRadioFieldErrors(result.errors);
+            }
+            return result;
+        },
+        [createOrderItemsFromForm],
+    );
+
     const closeAudioModal = useCallback(() => {
         setAudioModalOpen(false);
         setRadioModalMode('add');
         setRadioEditRow(null);
+        setRadioFieldErrors(undefined);
     }, []);
 
     const handleBroadcastEditSave = useCallback(
@@ -891,11 +935,50 @@ function GeneralMediaView({
     );
 
     const handleRadioEditSave = useCallback(
-        (row: OrderItemsRadioRow) => {
-            replaceVenueItem(row);
+        async (row: OrderItemsRadioRow) => {
+            if (!openOrder) {
+                toast.error('Open an order before editing line items.');
+                return { failed: true };
+            }
+
+            if (!canEditOrderLineItem(auth.user, row, userRoles)) {
+                toast.error('You do not have permission to edit this line.');
+                return { failed: true };
+            }
+
+            const validation = validateRadioRowSpecifications(row);
+            if (!validation.ok) {
+                toast.error(validation.message);
+                return { failed: true };
+            }
+
+            setRadioFieldErrors(undefined);
+
+            const patch = radioUpdateAdapter.rowToFullBulkPatch(row, openOrder);
+            const result = await commitOrderItemBulkWrite(
+                [Number(row.id)],
+                patch,
+                'Line item updated.',
+            );
+
+            if (!result.ok) {
+                if (result.errors && Object.keys(result.errors).length > 0) {
+                    setRadioFieldErrors(result.errors);
+                    return { failed: true };
+                }
+                return { failed: true };
+            }
+
             closeAudioModal();
+            return { failed: false };
         },
-        [replaceVenueItem, closeAudioModal],
+        [
+            openOrder,
+            auth.user,
+            userRoles,
+            commitOrderItemBulkWrite,
+            closeAudioModal,
+        ],
     );
 
     const handleVideoSectionPreviewClick = useCallback(
@@ -1177,7 +1260,8 @@ function GeneralMediaView({
             if (editing.field === 'duration_seconds') {
                 if (
                     tableScope !== 'broadcast' &&
-                    tableScope !== 'socialLine'
+                    tableScope !== 'socialLine' &&
+                    tableScope !== 'radio'
                 ) {
                     cellPersistGuardRef.current = null;
                     return;
@@ -1203,10 +1287,9 @@ function GeneralMediaView({
                     cellPersistGuardRef.current = null;
                     return;
                 }
-                const durationAdapter =
-                    tableScope === 'socialLine'
-                        ? socialUpdateAdapter
-                        : broadcastUpdateAdapter;
+                const durationAdapter = mediaLinePatchAdapterForScope(
+                    tableScope as 'broadcast' | 'socialLine' | 'radio',
+                );
                 const selectedIds = [...selectedRowIds];
                 const bulkTargetIds =
                     selectedIds.length > 1 && selectedIds.includes(row.id)
@@ -1339,10 +1422,9 @@ function GeneralMediaView({
                     cellPersistGuardRef.current = null;
                     return;
                 }
-                const statusAdapter =
-                    tableScope === 'socialLine'
-                        ? socialUpdateAdapter
-                        : broadcastUpdateAdapter;
+                const statusAdapter = mediaLinePatchAdapterForScope(
+                    tableScope as 'broadcast' | 'socialLine' | 'radio',
+                );
                 const original = inlineOriginalRef.current;
                 if (
                     original?.itemId === row.id &&
@@ -1890,6 +1972,7 @@ function GeneralMediaView({
                     cellEditing={sharedRadioCellEditing}
                     editScope="radio"
                     allowEditInactiveRows={canAdminEditInactiveRows}
+                    canEditStatus={canEditStatus}
                     orderItemStatusSelectOptions={orderItemStatusSelectOptions}
                     isDeliverableUpdating={isDeliverableUpdating}
                     selectedRowIds={selectedRowIds}
@@ -1909,6 +1992,18 @@ function GeneralMediaView({
                     onEditIsciRow={(row) => setEditIsciRow(row)}
                     isEditLineDisabled={(row) =>
                         isOrderLineItemEditDisabled(row, auth.user, userRoles)
+                    }
+                    canRemoveFromCart={
+                        apiSlideoutOrderId
+                            ? isMediaTableRowStillInCart
+                            : undefined
+                    }
+                    onRemoveFromCart={
+                        apiSlideoutOrderId
+                            ? (row) => {
+                                  void removeOrderItemFromCart(Number(row.id));
+                              }
+                            : undefined
                     }
                     onEditLineInModal={(row) => {
                         const raw = slideout.venue_items.find(
@@ -2071,6 +2166,9 @@ function GeneralMediaView({
                 mode={radioModalMode}
                 initialVenueRow={radioEditRow ?? undefined}
                 onEditSave={handleRadioEditSave}
+                onAdd={handleRadioAdd}
+                fieldErrors={radioFieldErrors}
+                existingRadioRows={existingRadioRows}
                 venue_item_language={slideout.venue_item_language}
             />
             <AddKeyArtStaticAssetsModal

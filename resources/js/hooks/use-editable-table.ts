@@ -88,8 +88,17 @@ export function useEditableTable<T extends object>({
     // Ref to track latest data for onChange callbacks
     const localDataRef = useRef<T[]>(data);
 
+    // Callers often pass inline `getId`; keep a ref so sync effect deps stay stable.
+    const getIdRef = useRef(getId);
+    getIdRef.current = getId;
+    const resolveId = useCallback(
+        (item: T) => getIdRef.current(item),
+        [],
+    );
+
     // Update local data when source data changes; preserve the row being edited.
     useEffect(() => {
+        const getId = getIdRef.current;
         if (!editingCell) {
             setLocalData(data);
             localDataRef.current = data;
@@ -107,7 +116,7 @@ export function useEditableTable<T extends object>({
         });
         setLocalData(merged);
         localDataRef.current = merged;
-    }, [data, editingCell, getId]);
+    }, [data, editingCell]);
 
     // Handle double-click to start editing
     const handleDoubleClick = (
@@ -115,7 +124,7 @@ export function useEditableTable<T extends object>({
         field: string,
         scope?: string,
     ) => {
-        const item = localDataRef.current.find((i) => getId(i) === itemId);
+        const item = localDataRef.current.find((i) => resolveId(i) === itemId);
         if (item) {
             setOriginalValue(
                 (item[field as keyof T] as string | number) || null,
@@ -132,7 +141,7 @@ export function useEditableTable<T extends object>({
     ) => {
         setLocalData((prev) => {
             const updated = prev.map((item) =>
-                getId(item) === itemId
+                resolveId(item) === itemId
                     ? { ...item, [field]: value }
                     : item,
             );
@@ -202,7 +211,7 @@ export function useEditableTable<T extends object>({
     // Remove an item from the table
     const removeItem = (itemId: number | string) => {
         setLocalData((prev) => {
-            const updated = prev.filter((i) => getId(i) !== itemId);
+            const updated = prev.filter((i) => resolveId(i) !== itemId);
             localDataRef.current = updated;
             return updated;
         });
@@ -218,7 +227,7 @@ export function useEditableTable<T extends object>({
         field: string,
         scope?: string,
     ) => {
-        const item = localDataRef.current.find((i) => getId(i) === itemId);
+        const item = localDataRef.current.find((i) => resolveId(i) === itemId);
         const value = item
             ? ((item[field as keyof T] as string | number) ?? null)
             : null;
@@ -230,7 +239,7 @@ export function useEditableTable<T extends object>({
         (ids: ReadonlySet<string | number>, patch: Partial<T>) => {
             if (ids.size === 0) return;
             const updated = localDataRef.current.map((item) =>
-                ids.has(getId(item)) ? { ...item, ...patch } : item,
+                ids.has(resolveId(item)) ? { ...item, ...patch } : item,
             );
             localDataRef.current = updated;
             setLocalData(updated);
@@ -240,20 +249,20 @@ export function useEditableTable<T extends object>({
                 onChange(updated);
             }
         },
-        [getId, onChange],
+        [onChange, resolveId],
     );
 
     const patchRowFields = useCallback(
         (itemId: number | string, patch: Partial<T>) => {
             setLocalData((prev) => {
                 const updated = prev.map((item) =>
-                    getId(item) === itemId ? { ...item, ...patch } : item,
+                    resolveId(item) === itemId ? { ...item, ...patch } : item,
                 );
                 localDataRef.current = updated;
                 return updated;
             });
         },
-        [getId],
+        [resolveId],
     );
 
     return {

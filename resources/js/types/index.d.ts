@@ -477,6 +477,8 @@ export interface OrderItemsRadioRow
     type: 'radio';
     spot_type: AudioSpotType;
     cut: AllAudioCuts;
+    asset_tracking?: AssetTrackingMap;
+    missingAssetTags?: string[];
 }
 
 /** Social: layout type and cut match add Social Video modal. */
