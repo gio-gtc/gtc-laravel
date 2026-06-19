@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { MultiSelectCombobox } from '@/components/ui/combobox';
 import {
     Dialog,
     DialogContent,
@@ -11,36 +10,45 @@ import {
 import { Label } from '@/components/ui/label';
 import { LoadingDots } from '@/components/ui/loading-dots';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+    mergeComboboxOptionsWithCustoms,
+    MultiSelectWithOther,
+} from '@/components/ui/multi-select-with-other';
+import { SelectWithOther } from '@/components/ui/select-with-other';
 import {
     defaultVenueItemLanguageLabels,
     venueItemLanguageIdToLabel,
 } from '@/components/utils/venue-items';
 import { durationWireFromPill } from '@/lib/orders/broadcast-spec-wire';
 import type { SequentialCreateResult } from '@/lib/orders/order-item-adapters/types';
+import {
+    isRadioAddFormComplete,
+    isRadioEditFormComplete,
+} from '@/lib/orders/radio-add-form-complete';
 import { hasRadioFormDuplicates } from '@/lib/orders/radio-duplicate-check';
+import { isGtcAdminUser } from '@/lib/user-roles';
 import { cn } from '@/lib/utils';
+import { languageTypeToId } from '@/lib/venue-items/modal-mappers';
+import type {
+    OrderItemLanguage,
+    OrderItemsRadioRow,
+    SharedData,
+} from '@/types';
+import { usePage } from '@inertiajs/react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    languageTypeToId,
-    modalDurationPillToSeconds,
-} from '@/lib/venue-items/modal-mappers';
-import type { OrderItemLanguage, OrderItemsRadioRow } from '@/types';
-import { useEffect, useMemo, useState } from 'react';
-import {
+    customDurationInputToPillLabel,
     durationSecondsToModalPillLabel,
+    getDefaultDurationSecondsForModal,
     isNonDefaultModalDuration,
 } from './modal-duration';
 import OrderModalLayout from './order-modal-layout';
 import PillButton from './pill-button';
 import { orderModalStyles, toggleInArray } from './shared';
-import { OPTIONS_BY_TYPE_AUDIO } from './spot-type-cuts-options';
-
-const DURATION_OPTIONS = [':15', ':30', ':60'] as const;
+import {
+    BROADCAST_SPOT_TYPES,
+    OPTIONS_BY_TYPE_AUDIO,
+} from './spot-type-cuts-options';
+import TextPillInput from './text-pill-input';
 
 /** Same multi-select semantics as Add Broadcast & Streaming (type drives cuts; duration/language are toggles). */
 export interface AddAudioFormValues {
@@ -67,6 +75,13 @@ interface AddAudioModalProps {
     existingRadioRows?: OrderItemsRadioRow[];
 }
 
+function isDurationPillDisabled(pill: string, spotType: string): boolean {
+    if (spotType === 'International') {
+        return true;
+    }
+    return pill === ':15' && spotType !== 'Generic';
+}
+
 export default function AddAudioModal({
     isOpen,
     onClose,
@@ -80,6 +95,8 @@ export default function AddAudioModal({
     existingRadioRows = [],
 }: AddAudioModalProps) {
     const isEdit = mode === 'edit' && initialVenueRow != null;
+    const { auth } = usePage<SharedData>().props;
+    const allowFieldOther = isGtcAdminUser(auth.roles ?? []);
 
     const [type, setType] = useState('Generic');
     const [cuts, setCuts] = useState<string[]>([]);
@@ -92,8 +109,104 @@ export default function AddAudioModal({
     const [editCut, setEditCut] = useState('');
     const [editDuration, setEditDuration] = useState('');
     const [editLanguage, setEditLanguage] = useState('');
+
+    const [sessionCustomCuts, setSessionCustomCuts] = useState<string[]>([]);
+    const [sessionCustomTypes, setSessionCustomTypes] = useState<string[]>([]);
+    const [sessionCustomDurations, setSessionCustomDurations] = useState<
+        string[]
+    >([]);
+    const [customDurationDraft, setCustomDurationDraft] = useState('');
+    const [editCustomDurationDraft, setEditCustomDurationDraft] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [duplicateConfirmOpen, setDuplicateConfirmOpen] = useState(false);
+
+    const availableCuts = useMemo(() => {
+        const config = type ? OPTIONS_BY_TYPE_AUDIO[type] : null;
+        return config?.cuts ?? [];
+    }, [type]);
+
+    const editAvailableCuts = useMemo(() => {
+        const config = editType ? OPTIONS_BY_TYPE_AUDIO[editType] : null;
+        return config?.cuts ?? [];
+    }, [editType]);
+
+    const addTypeOptions = useMemo(
+        () =>
+            mergeComboboxOptionsWithCustoms(
+                [...BROADCAST_SPOT_TYPES],
+                sessionCustomTypes,
+            ),
+        [sessionCustomTypes],
+    );
+
+    const editTypeOptions = useMemo(
+        () =>
+            mergeComboboxOptionsWithCustoms(
+                [...BROADCAST_SPOT_TYPES],
+                [
+                    ...sessionCustomTypes,
+                    ...(editType &&
+                    !(BROADCAST_SPOT_TYPES as readonly string[]).includes(
+                        editType,
+                    )
+                        ? [editType]
+                        : []),
+                ],
+            ),
+        [editType, sessionCustomTypes],
+    );
+
+    const addCutOptions = useMemo(
+        () =>
+            mergeComboboxOptionsWithCustoms(
+                [...availableCuts],
+                sessionCustomCuts,
+            ),
+        [availableCuts, sessionCustomCuts],
+    );
+
+    const editCutOptions = useMemo(
+        () =>
+            mergeComboboxOptionsWithCustoms(
+                [...editAvailableCuts],
+                editCut &&
+                    !(editAvailableCuts as readonly string[]).includes(editCut)
+                    ? [editCut]
+                    : sessionCustomCuts,
+            ),
+        [editCut, editAvailableCuts, sessionCustomCuts],
+    );
+
+    const defaultDurationPills = useMemo(
+        () => getDefaultDurationSecondsForModal('audio').map((s) => `:${s}`),
+        [],
+    );
+
+    const allDurationPills = useMemo(() => {
+        const extras = [
+            ...sessionCustomDurations,
+            ...duration.filter((d) => !defaultDurationPills.includes(d)),
+        ];
+        return [...new Set([...defaultDurationPills, ...extras])];
+    }, [defaultDurationPills, sessionCustomDurations, duration]);
+
+    const editAudioDurationSeconds = useMemo(() => {
+        const parsed = durationWireFromPill(editDuration);
+        const n = Number.parseInt(parsed, 10);
+        return Number.isFinite(n) ? n : 0;
+    }, [editDuration]);
+
+    const editExtraDurationLabel =
+        isEdit &&
+        editDuration &&
+        isNonDefaultModalDuration(editAudioDurationSeconds, 'audio')
+            ? durationSecondsToModalPillLabel(editAudioDurationSeconds, 'audio')
+            : null;
+
+    const editAllDurationPills = useMemo(() => {
+        const extras = editExtraDurationLabel ? [editExtraDurationLabel] : [];
+        return [...new Set([...defaultDurationPills, ...extras])];
+    }, [defaultDurationPills, editExtraDurationLabel]);
 
     useEffect(() => {
         if (!isOpen || !isEdit || !initialVenueRow) return;
@@ -114,6 +227,7 @@ export default function AddAudioModal({
             initialVenueRow.language ??
                 (langLabel || venue_item_language[0]?.type || ''),
         );
+        setEditCustomDurationDraft('');
         /* eslint-enable react-hooks/set-state-in-effect */
     }, [isOpen, isEdit, initialVenueRow, venue_item_language]);
 
@@ -136,42 +250,25 @@ export default function AddAudioModal({
             ? durationSecondsToModalPillLabel(initialDurationSeconds, 'audio')
             : null;
 
-    const { availableCuts } = useMemo(() => {
-        const config = type ? OPTIONS_BY_TYPE_AUDIO[type] : null;
-        return {
-            availableCuts: config?.cuts ?? [],
-        };
-    }, [type]);
-
-    const editAvailableCuts = useMemo(() => {
-        const config = editType ? OPTIONS_BY_TYPE_AUDIO[editType] : null;
-        return config?.cuts ?? [];
-    }, [editType]);
-
-    const editDurationSeconds = useMemo(
-        () => modalDurationPillToSeconds(editDuration, 'audio'),
-        [editDuration],
+    const canSubmitEdit = useMemo(
+        () =>
+            isRadioEditFormComplete({
+                type: editType,
+                cut: editCut,
+                duration: editDuration,
+                language: editLanguage,
+            }),
+        [editType, editCut, editDuration, editLanguage],
     );
-
-    const editExtraDurationLabel =
-        isEdit &&
-        editDuration &&
-        isNonDefaultModalDuration(editDurationSeconds, 'audio')
-            ? durationSecondsToModalPillLabel(editDurationSeconds, 'audio')
-            : null;
-
-    const canSubmitEdit = useMemo(() => {
-        return Boolean(editCut && editDuration && editLanguage);
-    }, [editCut, editDuration, editLanguage]);
 
     const canSubmitAdd = useMemo(
         () =>
-            Boolean(
-                type &&
-                    cuts.length > 0 &&
-                    duration.length > 0 &&
-                    language.length > 0,
-            ),
+            isRadioAddFormComplete({
+                type,
+                cuts,
+                duration,
+                language,
+            }),
         [type, cuts, duration, language],
     );
 
@@ -179,6 +276,11 @@ export default function AddAudioModal({
         setCuts([]);
         setDuration([]);
         setLanguage(defaultVenueItemLanguageLabels(venue_item_language));
+        setSessionCustomCuts([]);
+        setSessionCustomTypes([]);
+        setSessionCustomDurations([]);
+        setCustomDurationDraft('');
+        setEditCustomDurationDraft('');
     };
 
     const resetAllFields = () => {
@@ -188,12 +290,12 @@ export default function AddAudioModal({
     };
 
     const handleTypeChange = (newType: string) => {
-        resetForm();
+        setCuts([]);
+        setDuration([]);
+        setLanguage(defaultVenueItemLanguageLabels(venue_item_language));
         setType(newType);
         const config = OPTIONS_BY_TYPE_AUDIO[newType];
-        if (config) {
-            setCuts((prev) => prev.filter((c) => config.cuts.includes(c)));
-        } else {
+        if (!config) {
             setCuts([]);
             setDuration([]);
         }
@@ -212,8 +314,48 @@ export default function AddAudioModal({
 
     const handleClose = () => {
         resetAllFields();
+        setIsSubmitting(false);
         onClose();
     };
+
+    const handleCustomCutAdded = useCallback((value: string) => {
+        setSessionCustomCuts((prev) =>
+            prev.includes(value) ? prev : [...prev, value],
+        );
+    }, []);
+
+    const handleCustomTypeAdded = useCallback((value: string) => {
+        setSessionCustomTypes((prev) =>
+            prev.includes(value) ? prev : [...prev, value],
+        );
+    }, []);
+
+    const handleAddCustomDurationCommit = useCallback(() => {
+        const pill = customDurationInputToPillLabel(
+            customDurationDraft,
+            'audio',
+        );
+        if (!pill) {
+            return;
+        }
+        setSessionCustomDurations((prev) =>
+            prev.includes(pill) ? prev : [...prev, pill],
+        );
+        setDuration((prev) => toggleInArray(prev, pill));
+        setCustomDurationDraft('');
+    }, [customDurationDraft]);
+
+    const handleEditCustomDurationCommit = useCallback(() => {
+        const pill = customDurationInputToPillLabel(
+            editCustomDurationDraft,
+            'audio',
+        );
+        if (!pill) {
+            return;
+        }
+        setEditCustomDurationDraft('');
+        setEditDuration(pill);
+    }, [editCustomDurationDraft]);
 
     const buildAddFormValues = (): AddAudioFormValues => ({
         type,
@@ -293,7 +435,7 @@ export default function AddAudioModal({
             <OrderModalLayout
                 isOpen={isOpen}
                 onClose={handleClose}
-                title={isEdit ? 'Edit Audio' : 'Add Audio'}
+                title={isEdit ? 'Edit Radio' : 'Add Radio'}
                 primaryLabel={isEdit ? 'Save changes' : 'Add to Order'}
                 onPrimaryClick={isEdit ? handleEditSave : handleAddToOrder}
                 primaryLoading={isSubmitting}
@@ -325,30 +467,19 @@ export default function AddAudioModal({
                             <p className={orderModalStyles.helper}>
                                 Select the type of Spot
                             </p>
-                            <Select
+                            <SelectWithOther
+                                id="edit-audio-type"
+                                options={editTypeOptions}
                                 value={editType}
                                 onValueChange={handleEditTypeChange}
-                            >
-                                <SelectTrigger
-                                    id="edit-audio-type"
-                                    className={orderModalStyles.selectTrigger}
-                                >
-                                    <SelectValue placeholder="Select the type of Spot" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Generic">
-                                        Generic
-                                    </SelectItem>
-                                    <SelectItem value="AmEx">AmEx</SelectItem>
-                                    <SelectItem value="Verizon">
-                                        Verizon
-                                    </SelectItem>
-                                    <SelectItem value="Citi">Citi</SelectItem>
-                                    <SelectItem value="International">
-                                        International
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+                                allowOther={allowFieldOther}
+                                onCustomOptionAdded={handleCustomTypeAdded}
+                                placeholder="Select the type of Spot"
+                                otherInputPlaceholder="Enter spot type"
+                                triggerClassName={
+                                    orderModalStyles.selectTrigger
+                                }
+                            />
                         </div>
 
                         <div className="flex flex-3 flex-col gap-1.5">
@@ -361,20 +492,24 @@ export default function AddAudioModal({
                             <p className={orderModalStyles.helper}>
                                 Select the type of Cuts
                             </p>
-                            <MultiSelectCombobox
+                            <SelectWithOther
                                 id="edit-audio-cuts"
-                                mode="single"
-                                options={editAvailableCuts}
-                                value={editCut ? [editCut] : []}
-                                onValueChange={(v) => setEditCut(v[0] ?? '')}
+                                options={editCutOptions}
+                                value={editCut}
+                                onValueChange={setEditCut}
+                                allowOther={allowFieldOther}
+                                onCustomOptionAdded={handleCustomCutAdded}
                                 placeholder="Select Cuts"
+                                otherInputPlaceholder="Enter custom cut"
                                 emptyMessage="No cuts found."
-                                triggerClassName={orderModalStyles.selectTrigger}
+                                triggerClassName={
+                                    orderModalStyles.selectTrigger
+                                }
                             />
                         </div>
 
                         <div className="flex flex-row justify-around gap-2 text-xs sm:justify-center">
-                            <div className="flex flex-col gap-2">
+                            <div className="flex max-w-[75px] flex-col gap-2">
                                 <Label
                                     className={cn(
                                         'pb-4',
@@ -384,11 +519,9 @@ export default function AddAudioModal({
                                     Duration
                                 </Label>
                                 <div className="flex flex-col gap-2">
-                                    {DURATION_OPTIONS.map((d) => {
+                                    {editAllDurationPills.map((d) => {
                                         const isDisabled =
-                                            (d == ':15' &&
-                                                editType != 'Generic') ||
-                                            editType === 'International';
+                                            isDurationPillDisabled(d, editType);
 
                                         return (
                                             <PillButton
@@ -396,36 +529,69 @@ export default function AddAudioModal({
                                                 className="w-full"
                                                 selected={editDuration === d}
                                                 disabled={isDisabled}
-                                                onClick={() =>
-                                                    !isDisabled &&
-                                                    setEditDuration(d)
-                                                }
+                                                onClick={() => {
+                                                    if (isDisabled) return;
+                                                    setEditCustomDurationDraft(
+                                                        '',
+                                                    );
+                                                    setEditDuration(d);
+                                                }}
                                             >
                                                 {d}
                                             </PillButton>
                                         );
                                     })}
-                                    {editExtraDurationLabel !== null && (
-                                        <PillButton
-                                            key={editExtraDurationLabel}
-                                            className="w-full"
-                                            selected={
-                                                editDuration ===
-                                                editExtraDurationLabel
-                                            }
-                                            disabled={
-                                                editType === 'International'
-                                            }
-                                            onClick={() =>
-                                                editType !== 'International' &&
-                                                setEditDuration(
-                                                    editExtraDurationLabel,
-                                                )
-                                            }
-                                        >
-                                            {editExtraDurationLabel}
-                                        </PillButton>
-                                    )}
+                                    {editExtraDurationLabel !== null &&
+                                        !editAllDurationPills.includes(
+                                            editExtraDurationLabel,
+                                        ) && (
+                                            <PillButton
+                                                key={editExtraDurationLabel}
+                                                className="w-full"
+                                                selected={
+                                                    editDuration ===
+                                                    editExtraDurationLabel
+                                                }
+                                                disabled={
+                                                    editType === 'International'
+                                                }
+                                                onClick={() => {
+                                                    if (
+                                                        editType ===
+                                                        'International'
+                                                    ) {
+                                                        return;
+                                                    }
+                                                    setEditCustomDurationDraft(
+                                                        '',
+                                                    );
+                                                    setEditDuration(
+                                                        editExtraDurationLabel,
+                                                    );
+                                                }}
+                                            >
+                                                {editExtraDurationLabel}
+                                            </PillButton>
+                                        )}
+                                    <TextPillInput
+                                        id="edit-audio-custom-duration"
+                                        numericOnly
+                                        value={editCustomDurationDraft}
+                                        onChange={setEditCustomDurationDraft}
+                                        onCommit={
+                                            handleEditCustomDurationCommit
+                                        }
+                                        selected={
+                                            editCustomDurationDraft.trim() !==
+                                                '' &&
+                                            customDurationInputToPillLabel(
+                                                editCustomDurationDraft,
+                                                'audio',
+                                            ) === editDuration
+                                        }
+                                        disabled={editType === 'International'}
+                                        className="w-full"
+                                    />
                                 </div>
                             </div>
 
@@ -475,30 +641,19 @@ export default function AddAudioModal({
                             <p className={orderModalStyles.helper}>
                                 Select the type of Spot
                             </p>
-                            <Select
+                            <SelectWithOther
+                                id="type"
+                                options={addTypeOptions}
                                 value={type}
                                 onValueChange={handleTypeChange}
-                            >
-                                <SelectTrigger
-                                    id="type"
-                                    className={orderModalStyles.selectTrigger}
-                                >
-                                    <SelectValue placeholder="Select the type of Spot" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Generic">
-                                        Generic
-                                    </SelectItem>
-                                    <SelectItem value="AmEx">AmEx</SelectItem>
-                                    <SelectItem value="Verizon">
-                                        Verizon
-                                    </SelectItem>
-                                    <SelectItem value="Citi">Citi</SelectItem>
-                                    <SelectItem value="International">
-                                        International
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+                                allowOther={allowFieldOther}
+                                onCustomOptionAdded={handleCustomTypeAdded}
+                                placeholder="Select the type of Spot"
+                                otherInputPlaceholder="Enter spot type"
+                                triggerClassName={
+                                    orderModalStyles.selectTrigger
+                                }
+                            />
                         </div>
 
                         <div className="flex flex-3 flex-col gap-1.5">
@@ -511,19 +666,24 @@ export default function AddAudioModal({
                             <p className={orderModalStyles.helper}>
                                 Select the type of Cuts
                             </p>
-                            <MultiSelectCombobox
+                            <MultiSelectWithOther
                                 id="cuts"
-                                options={availableCuts}
+                                options={addCutOptions}
                                 value={cuts}
                                 onValueChange={setCuts}
+                                onCustomOptionAdded={handleCustomCutAdded}
+                                allowOther={allowFieldOther}
                                 placeholder="Select Cuts"
                                 emptyMessage="No cuts found."
-                                triggerClassName={orderModalStyles.selectTrigger}
+                                otherInputPlaceholder="Enter custom cut"
+                                triggerClassName={
+                                    orderModalStyles.selectTrigger
+                                }
                             />
                         </div>
 
                         <div className="flex flex-row justify-around gap-2 text-xs sm:justify-center">
-                            <div className="flex flex-col gap-2">
+                            <div className="flex max-w-[75px] flex-col gap-2">
                                 <Label
                                     className={cn(
                                         'pb-4',
@@ -533,10 +693,9 @@ export default function AddAudioModal({
                                     Duration
                                 </Label>
                                 <div className="flex flex-col gap-2">
-                                    {DURATION_OPTIONS.map((d) => {
+                                    {allDurationPills.map((d) => {
                                         const isDisabled =
-                                            (d == ':15' && type != 'Generic') ||
-                                            type === 'International';
+                                            isDurationPillDisabled(d, type);
 
                                         return (
                                             <PillButton
@@ -555,27 +714,54 @@ export default function AddAudioModal({
                                             </PillButton>
                                         );
                                     })}
-                                    {extraDurationLabel !== null && (
-                                        <PillButton
-                                            key={extraDurationLabel}
-                                            className="w-full"
-                                            selected={duration.includes(
-                                                extraDurationLabel,
-                                            )}
-                                            disabled={type === 'International'}
-                                            onClick={() =>
-                                                type !== 'International' &&
-                                                setDuration((prev) =>
-                                                    toggleInArray(
-                                                        prev,
-                                                        extraDurationLabel,
-                                                    ),
-                                                )
-                                            }
-                                        >
-                                            {extraDurationLabel}
-                                        </PillButton>
-                                    )}
+                                    {extraDurationLabel !== null &&
+                                        !allDurationPills.includes(
+                                            extraDurationLabel,
+                                        ) && (
+                                            <PillButton
+                                                key={extraDurationLabel}
+                                                className="w-full"
+                                                selected={duration.includes(
+                                                    extraDurationLabel,
+                                                )}
+                                                disabled={
+                                                    type === 'International'
+                                                }
+                                                onClick={() =>
+                                                    type !== 'International' &&
+                                                    setDuration((prev) =>
+                                                        toggleInArray(
+                                                            prev,
+                                                            extraDurationLabel,
+                                                        ),
+                                                    )
+                                                }
+                                            >
+                                                {extraDurationLabel}
+                                            </PillButton>
+                                        )}
+                                    <TextPillInput
+                                        id="add-audio-custom-duration"
+                                        numericOnly
+                                        value={customDurationDraft}
+                                        onChange={setCustomDurationDraft}
+                                        onCommit={handleAddCustomDurationCommit}
+                                        selected={
+                                            customDurationDraft.trim() !== '' &&
+                                            customDurationInputToPillLabel(
+                                                customDurationDraft,
+                                                'audio',
+                                            ) !== null &&
+                                            duration.includes(
+                                                customDurationInputToPillLabel(
+                                                    customDurationDraft,
+                                                    'audio',
+                                                )!,
+                                            )
+                                        }
+                                        disabled={type === 'International'}
+                                        className="w-full"
+                                    />
                                 </div>
                             </div>
 

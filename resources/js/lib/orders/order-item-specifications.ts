@@ -213,6 +213,16 @@ export function orderItemDueDateDisplay(item: OrderItem): string {
 }
 
 export function orderItemIsci(item: OrderItem): string {
+    if (item.specifiable != null && typeof item.specifiable === 'object') {
+        const direct = specString(
+            item.specifiable as OrderItemSpecRecord,
+            'isci',
+        );
+        if (direct) {
+            return direct;
+        }
+    }
+
     return specString(orderItemSpecRecord(item), 'isci');
 }
 

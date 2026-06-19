@@ -19,9 +19,16 @@ export async function commitOrderItemBulkWrite(deps: {
     patch: OrderItemBulkPatch;
     refreshOpenOrder: (orderId: number) => Promise<unknown>;
     successMessage?: string;
+    skipRefresh?: boolean;
 }): Promise<CommitOrderItemBulkWriteResult> {
-    const { orderId, orderItemIds, patch, refreshOpenOrder, successMessage } =
-        deps;
+    const {
+        orderId,
+        orderItemIds,
+        patch,
+        refreshOpenOrder,
+        successMessage,
+        skipRefresh = false,
+    } = deps;
 
     if (orderItemIds.length === 0) {
         return { ok: false, message: 'No line items selected to update.' };
@@ -32,7 +39,9 @@ export async function commitOrderItemBulkWrite(deps: {
             order_item_ids: orderItemIds,
             ...patch,
         });
-        await refreshOpenOrder(orderId);
+        if (!skipRefresh) {
+            await refreshOpenOrder(orderId);
+        }
         const message =
             successMessage ?? result.message ?? 'Line item(s) updated.';
         toast.success(message);

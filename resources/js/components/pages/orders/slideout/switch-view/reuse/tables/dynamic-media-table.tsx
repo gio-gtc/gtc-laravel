@@ -271,20 +271,25 @@ export default function MediaTable({
                                                     {cellEditing &&
                                                     (editScope === 'broadcast' ||
                                                         editScope ===
-                                                            'socialLine') ? (
+                                                            'socialLine' ||
+                                                        editScope ===
+                                                            'radio') ? (
                                                         <EditableCellInput
                                                             variant="orderSlideoutTableCells"
                                                             type="number"
                                                             min={0}
                                                             step={1}
                                                             value={
-                                                                parseDurationWireAsSeconds(
-                                                                    row.duration_wire ??
-                                                                        String(
-                                                                            row.duration_seconds,
-                                                                        ),
-                                                                ) ??
-                                                                row.duration_seconds
+                                                                row.duration_wire ===
+                                                                ''
+                                                                    ? ''
+                                                                    : (parseDurationWireAsSeconds(
+                                                                          row.duration_wire ??
+                                                                              String(
+                                                                                  row.duration_seconds,
+                                                                              ),
+                                                                      ) ??
+                                                                      row.duration_seconds)
                                                             }
                                                             itemId={row.id}
                                                             field="duration_seconds"
@@ -301,6 +306,14 @@ export default function MediaTable({
                                                                 field,
                                                                 value,
                                                             ) => {
+                                                                if (value === '') {
+                                                                    cellEditing.onCellChange(
+                                                                        itemId,
+                                                                        'duration_wire',
+                                                                        '',
+                                                                    );
+                                                                    return;
+                                                                }
                                                                 const seconds =
                                                                     typeof value ===
                                                                     'number'
@@ -435,7 +448,8 @@ export default function MediaTable({
                                                     ) : editScope ===
                                                           'broadcast' ||
                                                       editScope ===
-                                                          'socialLine' ? (
+                                                          'socialLine' ||
+                                                      editScope === 'radio' ? (
                                                         durationDisplayLabel(
                                                             row.duration_wire ??
                                                                 String(

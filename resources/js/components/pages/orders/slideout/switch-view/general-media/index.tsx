@@ -9,49 +9,24 @@ import { buildOrderItemStatusSelectOptions } from '@/components/utils/editable-t
 import {
     getAssignedUsersForVenueItem,
     venueItemMediaLineLabel,
-    venueItemStatusIdToLabel,
-    venueItemStatusLabelToId,
     venueItemsArtTableRow,
     venueItemsMediaTableRow,
+    venueItemStatusIdToLabel,
+    venueItemStatusLabelToId,
     type OrdersVenueLineCatalog,
 } from '@/components/utils/venue-items';
 import { useOrderSlideoutCatalog } from '@/contexts/order-slideout-catalog-context';
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
-import { isGtcStaffUser } from '@/lib/user-organisation';
-import {
-    broadcastCreateAdapter,
-    broadcastUpdateAdapter,
-    radioCreateAdapter,
-    radioUpdateAdapter,
-    socialCreateAdapter,
-    socialUpdateAdapter,
-    validateRadioRowSpecifications,
-} from '@/lib/orders/order-item-adapters';
-import type { OrderItemUpdateAdapter } from '@/lib/orders/order-item-adapters/types';
-import { validateSocialRowSpecifications } from '@/lib/orders/order-item-adapters/social';
+import { useChat } from '@/hooks/use-chat';
+import { useEditableTable } from '@/hooks/use-editable-table';
+import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
+import { plainTextToChatDoc } from '@/lib/chat-utils';
+import { parseDurationWireAsSeconds } from '@/lib/orders/broadcast-spec-wire';
 import {
     isInlineDurationUnchanged,
     isInlineStatusUnchanged,
     rowAssigneesUnchanged,
 } from '@/lib/orders/inline-edit-noop';
-import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
-import {
-    OrderItemApiError,
-    reviseOrderItem,
-    syncOrderItemAssignees,
-} from '@/lib/orders/order-item-api-client';
-import { orderItemAssigneesToUsers } from '@/lib/orders/orders-filter-users';
-import {
-    assertBulkSelectionWritable,
-    canApproveOrderItemDeliverable,
-    canEditOrderItemAssignees,
-    canEditOrderLineItem,
-    canEditOrderLineItemStatus,
-    canInitiateOrderItemRevision,
-    canStaffOverrideInactiveRowEdits,
-    isOrderLineItemEditDisabled,
-} from '@/lib/orders/order-line-item-write-access';
-import { ORDER_ITEM_STATUS_ID } from '@/lib/orders/order-item-statuses';
 import {
     canShowMediaPreview,
     MEDIA_PREVIEW_STATUSES,
@@ -60,15 +35,41 @@ import {
     type MediaPreviewStatus,
 } from '@/lib/orders/media-preview';
 import {
+    artCreateAdapter,
+    broadcastCreateAdapter,
+    broadcastUpdateAdapter,
+    radioCreateAdapter,
+    radioUpdateAdapter,
+    socialCreateAdapter,
+    socialUpdateAdapter,
+    validateRadioRowSpecifications,
+} from '@/lib/orders/order-item-adapters';
+import type { AddKeyArtStaticAssetsFormValues } from './modals/add-key-art-static-assets-modal';
+import { validateSocialRowSpecifications } from '@/lib/orders/order-item-adapters/social';
+import type { OrderItemUpdateAdapter } from '@/lib/orders/order-item-adapters/types';
+import {
+    OrderItemApiError,
+    reviseOrderItem,
+    syncOrderItemAssignees,
+} from '@/lib/orders/order-item-api-client';
+import { ORDER_ITEM_STATUS_ID } from '@/lib/orders/order-item-statuses';
+import {
     apiOrderItemTableStatus,
     isMediaTableRowStillInCart,
 } from '@/lib/orders/order-item-table-rows';
-import { useChat } from '@/hooks/use-chat';
-import { useEditableTable } from '@/hooks/use-editable-table';
-import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
-import { plainTextToChatDoc } from '@/lib/chat-utils';
+import {
+    assertBulkSelectionWritable,
+    canApproveOrderItemDeliverable,
+    canEditOrderLineItem,
+    canEditOrderLineItemStatus,
+    canInitiateOrderItemRevision,
+    canStaffOverrideInactiveRowEdits,
+    isOrderLineItemEditDisabled,
+} from '@/lib/orders/order-line-item-write-access';
+import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
+import { orderItemAssigneesToUsers } from '@/lib/orders/orders-filter-users';
 import { resolveSlideoutCatalog } from '@/lib/orders/slideout-catalog-defaults';
-import { patchOrderItemSpecificationsInOrder } from '@/lib/orders/slideout/order-mutations';
+import { isGtcStaffUser } from '@/lib/user-organisation';
 import {
     OrderItemsArtRow,
     OrderItemsBroadcastRadioSocialRow,
@@ -85,7 +86,7 @@ import {
     type Venue,
 } from '@/types';
 import { usePage } from '@inertiajs/react';
-import { format, isValid, parse, parseISO } from 'date-fns';
+import { format, isValid, parse } from 'date-fns';
 import { useCallback, useMemo, useRef, useState, type RefObject } from 'react';
 import { toast } from 'react-toastify';
 import { ChatThread } from '../reuse/chat';
@@ -153,7 +154,10 @@ function mediaLinePatchAdapterForScope(
 
 function mediaLineUpdateAdapterForScope(
     tableScope: 'broadcast' | 'socialLine' | 'radio',
-): Pick<OrderItemUpdateAdapter<OrderItemsBroadcastRow>, 'typePatch' | 'cutPatch'> {
+): Pick<
+    OrderItemUpdateAdapter<OrderItemsBroadcastRow>,
+    'typePatch' | 'cutPatch'
+> {
     return mediaLinePatchAdapterForScope(tableScope);
 }
 
@@ -169,11 +173,7 @@ function createMediaLineCellChangeHandler(
     ) => void,
     dataRef: RefObject<MediaTableRow[]>,
 ) {
-    return (
-        itemId: number | string,
-        field: string,
-        value: string | number,
-    ) => {
+    return (itemId: number | string, field: string, value: string | number) => {
         if (field === 'spot_type' || field === 'cut') {
             const row = dataRef.current.find(
                 (r) => String(r.id) === String(itemId),
@@ -215,10 +215,7 @@ function createMediaLineCellKeyDownHandler(
         scope?: string,
     ) => {
         handleCellKeyDown(e, itemId, field, scope);
-        if (
-            e.key === 'Escape' &&
-            (field === 'spot_type' || field === 'cut')
-        ) {
+        if (e.key === 'Escape' && (field === 'spot_type' || field === 'cut')) {
             queueMicrotask(() => {
                 const row = dataRef.current.find(
                     (r) => String(r.id) === String(itemId),
@@ -252,13 +249,36 @@ function applyOptimisticMediaLineBulkPatch(
         if (!idSet.has(String(row.id))) {
             continue;
         }
-        const spot_type =
-            field === 'spot_type' ? value : (row.spot_type ?? '');
+        const spot_type = field === 'spot_type' ? value : (row.spot_type ?? '');
         const cut = field === 'cut' ? value : (row.cut ?? '');
         patchRowFields(row.id, {
             spot_type,
             cut,
             cutName: venueItemMediaLineLabel(spot_type, cut),
+        });
+    }
+}
+
+function applyOptimisticDurationBulkPatch(
+    bulkTargetIds: number[],
+    durationWire: string,
+    dataRef: RefObject<MediaTableRow[]>,
+    patchRowFields: (
+        itemId: number | string,
+        patch: Partial<MediaTableRow>,
+    ) => void,
+) {
+    const parsedSeconds =
+        parseDurationWireAsSeconds(durationWire) ??
+        (Number.parseInt(durationWire, 10) || 0);
+    const idSet = new Set(bulkTargetIds.map((id) => String(id)));
+    for (const row of dataRef.current) {
+        if (!idSet.has(String(row.id))) {
+            continue;
+        }
+        patchRowFields(row.id, {
+            duration_wire: durationWire,
+            duration_seconds: parsedSeconds,
         });
     }
 }
@@ -334,7 +354,6 @@ function GeneralMediaView({
         getMenuItemForCategory,
         orderCatalogLoading,
         openOrder,
-        setOpenOrder,
         refreshOpenOrder,
         applyParentOrderBadgeUpdate,
         removeOrderItemFromCart,
@@ -345,9 +364,8 @@ function GeneralMediaView({
         ORDER_MENU_CATEGORY_QUADRANTS.broadcast,
     );
     const apiSlideoutOrderId = catalog.slideoutApiOrderId;
-    const canAdminEditInactiveRows = canStaffOverrideInactiveRowEdits(
-        userRoles,
-    );
+    const canAdminEditInactiveRows =
+        canStaffOverrideInactiveRowEdits(userRoles);
     const canEditAssignees = canAdminEditInactiveRows;
     const canEditStatus = isGtcStaffUser(auth.user);
     const { replaceVenueItem } = slideout;
@@ -449,8 +467,9 @@ function GeneralMediaView({
         [auth.user, userRoles],
     );
 
-    const [deliverableUpdatingRowIds, setDeliverableUpdatingRowIds] =
-        useState<ReadonlySet<string>>(() => new Set());
+    const [deliverableUpdatingRowIds, setDeliverableUpdatingRowIds] = useState<
+        ReadonlySet<string>
+    >(() => new Set());
 
     const isDeliverableUpdating = useCallback(
         (rowId: string | number) =>
@@ -577,10 +596,7 @@ function GeneralMediaView({
                     r.tour_venue_id === orderItem.orderVenue.id,
             )
             .map((row) =>
-                mapBroadcastRadioSocialRow(
-                    row,
-                    'Broadcast & Streaming Video',
-                ),
+                mapBroadcastRadioSocialRow(row, 'Broadcast & Streaming Video'),
             );
     }, [orderItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
 
@@ -592,9 +608,7 @@ function GeneralMediaView({
                     r.type === 'social' &&
                     r.tour_venue_id === orderItem.orderVenue.id,
             )
-            .map((row) =>
-                mapBroadcastRadioSocialRow(row, 'Social Video'),
-            );
+            .map((row) => mapBroadcastRadioSocialRow(row, 'Social Video'));
     }, [orderItem, slideout.venue_items, mapBroadcastRadioSocialRow]);
 
     const venueRadioWithCallbacks = useMemo(() => {
@@ -621,8 +635,7 @@ function GeneralMediaView({
                     ? apiOrderItemTableStatus(row.id, openOrder)
                     : undefined;
                 const resolvedStatus =
-                    statusOverride ??
-                    venueItemStatusIdToLabel(row.status_id);
+                    statusOverride ?? venueItemStatusIdToLabel(row.status_id);
                 const staticRow = venueItemsArtTableRow(
                     row,
                     resolveAssignedForRow(row.id),
@@ -837,6 +850,14 @@ function GeneralMediaView({
         [createOrderItemsFromForm],
     );
 
+    const handleKeyArtAdd = useCallback(
+        async (form: AddKeyArtStaticAssetsFormValues) => {
+            const result = await createOrderItemsFromForm(artCreateAdapter, form);
+            return result;
+        },
+        [createOrderItemsFromForm],
+    );
+
     const closeAudioModal = useCallback(() => {
         setAudioModalOpen(false);
         setRadioModalMode('add');
@@ -879,12 +900,7 @@ function GeneralMediaView({
             closeBroadcastModal();
             return { failed: false };
         },
-        [
-            openOrder,
-            auth.user,
-            commitOrderItemBulkWrite,
-            closeBroadcastModal,
-        ],
+        [openOrder, auth.user, commitOrderItemBulkWrite, closeBroadcastModal],
     );
 
     const handleSocialEditSave = useCallback(
@@ -907,7 +923,10 @@ function GeneralMediaView({
 
             setSocialFieldErrors(undefined);
 
-            const patch = socialUpdateAdapter.rowToFullBulkPatch(row, openOrder);
+            const patch = socialUpdateAdapter.rowToFullBulkPatch(
+                row,
+                openOrder,
+            );
             const result = await commitOrderItemBulkWrite(
                 [Number(row.id)],
                 patch,
@@ -1196,9 +1215,7 @@ function GeneralMediaView({
     );
 
     const handleTableCellBlurWithPersist = useCallback(
-        async (
-            tableScope: 'broadcast' | 'socialLine' | 'radio' | 'static',
-        ) => {
+        async (tableScope: 'broadcast' | 'socialLine' | 'radio' | 'static') => {
             const ctxByScope = {
                 broadcast: {
                     editing: broadcastEditingCell,
@@ -1273,8 +1290,33 @@ function GeneralMediaView({
                 const original = inlineOriginalRef.current;
                 const mediaRow = row as MediaTableRow;
                 const durationWire =
-                    mediaRow.duration_wire ??
-                    String(mediaRow.duration_seconds);
+                    mediaRow.duration_wire ?? String(mediaRow.duration_seconds);
+                if (durationWire.trim() === '') {
+                    if (
+                        original?.itemId === row.id &&
+                        original.field === 'duration_seconds'
+                    ) {
+                        const revertedSeconds =
+                            parseDurationWireAsSeconds(
+                                String(original.value),
+                            ) ??
+                            (Number.parseInt(String(original.value), 10) ||
+                                0);
+                        ctx.handleChange(
+                            row.id,
+                            'duration_wire',
+                            String(original.value),
+                        );
+                        ctx.handleChange(
+                            row.id,
+                            'duration_seconds',
+                            revertedSeconds,
+                        );
+                    }
+                    inlineOriginalRef.current = null;
+                    cellPersistGuardRef.current = null;
+                    return;
+                }
                 if (
                     original?.itemId === row.id &&
                     original.field === 'duration_seconds' &&
@@ -1299,8 +1341,16 @@ function GeneralMediaView({
                     bulkTargetIds,
                     durationAdapter.durationPatch(durationWire),
                 );
-                if (
-                    !result.ok &&
+                if (result.ok) {
+                    if (ctx.patchRowFields) {
+                        applyOptimisticDurationBulkPatch(
+                            bulkTargetIds,
+                            durationWire,
+                            ctx.dataRef,
+                            ctx.patchRowFields,
+                        );
+                    }
+                } else if (
                     original?.itemId === row.id &&
                     original.field === 'duration_seconds'
                 ) {
@@ -1370,15 +1420,6 @@ function GeneralMediaView({
                             ctx.patchRowFields,
                         );
                     }
-                    if (openOrder) {
-                        setOpenOrder(
-                            patchOrderItemSpecificationsInOrder(
-                                openOrder,
-                                bulkTargetIds,
-                                patch.specifications ?? {},
-                            ),
-                        );
-                    }
                 } else if (
                     !result.ok &&
                     original?.itemId === row.id &&
@@ -1429,10 +1470,7 @@ function GeneralMediaView({
                 if (
                     original?.itemId === row.id &&
                     original.field === 'status' &&
-                    isInlineStatusUnchanged(
-                        String(original.value),
-                        row.status,
-                    )
+                    isInlineStatusUnchanged(String(original.value), row.status)
                 ) {
                     inlineOriginalRef.current = null;
                     cellPersistGuardRef.current = null;
@@ -1478,7 +1516,6 @@ function GeneralMediaView({
             userRoles,
             commitOrderItemBulkWrite,
             selectedRowIds,
-            setOpenOrder,
         ],
     );
 
@@ -1543,10 +1580,9 @@ function GeneralMediaView({
             }
 
             const orderItemIds = rowsToUpdate.map((row) => Number(row.id));
-            const result = await commitOrderItemBulkWrite(
-                orderItemIds,
-                { due_date: dueDateIso },
-            );
+            const result = await commitOrderItemBulkWrite(orderItemIds, {
+                due_date: dueDateIso,
+            });
             if (result.ok) {
                 setDueDateModalOpen(false);
             }
@@ -1575,10 +1611,7 @@ function GeneralMediaView({
                 return;
             }
 
-            const frozenStatuses = new Set([
-                'Cancelled',
-                'Revision Request',
-            ]);
+            const frozenStatuses = new Set(['Cancelled', 'Revision Request']);
             const selectedRows = [
                 ...localBroadcastRows,
                 ...localSocialLineRows,
@@ -1614,7 +1647,9 @@ function GeneralMediaView({
             );
 
             const fulfilled = results.filter(
-                (result): result is PromiseFulfilledResult<
+                (
+                    result,
+                ): result is PromiseFulfilledResult<
                     Awaited<ReturnType<typeof syncOrderItemAssignees>>
                 > => result.status === 'fulfilled',
             );
@@ -1648,8 +1683,8 @@ function GeneralMediaView({
                         : undefined;
                     const message =
                         reason.status === 403
-                            ? (reason.message ||
-                              'You do not have permission to update assignees.')
+                            ? reason.message ||
+                              'You do not have permission to update assignees.'
                             : (validationMessage ?? reason.message);
                     setAssigneeSaveError(message);
                     toast.error(message);
@@ -1840,7 +1875,7 @@ function GeneralMediaView({
         [localSocialLineRows, statusFilter, sortDirection],
     );
 
-    const filteredRadioData = useMemo(
+    const filteredAudioData = useMemo(
         () => filterAndSortRows(localRadioRows, statusFilter, sortDirection),
         [localRadioRows, statusFilter, sortDirection],
     );
@@ -1967,8 +2002,8 @@ function GeneralMediaView({
                     onPreviewClick={openSocialVideoPreview}
                 />
                 <MediaTable
-                    title="Radio"
-                    data={filteredRadioData}
+                    title="Audio"
+                    data={filteredAudioData}
                     cellEditing={sharedRadioCellEditing}
                     editScope="radio"
                     allowEditInactiveRows={canAdminEditInactiveRows}
@@ -2174,6 +2209,7 @@ function GeneralMediaView({
             <AddKeyArtStaticAssetsModal
                 isOpen={keyArtModalOpen}
                 onClose={() => setKeyArtModalOpen(false)}
+                onAdd={handleKeyArtAdd}
                 isUSOrder={
                     orderItem?.venue ? orderItem.venue.country_id === 1 : true
                 }

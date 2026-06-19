@@ -25,7 +25,7 @@ import {
     defaultSocialCut,
     defaultSocialSpotType,
 } from '@/lib/orders/order-item-venue-defaults';
-import { orderItemTypeFromCategoryId } from '@/lib/orders/order-menu-categories';
+import { orderItemRowTypeFromItem } from '@/lib/orders/order-menu-categories';
 import type {
     OrderItemAssigned,
     OrderItemsArtRow,
@@ -126,9 +126,7 @@ export function mapApiOrderItemToVenueRow(
     order: ApiOrder,
     item: OrderItem,
 ): OrderItemsRow | null {
-    const orderType = orderItemTypeFromCategoryId(
-        item.order_menu_item?.order_menu_category_id,
-    );
+    const orderType = orderItemRowTypeFromItem(item);
     if (!orderType) {
         return null;
     }

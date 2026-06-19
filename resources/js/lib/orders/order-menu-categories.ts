@@ -1,5 +1,10 @@
 import type { OrderItemsRowType } from '@/types';
-import type { ApiOrder, OrderMenuCategoryId } from '@/types/orders-api';
+import type { OrderItem, OrderMenuCategoryId } from '@/types/orders-api';
+import {
+    isBroadcastOrderItem,
+    isRadioOrderItem,
+    isSocialOrderItem,
+} from '@/lib/orders/order-item-specifications';
 
 export const ORDER_MENU_CATEGORY_QUADRANTS = {
     broadcast: 1,
@@ -41,6 +46,28 @@ export function orderItemTypeFromCategoryId(
         default:
             return null;
     }
+}
+
+/** Resolve venue row type when API omits `order_menu_item` embed (e.g. POST create). */
+export function orderItemRowTypeFromItem(item: OrderItem): OrderItemsRowType | null {
+    const fromCategory = orderItemTypeFromCategoryId(
+        item.order_menu_item?.order_menu_category_id,
+    );
+    if (fromCategory) {
+        return fromCategory;
+    }
+
+    if (isBroadcastOrderItem(item)) {
+        return 'broadcast';
+    }
+    if (isSocialOrderItem(item)) {
+        return 'social';
+    }
+    if (isRadioOrderItem(item)) {
+        return 'radio';
+    }
+
+    return null;
 }
 
 export function categoryIdFromVenueItemType(

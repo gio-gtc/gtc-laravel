@@ -2,6 +2,7 @@ import {
     VENUE_ITEM_ART_PACKAGE_TYPES,
     type VenueItemArtPackageType,
 } from '@/components/pages/orders/slideout/switch-view/general-media/modals/spot-type-cuts-options';
+import type { SequentialCreateResult } from '@/lib/orders/order-item-adapters/types';
 import { Label } from '@/components/ui/label';
 import { useEffect, useState } from 'react';
 import OrderModalLayout from './order-modal-layout';
@@ -19,7 +20,9 @@ export interface AddKeyArtStaticAssetsFormValues {
 interface AddKeyArtStaticAssetsModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onAdd?: (values: AddKeyArtStaticAssetsFormValues) => void;
+    onAdd?: (
+        values: AddKeyArtStaticAssetsFormValues,
+    ) => Promise<SequentialCreateResult | void>;
     isUSOrder?: boolean;
 }
 
@@ -45,8 +48,11 @@ export default function AddKeyArtStaticAssetsModal({
         setTypes((prev) => toggleInArray(prev, option));
     };
 
-    const handleAddToOrder = () => {
-        onAdd?.({ types });
+    const handleAddToOrder = async () => {
+        if (!onAdd || types.length === 0) {
+            return;
+        }
+        await onAdd({ types });
         onClose();
     };
 

@@ -1,7 +1,9 @@
+import type { OrderItemBulkPatch } from '@/lib/orders/order-item-adapters/types';
 import type { OrderItemsRow } from '@/types';
 import type { ApiOrder, OrderItem } from '@/types/orders-api';
 import {
     isBroadcastOrderItem,
+    isRadioOrderItem,
     isSocialOrderItem,
     orderItemSpecRecord,
 } from '@/lib/orders/order-item-specifications';
@@ -65,7 +67,9 @@ export function patchOrderItemSpecificationsInOrder(
 
         if (
             item.specifiable != null &&
-            (isBroadcastOrderItem(item) || isSocialOrderItem(item))
+            (isBroadcastOrderItem(item) ||
+                isSocialOrderItem(item) ||
+                isRadioOrderItem(item))
         ) {
             return {
                 ...item,
@@ -83,6 +87,44 @@ export function patchOrderItemSpecificationsInOrder(
                 ...existingSpecs,
                 ...specifications,
             },
+        };
+    });
+
+    return { ...order, order_items: items };
+}
+
+/** Apply bulk-write fields onto matching order items (optimistic modal/inline edit). */
+export function patchOrderItemsBulkInOrder(
+    order: ApiOrder,
+    orderItemIds: number[],
+    patch: OrderItemBulkPatch,
+): ApiOrder {
+    if (orderItemIds.length === 0) {
+        return order;
+    }
+
+    if (patch.specifications && Object.keys(patch.specifications).length > 0) {
+        return patchOrderItemSpecificationsInOrder(
+            order,
+            orderItemIds,
+            patch.specifications,
+        );
+    }
+
+    const idSet = new Set(orderItemIds.map((id) => Number(id)));
+    const items = (order.order_items ?? []).map((item) => {
+        if (!idSet.has(item.id)) {
+            return item;
+        }
+
+        return {
+            ...item,
+            ...(patch.due_date !== undefined
+                ? { due_date: patch.due_date }
+                : {}),
+            ...(patch.order_item_status_id !== undefined
+                ? { order_item_status_id: patch.order_item_status_id }
+                : {}),
         };
     });
 

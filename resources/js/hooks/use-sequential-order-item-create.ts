@@ -2,6 +2,7 @@ import {
     createOrderItem,
     OrderItemApiError,
 } from '@/lib/orders/order-item-api-client';
+import { draftToPendingArtRow } from '@/lib/orders/order-item-adapters/art';
 import { draftToPendingBroadcastRow } from '@/lib/orders/order-item-adapters/broadcast';
 import { draftToPendingRadioRow } from '@/lib/orders/order-item-adapters/radio';
 import { draftToPendingSocialRow } from '@/lib/orders/order-item-adapters/social';
@@ -11,14 +12,24 @@ import type {
     SequentialCreateResult,
 } from '@/lib/orders/order-item-adapters/types';
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
+import { orderItemIsci } from '@/lib/orders/order-item-specifications';
+import {
+    apiOrderToLegacySlideout,
+    mapApiOrderItemToVenueRow,
+} from '@/lib/orders/slideout/api-order-slideout';
 import { upsertOrderItem } from '@/lib/orders/slideout/order-mutations';
 import type { OrderItemsRow } from '@/types';
-import type { ApiOrder } from '@/types/orders-api';
+import type { OrderCatalogMenuItem } from '@/types/order-catalog';
+import type { ApiOrder, OrderItem, OrderMenuItem, ParentOrderUpdate } from '@/types/orders-api';
+import type { Dispatch, SetStateAction } from 'react';
 
 export type SequentialCreateDeps = {
     order: ApiOrder;
-    setOpenOrder: React.Dispatch<React.SetStateAction<ApiOrder | null>>;
-    setExtraVenueItems: React.Dispatch<React.SetStateAction<OrderItemsRow[]>>;
+    setOpenOrder: Dispatch<SetStateAction<ApiOrder | null>>;
+    setExtraVenueItems: Dispatch<SetStateAction<OrderItemsRow[]>>;
+    applyParentOrderBadgeUpdate?: (
+        patch: ParentOrderUpdate | undefined,
+    ) => void;
 };
 
 function pendingRowsForDrafts<TForm>(
@@ -27,7 +38,10 @@ function pendingRowsForDrafts<TForm>(
     order: ApiOrder,
     orderMenuItemId: number,
     catalogTags?: string[],
-): { drafts: ReturnType<OrderItemCreateAdapter<TForm>['expandDrafts']>; pendingRows: OrderItemsRow[] } {
+): {
+    drafts: ReturnType<OrderItemCreateAdapter<TForm>['expandDrafts']>;
+    pendingRows: OrderItemsRow[];
+} {
     let pendingCounter = 0;
     const dueDate =
         order.due_date?.split('T')[0] ?? new Date().toISOString().slice(0, 10);
@@ -61,7 +75,78 @@ function draftToPendingRow<TForm>(
     if (adapter.categoryId === ORDER_MENU_CATEGORY_QUADRANTS.radio) {
         return draftToPendingRadioRow(draft, tourVenueId, catalogTags);
     }
+    if (adapter.categoryId === ORDER_MENU_CATEGORY_QUADRANTS.keyArt) {
+        return draftToPendingArtRow(draft, tourVenueId);
+    }
     return draftToPendingBroadcastRow(draft, tourVenueId, catalogTags);
+}
+
+function enrichCreatedOrderItem(
+    item: OrderItem,
+    catalogMenuItem?: OrderCatalogMenuItem,
+): OrderItem {
+    if (!catalogMenuItem) {
+        return item;
+    }
+
+    const orderMenuItem: OrderMenuItem =
+        item.order_menu_item ??
+        ({
+            id: catalogMenuItem.id,
+            name: catalogMenuItem.name,
+            order_menu_category_id: catalogMenuItem.order_menu_category_id,
+        } satisfies OrderMenuItem);
+
+    return {
+        ...item,
+        order_menu_item: orderMenuItem,
+    };
+}
+
+function resolvePendingAfterCreate(
+    nextOrder: ApiOrder,
+    pendingRow: OrderItemsRow,
+    createdItem: OrderItem,
+): OrderItemsRow {
+    const mapped = mapApiOrderItemToVenueRow(nextOrder, createdItem);
+    if (mapped) {
+        return mapped;
+    }
+
+    return {
+        ...pendingRow,
+        id: String(createdItem.id),
+        isci:
+            orderItemIsci(createdItem) ||
+            (pendingRow.isci === 'Adding…' ? '' : pendingRow.isci),
+        is_pending: false,
+    } as OrderItemsRow;
+}
+
+function syncExtraAfterCreate(
+    prevExtra: OrderItemsRow[],
+    pendingId: string,
+    nextOrder: ApiOrder,
+    pendingRow: OrderItemsRow,
+    createdItem: OrderItem,
+): OrderItemsRow[] {
+    const apiRows =
+        apiOrderToLegacySlideout(nextOrder).catalogExtensions.venue_items ?? [];
+    const createdId = String(createdItem.id);
+    const inApiList = apiRows.some((row) => String(row.id) === createdId);
+
+    if (inApiList) {
+        return prevExtra.filter((row) => String(row.id) !== pendingId);
+    }
+
+    const resolved = resolvePendingAfterCreate(
+        nextOrder,
+        pendingRow,
+        createdItem,
+    );
+    return prevExtra.map((row) =>
+        String(row.id) === pendingId ? resolved : row,
+    );
 }
 
 export async function runSequentialOrderItemCreate<TForm>(
@@ -70,8 +155,10 @@ export async function runSequentialOrderItemCreate<TForm>(
     orderMenuItemId: number,
     deps: SequentialCreateDeps,
     catalogTags?: string[],
+    catalogMenuItem?: OrderCatalogMenuItem,
 ): Promise<SequentialCreateResult> {
-    const { order, setOpenOrder, setExtraVenueItems } = deps;
+    const { order, setOpenOrder, setExtraVenueItems, applyParentOrderBadgeUpdate } =
+        deps;
     const { drafts, pendingRows } = pendingRowsForDrafts(
         adapter,
         form,
@@ -90,6 +177,7 @@ export async function runSequentialOrderItemCreate<TForm>(
 
     for (let index = 0; index < drafts.length; index += 1) {
         const draft = drafts[index]!;
+        const pendingRow = pendingRows[index]!;
 
         try {
             const result = await createOrderItem(
@@ -97,12 +185,31 @@ export async function runSequentialOrderItemCreate<TForm>(
                 adapter.toStorePayload(draft),
             );
 
-            setOpenOrder((prev) =>
-                prev ? upsertOrderItem(prev, result.order_item) : prev,
+            applyParentOrderBadgeUpdate?.(result.parent_order_update);
+
+            const createdItem = enrichCreatedOrderItem(
+                result.order_item,
+                catalogMenuItem,
             );
-            setExtraVenueItems((prev) =>
-                prev.filter((row) => String(row.id) !== draft.pendingId),
-            );
+
+            let nextOrder: ApiOrder | undefined;
+            setOpenOrder((prevOrder) => {
+                nextOrder = prevOrder
+                    ? upsertOrderItem(prevOrder, createdItem)
+                    : undefined;
+                return nextOrder ?? prevOrder;
+            });
+            if (nextOrder) {
+                setExtraVenueItems((prevExtra) =>
+                    syncExtraAfterCreate(
+                        prevExtra,
+                        draft.pendingId,
+                        nextOrder!,
+                        pendingRow,
+                        createdItem,
+                    ),
+                );
+            }
             succeeded += 1;
         } catch (error) {
             setExtraVenueItems((prev) =>

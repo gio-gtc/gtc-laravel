@@ -1,6 +1,11 @@
 import { Input, InputVariants } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react';
+import {
+    useLayoutEffect,
+    useRef,
+    useState,
+    type KeyboardEvent,
+} from 'react';
 
 const INPUT_VARIANT_MEASURE_CLASSES: Partial<Record<InputVariants, string>> = {
     default: 'text-sm',
@@ -67,13 +72,37 @@ export function EditableCellInput({
     const isEmpty =
         emptyValue !== undefined &&
         (value === emptyValue || (type === 'number' && Number(value) === 0));
+
+    const [numberDraft, setNumberDraft] = useState<string | null>(null);
+
+    useLayoutEffect(() => {
+        if (isEditing && type === 'number') {
+            if (value === '' || value === emptyValue) {
+                setNumberDraft('');
+            } else {
+                setNumberDraft(String(value));
+            }
+        } else if (!isEditing) {
+            setNumberDraft(null);
+        }
+    }, [isEditing, type, value, emptyValue]);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (disabled) return;
-        const newValue =
-            type === 'number'
-                ? parseFloat(e.target.value) || 0
-                : e.target.value;
-        onChange(itemId, field, newValue);
+        if (type === 'number') {
+            const raw = e.target.value;
+            setNumberDraft(raw);
+            if (raw === '' || raw === '-') {
+                onChange(itemId, field, '');
+                return;
+            }
+            const parsed = Number.parseFloat(raw);
+            if (Number.isFinite(parsed)) {
+                onChange(itemId, field, parsed);
+            }
+            return;
+        }
+        onChange(itemId, field, e.target.value);
     };
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -95,7 +124,14 @@ export function EditableCellInput({
     const inputPlaceholder =
         emptyPlaceholder ??
         (emptyValue !== undefined ? String(emptyValue) : undefined);
-    const inputValue = isEmpty ? '' : type === 'number' ? value : String(value);
+    const inputValue =
+        isEditing && type === 'number' && numberDraft !== null
+            ? numberDraft
+            : isEmpty
+              ? ''
+              : type === 'number'
+                ? value
+                : String(value);
 
     const alignmentClasses = {
         left: 'text-left',

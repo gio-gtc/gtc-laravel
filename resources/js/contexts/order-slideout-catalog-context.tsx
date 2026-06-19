@@ -7,6 +7,7 @@ import { commitOrderItemBulkWrite as runCommitOrderItemBulkWrite } from '@/lib/o
 import type { OrderItemBulkPatch } from '@/lib/orders/order-item-adapters/types';
 import type { CommitOrderItemBulkWriteResult } from '@/lib/orders/order-item-bulk-write';
 import { mergeApiOrderUpdate } from '@/lib/orders/merge-api-order-update';
+import { applyParentOrderUpdate } from '@/lib/orders/apply-parent-order-update';
 import {
     deleteOrderItem,
     fetchOrderCatalogMenu,
@@ -26,6 +27,8 @@ import {
     upsertOrderItem,
     venueRowToStoreItemPayload,
 } from '@/lib/orders/slideout';
+import { mergeApiAndExtraVenueItems } from '@/lib/orders/slideout/merge-api-and-extra-venue-items';
+import { patchOrderItemsBulkInOrder } from '@/lib/orders/slideout/order-mutations';
 import type { OrderCatalogMenu } from '@/types/order-catalog';
 import type { OrderItemsRow, SharedData } from '@/types';
 import type { OrdersCatalogValue } from '@/types/inertia-pages';
@@ -82,6 +85,7 @@ type OrderSlideoutCatalogContextValue = {
         orderItemIds: number[],
         patch: OrderItemBulkPatch,
         successMessage?: string,
+        options?: { skipRefresh?: boolean },
     ) => Promise<CommitOrderItemBulkWriteResult>;
 };
 
@@ -365,8 +369,10 @@ export function OrderSlideoutCatalogProvider({
                     order: openOrder,
                     setOpenOrder,
                     setExtraVenueItems,
+                    applyParentOrderBadgeUpdate,
                 },
                 menuItem.tags,
+                menuItem,
             );
 
             if (result.failed) {
@@ -381,12 +387,11 @@ export function OrderSlideoutCatalogProvider({
                         ? 'Line item added.'
                         : `${result.succeeded} line items added.`,
                 );
-                void refreshOpenOrder(openOrder.id);
             }
 
             return result;
         },
-        [openOrder, getMenuItemForCategory, refreshOpenOrder],
+        [openOrder, getMenuItemForCategory, applyParentOrderBadgeUpdate],
     );
 
     const removeOrderItemFromCart = useCallback(
@@ -421,6 +426,7 @@ export function OrderSlideoutCatalogProvider({
             orderItemIds: number[],
             patch: OrderItemBulkPatch,
             successMessage?: string,
+            options?: { skipRefresh?: boolean },
         ): Promise<CommitOrderItemBulkWriteResult> => {
             if (!openOrder) {
                 toast.error('Open an order before updating line items.');
@@ -430,13 +436,29 @@ export function OrderSlideoutCatalogProvider({
                 };
             }
 
-            return runCommitOrderItemBulkWrite({
+            const skipRefresh = options?.skipRefresh ?? true;
+            const snapshot = openOrder;
+
+            setOpenOrder((prev) =>
+                prev
+                    ? patchOrderItemsBulkInOrder(prev, orderItemIds, patch)
+                    : prev,
+            );
+
+            const result = await runCommitOrderItemBulkWrite({
                 orderId: openOrder.id,
                 orderItemIds,
                 patch,
                 refreshOpenOrder,
                 successMessage,
+                skipRefresh,
             });
+
+            if (!result.ok) {
+                setOpenOrder(snapshot);
+            }
+
+            return result;
         },
         [openOrder, refreshOpenOrder],
     );
@@ -454,10 +476,11 @@ export function OrderSlideoutCatalogProvider({
             };
         }
 
-        const apiItems = [
-            ...(legacyPayload.catalogExtensions.venue_items ?? []),
-            ...extraVenueItems,
-        ];
+        const apiDerived = legacyPayload.catalogExtensions.venue_items ?? [];
+        const apiItems = mergeApiAndExtraVenueItems(
+            apiDerived,
+            extraVenueItems,
+        );
 
         return {
             ...baseCatalog,
