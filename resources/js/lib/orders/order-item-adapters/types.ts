@@ -49,3 +49,12 @@ export interface OrderItemUpdateAdapter<TVenueRow extends OrderItemsRow> {
     typePatch: (type: string) => OrderItemBulkPatch;
     cutPatch: (cut: string) => OrderItemBulkPatch;
 }
+
+export interface ArtOrderItemUpdateAdapter<TVenueRow extends OrderItemsRow> {
+    categoryId: OrderMenuCategoryId;
+    rowToFullBulkPatch: (row: TVenueRow) => OrderItemBulkPatch;
+    typePatch: (type: string) => OrderItemBulkPatch;
+    widthPatch: (width: number | null) => OrderItemBulkPatch;
+    heightPatch: (height: number | null) => OrderItemBulkPatch;
+    statusPatch: (statusId: number) => OrderItemBulkPatch;
+}

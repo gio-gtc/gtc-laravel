@@ -132,6 +132,16 @@ export interface OrderItemRadioSpecification {
     asset_tracking?: AssetTrackingMap;
 }
 
+/** gtc-api wire shape for `OrderItemKeyArtSpecs` specifiable (basename on wire). */
+export interface OrderItemKeyArtSpecification {
+    id?: number;
+    type: string;
+    w: string | null;
+    h: string | null;
+    created_at?: string;
+    updated_at?: string;
+}
+
 /** Audit feedback on Status 5 (Revision Request) rows only. */
 export interface OrderItemRevisionInstructions {
     id: number;
@@ -157,6 +167,7 @@ export interface OrderItem {
         | OrderItemBroadcastSpecification
         | OrderItemSocialSpecification
         | OrderItemRadioSpecification
+        | OrderItemKeyArtSpecification
         | Record<string, unknown>;
     status_lookup?: OrderItemStatusLookup;
     root_order_item_id?: number | null;

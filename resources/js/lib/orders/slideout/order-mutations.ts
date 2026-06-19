@@ -3,6 +3,7 @@ import type { OrderItemsRow } from '@/types';
 import type { ApiOrder, OrderItem } from '@/types/orders-api';
 import {
     isBroadcastOrderItem,
+    isKeyArtOrderItem,
     isRadioOrderItem,
     isSocialOrderItem,
     orderItemSpecRecord,
@@ -69,7 +70,8 @@ export function patchOrderItemSpecificationsInOrder(
             item.specifiable != null &&
             (isBroadcastOrderItem(item) ||
                 isSocialOrderItem(item) ||
-                isRadioOrderItem(item))
+                isRadioOrderItem(item) ||
+                isKeyArtOrderItem(item))
         ) {
             return {
                 ...item,

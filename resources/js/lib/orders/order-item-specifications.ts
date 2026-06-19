@@ -23,6 +23,12 @@ export const SOCIAL_SPECIFIABLE_TYPE_LEGACY =
 export const RADIO_SPECIFIABLE_TYPE =
     'App\\Models\\OrderItemRadioSpecification';
 
+export const KEY_ART_SPECIFIABLE_TYPE = 'OrderItemKeyArtSpecs';
+
+/** Optional FQCN if gtc-api ever emits the full class name. */
+export const KEY_ART_SPECIFIABLE_TYPE_FQCN =
+    'App\\Models\\OrderItemKeyArtSpecs';
+
 export type OrderItemSpecRecord = Record<string, unknown>;
 
 export function specString(specs: OrderItemSpecRecord, key: string): string {
@@ -63,12 +69,26 @@ export function isRadioOrderItem(item: OrderItem): boolean {
     );
 }
 
+export function isKeyArtOrderItem(item: OrderItem): boolean {
+    if (
+        item.specifiable_type === KEY_ART_SPECIFIABLE_TYPE ||
+        item.specifiable_type === KEY_ART_SPECIFIABLE_TYPE_FQCN
+    ) {
+        return true;
+    }
+    return (
+        item.order_menu_item?.order_menu_category_id ===
+        ORDER_MENU_CATEGORY_QUADRANTS.keyArt
+    );
+}
+
 export function orderItemSpecRecord(item: OrderItem): OrderItemSpecRecord {
     if (
         item.specifiable != null &&
         (isBroadcastOrderItem(item) ||
             isSocialOrderItem(item) ||
-            isRadioOrderItem(item))
+            isRadioOrderItem(item) ||
+            isKeyArtOrderItem(item))
     ) {
         return item.specifiable as OrderItemSpecRecord;
     }
@@ -169,9 +189,39 @@ export function orderItemEncodingLabels(specs: OrderItemSpecRecord): string[] {
     return encodingLabelsFromWire(specs.encoding);
 }
 
+function parseArtDimensionField(
+    specs: OrderItemSpecRecord,
+    key: 'w' | 'h',
+): number | null {
+    const raw = specs[key];
+    if (raw == null || raw === '') {
+        return null;
+    }
+    if (typeof raw === 'string') {
+        const trimmed = raw.trim();
+        if (!trimmed) {
+            return null;
+        }
+        const parsed = Number.parseInt(trimmed, 10);
+        return Number.isFinite(parsed) ? parsed : null;
+    }
+    if (typeof raw === 'number' && Number.isFinite(raw)) {
+        return raw;
+    }
+    return null;
+}
+
 export function parseOrderItemDimensions(
     specs: OrderItemSpecRecord,
-): { width: number; height: number } {
+): { width: number | null; height: number | null } {
+    const fromWire = {
+        width: parseArtDimensionField(specs, 'w'),
+        height: parseArtDimensionField(specs, 'h'),
+    };
+    if (fromWire.width != null || fromWire.height != null) {
+        return fromWire;
+    }
+
     const raw =
         specString(specs, 'dimensions') ||
         (specString(specs, 'type').includes('×') ? specString(specs, 'type') : '');
@@ -181,16 +231,37 @@ export function parseOrderItemDimensions(
         return { width: Number(match[1]), height: Number(match[2]) };
     }
 
-    const width = typeof specs.width === 'number' ? specs.width : 0;
-    const height = typeof specs.height === 'number' ? specs.height : 0;
+    const width = typeof specs.width === 'number' ? specs.width : null;
+    const height = typeof specs.height === 'number' ? specs.height : null;
 
     return { width, height };
+}
+
+/** Wire value for PATCH `specifications.w` / `specifications.h`. */
+export function artDimensionWire(value: number | null): string | null {
+    if (value == null) {
+        return null;
+    }
+    return String(value);
 }
 
 export function orderItemCutLabel(item: OrderItem): string {
     const menuName = item.order_menu_item?.name?.trim() ?? '';
     const specs = orderItemSpecRecord(item);
     const specType = specString(specs, 'type');
+
+    if (isKeyArtOrderItem(item)) {
+        const { width, height } = parseOrderItemDimensions(specs);
+        const parts = [menuName];
+        if (specType && specType !== menuName) {
+            parts.push(specType);
+        }
+        if (width != null && height != null) {
+            parts.push(`${width}×${height}`);
+        }
+        return parts.filter(Boolean).join(' · ') || menuName || `Item ${item.id}`;
+    }
+
     const specDimensions = specString(specs, 'dimensions');
 
     const parts = [menuName];

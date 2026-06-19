@@ -214,4 +214,76 @@ assert(socialRow.language === 'English', 'social specifiable language');
 assert(socialRow.card_holder === 'Amex', 'social specifiable card_holder');
 assert(socialRow.isci === 'GTC000200', 'social specifiable isci');
 
+const keyArtWithDimensionsOrder: ApiOrder = {
+    ...sampleOrder,
+    order_items: [
+        {
+            id: 142,
+            order_id: 1,
+            order_menu_item_id: 4,
+            order_item_status_id: 3,
+            locked_price: '350.00',
+            status: 'In Production',
+            due_date: '2026-07-15',
+            created_at: '2026-06-19T21:02:23.000000Z',
+            updated_at: '2026-06-19T21:02:23.000000Z',
+            revision_number: 0,
+            specifiable_type: 'OrderItemKeyArtSpecs',
+            specifiable: {
+                id: 24,
+                type: 'Socials & Web Banners',
+                w: '1200',
+                h: '1200',
+            },
+            root_order_item_id: null,
+            supersedes_order_item_id: null,
+            invoice_line_id: null,
+            order_menu_item: {
+                id: 4,
+                name: 'Key Art & Static Assets',
+                order_menu_category_id: 4,
+            },
+            assignees: [],
+        },
+    ],
+};
+
+const keyArtPayload = apiOrderToLegacySlideout(keyArtWithDimensionsOrder);
+const keyArtRow = keyArtPayload.catalogExtensions.venue_items?.[0];
+assert(keyArtRow?.type === 'art', 'key art specifiable row type');
+if (keyArtRow?.type !== 'art') {
+    throw new Error('expected art row');
+}
+assert(
+    keyArtRow.package_type === 'Socials & Web Banners',
+    'key art package_type from specifiable.type',
+);
+assert(keyArtRow.width === 1200, 'key art width from specifiable.w');
+assert(keyArtRow.height === 1200, 'key art height from specifiable.h');
+assert(!('isci' in keyArtRow), 'key art row has no isci');
+
+const keyArtNullDimensionsOrder: ApiOrder = {
+    ...keyArtWithDimensionsOrder,
+    order_items: [
+        {
+            ...keyArtWithDimensionsOrder.order_items![0],
+            specifiable: {
+                id: 25,
+                type: 'Key Art Package',
+                w: null,
+                h: null,
+            },
+        },
+    ],
+};
+
+const keyArtNullPayload = apiOrderToLegacySlideout(keyArtNullDimensionsOrder);
+const keyArtNullRow = keyArtNullPayload.catalogExtensions.venue_items?.[0];
+assert(keyArtNullRow?.type === 'art', 'key art null dimensions row type');
+if (keyArtNullRow?.type !== 'art') {
+    throw new Error('expected art row with null dimensions');
+}
+assert(keyArtNullRow.width === null, 'key art null width');
+assert(keyArtNullRow.height === null, 'key art null height');
+
 console.log('api-order-to-legacy-slideout: ok');

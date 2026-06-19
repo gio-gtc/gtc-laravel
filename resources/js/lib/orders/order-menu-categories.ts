@@ -2,6 +2,7 @@ import type { OrderItemsRowType } from '@/types';
 import type { OrderItem, OrderMenuCategoryId } from '@/types/orders-api';
 import {
     isBroadcastOrderItem,
+    isKeyArtOrderItem,
     isRadioOrderItem,
     isSocialOrderItem,
 } from '@/lib/orders/order-item-specifications';
@@ -65,6 +66,9 @@ export function orderItemRowTypeFromItem(item: OrderItem): OrderItemsRowType | n
     }
     if (isRadioOrderItem(item)) {
         return 'radio';
+    }
+    if (isKeyArtOrderItem(item)) {
+        return 'art';
     }
 
     return null;

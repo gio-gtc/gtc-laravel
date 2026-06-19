@@ -159,14 +159,15 @@ export default function StaticAssetsMediaTable({
                                                     {cellEditing ? (
                                                         <EditableCellInput
                                                             variant="orderSlideoutTableCells"
-                                                            value={row.width}
+                                                            value={
+                                                                row.width ?? ''
+                                                            }
                                                             itemId={row.id}
                                                             field="width"
                                                             type="number"
                                                             min={0}
                                                             step={1}
-                                                            emptyValue={0}
-                                                            emptyPlaceholder="0"
+                                                            emptyPlaceholder="—"
                                                             onChange={
                                                                 cellEditing.onCellChange
                                                             }
@@ -189,7 +190,7 @@ export default function StaticAssetsMediaTable({
                                                             }
                                                         />
                                                     ) : (
-                                                        row.width
+                                                        (row.width ?? '—')
                                                     )}
                                                 </TableCell>
 
@@ -198,14 +199,15 @@ export default function StaticAssetsMediaTable({
                                                     {cellEditing ? (
                                                         <EditableCellInput
                                                             variant="orderSlideoutTableCells"
-                                                            value={row.height}
+                                                            value={
+                                                                row.height ?? ''
+                                                            }
                                                             itemId={row.id}
                                                             field="height"
                                                             type="number"
                                                             min={0}
                                                             step={1}
-                                                            emptyValue={0}
-                                                            emptyPlaceholder="0"
+                                                            emptyPlaceholder="—"
                                                             onChange={
                                                                 cellEditing.onCellChange
                                                             }
@@ -228,7 +230,7 @@ export default function StaticAssetsMediaTable({
                                                             }
                                                         />
                                                     ) : (
-                                                        row.height
+                                                        (row.height ?? '—')
                                                     )}
                                                 </TableCell>
 
@@ -263,7 +265,7 @@ export default function StaticAssetsMediaTable({
                                                 <TableCell>
                                                     <div
                                                         className={cn(
-                                                            'min-h-[inherit]',
+                                                            'min-h-[30px]',
                                                             !assigneeEditsLocked &&
                                                                 'cursor-pointer',
                                                         )}

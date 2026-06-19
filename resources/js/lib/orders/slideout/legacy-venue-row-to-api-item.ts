@@ -2,6 +2,7 @@ import {
     categoryIdFromVenueItemType,
     defaultOrderMenuItemIdForCategory,
 } from '@/lib/orders/order-menu-categories';
+import { artDimensionWire } from '@/lib/orders/order-item-specifications';
 import type {
     OrderItemsArtRow,
     OrderItemsBroadcastRadioSocialRow,
@@ -42,10 +43,8 @@ function mediaSpecifications(
 function artSpecifications(row: OrderItemsArtRow): Record<string, unknown> {
     return {
         type: row.package_type,
-        dimensions:
-            row.width > 0 && row.height > 0
-                ? `${row.width}x${row.height}`
-                : row.label,
+        w: artDimensionWire(row.width),
+        h: artDimensionWire(row.height),
     };
 }
 

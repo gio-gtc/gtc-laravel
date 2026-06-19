@@ -1,5 +1,6 @@
 export {
     artCreateAdapter,
+    artUpdateAdapter,
     draftToPendingArtRow,
 } from './art';
 export {
@@ -19,6 +20,7 @@ export {
     validateRadioRowSpecifications,
 } from './radio';
 export type {
+    ArtOrderItemUpdateAdapter,
     OrderItemBulkPatch,
     OrderItemCreateAdapter,
     OrderItemCreateDraft,

@@ -353,8 +353,8 @@ export interface MediaTableProps {
 export interface StaticAssetsTableRow {
     id: string | number;
     cutName: string;
-    width: number;
-    height: number;
+    width: number | null;
+    height: number | null;
     dueDate: string; // e.g., "1/15/25"
     assigned: User[];
     status: OrderItemStatus['type'];
@@ -503,8 +503,8 @@ export interface OrderItemsArtRow extends OrderItemsRowBase {
     /** Billable line from Add Key Art & Static Assets (one row per selected type). */
     package_type: OrderItemArtPackageType;
     label: string;
-    width: number;
-    height: number;
+    width: number | null;
+    height: number | null;
     status_id: number;
     thumbnailUrl?: string;
     mediaUrl?: string;

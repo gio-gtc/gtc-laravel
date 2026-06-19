@@ -1,44 +1,26 @@
 import type { AddKeyArtStaticAssetsFormValues } from '@/components/pages/orders/slideout/switch-view/general-media/modals/add-key-art-static-assets-modal';
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
+import { artDimensionWire } from '@/lib/orders/order-item-specifications';
 import { formatShortUsDate } from '@/lib/format/date';
 import type { OrderItemsArtRow } from '@/types';
 import type {
+    ArtOrderItemUpdateAdapter,
     OrderItemCreateAdapter,
     OrderItemCreateDraft,
     OrderItemExpandContext,
 } from './types';
 
-const ART_DIMENSIONS_BY_PACKAGE: Record<
-    OrderItemsArtRow['package_type'],
-    { label: string; width: number; height: number }
-> = {
-    'Key Art Package': {
-        label: 'Key Art',
-        width: 1400,
-        height: 400,
-    },
-    'Socials & Web Banners': {
-        label: 'Socials & Web Banners',
-        width: 1400,
-        height: 400,
-    },
-    'International Key art & Social Package': {
-        label: 'International Key art & Social Package',
-        width: 1400,
-        height: 400,
-    },
-};
-
 function buildArtSpecifications(packageType: string): Record<string, unknown> {
-    const defaults =
-        ART_DIMENSIONS_BY_PACKAGE[
-            packageType as OrderItemsArtRow['package_type']
-        ];
+    return { type: packageType };
+}
+
+function buildArtUpdateSpecifications(
+    row: OrderItemsArtRow,
+): Record<string, unknown> {
     return {
-        type: packageType,
-        dimensions: defaults
-            ? `${defaults.width}x${defaults.height}`
-            : packageType,
+        type: row.package_type,
+        w: artDimensionWire(row.width),
+        h: artDimensionWire(row.height),
     };
 }
 
@@ -68,18 +50,15 @@ export function draftToPendingArtRow(
     const packageType = String(
         specs.type ?? 'Key Art Package',
     ) as OrderItemsArtRow['package_type'];
-    const defaults =
-        ART_DIMENSIONS_BY_PACKAGE[packageType] ??
-        ART_DIMENSIONS_BY_PACKAGE['Key Art Package'];
 
     return {
         id: draft.pendingId,
         tour_venue_id: tourVenueId,
         type: 'art',
         package_type: packageType,
-        label: defaults.label,
-        width: defaults.width,
-        height: defaults.height,
+        label: packageType,
+        width: null,
+        height: null,
         created_date: new Date().toISOString(),
         dueDate: formatShortUsDate(draft.due_date),
         status_id: 1,
@@ -97,3 +76,22 @@ export const artCreateAdapter: OrderItemCreateAdapter<AddKeyArtStaticAssetsFormV
             specifications: draft.specifications,
         }),
     };
+
+export const artUpdateAdapter: ArtOrderItemUpdateAdapter<OrderItemsArtRow> = {
+    categoryId: ORDER_MENU_CATEGORY_QUADRANTS.keyArt,
+    rowToFullBulkPatch: (row) => ({
+        specifications: buildArtUpdateSpecifications(row),
+    }),
+    typePatch: (type) => ({
+        specifications: { type: type.trim() },
+    }),
+    widthPatch: (width) => ({
+        specifications: { w: artDimensionWire(width) },
+    }),
+    heightPatch: (height) => ({
+        specifications: { h: artDimensionWire(height) },
+    }),
+    statusPatch: (statusId) => ({
+        order_item_status_id: statusId,
+    }),
+};

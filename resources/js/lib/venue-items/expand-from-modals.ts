@@ -209,45 +209,21 @@ export function expandSocialRowsFromForm(
     return rows;
 }
 
-const DEFAULT_ART_BY_PACKAGE: Record<
-    OrderItemsArtRow['package_type'],
-    Pick<OrderItemsArtRow, 'label' | 'width' | 'height'>
-> = {
-    'Key Art Package': {
-        label: 'Key Art',
-        width: 1400,
-        height: 400,
-    },
-    'Socials & Web Banners': {
-        label: 'Socials & Web Banners',
-        width: 1400,
-        height: 400,
-    },
-    'International Key art & Social Package': {
-        label: 'International Key art & Social Package',
-        width: 1400,
-        height: 400,
-    },
-};
-
 /** One art row per selected package type. */
 export function expandKeyArtRowsFromForm(
     ctx: VenueItemExpandContext,
     form: AddKeyArtStaticAssetsFormValues,
 ): OrderItemsArtRow[] {
-    return form.types.map((package_type) => {
-        const defaults = DEFAULT_ART_BY_PACKAGE[package_type];
-        return {
-            id: ctx.nextId(),
-            tour_venue_id: ctx.tourVenueId,
-            type: 'art',
-            package_type,
-            label: defaults.label,
-            width: defaults.width,
-            height: defaults.height,
-            created_date: new Date().toISOString(),
-            dueDate: ctx.dueDate,
-            status_id: ctx.statusId,
-        };
-    });
+    return form.types.map((package_type) => ({
+        id: ctx.nextId(),
+        tour_venue_id: ctx.tourVenueId,
+        type: 'art',
+        package_type,
+        label: package_type,
+        width: null,
+        height: null,
+        created_date: new Date().toISOString(),
+        dueDate: ctx.dueDate,
+        status_id: ctx.statusId,
+    }));
 }

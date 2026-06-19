@@ -188,7 +188,7 @@ export function mapApiOrderItemToVenueRow(
         return row;
     }
 
-    const specs = item.specifications ?? {};
+    const specs = orderItemSpecRecord(item);
 
     if (orderType === 'radio') {
         const radioSpecs = orderItemSpecRecord(item);
@@ -215,13 +215,12 @@ export function mapApiOrderItemToVenueRow(
     }
 
     if (orderType === 'art') {
-        const { width, height } = parseOrderItemDimensions(
-            specs as Record<string, unknown>,
-        );
+        const artSpecs = orderItemSpecRecord(item);
+        const { width, height } = parseOrderItemDimensions(artSpecs);
         const row: OrderItemsArtRow = {
             ...base,
             type: 'art',
-            package_type: defaultArtPackage(specs as Record<string, unknown>),
+            package_type: defaultArtPackage(artSpecs),
             label: orderItemCutLabel(item),
             width,
             height,

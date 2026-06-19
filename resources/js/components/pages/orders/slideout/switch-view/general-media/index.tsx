@@ -36,6 +36,7 @@ import {
 } from '@/lib/orders/media-preview';
 import {
     artCreateAdapter,
+    artUpdateAdapter,
     broadcastCreateAdapter,
     broadcastUpdateAdapter,
     radioCreateAdapter,
@@ -188,6 +189,39 @@ function createMediaLineCellChangeHandler(
                 spot_type,
                 cut,
                 cutName: venueItemMediaLineLabel(spot_type, cut),
+            });
+            return;
+        }
+        handleCellChange(itemId, field, value);
+    };
+}
+
+function parseArtDimensionInput(value: string | number): number | null {
+    if (value === '' || value === null || value === undefined) {
+        return null;
+    }
+    const parsed =
+        typeof value === 'number'
+            ? value
+            : Number.parseInt(String(value).trim(), 10);
+    return Number.isFinite(parsed) ? parsed : null;
+}
+
+function createArtCellChangeHandler(
+    handleCellChange: (
+        itemId: number | string,
+        field: string,
+        value: string | number,
+    ) => void,
+    patchRowFields: (
+        itemId: number | string,
+        patch: Partial<StaticAssetsTableRow>,
+    ) => void,
+) {
+    return (itemId: number | string, field: string, value: string | number) => {
+        if (field === 'cutName') {
+            patchRowFields(itemId, {
+                cutName: String(value),
             });
             return;
         }
@@ -739,6 +773,7 @@ function GeneralMediaView({
         handleCellKeyDown: handleStaticCellKeyDown,
         isEditing: isStaticCellEditing,
         bulkPatchByIds: bulkPatchStaticRows,
+        patchRowFields: patchStaticRowFields,
         localDataRef: staticLocalDataRef,
     } = useEditableTable<StaticAssetsTableRow>({
         data: venueArtWithCallbacks,
@@ -1207,6 +1242,19 @@ function GeneralMediaView({
                                 : (mediaRow.cut ?? ''),
                         ),
                     };
+                } else if (field === 'cutName') {
+                    inlineOriginalRef.current = {
+                        itemId,
+                        field,
+                        value: row.cutName,
+                    };
+                } else if (field === 'width' || field === 'height') {
+                    const staticRow = row as StaticAssetsTableRow;
+                    inlineOriginalRef.current = {
+                        itemId,
+                        field,
+                        value: staticRow[field] ?? '',
+                    };
                 }
             }
             handleDoubleClick(itemId, field, scope);
@@ -1243,7 +1291,7 @@ function GeneralMediaView({
                     dataRef: staticLocalDataRef,
                     handleBlur: handleStaticCellBlur,
                     handleChange: handleStaticCellChange,
-                    patchRowFields: undefined,
+                    patchRowFields: patchStaticRowFields,
                 },
             } as const;
 
@@ -1448,6 +1496,91 @@ function GeneralMediaView({
                 return;
             }
 
+            if (
+                tableScope === 'static' &&
+                (editing.field === 'cutName' ||
+                    editing.field === 'width' ||
+                    editing.field === 'height')
+            ) {
+                if (!canEditOrderLineItem(auth.user, row, userRoles)) {
+                    cellPersistGuardRef.current = null;
+                    return;
+                }
+                const staticRow = row as StaticAssetsTableRow;
+                const original = inlineOriginalRef.current;
+                const selectedIds = [...selectedRowIds];
+                const bulkTargetIds =
+                    selectedIds.length > 1 && selectedIds.includes(row.id)
+                        ? selectedIds.map((id) => Number(id))
+                        : [Number(row.id)];
+
+                if (editing.field === 'cutName') {
+                    const currentValue = staticRow.cutName ?? '';
+                    if (
+                        original?.itemId === row.id &&
+                        original.field === 'cutName' &&
+                        String(original.value) === currentValue
+                    ) {
+                        inlineOriginalRef.current = null;
+                        cellPersistGuardRef.current = null;
+                        return;
+                    }
+                    const result = await commitOrderItemBulkWrite(
+                        bulkTargetIds,
+                        artUpdateAdapter.typePatch(currentValue),
+                    );
+                    if (
+                        !result.ok &&
+                        original?.itemId === row.id &&
+                        original.field === 'cutName' &&
+                        ctx.patchRowFields
+                    ) {
+                        ctx.patchRowFields(row.id, {
+                            cutName: String(original.value),
+                        });
+                    }
+                } else {
+                    const dimensionField =
+                        editing.field === 'width' ? 'width' : 'height';
+                    const currentValue = parseArtDimensionInput(
+                        staticRow[dimensionField] ?? '',
+                    );
+                    const originalValue =
+                        original?.itemId === row.id &&
+                        original.field === dimensionField
+                            ? parseArtDimensionInput(
+                                  String(original.value),
+                              )
+                            : null;
+                    if (currentValue === originalValue) {
+                        inlineOriginalRef.current = null;
+                        cellPersistGuardRef.current = null;
+                        return;
+                    }
+                    const patch =
+                        dimensionField === 'width'
+                            ? artUpdateAdapter.widthPatch(currentValue)
+                            : artUpdateAdapter.heightPatch(currentValue);
+                    const result = await commitOrderItemBulkWrite(
+                        bulkTargetIds,
+                        patch,
+                    );
+                    if (
+                        !result.ok &&
+                        original?.itemId === row.id &&
+                        original.field === dimensionField &&
+                        ctx.patchRowFields
+                    ) {
+                        ctx.patchRowFields(row.id, {
+                            [dimensionField]: originalValue,
+                        });
+                    }
+                }
+                inlineOriginalRef.current = null;
+                cellPersistGuardRef.current = null;
+                return;
+            }
+
             if (editing.field === 'status') {
                 if (!canEditOrderLineItemStatus(auth.user, row, userRoles)) {
                     cellPersistGuardRef.current = null;
@@ -1463,9 +1596,15 @@ function GeneralMediaView({
                     cellPersistGuardRef.current = null;
                     return;
                 }
-                const statusAdapter = mediaLinePatchAdapterForScope(
-                    tableScope as 'broadcast' | 'socialLine' | 'radio',
-                );
+                const statusAdapter =
+                    tableScope === 'static'
+                        ? artUpdateAdapter
+                        : mediaLinePatchAdapterForScope(
+                              tableScope as
+                                  | 'broadcast'
+                                  | 'socialLine'
+                                  | 'radio',
+                          );
                 const original = inlineOriginalRef.current;
                 if (
                     original?.itemId === row.id &&
@@ -1511,6 +1650,7 @@ function GeneralMediaView({
             staticLocalDataRef,
             handleStaticCellBlur,
             handleStaticCellChange,
+            patchStaticRowFields,
             openOrder,
             auth.user,
             userRoles,
@@ -2067,7 +2207,10 @@ function GeneralMediaView({
                     canEditAssignees={canEditAssignees}
                     onPreviewImageClick={openStaticImagePreview}
                     cellEditing={{
-                        onCellChange: handleStaticCellChange,
+                        onCellChange: createArtCellChangeHandler(
+                            handleStaticCellChange,
+                            patchStaticRowFields,
+                        ),
                         onCellDoubleClick: (
                             itemId: string | number,
                             field: string,
