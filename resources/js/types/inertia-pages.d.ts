@@ -117,7 +117,7 @@ export interface OrdersSlideoutCatalogExtensions {
     replaceVenueItem?: (row: VenueItemsRow) => void;
     /** When set, slideout is backed by gtc-api order data (inline edits are not persisted). */
     slideoutApiOrderId?: number;
-    submitOpenOrder?: () => void;
+    submitOpenOrder?: () => Promise<import('@/types/orders-api').SubmitOrderResponse>;
     orderCatalog?: import('./order-catalog').OrderCatalogMenu | null;
     orderCatalogLoading?: boolean;
     getMenuItemForCategory?: (

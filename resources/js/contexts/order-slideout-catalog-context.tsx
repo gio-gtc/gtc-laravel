@@ -18,7 +18,7 @@ import type {
     SequentialCreateResult,
 } from '@/lib/orders/order-item-adapters/types';
 import { resolveMenuItemByCategoryId } from '@/lib/orders/order-catalog';
-import { fetchOrderShow } from '@/lib/orders/orders-api-client';
+import { fetchOrderShow, submitOrder } from '@/lib/orders/orders-api-client';
 import {
     apiOrderToLegacySlideout,
     mergeSlideoutVenueItems,
@@ -37,6 +37,7 @@ import type {
     OrderItem,
     OrderMenuCategoryId,
     ParentOrderUpdate,
+    SubmitOrderResponse,
 } from '@/types/orders-api';
 import { router, usePage } from '@inertiajs/react';
 import {
@@ -69,7 +70,7 @@ type OrderSlideoutCatalogContextValue = {
         patch: ParentOrderUpdate | undefined,
     ) => void;
     refreshOpenOrder: (orderId: number) => Promise<ApiOrder | null>;
-    submitOpenOrder: () => void;
+    submitOpenOrder: () => Promise<SubmitOrderResponse>;
     registerTourOrdersInvalidator: (fn: TourOrdersInvalidator) => void;
     orderCatalog: OrderCatalogMenu | null;
     orderCatalogLoading: boolean;
@@ -251,24 +252,20 @@ export function OrderSlideoutCatalogProvider({
         return apiOrderToLegacySlideout(openOrder);
     }, [openOrder]);
 
-    const submitOpenOrder = useCallback(() => {
+    const submitOpenOrder = useCallback(async () => {
         if (!openOrder) {
-            return;
+            throw new Error('No order is open.');
         }
-        router.post(
-            `/orders/${openOrder.id}/submit`,
-            {},
-            {
-                preserveScroll: true,
-                onSuccess: () => {
-                    toast.success('Order submitted.');
-                    void refreshOpenOrder(openOrder.id);
-                },
-                onError: () => {
-                    toast.error('Failed to submit order.');
-                },
-            },
+
+        const response = await submitOrder(openOrder.id);
+
+        setOpenOrder((prev) =>
+            prev ? mergeApiOrderUpdate(prev, response.order) : response.order,
         );
+
+        void refreshOpenOrder(openOrder.id);
+
+        return response;
     }, [openOrder, refreshOpenOrder]);
 
     const replaceVenueItem = useCallback(

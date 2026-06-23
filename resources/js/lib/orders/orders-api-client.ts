@@ -8,6 +8,7 @@ import type {
     IndexOrder,
     OrderPatchPayload,
     PaginatedToursResponse,
+    SubmitOrderResponse,
     ToursPaginationMeta,
 } from '@/types/orders-api';
 
@@ -130,4 +131,48 @@ export async function patchOrder(
 
 export function hasMoreTours(pagination: ToursPaginationMeta): boolean {
     return pagination.current_page < pagination.last_page;
+}
+
+export class OrderSubmitApiError extends Error {
+    status: number;
+
+    constructor(message: string, status: number) {
+        super(message);
+        this.name = 'OrderSubmitApiError';
+        this.status = status;
+    }
+}
+
+export async function submitOrder(
+    orderId: number,
+    signal?: AbortSignal,
+): Promise<SubmitOrderResponse> {
+    const headers = getCsrfHeaders();
+
+    const response = await fetch(`/api/orders/${orderId}/submit`, {
+        method: 'POST',
+        headers,
+        credentials: 'same-origin',
+        signal,
+    });
+
+    const body = (await response.json()) as SubmitOrderResponse & {
+        message?: string;
+    };
+
+    if (!response.ok) {
+        throw new OrderSubmitApiError(
+            body.message ?? 'Could not submit order.',
+            response.status,
+        );
+    }
+
+    if (!body.order || !body.invoice) {
+        throw new OrderSubmitApiError(
+            'Invalid submit response from server.',
+            502,
+        );
+    }
+
+    return body;
 }

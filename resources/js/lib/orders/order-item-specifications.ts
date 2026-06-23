@@ -119,6 +119,14 @@ export function orderItemWireStatus(item: OrderItem): OrderItemStatus {
     return 'Still In Cart';
 }
 
+export function orderHasStillInCartItems(
+    order: ApiOrder | null | undefined,
+): boolean {
+    return (order?.order_items ?? []).some(
+        (item) => orderItemWireStatus(item) === 'Still In Cart',
+    );
+}
+
 export function orderItemAssetTracking(item: OrderItem): AssetTrackingMap {
     const specs = orderItemSpecRecord(item);
     const tracking = specs.asset_tracking;

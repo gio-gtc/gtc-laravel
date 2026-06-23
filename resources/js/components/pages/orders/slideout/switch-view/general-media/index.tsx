@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { LoadingDots } from '@/components/ui/loading-dots';
 import {
     Dialog,
     DialogContent,
@@ -52,6 +53,9 @@ import {
     reviseOrderItem,
     syncOrderItemAssignees,
 } from '@/lib/orders/order-item-api-client';
+import {
+    orderHasStillInCartItems,
+} from '@/lib/orders/order-item-specifications';
 import { ORDER_ITEM_STATUS_ID } from '@/lib/orders/order-item-statuses';
 import {
     apiOrderItemTableStatus,
@@ -68,6 +72,9 @@ import {
 } from '@/lib/orders/order-line-item-write-access';
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
 import { orderItemAssigneesToUsers } from '@/lib/orders/orders-filter-users';
+import {
+    OrderSubmitApiError,
+} from '@/lib/orders/orders-api-client';
 import { resolveSlideoutCatalog } from '@/lib/orders/slideout-catalog-defaults';
 import { isGtcStaffUser } from '@/lib/user-organisation';
 import {
@@ -85,6 +92,7 @@ import {
     type User,
     type Venue,
 } from '@/types';
+import type { SubmitInvoice } from '@/types/orders-api';
 import { usePage } from '@inertiajs/react';
 import { tableDueDateDisplayToIso } from '@/lib/format/date';
 import { useCallback, useMemo, useRef, useState, type RefObject } from 'react';
@@ -115,6 +123,7 @@ import AddSocialVideoModal, {
     type AddSocialVideoFormValues,
 } from './modals/add-social-video-modal';
 import RevisionRequestModal from './modals/revision-request-modal';
+import OrderSubmitSuccessModal from './modals/order-submit-success-modal';
 import { VENUE_ITEM_ART_PACKAGE_TYPES } from './modals/spot-type-cuts-options';
 import VideoPlayerModal from './modals/video-player-modal';
 
@@ -384,6 +393,7 @@ function GeneralMediaView({
         applyParentOrderBadgeUpdate,
         removeOrderItemFromCart,
         commitOrderItemBulkWrite,
+        submitOpenOrder,
     } = useOrderSlideoutCatalog();
     const slideout = resolveSlideoutCatalog(catalog);
     const broadcastMenuItem = getMenuItemForCategory(
@@ -773,6 +783,9 @@ function GeneralMediaView({
     });
 
     const [dueDateModalOpen, setDueDateModalOpen] = useState(false);
+    const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
+    const [submitSuccessInvoice, setSubmitSuccessInvoice] =
+        useState<SubmitInvoice | null>(null);
     const [assignedModalOpen, setAssignedModalOpen] = useState(false);
     const [dueDateSeedIso, setDueDateSeedIso] = useState<string | undefined>();
     const [assignedSeed, setAssignedSeed] = useState<User[]>([]);
@@ -1145,6 +1158,40 @@ function GeneralMediaView({
                 inv.venue_id === orderItem.venue!.id,
         );
     }, [order, orderItem, slideout.invoices]);
+
+    const hasCartItems = useMemo(
+        () => orderHasStillInCartItems(openOrder),
+        [openOrder],
+    );
+
+    const handleSubmitOrder = useCallback(async () => {
+        if (isSubmittingOrder || !openOrder || !hasCartItems) {
+            return;
+        }
+
+        setIsSubmittingOrder(true);
+        try {
+            const response = await submitOpenOrder();
+            setSubmitSuccessInvoice(response.invoice);
+        } catch (error) {
+            if (error instanceof OrderSubmitApiError && error.status === 409) {
+                toast.error(
+                    error.message ||
+                        'Your cart is empty or this order has already been submitted.',
+                );
+                return;
+            }
+
+            toast.error('Failed to submit order.');
+        } finally {
+            setIsSubmittingOrder(false);
+        }
+    }, [
+        hasCartItems,
+        isSubmittingOrder,
+        openOrder,
+        submitOpenOrder,
+    ]);
 
     const isDemoRow = orderItem != null && orderItem.venue === null;
 
@@ -2228,20 +2275,41 @@ function GeneralMediaView({
                 />
             </div>
 
-            {/* Billing Section */}
-            <SectionContainers title="Billing Invoices">
-                <BillingSection billingInvoices={billingInvoices} />
-            </SectionContainers>
+            {!openOrder?.is_demo ? (
+                <>
+                    {/* Billing Section */}
+                    <SectionContainers title="Billing Invoices">
+                        <BillingSection billingInvoices={billingInvoices} />
+                    </SectionContainers>
 
-            {/* Submit Order Buttons */}
-            <div className="flex justify-center gap-1 rounded-lg border bg-gray-50 px-1 py-0.5">
-                <Button className="h-[36px]" variant="outline" size="md">
-                    Cancel
-                </Button>
-                <Button className="h-[36px]" variant="destructive" size="md">
-                    Submit Order
-                </Button>
-            </div>
+                    {/* Submit Order Buttons */}
+                    <div className="flex justify-center gap-1 rounded-lg border bg-gray-50 px-1 py-0.5">
+                        <Button className="h-[36px]" variant="outline" size="md">
+                            Cancel
+                        </Button>
+                        <Button
+                            className="h-[36px]"
+                            variant="destructive"
+                            size="md"
+                            disabled={
+                                isSubmittingOrder ||
+                                !openOrder ||
+                                !hasCartItems
+                            }
+                            aria-busy={isSubmittingOrder}
+                            onClick={() => {
+                                void handleSubmitOrder();
+                            }}
+                        >
+                            {isSubmittingOrder ? (
+                                <LoadingDots />
+                            ) : (
+                                'Submit Order'
+                            )}
+                        </Button>
+                    </div>
+                </>
+            ) : null}
 
             {/* Attachments Section */}
             <SectionContainers title="Attachments">
@@ -2348,6 +2416,11 @@ function GeneralMediaView({
                 isUSOrder={
                     orderItem?.venue ? orderItem.venue.country_id === 1 : true
                 }
+            />
+            <OrderSubmitSuccessModal
+                isOpen={submitSuccessInvoice !== null}
+                onClose={() => setSubmitSuccessInvoice(null)}
+                invoice={submitSuccessInvoice}
             />
             <RevisionRequestModal
                 isOpen={revisionModalOpen}

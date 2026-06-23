@@ -6,3 +6,7 @@ export function formatCurrency(value: number): string {
         maximumFractionDigits: 2,
     }).format(value);
 }
+
+export function formatCents(cents: number): string {
+    return formatCurrency(cents / 100);
+}

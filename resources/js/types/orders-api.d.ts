@@ -451,3 +451,37 @@ export type CreateOrderForm = {
     local_deliverable_email: string;
     ordered_by_id?: number;
 };
+
+export type SubmitInvoiceLine = {
+    id: number;
+    invoice_id: number;
+    order_item_id: number;
+    description: string;
+    unit_price_cents: number;
+    quantity: number;
+    total_cents: number;
+    price: number;
+    created_at: string;
+    updated_at: string;
+};
+
+export type SubmitInvoice = {
+    id: number;
+    order_id: number;
+    organisation_id: number;
+    document_number: string;
+    status: 'Held' | 'Unpaid' | 'Paid';
+    subtotal_cents: number;
+    tax_cents: number;
+    total_cents: number;
+    payment_due: string;
+    lines: SubmitInvoiceLine[];
+    created_at: string;
+    updated_at: string;
+};
+
+export type SubmitOrderResponse = {
+    message: string;
+    order: ApiOrder;
+    invoice: SubmitInvoice;
+};
