@@ -55,6 +55,7 @@ import {
 } from '@/lib/orders/order-item-api-client';
 import {
     orderHasStillInCartItems,
+    orderCartBillingLines,
 } from '@/lib/orders/order-item-specifications';
 import { ORDER_ITEM_STATUS_ID } from '@/lib/orders/order-item-statuses';
 import {
@@ -92,7 +93,6 @@ import {
     type User,
     type Venue,
 } from '@/types';
-import type { SubmitInvoice } from '@/types/orders-api';
 import { usePage } from '@inertiajs/react';
 import { tableDueDateDisplayToIso } from '@/lib/format/date';
 import { useCallback, useMemo, useRef, useState, type RefObject } from 'react';
@@ -123,7 +123,6 @@ import AddSocialVideoModal, {
     type AddSocialVideoFormValues,
 } from './modals/add-social-video-modal';
 import RevisionRequestModal from './modals/revision-request-modal';
-import OrderSubmitSuccessModal from './modals/order-submit-success-modal';
 import { VENUE_ITEM_ART_PACKAGE_TYPES } from './modals/spot-type-cuts-options';
 import VideoPlayerModal from './modals/video-player-modal';
 
@@ -394,6 +393,7 @@ function GeneralMediaView({
         removeOrderItemFromCart,
         commitOrderItemBulkWrite,
         submitOpenOrder,
+        heldInvoicesForOpenOrder,
     } = useOrderSlideoutCatalog();
     const slideout = resolveSlideoutCatalog(catalog);
     const broadcastMenuItem = getMenuItemForCategory(
@@ -784,8 +784,6 @@ function GeneralMediaView({
 
     const [dueDateModalOpen, setDueDateModalOpen] = useState(false);
     const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
-    const [submitSuccessInvoice, setSubmitSuccessInvoice] =
-        useState<SubmitInvoice | null>(null);
     const [assignedModalOpen, setAssignedModalOpen] = useState(false);
     const [dueDateSeedIso, setDueDateSeedIso] = useState<string | undefined>();
     const [assignedSeed, setAssignedSeed] = useState<User[]>([]);
@@ -1164,6 +1162,11 @@ function GeneralMediaView({
         [openOrder],
     );
 
+    const cartLines = useMemo(
+        () => orderCartBillingLines(openOrder),
+        [openOrder],
+    );
+
     const handleSubmitOrder = useCallback(async () => {
         if (isSubmittingOrder || !openOrder || !hasCartItems) {
             return;
@@ -1171,8 +1174,8 @@ function GeneralMediaView({
 
         setIsSubmittingOrder(true);
         try {
-            const response = await submitOpenOrder();
-            setSubmitSuccessInvoice(response.invoice);
+            await submitOpenOrder();
+            toast.success('Order submitted.');
         } catch (error) {
             if (error instanceof OrderSubmitApiError && error.status === 409) {
                 toast.error(
@@ -2279,7 +2282,11 @@ function GeneralMediaView({
                 <>
                     {/* Billing Section */}
                     <SectionContainers title="Billing Invoices">
-                        <BillingSection billingInvoices={billingInvoices} />
+                        <BillingSection
+                            billingInvoices={billingInvoices}
+                            cartLines={cartLines}
+                            heldInvoices={heldInvoicesForOpenOrder}
+                        />
                     </SectionContainers>
 
                     {/* Submit Order Buttons */}
@@ -2416,11 +2423,6 @@ function GeneralMediaView({
                 isUSOrder={
                     orderItem?.venue ? orderItem.venue.country_id === 1 : true
                 }
-            />
-            <OrderSubmitSuccessModal
-                isOpen={submitSuccessInvoice !== null}
-                onClose={() => setSubmitSuccessInvoice(null)}
-                invoice={submitSuccessInvoice}
             />
             <RevisionRequestModal
                 isOpen={revisionModalOpen}

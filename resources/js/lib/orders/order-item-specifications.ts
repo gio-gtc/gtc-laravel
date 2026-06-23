@@ -127,6 +127,34 @@ export function orderHasStillInCartItems(
     );
 }
 
+export type OrderCartBillingLine = {
+    id: number;
+    reference: string;
+    amount: number;
+};
+
+export function orderItemLockedPriceAmount(item: OrderItem): number {
+    const raw = item.locked_price;
+    if (raw == null || raw === '') {
+        return 0;
+    }
+
+    const parsed = typeof raw === 'number' ? raw : parseFloat(String(raw));
+    return Number.isFinite(parsed) ? parsed : 0;
+}
+
+export function orderCartBillingLines(
+    order: ApiOrder | null | undefined,
+): OrderCartBillingLine[] {
+    return (order?.order_items ?? [])
+        .filter((item) => orderItemWireStatus(item) === 'Still In Cart')
+        .map((item) => ({
+            id: item.id,
+            reference: orderItemCutLabel(item),
+            amount: orderItemLockedPriceAmount(item),
+        }));
+}
+
 export function orderItemAssetTracking(item: OrderItem): AssetTrackingMap {
     const specs = orderItemSpecRecord(item);
     const tracking = specs.asset_tracking;

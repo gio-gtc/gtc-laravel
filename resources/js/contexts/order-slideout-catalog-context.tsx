@@ -37,6 +37,7 @@ import type {
     OrderItem,
     OrderMenuCategoryId,
     ParentOrderUpdate,
+    SubmitInvoice,
     SubmitOrderResponse,
 } from '@/types/orders-api';
 import { router, usePage } from '@inertiajs/react';
@@ -71,6 +72,7 @@ type OrderSlideoutCatalogContextValue = {
     ) => void;
     refreshOpenOrder: (orderId: number) => Promise<ApiOrder | null>;
     submitOpenOrder: () => Promise<SubmitOrderResponse>;
+    heldInvoicesForOpenOrder: SubmitInvoice[];
     registerTourOrdersInvalidator: (fn: TourOrdersInvalidator) => void;
     orderCatalog: OrderCatalogMenu | null;
     orderCatalogLoading: boolean;
@@ -110,6 +112,9 @@ export function OrderSlideoutCatalogProvider({
         null,
     );
     const [orderCatalogLoading, setOrderCatalogLoading] = useState(true);
+    const [heldInvoicesByOrderId, setHeldInvoicesByOrderId] = useState<
+        Record<number, SubmitInvoice[]>
+    >({});
     const tourInvalidatorRef = useRef<TourOrdersInvalidator | null>(null);
 
     useEffect(() => {
@@ -258,15 +263,36 @@ export function OrderSlideoutCatalogProvider({
         }
 
         const response = await submitOrder(openOrder.id);
+        const orderId = openOrder.id;
+
+        setHeldInvoicesByOrderId((prev) => {
+            const existing = prev[orderId] ?? [];
+            const withoutDuplicate = existing.filter(
+                (invoice) => invoice.id !== response.invoice.id,
+            );
+
+            return {
+                ...prev,
+                [orderId]: [...withoutDuplicate, response.invoice],
+            };
+        });
 
         setOpenOrder((prev) =>
             prev ? mergeApiOrderUpdate(prev, response.order) : response.order,
         );
 
-        void refreshOpenOrder(openOrder.id);
+        void refreshOpenOrder(orderId);
 
         return response;
     }, [openOrder, refreshOpenOrder]);
+
+    const heldInvoicesForOpenOrder = useMemo((): SubmitInvoice[] => {
+        if (!openOrder?.id) {
+            return [];
+        }
+
+        return heldInvoicesByOrderId[openOrder.id] ?? [];
+    }, [openOrder?.id, heldInvoicesByOrderId]);
 
     const replaceVenueItem = useCallback(
         (row: OrderItemsRow) => {
@@ -524,6 +550,7 @@ export function OrderSlideoutCatalogProvider({
             applyParentOrderBadgeUpdate,
             refreshOpenOrder,
             submitOpenOrder,
+            heldInvoicesForOpenOrder,
             registerTourOrdersInvalidator,
             orderCatalog,
             orderCatalogLoading,
@@ -544,6 +571,7 @@ export function OrderSlideoutCatalogProvider({
             applyParentOrderBadgeUpdate,
             refreshOpenOrder,
             submitOpenOrder,
+            heldInvoicesForOpenOrder,
             registerTourOrdersInvalidator,
             orderCatalog,
             orderCatalogLoading,

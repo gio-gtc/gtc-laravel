@@ -6,41 +6,38 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { formatCurrency } from '@/helper-functions/format-currency';
+import { formatCents, formatCurrency } from '@/helper-functions/format-currency';
+import { formatNumericUsDate } from '@/lib/format/date';
+import { formatSubmitInvoiceLineDescription } from '@/lib/orders/invoice-line-display';
+import type { OrderCartBillingLine } from '@/lib/orders/order-item-specifications';
 import { Invoice } from '@/types';
+import type { SubmitInvoice } from '@/types/orders-api';
 import { Download } from 'lucide-react';
 
-interface NewOrderItem {
-    id: string | number;
-    reference: string;
-    amount: number;
+interface BillingSectionProps {
+    billingInvoices: Invoice[];
+    cartLines: OrderCartBillingLine[];
+    heldInvoices: SubmitInvoice[];
 }
 
-const MOCK_NEW_ORDER_ITEMS: NewOrderItem[] = [
-    { id: 1, reference: 'Key Art Package 1400 × 400', amount: 420 },
-    { id: 2, reference: 'Socials & Web Banners', amount: 150 },
-];
-
-function BillingSection({ billingInvoices }: { billingInvoices: Invoice[] }) {
-    function formatBillingDate(dateString: string): string {
-        const date = new Date(dateString);
-        if (Number.isNaN(date.getTime())) return '—';
-        return new Intl.DateTimeFormat('en-US', {
-            month: 'numeric',
-            day: 'numeric',
-            year: '2-digit',
-        }).format(date);
-    }
-
-    const invoicedTotal = billingInvoices.reduce(
+function BillingSection({
+    billingInvoices,
+    cartLines,
+    heldInvoices,
+}: BillingSectionProps) {
+    const legacyInvoicedTotal = billingInvoices.reduce(
         (sum, inv) => sum + inv.amount,
         0,
     );
-    const newOrderTotal = MOCK_NEW_ORDER_ITEMS.reduce(
-        (sum, item) => sum + item.amount,
+    const heldInvoicedTotal = heldInvoices.reduce(
+        (sum, inv) => sum + inv.total_cents / 100,
         0,
     );
+    const invoicedTotal = legacyInvoicedTotal + heldInvoicedTotal;
+    const newOrderTotal = cartLines.reduce((sum, item) => sum + item.amount, 0);
     const grandTotal = invoicedTotal + newOrderTotal;
+    const hasInvoiceRows =
+        billingInvoices.length > 0 || heldInvoices.length > 0;
 
     return (
         <Table compactRows>
@@ -64,7 +61,7 @@ function BillingSection({ billingInvoices }: { billingInvoices: Invoice[] }) {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {billingInvoices.length === 0 ? (
+                {!hasInvoiceRows ? (
                     <TableRow>
                         <TableCell
                             colSpan={5}
@@ -72,24 +69,62 @@ function BillingSection({ billingInvoices }: { billingInvoices: Invoice[] }) {
                         ></TableCell>
                     </TableRow>
                 ) : (
-                    billingInvoices.map((inv) => (
-                        <TableRow
-                            key={inv.id}
-                            className="xs-gray-500-weight-600"
-                        >
-                            <TableCell className="text-center">
-                                {inv.invoiceNumber || String(inv.id)}
-                            </TableCell>
-                            <TableCell className="text-center">
-                                {formatBillingDate(inv.date)}
-                            </TableCell>
-                            <TableCell>{inv.clientReference || '—'}</TableCell>
-                            <TableCell>{formatCurrency(inv.amount)}</TableCell>
-                            <TableCell className="flex justify-center">
-                                <Download className="size-[20px] text-green-400" />
-                            </TableCell>
-                        </TableRow>
-                    ))
+                    <>
+                        {billingInvoices.map((inv) => (
+                            <TableRow
+                                key={inv.id}
+                                className="xs-gray-500-weight-600"
+                            >
+                                <TableCell className="text-center">
+                                    {inv.invoiceNumber || String(inv.id)}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    {formatNumericUsDate(inv.date)}
+                                </TableCell>
+                                <TableCell>
+                                    {inv.clientReference || '—'}
+                                </TableCell>
+                                <TableCell>
+                                    {formatCurrency(inv.amount)}
+                                </TableCell>
+                                <TableCell className="flex justify-center">
+                                    <Download className="size-[20px] text-green-400" />
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        {heldInvoices.flatMap((invoice) =>
+                            invoice.lines.map((line, lineIndex) => (
+                                    <TableRow
+                                        key={`${invoice.id}-${line.id}`}
+                                        className="xs-gray-500-weight-600"
+                                    >
+                                        <TableCell className="text-center">
+                                            {lineIndex === 0
+                                                ? invoice.document_number
+                                                : ''}
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                            {lineIndex === 0
+                                                ? formatNumericUsDate(
+                                                      invoice.created_at,
+                                                  )
+                                                : ''}
+                                        </TableCell>
+                                        <TableCell>
+                                            {formatSubmitInvoiceLineDescription(
+                                                line,
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            {formatCents(line.total_cents)}
+                                        </TableCell>
+                                        <TableCell className="flex justify-center">
+                                            <Download className="size-[20px] text-green-400" />
+                                        </TableCell>
+                                    </TableRow>
+                            )),
+                        )}
+                    </>
                 )}
                 {/* New Order section */}
                 <TableRow className="xs-gray-500-weight-600 bg-neutral-100">
@@ -97,7 +132,7 @@ function BillingSection({ billingInvoices }: { billingInvoices: Invoice[] }) {
                         New Order
                     </TableCell>
                 </TableRow>
-                {MOCK_NEW_ORDER_ITEMS.map((item) => (
+                {cartLines.map((item) => (
                     <TableRow key={item.id} className="xs-gray-500-weight-600">
                         <TableCell />
                         <TableCell />

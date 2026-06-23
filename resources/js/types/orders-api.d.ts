@@ -474,7 +474,7 @@ export type SubmitInvoice = {
     subtotal_cents: number;
     tax_cents: number;
     total_cents: number;
-    payment_due: string;
+    payment_due: string | null;
     lines: SubmitInvoiceLine[];
     created_at: string;
     updated_at: string;
