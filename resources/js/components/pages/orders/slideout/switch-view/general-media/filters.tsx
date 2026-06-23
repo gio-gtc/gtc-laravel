@@ -5,6 +5,7 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import Divider from '@/components/utils/divider';
+import { compareTableDueDateDisplays } from '@/lib/format/date';
 import { ORDER_ITEM_STATUSES } from '@/lib/orders/order-item-statuses';
 import { cn } from '@/lib/utils';
 import { type MediaTableRow } from '@/types';
@@ -127,8 +128,8 @@ export default function Filters({
                 variant="outline"
                 size="md"
                 onClick={cycleSortDirection}
-                title="Sort by created date"
-                aria-label="Sort by created date"
+                title="Sort by due date"
+                aria-label="Sort by due date"
             >
                 <SortIcon className="size-3 text-gray-400" /> Sort
             </Button>
@@ -138,7 +139,7 @@ export default function Filters({
 
 type RowWithStatus = {
     status: MediaTableRow['status'];
-    created_date: string;
+    dueDate: string;
 };
 
 export function filterAndSortRows<T extends RowWithStatus>(
@@ -153,10 +154,13 @@ export function filterAndSortRows<T extends RowWithStatus>(
     }
 
     if (sortDirection === 'asc' || sortDirection === 'desc') {
-        result = [...result].sort((a, b) => {
-            const cmp = a.created_date.localeCompare(b.created_date);
-            return sortDirection === 'asc' ? cmp : -cmp;
-        });
+        result = [...result].sort((a, b) =>
+            compareTableDueDateDisplays(
+                a.dueDate,
+                b.dueDate,
+                sortDirection,
+            ),
+        );
     }
 
     return result;

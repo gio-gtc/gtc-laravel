@@ -7,6 +7,7 @@ import {
 import { useOrdersCatalog } from '@/contexts/orders-catalog-context';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
+import { tableDueDateDisplayToIso } from '@/lib/format/date';
 import { resolveSlideoutCatalog } from '@/lib/orders/slideout-catalog-defaults';
 import {
     type LocalizedArtTableRow,
@@ -15,7 +16,7 @@ import {
     type User,
     type Venue,
 } from '@/types';
-import { format, isValid, parse, parseISO } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { useCallback, useMemo, useState } from 'react';
 import ChatBox from '../reuse/chat';
 import BulkEditAssignedModal from '../reuse/modals/bulk-edit-assigned-modal';
@@ -25,14 +26,6 @@ import SectionContainers from '../reuse/section-containers';
 import LocalizedArtTable from '../reuse/tables/localised-media-table';
 import AttachmentsSection from '../reuse/tables/sections/attachments-section-table';
 import LocalizedArtFormModal from './modals/localized-art-form-modal';
-
-function tableDueDateDisplayToIso(display: string): string | undefined {
-    const trimmed = display.trim();
-    if (!trimmed) return undefined;
-    const d = parse(trimmed, 'M/d/yy', new Date());
-    if (!isValid(d)) return undefined;
-    return format(d, 'yyyy-MM-dd');
-}
 
 interface LocalArtViewProps {
     orderItem: { orderVenue: TourVenue; venue: Venue | null } | null;

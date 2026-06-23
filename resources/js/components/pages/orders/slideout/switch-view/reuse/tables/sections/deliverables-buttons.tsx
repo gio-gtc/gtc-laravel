@@ -10,12 +10,10 @@ import {
     ConnectOneIcon,
     HuluIcon,
     MP4Icon,
-    MPEG2Icon,
     NetflixIcon,
 } from '@/components/ui/icons';
 import { LoadingDots } from '@/components/ui/loading-dots';
 import { cn } from '@/lib/utils';
-import type { MouseEvent } from 'react';
 import {
     Check,
     CloudDownloadIcon,
@@ -23,6 +21,7 @@ import {
     RotateCwIcon,
     X,
 } from 'lucide-react';
+import type { MouseEvent } from 'react';
 
 const DOWNLOAD_OPTIONS = [
     {
@@ -52,13 +51,13 @@ const DOWNLOAD_OPTIONS = [
     },
     {
         id: 'mp4',
-        label: 'MP4',
+        label: 'MP4 (Digital)',
         icon: <MP4Icon />,
     },
     {
-        id: 'mpeg2',
-        label: 'MPEG-2',
-        icon: <MPEG2Icon />,
+        id: 'broadcast',
+        label: 'Broadcast',
+        icon: <MP4Icon />,
     },
 ] as const;
 

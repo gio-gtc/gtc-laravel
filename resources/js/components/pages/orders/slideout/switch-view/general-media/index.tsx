@@ -45,7 +45,6 @@ import {
     socialUpdateAdapter,
     validateRadioRowSpecifications,
 } from '@/lib/orders/order-item-adapters';
-import type { AddKeyArtStaticAssetsFormValues } from './modals/add-key-art-static-assets-modal';
 import { validateSocialRowSpecifications } from '@/lib/orders/order-item-adapters/social';
 import type { OrderItemUpdateAdapter } from '@/lib/orders/order-item-adapters/types';
 import {
@@ -87,7 +86,7 @@ import {
     type Venue,
 } from '@/types';
 import { usePage } from '@inertiajs/react';
-import { format, isValid, parse } from 'date-fns';
+import { tableDueDateDisplayToIso } from '@/lib/format/date';
 import { useCallback, useMemo, useRef, useState, type RefObject } from 'react';
 import { toast } from 'react-toastify';
 import { ChatThread } from '../reuse/chat';
@@ -110,6 +109,7 @@ import AddAudioModal, {
 import AddBroadcastStreamingModal, {
     type AddBroadcastStreamingFormValues,
 } from './modals/add-broadcast-streaming-modal';
+import type { AddKeyArtStaticAssetsFormValues } from './modals/add-key-art-static-assets-modal';
 import AddKeyArtStaticAssetsModal from './modals/add-key-art-static-assets-modal';
 import AddSocialVideoModal, {
     type AddSocialVideoFormValues,
@@ -127,14 +127,6 @@ interface GeneralMediaViewProps {
         rowId: string | number;
         isci: string;
     }) => void;
-}
-
-function tableDueDateDisplayToIso(display: string): string | undefined {
-    const trimmed = display.trim();
-    if (!trimmed) return undefined;
-    const d = parse(trimmed, 'M/d/yy', new Date());
-    if (!isValid(d)) return undefined;
-    return format(d, 'yyyy-MM-dd');
 }
 
 function mediaLinePatchAdapterForScope(
@@ -887,7 +879,10 @@ function GeneralMediaView({
 
     const handleKeyArtAdd = useCallback(
         async (form: AddKeyArtStaticAssetsFormValues) => {
-            const result = await createOrderItemsFromForm(artCreateAdapter, form);
+            const result = await createOrderItemsFromForm(
+                artCreateAdapter,
+                form,
+            );
             return result;
         },
         [createOrderItemsFromForm],
@@ -1348,8 +1343,7 @@ function GeneralMediaView({
                             parseDurationWireAsSeconds(
                                 String(original.value),
                             ) ??
-                            (Number.parseInt(String(original.value), 10) ||
-                                0);
+                            (Number.parseInt(String(original.value), 10) || 0);
                         ctx.handleChange(
                             row.id,
                             'duration_wire',
@@ -1548,9 +1542,7 @@ function GeneralMediaView({
                     const originalValue =
                         original?.itemId === row.id &&
                         original.field === dimensionField
-                            ? parseArtDimensionInput(
-                                  String(original.value),
-                              )
+                            ? parseArtDimensionInput(String(original.value))
                             : null;
                     if (currentValue === originalValue) {
                         inlineOriginalRef.current = null;
@@ -2236,6 +2228,11 @@ function GeneralMediaView({
                 />
             </div>
 
+            {/* Billing Section */}
+            <SectionContainers title="Billing Invoices">
+                <BillingSection billingInvoices={billingInvoices} />
+            </SectionContainers>
+
             {/* Submit Order Buttons */}
             <div className="flex justify-center gap-1 rounded-lg border bg-gray-50 px-1 py-0.5">
                 <Button className="h-[36px]" variant="outline" size="md">
@@ -2245,11 +2242,6 @@ function GeneralMediaView({
                     Submit Order
                 </Button>
             </div>
-
-            {/* Billing Section */}
-            <SectionContainers title="Billing Invoices">
-                <BillingSection billingInvoices={billingInvoices} />
-            </SectionContainers>
 
             {/* Attachments Section */}
             <SectionContainers title="Attachments">
