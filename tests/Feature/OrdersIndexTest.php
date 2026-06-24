@@ -143,7 +143,7 @@ function sampleApiOrderPayload(): array
                         'id' => 34,
                         'invoice_id' => 12,
                         'order_item_id' => 69,
-                        'description' => 'Broadcast & Streaming Video Details',
+                        'description' => 'Generic On Sale Now :30',
                         'unit_price_cents' => 120000,
                         'quantity' => 1,
                         'total_cents' => 120000,
@@ -362,7 +362,7 @@ it('proxies GET /api/orders/{id} and normalizes order show payload', function ()
         ->assertJsonPath('order.ticket_outlets', 'Ticketmaster')
         ->assertJsonPath('order.special_instructions', 'Mix to -14 LUFS')
         ->assertJsonPath('order.invoices.0.document_number', '975950')
-        ->assertJsonPath('order.invoices.0.lines.0.description', 'Broadcast & Streaming Video Details');
+        ->assertJsonPath('order.invoices.0.lines.0.description', 'Generic On Sale Now :30');
 });
 
 it('proxies PATCH /api/orders/{id} with descriptions and show_dates', function () {

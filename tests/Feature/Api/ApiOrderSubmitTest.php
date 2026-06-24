@@ -30,7 +30,7 @@ function sampleSubmitApiResponse(int $orderId = 4): array
                         'order_menu_item_id' => 4,
                         'order_item_status_id' => 2,
                         'invoice_line_id' => 14,
-                        'description' => 'Key Art Package',
+                        'description' => 'Key Art Package 1920×1080',
                         'locked_price' => 940.83,
                         'created_at' => '2026-06-22T20:45:10.000000Z',
                         'updated_at' => '2026-06-22T21:12:16.000000Z',
@@ -54,7 +54,7 @@ function sampleSubmitApiResponse(int $orderId = 4): array
                         'id' => 14,
                         'invoice_id' => 12,
                         'order_item_id' => 1,
-                        'description' => 'Key Art Package',
+                        'description' => 'Key Art Package 1920×1080',
                         'unit_price_cents' => 94083,
                         'quantity' => 1,
                         'total_cents' => 94083,
@@ -80,7 +80,7 @@ it('proxies json order submit to gtc-api', function () {
         ->assertJsonPath('order.id', 4)
         ->assertJsonPath('invoice.document_number', '975950')
         ->assertJsonPath('invoice.total_cents', 94083)
-        ->assertJsonPath('invoice.lines.0.description', 'Key Art Package');
+        ->assertJsonPath('invoice.lines.0.description', 'Key Art Package 1920×1080');
 
     Http::assertSent(function ($request) {
         return $request->url() === apiOrderSubmitUrl(4)

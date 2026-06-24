@@ -1,5 +1,6 @@
 import { formatShortUsDate } from '@/lib/format/date';
 import {
+    durationDisplayLabel,
     durationWireFromSpecValue,
     encodingLabelsFromWire,
 } from '@/lib/orders/broadcast-spec-wire';
@@ -150,7 +151,7 @@ export function orderCartBillingLines(
         .filter((item) => orderItemWireStatus(item) === 'Still In Cart')
         .map((item) => ({
             id: item.id,
-            reference: orderItemCutLabel(item),
+            reference: orderItemBillingReference(item),
             amount: orderItemLockedPriceAmount(item),
         }));
 }
@@ -279,6 +280,27 @@ export function artDimensionWire(value: number | null): string | null {
         return null;
     }
     return String(value);
+}
+
+export function orderItemBillingReference(item: OrderItem): string {
+    const specs = orderItemSpecRecord(item);
+
+    if (isKeyArtOrderItem(item)) {
+        const type = specString(specs, 'type');
+        const { width, height } = parseOrderItemDimensions(specs);
+        const parts = [type];
+        if (width != null && height != null) {
+            parts.push(`${width}×${height}`);
+        }
+        return parts.filter(Boolean).join(' ') || `Item ${item.id}`;
+    }
+
+    const type = specString(specs, 'type');
+    const cut = specString(specs, 'cut');
+    const durationWire = orderItemDurationWire(specs);
+    const duration = durationWire ? durationDisplayLabel(durationWire) : '';
+
+    return [type, cut, duration].filter(Boolean).join(' ');
 }
 
 export function orderItemCutLabel(item: OrderItem): string {
