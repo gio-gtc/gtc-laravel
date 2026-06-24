@@ -74,6 +74,7 @@ import {
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
 import { orderItemAssigneesToUsers } from '@/lib/orders/orders-filter-users';
 import {
+    OrderCartClearApiError,
     OrderSubmitApiError,
 } from '@/lib/orders/orders-api-client';
 import { resolveSlideoutCatalog } from '@/lib/orders/slideout-catalog-defaults';
@@ -123,6 +124,7 @@ import AddSocialVideoModal, {
     type AddSocialVideoFormValues,
 } from './modals/add-social-video-modal';
 import RevisionRequestModal from './modals/revision-request-modal';
+import ClearCartConfirmModal from './modals/clear-cart-confirm-modal';
 import { VENUE_ITEM_ART_PACKAGE_TYPES } from './modals/spot-type-cuts-options';
 import VideoPlayerModal from './modals/video-player-modal';
 
@@ -393,6 +395,7 @@ function GeneralMediaView({
         removeOrderItemFromCart,
         commitOrderItemBulkWrite,
         submitOpenOrder,
+        clearOpenOrderCart,
         heldInvoicesForOpenOrder,
     } = useOrderSlideoutCatalog();
     const slideout = resolveSlideoutCatalog(catalog);
@@ -784,6 +787,8 @@ function GeneralMediaView({
 
     const [dueDateModalOpen, setDueDateModalOpen] = useState(false);
     const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
+    const [clearCartModalOpen, setClearCartModalOpen] = useState(false);
+    const [isClearingCart, setIsClearingCart] = useState(false);
     const [assignedModalOpen, setAssignedModalOpen] = useState(false);
     const [dueDateSeedIso, setDueDateSeedIso] = useState<string | undefined>();
     const [assignedSeed, setAssignedSeed] = useState<User[]>([]);
@@ -1194,6 +1199,41 @@ function GeneralMediaView({
         isSubmittingOrder,
         openOrder,
         submitOpenOrder,
+    ]);
+
+    const handleClearCart = useCallback(async () => {
+        if (isClearingCart || !openOrder || !hasCartItems) {
+            return;
+        }
+
+        setIsClearingCart(true);
+        try {
+            const response = await clearOpenOrderCart();
+            toast.success(response.message);
+            setClearCartModalOpen(false);
+        } catch (error) {
+            if (error instanceof OrderCartClearApiError && error.status === 409) {
+                toast.error(
+                    error.message ||
+                        'Your cart is empty or this order has already been submitted.',
+                );
+                return;
+            }
+
+            if (error instanceof OrderCartClearApiError) {
+                toast.error(error.message || 'Failed to clear cart.');
+                return;
+            }
+
+            toast.error('Failed to clear cart.');
+        } finally {
+            setIsClearingCart(false);
+        }
+    }, [
+        clearOpenOrderCart,
+        hasCartItems,
+        isClearingCart,
+        openOrder,
     ]);
 
     const isDemoRow = orderItem != null && orderItem.venue === null;
@@ -2291,7 +2331,17 @@ function GeneralMediaView({
 
                     {/* Submit Order Buttons */}
                     <div className="flex justify-center gap-1 rounded-lg border bg-gray-50 px-1 py-0.5">
-                        <Button className="h-[36px]" variant="outline" size="md">
+                        <Button
+                            className="h-[36px]"
+                            variant="outline"
+                            size="md"
+                            disabled={
+                                !hasCartItems ||
+                                isSubmittingOrder ||
+                                isClearingCart
+                            }
+                            onClick={() => setClearCartModalOpen(true)}
+                        >
                             Cancel
                         </Button>
                         <Button
@@ -2300,6 +2350,7 @@ function GeneralMediaView({
                             size="md"
                             disabled={
                                 isSubmittingOrder ||
+                                isClearingCart ||
                                 !openOrder ||
                                 !hasCartItems
                             }
@@ -2440,6 +2491,12 @@ function GeneralMediaView({
                         );
                     }
                 }}
+            />
+            <ClearCartConfirmModal
+                isOpen={clearCartModalOpen}
+                onClose={() => setClearCartModalOpen(false)}
+                onConfirm={handleClearCart}
+                isClearing={isClearingCart}
             />
             <Dialog
                 open={imagePreview !== null}

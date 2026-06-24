@@ -18,7 +18,7 @@ import type {
     SequentialCreateResult,
 } from '@/lib/orders/order-item-adapters/types';
 import { resolveMenuItemByCategoryId } from '@/lib/orders/order-catalog';
-import { fetchOrderShow, submitOrder } from '@/lib/orders/orders-api-client';
+import { fetchOrderShow, submitOrder, clearOrderCart } from '@/lib/orders/orders-api-client';
 import {
     apiOrderToLegacySlideout,
     mergeSlideoutVenueItems,
@@ -39,6 +39,7 @@ import type {
     ParentOrderUpdate,
     SubmitInvoice,
     SubmitOrderResponse,
+    ClearOrderCartResponse,
 } from '@/types/orders-api';
 import { router, usePage } from '@inertiajs/react';
 import {
@@ -72,6 +73,7 @@ type OrderSlideoutCatalogContextValue = {
     ) => void;
     refreshOpenOrder: (orderId: number) => Promise<ApiOrder | null>;
     submitOpenOrder: () => Promise<SubmitOrderResponse>;
+    clearOpenOrderCart: () => Promise<ClearOrderCartResponse>;
     heldInvoicesForOpenOrder: SubmitInvoice[];
     registerTourOrdersInvalidator: (fn: TourOrdersInvalidator) => void;
     orderCatalog: OrderCatalogMenu | null;
@@ -282,6 +284,35 @@ export function OrderSlideoutCatalogProvider({
         );
 
         void refreshOpenOrder(orderId);
+
+        return response;
+    }, [openOrder, refreshOpenOrder]);
+
+    const clearOpenOrderCart = useCallback(async () => {
+        if (!openOrder) {
+            throw new Error('No order is open.');
+        }
+
+        const orderId = openOrder.id;
+        const tourId = openOrder.tour_id;
+        const response = await clearOrderCart(orderId);
+
+        if (response.order_deleted) {
+            setOpenOrder(null);
+            setOrdersDetailCache((prev) => {
+                const next = { ...prev };
+                delete next[orderId];
+                return next;
+            });
+            setHeldInvoicesByOrderId((prev) => {
+                const next = { ...prev };
+                delete next[orderId];
+                return next;
+            });
+            tourInvalidatorRef.current?.(tourId);
+        } else {
+            void refreshOpenOrder(orderId);
+        }
 
         return response;
     }, [openOrder, refreshOpenOrder]);
@@ -528,8 +559,9 @@ export function OrderSlideoutCatalogProvider({
         legacyPayload,
         extraVenueItems,
         replaceVenueItem,
-        submitOpenOrder,
-        openOrder?.id,
+            submitOpenOrder,
+            clearOpenOrderCart,
+            openOrder?.id,
         orderCatalog,
         orderCatalogLoading,
         getMenuItemForCategory,
@@ -550,6 +582,7 @@ export function OrderSlideoutCatalogProvider({
             applyParentOrderBadgeUpdate,
             refreshOpenOrder,
             submitOpenOrder,
+            clearOpenOrderCart,
             heldInvoicesForOpenOrder,
             registerTourOrdersInvalidator,
             orderCatalog,
@@ -571,6 +604,7 @@ export function OrderSlideoutCatalogProvider({
             applyParentOrderBadgeUpdate,
             refreshOpenOrder,
             submitOpenOrder,
+            clearOpenOrderCart,
             heldInvoicesForOpenOrder,
             registerTourOrdersInvalidator,
             orderCatalog,

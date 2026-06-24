@@ -9,6 +9,7 @@ import type {
     OrderPatchPayload,
     PaginatedToursResponse,
     SubmitOrderResponse,
+    ClearOrderCartResponse,
     ToursPaginationMeta,
 } from '@/types/orders-api';
 
@@ -170,6 +171,54 @@ export async function submitOrder(
     if (!body.order || !body.invoice) {
         throw new OrderSubmitApiError(
             'Invalid submit response from server.',
+            502,
+        );
+    }
+
+    return body;
+}
+
+export class OrderCartClearApiError extends Error {
+    status: number;
+
+    constructor(message: string, status: number) {
+        super(message);
+        this.name = 'OrderCartClearApiError';
+        this.status = status;
+    }
+}
+
+export async function clearOrderCart(
+    orderId: number,
+    signal?: AbortSignal,
+): Promise<ClearOrderCartResponse> {
+    const headers = getCsrfHeaders();
+
+    const response = await fetch(`/api/orders/${orderId}/cart`, {
+        method: 'DELETE',
+        headers,
+        credentials: 'same-origin',
+        signal,
+    });
+
+    const body = (await response.json()) as ClearOrderCartResponse & {
+        message?: string;
+    };
+
+    if (!response.ok) {
+        throw new OrderCartClearApiError(
+            body.message ?? 'Could not clear cart.',
+            response.status,
+        );
+    }
+
+    if (
+        typeof body.message !== 'string' ||
+        typeof body.order_deleted !== 'boolean' ||
+        typeof body.count !== 'number'
+    ) {
+        throw new OrderCartClearApiError(
+            'Invalid clear cart response from server.',
             502,
         );
     }

@@ -487,3 +487,9 @@ export type SubmitOrderResponse = {
     order: ApiOrder;
     invoice: SubmitInvoice;
 };
+
+export type ClearOrderCartResponse = {
+    message: string;
+    order_deleted: boolean;
+    count: number;
+};

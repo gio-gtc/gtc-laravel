@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\OrderItemUpdateController;
 use App\Http\Controllers\Api\ClientsIndexController;
 use App\Http\Controllers\Api\StaffIndexController;
 use App\Http\Controllers\Api\OrderShowController;
+use App\Http\Controllers\Api\OrderCartClearController;
 use App\Http\Controllers\Api\OrderSubmitController as ApiOrderSubmitController;
 use App\Http\Controllers\Api\OrderUpdateController;
 use App\Http\Controllers\Api\TourIndexController;
@@ -131,6 +132,7 @@ Route::middleware([BffAuth::class])->group(function () {
         Route::get('tours/{tour}/orders', TourOrdersController::class)->name('api.tours.orders');
         Route::get('orders/{order}', OrderShowController::class)->name('api.orders.show');
         Route::post('orders/{order}/submit', ApiOrderSubmitController::class)->name('api.orders.submit');
+        Route::delete('orders/{order}/cart', OrderCartClearController::class)->name('api.orders.cart.clear');
         Route::post('orders/{order}/items', ApiOrderItemStoreController::class)->name('api.orders.items.store');
         Route::get('clients', ClientsIndexController::class)->name('api.clients.index');
         Route::get('staff', StaffIndexController::class)->name('api.staff.index');
