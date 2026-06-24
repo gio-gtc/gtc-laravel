@@ -74,7 +74,7 @@ type OrderSlideoutCatalogContextValue = {
     refreshOpenOrder: (orderId: number) => Promise<ApiOrder | null>;
     submitOpenOrder: () => Promise<SubmitOrderResponse>;
     clearOpenOrderCart: () => Promise<ClearOrderCartResponse>;
-    heldInvoicesForOpenOrder: SubmitInvoice[];
+    orderInvoicesForOpenOrder: SubmitInvoice[];
     registerTourOrdersInvalidator: (fn: TourOrdersInvalidator) => void;
     orderCatalog: OrderCatalogMenu | null;
     orderCatalogLoading: boolean;
@@ -114,9 +114,6 @@ export function OrderSlideoutCatalogProvider({
         null,
     );
     const [orderCatalogLoading, setOrderCatalogLoading] = useState(true);
-    const [heldInvoicesByOrderId, setHeldInvoicesByOrderId] = useState<
-        Record<number, SubmitInvoice[]>
-    >({});
     const tourInvalidatorRef = useRef<TourOrdersInvalidator | null>(null);
 
     useEffect(() => {
@@ -267,21 +264,25 @@ export function OrderSlideoutCatalogProvider({
         const response = await submitOrder(openOrder.id);
         const orderId = openOrder.id;
 
-        setHeldInvoicesByOrderId((prev) => {
-            const existing = prev[orderId] ?? [];
-            const withoutDuplicate = existing.filter(
-                (invoice) => invoice.id !== response.invoice.id,
+        setOpenOrder((prev) => {
+            const base = prev
+                ? mergeApiOrderUpdate(prev, response.order)
+                : response.order;
+
+            const existingInvoices = base.invoices ?? [];
+            const hasNewInvoice = existingInvoices.some(
+                (invoice) => invoice.id === response.invoice.id,
             );
 
+            if (hasNewInvoice) {
+                return base;
+            }
+
             return {
-                ...prev,
-                [orderId]: [...withoutDuplicate, response.invoice],
+                ...base,
+                invoices: [...existingInvoices, response.invoice],
             };
         });
-
-        setOpenOrder((prev) =>
-            prev ? mergeApiOrderUpdate(prev, response.order) : response.order,
-        );
 
         void refreshOpenOrder(orderId);
 
@@ -304,11 +305,6 @@ export function OrderSlideoutCatalogProvider({
                 delete next[orderId];
                 return next;
             });
-            setHeldInvoicesByOrderId((prev) => {
-                const next = { ...prev };
-                delete next[orderId];
-                return next;
-            });
             tourInvalidatorRef.current?.(tourId);
         } else {
             void refreshOpenOrder(orderId);
@@ -317,13 +313,9 @@ export function OrderSlideoutCatalogProvider({
         return response;
     }, [openOrder, refreshOpenOrder]);
 
-    const heldInvoicesForOpenOrder = useMemo((): SubmitInvoice[] => {
-        if (!openOrder?.id) {
-            return [];
-        }
-
-        return heldInvoicesByOrderId[openOrder.id] ?? [];
-    }, [openOrder?.id, heldInvoicesByOrderId]);
+    const orderInvoicesForOpenOrder = useMemo((): SubmitInvoice[] => {
+        return openOrder?.invoices ?? [];
+    }, [openOrder?.invoices]);
 
     const replaceVenueItem = useCallback(
         (row: OrderItemsRow) => {
@@ -583,7 +575,7 @@ export function OrderSlideoutCatalogProvider({
             refreshOpenOrder,
             submitOpenOrder,
             clearOpenOrderCart,
-            heldInvoicesForOpenOrder,
+            orderInvoicesForOpenOrder,
             registerTourOrdersInvalidator,
             orderCatalog,
             orderCatalogLoading,
@@ -605,7 +597,7 @@ export function OrderSlideoutCatalogProvider({
             refreshOpenOrder,
             submitOpenOrder,
             clearOpenOrderCart,
-            heldInvoicesForOpenOrder,
+            orderInvoicesForOpenOrder,
             registerTourOrdersInvalidator,
             orderCatalog,
             orderCatalogLoading,

@@ -125,6 +125,35 @@ function sampleApiOrderPayload(): array
                 ],
             ],
         ],
+        'invoices' => [
+            [
+                'id' => 12,
+                'order_id' => 1,
+                'organisation_id' => 4,
+                'document_number' => '975950',
+                'status' => 'Held',
+                'subtotal_cents' => 245000,
+                'tax_cents' => 0,
+                'total_cents' => 245000,
+                'payment_due' => '2026-07-24',
+                'created_at' => '2026-06-24T12:00:00.000000Z',
+                'updated_at' => '2026-06-24T12:00:00.000000Z',
+                'lines' => [
+                    [
+                        'id' => 34,
+                        'invoice_id' => 12,
+                        'order_item_id' => 69,
+                        'description' => 'Broadcast & Streaming Video Details',
+                        'unit_price_cents' => 120000,
+                        'quantity' => 1,
+                        'total_cents' => 120000,
+                        'created_at' => '2026-06-24T12:00:00.000000Z',
+                        'updated_at' => '2026-06-24T12:00:00.000000Z',
+                        'price' => 1200.00,
+                    ],
+                ],
+            ],
+        ],
     ];
 }
 
@@ -331,7 +360,9 @@ it('proxies GET /api/orders/{id} and normalizes order show payload', function ()
         ->assertJsonPath('order.id', 1)
         ->assertJsonPath('order.collaborators.0.id', 9)
         ->assertJsonPath('order.ticket_outlets', 'Ticketmaster')
-        ->assertJsonPath('order.special_instructions', 'Mix to -14 LUFS');
+        ->assertJsonPath('order.special_instructions', 'Mix to -14 LUFS')
+        ->assertJsonPath('order.invoices.0.document_number', '975950')
+        ->assertJsonPath('order.invoices.0.lines.0.description', 'Broadcast & Streaming Video Details');
 });
 
 it('proxies PATCH /api/orders/{id} with descriptions and show_dates', function () {

@@ -38,8 +38,6 @@ export default function OrdersTableOrderRow({
             : venue?.city || venue?.state || '';
     const badges = resolveOrderBadges(order);
 
-    console.log({ order });
-
     return (
         <TableRow
             data-state={orderIsSelected && 'selected'}

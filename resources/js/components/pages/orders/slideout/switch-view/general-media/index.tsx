@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button';
-import { LoadingDots } from '@/components/ui/loading-dots';
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { LoadingDots } from '@/components/ui/loading-dots';
 import { buildOrderItemStatusSelectOptions } from '@/components/utils/editable-table/venue-item-status-options';
 import {
     getAssignedUsersForVenueItem,
@@ -22,6 +22,7 @@ import { useChat } from '@/hooks/use-chat';
 import { useEditableTable } from '@/hooks/use-editable-table';
 import { useUsersWithFallback } from '@/hooks/use-users-with-fallback';
 import { plainTextToChatDoc } from '@/lib/chat-utils';
+import { tableDueDateDisplayToIso } from '@/lib/format/date';
 import { parseDurationWireAsSeconds } from '@/lib/orders/broadcast-spec-wire';
 import {
     isInlineDurationUnchanged,
@@ -54,8 +55,8 @@ import {
     syncOrderItemAssignees,
 } from '@/lib/orders/order-item-api-client';
 import {
-    orderHasStillInCartItems,
     orderCartBillingLines,
+    orderHasStillInCartItems,
 } from '@/lib/orders/order-item-specifications';
 import { ORDER_ITEM_STATUS_ID } from '@/lib/orders/order-item-statuses';
 import {
@@ -72,11 +73,11 @@ import {
     isOrderLineItemEditDisabled,
 } from '@/lib/orders/order-line-item-write-access';
 import { ORDER_MENU_CATEGORY_QUADRANTS } from '@/lib/orders/order-menu-categories';
-import { orderItemAssigneesToUsers } from '@/lib/orders/orders-filter-users';
 import {
     OrderCartClearApiError,
     OrderSubmitApiError,
 } from '@/lib/orders/orders-api-client';
+import { orderItemAssigneesToUsers } from '@/lib/orders/orders-filter-users';
 import { resolveSlideoutCatalog } from '@/lib/orders/slideout-catalog-defaults';
 import { isGtcStaffUser } from '@/lib/user-organisation';
 import {
@@ -85,7 +86,6 @@ import {
     OrderItemsBroadcastRow,
     OrderItemsRadioRow,
     OrderItemsSocialRow,
-    type Invoice,
     type MediaTableRow,
     type SharedData,
     type StaticAssetsTableRow,
@@ -95,7 +95,6 @@ import {
     type Venue,
 } from '@/types';
 import { usePage } from '@inertiajs/react';
-import { tableDueDateDisplayToIso } from '@/lib/format/date';
 import { useCallback, useMemo, useRef, useState, type RefObject } from 'react';
 import { toast } from 'react-toastify';
 import { ChatThread } from '../reuse/chat';
@@ -106,12 +105,13 @@ import SectionContainers from '../reuse/section-containers';
 import MediaTable from '../reuse/tables/dynamic-media-table';
 import AttachmentsSection from '../reuse/tables/sections/attachments-section-table';
 import StaticAssetsMediaTable from '../reuse/tables/static-assets-media-table';
-import BillingSection from './billing-section';
+import CartBillingTable from './cart-billing-table';
 import Filters, {
     filterAndSortRows,
     type MediaStatusFilter,
     type SortDirection,
 } from './filters';
+import InvoiceBillingTable from './invoice-billing-table';
 import AddAudioModal, {
     type AddAudioFormValues,
 } from './modals/add-audio-modal';
@@ -123,8 +123,8 @@ import AddKeyArtStaticAssetsModal from './modals/add-key-art-static-assets-modal
 import AddSocialVideoModal, {
     type AddSocialVideoFormValues,
 } from './modals/add-social-video-modal';
-import RevisionRequestModal from './modals/revision-request-modal';
 import ClearCartConfirmModal from './modals/clear-cart-confirm-modal';
+import RevisionRequestModal from './modals/revision-request-modal';
 import { VENUE_ITEM_ART_PACKAGE_TYPES } from './modals/spot-type-cuts-options';
 import VideoPlayerModal from './modals/video-player-modal';
 
@@ -396,7 +396,7 @@ function GeneralMediaView({
         commitOrderItemBulkWrite,
         submitOpenOrder,
         clearOpenOrderCart,
-        heldInvoicesForOpenOrder,
+        orderInvoicesForOpenOrder,
     } = useOrderSlideoutCatalog();
     const slideout = resolveSlideoutCatalog(catalog);
     const broadcastMenuItem = getMenuItemForCategory(
@@ -1152,16 +1152,6 @@ function GeneralMediaView({
         });
     }, []);
 
-    const billingInvoices = useMemo((): Invoice[] => {
-        if (!order || !orderItem || orderItem.venue == null) return [];
-        return slideout.invoices.filter(
-            (inv) =>
-                !inv.isDeleted &&
-                inv.tour === order.name &&
-                inv.venue_id === orderItem.venue!.id,
-        );
-    }, [order, orderItem, slideout.invoices]);
-
     const hasCartItems = useMemo(
         () => orderHasStillInCartItems(openOrder),
         [openOrder],
@@ -1194,12 +1184,7 @@ function GeneralMediaView({
         } finally {
             setIsSubmittingOrder(false);
         }
-    }, [
-        hasCartItems,
-        isSubmittingOrder,
-        openOrder,
-        submitOpenOrder,
-    ]);
+    }, [hasCartItems, isSubmittingOrder, openOrder, submitOpenOrder]);
 
     const handleClearCart = useCallback(async () => {
         if (isClearingCart || !openOrder || !hasCartItems) {
@@ -1212,7 +1197,10 @@ function GeneralMediaView({
             toast.success(response.message);
             setClearCartModalOpen(false);
         } catch (error) {
-            if (error instanceof OrderCartClearApiError && error.status === 409) {
+            if (
+                error instanceof OrderCartClearApiError &&
+                error.status === 409
+            ) {
                 toast.error(
                     error.message ||
                         'Your cart is empty or this order has already been submitted.',
@@ -1229,12 +1217,7 @@ function GeneralMediaView({
         } finally {
             setIsClearingCart(false);
         }
-    }, [
-        clearOpenOrderCart,
-        hasCartItems,
-        isClearingCart,
-        openOrder,
-    ]);
+    }, [clearOpenOrderCart, hasCartItems, isClearingCart, openOrder]);
 
     const isDemoRow = orderItem != null && orderItem.venue === null;
 
@@ -2320,16 +2303,10 @@ function GeneralMediaView({
 
             {!openOrder?.is_demo ? (
                 <>
-                    {/* Billing Section */}
-                    <SectionContainers title="Billing Invoices">
-                        <BillingSection
-                            billingInvoices={billingInvoices}
-                            cartLines={cartLines}
-                            heldInvoices={heldInvoicesForOpenOrder}
-                        />
+                    <SectionContainers title="New Order">
+                        <CartBillingTable cartLines={cartLines} />
                     </SectionContainers>
 
-                    {/* Submit Order Buttons */}
                     <div className="flex justify-center gap-1 rounded-lg border bg-gray-50 px-1 py-0.5">
                         <Button
                             className="h-[36px]"
@@ -2366,6 +2343,12 @@ function GeneralMediaView({
                             )}
                         </Button>
                     </div>
+
+                    <SectionContainers title="Billing Invoices">
+                        <InvoiceBillingTable
+                            invoices={orderInvoicesForOpenOrder}
+                        />
+                    </SectionContainers>
                 </>
             ) : null}
 

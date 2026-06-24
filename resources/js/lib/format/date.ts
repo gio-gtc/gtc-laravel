@@ -13,8 +13,14 @@ export function formatShortUsDate(dateString: string): string {
     return format(date, 'MMM d');
 }
 
-/** Billing/invoice table date (e.g. "6/22/26"). Returns "—" when invalid. */
-export function formatNumericUsDate(dateString: string): string {
+/** Billing/invoice table date (e.g. "6/22/26"). Returns "—" when invalid or missing. */
+export function formatNumericUsDate(
+    dateString: string | null | undefined,
+): string {
+    if (!dateString) {
+        return TABLE_DUE_DATE_MISSING;
+    }
+
     const dateOnly = dateString.split('T')[0];
     const date = parseISO(dateOnly);
     if (!isValid(date)) {

@@ -10,6 +10,7 @@ const NESTED_KEYS = [
     'item_statuses',
     'statuses',
     'tags',
+    'invoices',
 ] as const satisfies readonly (keyof ApiOrder)[];
 
 /**

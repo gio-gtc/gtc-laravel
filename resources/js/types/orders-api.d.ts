@@ -341,6 +341,9 @@ export interface ApiOrder {
 
     /** Deduped staff assignees on the order (gtc-api root embed). */
     collaborators?: OrderAssignee[];
+
+    /** Present on GET /api/orders/{id} (slideout workspace). */
+    invoices?: SubmitInvoice[];
 }
 
 /** Shared shape for resolving collaborator avatars from index or show payloads. */
@@ -478,8 +481,8 @@ export type SubmitInvoice = {
     total_cents: number;
     payment_due: string | null;
     lines: SubmitInvoiceLine[];
-    created_at: string;
-    updated_at: string;
+    created_at?: string;
+    updated_at?: string;
 };
 
 export type SubmitOrderResponse = {
