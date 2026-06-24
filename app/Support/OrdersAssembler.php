@@ -126,7 +126,6 @@ final class OrdersAssembler
             }
 
             $order = $raw;
-            $order['collaborators'] = self::dedupeAssignees($raw['order_items'] ?? []);
             if (isset($order['order_items']) && is_array($order['order_items'])) {
                 $order['order_items'] = OrderItemNormalizer::normalizeItems($order['order_items']);
             }
@@ -239,70 +238,5 @@ final class OrdersAssembler
                     : null,
             ],
         ];
-    }
-
-    /**
-     * @return array<int, array{id: int, name: string, email: string, first_name: string|null, last_name: string|null}>
-     */
-    private static function dedupeAssignees(mixed $orderItems): array
-    {
-        if (! is_array($orderItems)) {
-            return [];
-        }
-
-        $seen = [];
-        $collaborators = [];
-
-        foreach ($orderItems as $item) {
-            if (! is_array($item)) {
-                continue;
-            }
-
-            $assignees = $item['assignees'] ?? [];
-            if (! is_array($assignees)) {
-                continue;
-            }
-
-            foreach ($assignees as $assignee) {
-                if (! is_array($assignee)) {
-                    continue;
-                }
-
-                $id = $assignee['id'] ?? null;
-                if (! is_int($id) && ! is_numeric($id)) {
-                    continue;
-                }
-
-                $id = (int) $id;
-                if (isset($seen[$id])) {
-                    continue;
-                }
-
-                $seen[$id] = true;
-
-                $firstName = is_string($assignee['first_name'] ?? null)
-                    ? trim($assignee['first_name'])
-                    : '';
-                $lastName = is_string($assignee['last_name'] ?? null)
-                    ? trim($assignee['last_name'])
-                    : '';
-                $name = is_string($assignee['name'] ?? null)
-                    ? trim($assignee['name'])
-                    : '';
-                if ($name === '') {
-                    $name = trim($firstName.' '.$lastName);
-                }
-
-                $collaborators[] = [
-                    'id' => $id,
-                    'name' => $name,
-                    'email' => is_string($assignee['email'] ?? null) ? $assignee['email'] : '',
-                    'first_name' => $firstName !== '' ? $firstName : null,
-                    'last_name' => $lastName !== '' ? $lastName : null,
-                ];
-            }
-        }
-
-        return $collaborators;
     }
 }

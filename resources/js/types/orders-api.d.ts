@@ -300,7 +300,7 @@ export type HeavyOrderDetail = ApiOrder;
 
 /**
  * Order row from gtc-api GET /api/orders | GET /api/orders/{id}.
- * BFF may add `collaborators`.
+ * Root `collaborators` come from gtc-api on index/show payloads.
  */
 export interface ApiOrder {
     id: number;
@@ -339,13 +339,14 @@ export interface ApiOrder {
     logos?: string | null;
     special_instructions?: string | null;
 
-    /** BFF-derived from item assignees — not from gtc-api root. */
+    /** Deduped staff assignees on the order (gtc-api root embed). */
     collaborators?: OrderAssignee[];
 }
 
-export type GroupedOrders = {
-    tour: ApiOrderTour;
-    orders: ApiOrder[];
+/** Shared shape for resolving collaborator avatars from index or show payloads. */
+export type OrderCollaboratorSource = {
+    collaborators?: OrderAssignee[];
+    order_items?: Array<{ assignees?: OrderAssignee[] }>;
 };
 
 /** Assignee embed on lean index order items. */
@@ -412,7 +413,8 @@ export interface IndexOrder {
     venue?: IndexOrderVenue | null;
     show_dates?: OrderShowDate[];
     client?: IndexOrderClient | null;
-    order_items: LeanOrderItem[];
+    collaborators?: OrderAssignee[];
+    order_items?: LeanOrderItem[];
 }
 
 export interface TourHeader {

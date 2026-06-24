@@ -1,4 +1,9 @@
-import type { ApiOrder, ApiOrderClient, OrderAssignee } from '@/types/orders-api';
+import type {
+    ApiOrder,
+    ApiOrderClient,
+    OrderAssignee,
+    OrderCollaboratorSource,
+} from '@/types/orders-api';
 import type { User } from '@/types';
 import {
     embedPersonToUser,
@@ -79,7 +84,9 @@ export function resolveClientForOrder(
     return resolveUserById(order.ordered_by_id, clientRoster);
 }
 
-export function collectAssigneesFromOrder(order: ApiOrder): OrderAssignee[] {
+export function collectAssigneesFromOrder(
+    order: OrderCollaboratorSource,
+): OrderAssignee[] {
     if (order.collaborators?.length) {
         return order.collaborators;
     }
@@ -99,60 +106,12 @@ export function collectAssigneesFromOrder(order: ApiOrder): OrderAssignee[] {
 }
 
 export function resolveAssigneesForOrder(
-    order: ApiOrder,
+    order: OrderCollaboratorSource,
     collaboratorRoster: User[],
 ): User[] {
     return collectAssigneesFromOrder(order).map((a) =>
         assigneeToUser(a, collaboratorRoster),
     );
-}
-
-/** @alias resolveAssigneesForOrder */
-export function getAssigneesForOrder(
-    order: ApiOrder,
-    collaboratorRoster: User[],
-): User[] {
-    return resolveAssigneesForOrder(order, collaboratorRoster);
-}
-
-export function orderMatchesClientFilter(
-    order: ApiOrder,
-    clientIds: number[],
-): boolean {
-    if (clientIds.length === 0) {
-        return true;
-    }
-
-    if (order.is_demo) {
-        return false;
-    }
-
-    const orderedById = order.ordered_by_id;
-    return (
-        orderedById != null && clientIds.includes(orderedById)
-    );
-}
-
-export function orderMatchesCollaboratorFilter(
-    order: ApiOrder,
-    collaboratorRoster: User[],
-    options: {
-        myCollaborators: boolean;
-        collaboratorIds: number[];
-        authUserId: number;
-    },
-): boolean {
-    const assignees = resolveAssigneesForOrder(order, collaboratorRoster);
-
-    if (options.myCollaborators) {
-        return assignees.some((u) => u.id === options.authUserId);
-    }
-
-    if (options.collaboratorIds.length === 0) {
-        return true;
-    }
-
-    return assignees.some((u) => options.collaboratorIds.includes(u.id));
 }
 
 export function sanitizeFilterUserIds(

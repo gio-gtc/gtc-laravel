@@ -74,6 +74,15 @@ function sampleApiOrderPayload(): array
                 'is_international' => false,
             ],
         ],
+        'collaborators' => [
+            [
+                'id' => 9,
+                'email' => 'alex@gtcforce.com',
+                'first_name' => 'Alex',
+                'last_name' => 'Editor',
+                'avatar' => null,
+            ],
+        ],
         'order_items' => [
             [
                 'id' => 142,
@@ -116,6 +125,39 @@ function sampleApiOrderPayload(): array
                 ],
             ],
         ],
+    ];
+}
+
+function sampleLeanTourOrderPayload(): array
+{
+    return [
+        'id' => 4,
+        'tour_id' => 1,
+        'venue_id' => 1,
+        'due_date' => '2026-07-13',
+        'venue' => [
+            'id' => 1,
+            'name' => 'The Forum',
+            'city' => 'Inglewood',
+            'state' => 'CA',
+        ],
+        'client' => [
+            'id' => 1,
+            'first_name' => 'Alex',
+            'last_name' => 'Smith',
+        ],
+        'statuses' => [
+            ['id' => 2, 'name' => 'In Progress'],
+        ],
+        'collaborators' => [
+            [
+                'id' => 12,
+                'first_name' => 'Sarah',
+                'last_name' => 'Connor',
+                'avatar' => 'profiles/sc.png',
+            ],
+        ],
+        'tags' => ['Audio', 'Art'],
     ];
 }
 
@@ -248,6 +290,28 @@ it('proxies GET /api/tours/{tour}/orders and normalizes orders', function () {
         return str_starts_with($request->url(), $tourOrdersUrl)
             && str_contains($request->url(), 'filter=my-tasks');
     });
+});
+
+it('passes through lean tour orders without order_items', function () {
+    $tourOrdersUrl = toursIndexUrl().'/1/orders';
+
+    Http::fake([
+        $tourOrdersUrl.'*' => Http::response([
+            'data' => [sampleLeanTourOrderPayload()],
+        ], 200),
+    ]);
+
+    $this->actingAsBff()
+        ->getJson('/api/tours/1/orders')
+        ->assertOk()
+        ->assertJsonPath('data.0.id', 4)
+        ->assertJsonPath('data.0.venue.name', 'The Forum')
+        ->assertJsonPath('data.0.client.first_name', 'Alex')
+        ->assertJsonPath('data.0.collaborators.0.id', 12)
+        ->assertJsonPath('data.0.collaborators.0.avatar', 'profiles/sc.png')
+        ->assertJsonPath('data.0.statuses.0.name', 'In Progress')
+        ->assertJsonPath('data.0.tags.0', 'Audio')
+        ->assertJsonMissingPath('data.0.order_items');
 });
 
 it('proxies GET /api/orders/{id} and normalizes order show payload', function () {

@@ -1,11 +1,11 @@
 import { TableCell, TableRow } from '@/components/ui/table';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
-import { indexOrderAssigneesToUsers } from '@/lib/orders/index-order-helpers';
+import { resolveAssigneesForOrder } from '@/lib/orders/orders-filter-users';
+import { resolveOrderBadges } from '@/lib/orders/resolve-order-badges';
 import { cn } from '@/lib/utils';
 import type { User } from '@/types';
 import type { IndexOrder } from '@/types/orders-api';
 import { ChevronRight } from 'lucide-react';
-import { resolveOrderBadges } from '@/lib/orders/resolve-order-badges';
 import OrderBadgesRow from '../order-badges-row';
 
 type OrdersTableDemoRowProps = {
@@ -23,10 +23,7 @@ export default function OrdersTableDemoRow({
     onOrderRowSelect,
     onOpenSlideout,
 }: OrdersTableDemoRowProps) {
-    const assignees = indexOrderAssigneesToUsers(
-        demoOrder,
-        collaboratorRoster,
-    );
+    const assignees = resolveAssigneesForOrder(demoOrder, collaboratorRoster);
     const badges = resolveOrderBadges(demoOrder);
 
     return (
@@ -60,7 +57,7 @@ export default function OrdersTableDemoRow({
             <TableCell className="flex items-center gap-1 px-2 py-0.5">
                 <OrderBadgesRow
                     statuses={badges.statuses}
-                    tags={demoOrder.tags}
+                    tags={badges.tags}
                     tagIconClassName="size-3"
                     statusIconClassName="size-4"
                 />

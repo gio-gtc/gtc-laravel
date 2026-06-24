@@ -1,15 +1,13 @@
 import { TableCell, TableRow } from '@/components/ui/table';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { UserAvatarsStack } from '@/components/ui/user-avatars-stack';
-import {
-    indexOrderAssigneesToUsers,
-    resolveClientForIndexOrder,
-} from '@/lib/orders/index-order-helpers';
+import { resolveClientForIndexOrder } from '@/lib/orders/index-order-helpers';
+import { resolveAssigneesForOrder } from '@/lib/orders/orders-filter-users';
+import { resolveOrderBadges } from '@/lib/orders/resolve-order-badges';
 import { cn } from '@/lib/utils';
 import type { User } from '@/types';
 import type { IndexOrder } from '@/types/orders-api';
 import { ChevronRight } from 'lucide-react';
-import { resolveOrderBadges } from '@/lib/orders/resolve-order-badges';
 import OrderBadgesRow from '../order-badges-row';
 
 type OrdersTableOrderRowProps = {
@@ -33,12 +31,14 @@ export default function OrdersTableOrderRow({
 }: OrdersTableOrderRowProps) {
     const venue = order.venue;
     const client = resolveClientForIndexOrder(order, clientRoster);
-    const assignees = indexOrderAssigneesToUsers(order, collaboratorRoster);
+    const assignees = resolveAssigneesForOrder(order, collaboratorRoster);
     const region =
         venue?.city && venue?.state
             ? `${venue.city}, ${venue.state}`
             : venue?.city || venue?.state || '';
     const badges = resolveOrderBadges(order);
+
+    console.log({ order });
 
     return (
         <TableRow
@@ -82,7 +82,7 @@ export default function OrdersTableOrderRow({
             <TableCell className="flex items-center gap-1 px-2 py-0.5">
                 <OrderBadgesRow
                     statuses={badges.statuses}
-                    tags={order.tags}
+                    tags={badges.tags}
                     tagIconClassName="size-3"
                     statusIconClassName="size-4"
                 />

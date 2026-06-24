@@ -1,47 +1,6 @@
-import {
-    embedPersonToUser,
-    externalClientEmbedToUser,
-} from '@/lib/user-for-avatar';
+import { externalClientEmbedToUser } from '@/lib/user-for-avatar';
 import type { User } from '@/types';
-import type {
-    DashboardAssignee,
-    IndexOrder,
-    IndexOrderClient,
-} from '@/types/orders-api';
-
-export function flattenIndexOrderAssignees(
-    order: IndexOrder,
-): DashboardAssignee[] {
-    return Array.from(
-        new Map(
-            order.order_items
-                .flatMap((item) => item.assignees ?? [])
-                .map((assignee) => [assignee.id, assignee]),
-        ).values(),
-    );
-}
-
-export function indexOrderAssigneesToUsers(
-    order: IndexOrder,
-    collaboratorRoster: User[],
-): User[] {
-    const flat = flattenIndexOrderAssignees(order);
-
-    return flat.map((assignee) => {
-        const fromRoster = collaboratorRoster.find((u) => u.id === assignee.id);
-        if (fromRoster) {
-            return fromRoster;
-        }
-
-        return embedPersonToUser({
-            id: assignee.id,
-            first_name: assignee.first_name,
-            last_name: assignee.last_name,
-            email: assignee.email,
-            avatar: assignee.avatar,
-        });
-    });
-}
+import type { IndexOrder, IndexOrderClient } from '@/types/orders-api';
 
 export function resolveClientForIndexOrder(
     order: IndexOrder,
