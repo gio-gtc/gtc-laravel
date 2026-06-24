@@ -80,7 +80,14 @@ function OrdersTable() {
     const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
     const [isAddOrderModalOpen, setIsAddOrderModalOpen] = useState(false);
     const filterKeyRef = useRef<string | null>(null);
-    const deepLinkHandled = useRef(false);
+    const lastUrlOpenOrderId = useRef<number | null>(null);
+
+    const buildOrdersPageUrl = useCallback((params: URLSearchParams) => {
+        const query = params.toString();
+        return query
+            ? `${resolveUrl(orders())}?${query}`
+            : resolveUrl(orders());
+    }, []);
 
     const globalFilters = useMemo(
         (): GlobalDashboardFilters =>
@@ -128,6 +135,23 @@ function OrdersTable() {
     );
 
     useOrdersPageFlashSync({ revealTourOrder });
+
+    const handleCloseSlideout = useCallback(() => {
+        setOpenOrder(null);
+        const queryIndex = page.url.indexOf('?');
+        if (queryIndex < 0) {
+            return;
+        }
+        const params = new URLSearchParams(page.url.slice(queryIndex));
+        if (!params.has('openOrder')) {
+            return;
+        }
+        params.delete('openOrder');
+        router.visit(buildOrdersPageUrl(params), {
+            preserveState: true,
+            replace: true,
+        });
+    }, [buildOrdersPageUrl, page.url, setOpenOrder]);
 
     const applyGlobalFilterReset = useCallback(
         (nextFilters: GlobalDashboardFilters) => {
@@ -179,16 +203,14 @@ function OrdersTable() {
     }, [page.url, setFilters]);
 
     useEffect(() => {
-        if (deepLinkHandled.current) {
-            return;
-        }
-
         const queryIndex = page.url.indexOf('?');
         const params = new URLSearchParams(
             queryIndex >= 0 ? page.url.slice(queryIndex) : '',
         );
         const openOrderId = params.get('openOrder');
+
         if (!openOrderId) {
+            lastUrlOpenOrderId.current = null;
             return;
         }
 
@@ -197,11 +219,15 @@ function OrdersTable() {
             return;
         }
 
-        deepLinkHandled.current = true;
+        if (lastUrlOpenOrderId.current === id) {
+            return;
+        }
+
+        lastUrlOpenOrderId.current = id;
 
         void (async () => {
             const order = await openOrderById(id);
-            if (!order) {
+            if (!order || lastUrlOpenOrderId.current !== id) {
                 return;
             }
 
@@ -230,14 +256,11 @@ function OrdersTable() {
                 } else {
                     params.delete('filter');
                 }
-                const query = params.toString();
-                const url = query
-                    ? `${resolveUrl(orders())}?${query}`
-                    : resolveUrl(orders());
+                const url = buildOrdersPageUrl(params);
                 router.visit(url, { preserveState: true });
             }
         },
-        [filters.myCollaborators, page.url, setFilters],
+        [buildOrdersPageUrl, filters.myCollaborators, page.url, setFilters],
     );
 
     const handlePrefetchTour = useCallback(
@@ -529,7 +552,7 @@ function OrdersTable() {
                 onOrderSaved={updateOpenOrder}
                 isOpen={slideoutOpen}
                 isLoading={loadingOrderId !== null && openOrder === null}
-                onClose={() => setOpenOrder(null)}
+                onClose={handleCloseSlideout}
             />
         </div>
     );
