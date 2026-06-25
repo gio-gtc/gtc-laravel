@@ -31,7 +31,7 @@ function sampleSubmitApiResponse(int $orderId = 4): array
                         'order_item_status_id' => 2,
                         'invoice_line_id' => 14,
                         'description' => 'Key Art Package 1920×1080',
-                        'locked_price' => 940.83,
+                        'locked_price' => '940.83',
                         'created_at' => '2026-06-22T20:45:10.000000Z',
                         'updated_at' => '2026-06-22T21:12:16.000000Z',
                     ],
@@ -43,9 +43,9 @@ function sampleSubmitApiResponse(int $orderId = 4): array
                 'organisation_id' => 1,
                 'document_number' => '975950',
                 'status' => 'Held',
-                'subtotal_cents' => 94083,
-                'tax_cents' => 0,
-                'total_cents' => 94083,
+                'subtotal' => '940.83',
+                'tax' => '0.00',
+                'total' => '940.83',
                 'payment_due' => null,
                 'created_at' => '2026-06-22T21:12:16.000000Z',
                 'updated_at' => '2026-06-22T21:12:16.000000Z',
@@ -55,12 +55,11 @@ function sampleSubmitApiResponse(int $orderId = 4): array
                         'invoice_id' => 12,
                         'order_item_id' => 1,
                         'description' => 'Key Art Package 1920×1080',
-                        'unit_price_cents' => 94083,
+                        'unit_price' => '940.83',
                         'quantity' => 1,
-                        'total_cents' => 94083,
+                        'total' => '940.83',
                         'created_at' => '2026-06-22T21:12:16.000000Z',
                         'updated_at' => '2026-06-22T21:12:16.000000Z',
-                        'price' => 940.83,
                     ],
                 ],
             ],
@@ -79,7 +78,8 @@ it('proxies json order submit to gtc-api', function () {
         ->assertJsonPath('message', 'Order submitted successfully.')
         ->assertJsonPath('order.id', 4)
         ->assertJsonPath('invoice.document_number', '975950')
-        ->assertJsonPath('invoice.total_cents', 94083)
+        ->assertJsonPath('invoice.total', '940.83')
+        ->assertJsonPath('invoice.payment_due', null)
         ->assertJsonPath('invoice.lines.0.description', 'Key Art Package 1920×1080');
 
     Http::assertSent(function ($request) {

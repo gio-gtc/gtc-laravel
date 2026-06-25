@@ -6,7 +6,10 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { formatCents } from '@/helper-functions/format-currency';
+import {
+    formatCurrency,
+    parseWireMoney,
+} from '@/helper-functions/format-currency';
 import { formatNumericUsDate } from '@/lib/format/date';
 import { formatSubmitInvoiceLineDescription } from '@/lib/orders/invoice-line-display';
 import type { SubmitInvoice } from '@/types/orders-api';
@@ -25,8 +28,8 @@ function invoiceTableDate(invoice: SubmitInvoice): string | null | undefined {
 }
 
 function InvoiceBillingTable({ invoices }: InvoiceBillingTableProps) {
-    const invoicedTotalCents = invoices.reduce(
-        (sum, invoice) => sum + invoice.total_cents,
+    const invoicedTotal = invoices.reduce(
+        (sum, invoice) => sum + parseWireMoney(invoice.total),
         0,
     );
     const hasInvoiceRows = invoices.length > 0;
@@ -83,7 +86,9 @@ function InvoiceBillingTable({ invoices }: InvoiceBillingTableProps) {
                                     {formatSubmitInvoiceLineDescription(line)}
                                 </TableCell>
                                 <TableCell>
-                                    {formatCents(line.total_cents)}
+                                    {formatCurrency(
+                                        parseWireMoney(line.total),
+                                    )}
                                 </TableCell>
                                 <TableCell className="flex justify-center">
                                     <Download className="size-[20px] text-green-400" />
@@ -96,7 +101,7 @@ function InvoiceBillingTable({ invoices }: InvoiceBillingTableProps) {
                     <TableCell colSpan={3} className="pr-4 text-right">
                         Total
                     </TableCell>
-                    <TableCell>{formatCents(invoicedTotalCents)}</TableCell>
+                    <TableCell>{formatCurrency(invoicedTotal)}</TableCell>
                     <TableCell />
                 </TableRow>
             </TableBody>

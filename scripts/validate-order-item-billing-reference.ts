@@ -1,12 +1,16 @@
 /**
- * Smoke tests for orderItemBillingReference. Run: npx tsx scripts/validate-order-item-billing-reference.ts
+ * Smoke tests for orderItemBillingReference and cart billing helpers.
+ * Run: npx tsx scripts/validate-order-item-billing-reference.ts
  */
+import { parseWireMoney } from '../resources/js/helper-functions/format-currency.ts';
 import {
     BROADCAST_SPECIFIABLE_TYPE,
     KEY_ART_SPECIFIABLE_TYPE,
+    orderCartBillingLines,
+    orderCartBillingTotal,
     orderItemBillingReference,
 } from '../resources/js/lib/orders/order-item-specifications.ts';
-import type { OrderItem } from '../resources/js/types/orders-api.ts';
+import type { ApiOrder, OrderItem } from '../resources/js/types/orders-api.ts';
 
 function assert(condition: boolean, message: string): void {
     if (!condition) {
@@ -108,6 +112,46 @@ const emptyKeyArtItem = baseItem({
 assert(
     orderItemBillingReference(emptyKeyArtItem) === 'Item 100',
     'key art: empty specs fallback',
+);
+
+assert(parseWireMoney('1200.00') === 1200, 'parseWireMoney: decimal string');
+assert(parseWireMoney(null) === 0, 'parseWireMoney: null');
+
+const cartPreviewItem = baseItem({
+    id: 69,
+    locked_price: '1200.00',
+    encoding_surcharge: 100,
+    estimated_total: 1300,
+    status_lookup: { id: 1, name: 'Still In Cart', order_status_id: 1 },
+    specifiable_type: BROADCAST_SPECIFIABLE_TYPE,
+    specifiable: {
+        id: 3,
+        type: 'International International TV Package',
+        cut: '',
+        duration_seconds: '30',
+        language: 'English',
+        encoding: ['Hulu', 'Amazon'],
+        isci: 'ISCI-CART',
+    },
+});
+
+const cartOrder = {
+    id: 16,
+    order_items: [cartPreviewItem],
+} as ApiOrder;
+
+const cartLines = orderCartBillingLines(cartOrder);
+assert(cartLines.length === 2, 'cart: base + surcharge rows');
+assert(cartLines[0]?.amount === 1200, 'cart: base amount from locked_price');
+assert(cartLines[1]?.amount === 100, 'cart: surcharge amount');
+assert(
+    cartLines[1]?.reference ===
+        'Encoding & Delivery Surcharge (Hulu, Amazon)',
+    'cart: surcharge reference includes encodings',
+);
+assert(
+    orderCartBillingTotal(cartOrder) === 1300,
+    'cart: total uses estimated_total not row sum',
 );
 
 console.log('validate-order-item-billing-reference: ok');

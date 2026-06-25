@@ -93,7 +93,11 @@ function sampleApiOrderPayload(): array
                     'id' => 1,
                     'name' => 'Broadcast & Streaming Video Details',
                     'order_menu_category_id' => 1,
+                    'billing_code' => 'Video',
                 ],
+                'locked_price' => '1200.00',
+                'encoding_surcharge' => 100.00,
+                'estimated_total' => 1300.00,
                 'specifiable_id' => 14,
                 'specifiable_type' => 'App\\Models\\OrderItemBroadcastSpecification',
                 'specifiable' => [
@@ -132,10 +136,10 @@ function sampleApiOrderPayload(): array
                 'organisation_id' => 4,
                 'document_number' => '975950',
                 'status' => 'Held',
-                'subtotal_cents' => 245000,
-                'tax_cents' => 0,
-                'total_cents' => 245000,
-                'payment_due' => '2026-07-24',
+                'subtotal' => '2450.00',
+                'tax' => '0.00',
+                'total' => '2450.00',
+                'payment_due' => null,
                 'created_at' => '2026-06-24T12:00:00.000000Z',
                 'updated_at' => '2026-06-24T12:00:00.000000Z',
                 'lines' => [
@@ -144,12 +148,11 @@ function sampleApiOrderPayload(): array
                         'invoice_id' => 12,
                         'order_item_id' => 69,
                         'description' => 'Generic On Sale Now :30',
-                        'unit_price_cents' => 120000,
+                        'unit_price' => '1200.00',
                         'quantity' => 1,
-                        'total_cents' => 120000,
+                        'total' => '1200.00',
                         'created_at' => '2026-06-24T12:00:00.000000Z',
                         'updated_at' => '2026-06-24T12:00:00.000000Z',
-                        'price' => 1200.00,
                     ],
                 ],
             ],
@@ -362,7 +365,14 @@ it('proxies GET /api/orders/{id} and normalizes order show payload', function ()
         ->assertJsonPath('order.ticket_outlets', 'Ticketmaster')
         ->assertJsonPath('order.special_instructions', 'Mix to -14 LUFS')
         ->assertJsonPath('order.invoices.0.document_number', '975950')
-        ->assertJsonPath('order.invoices.0.lines.0.description', 'Generic On Sale Now :30');
+        ->assertJsonPath('order.invoices.0.total', '2450.00')
+        ->assertJsonPath('order.invoices.0.payment_due', null)
+        ->assertJsonPath('order.invoices.0.lines.0.total', '1200.00')
+        ->assertJsonPath('order.invoices.0.lines.0.description', 'Generic On Sale Now :30')
+        ->assertJsonPath('order.order_items.0.locked_price', '1200.00')
+        ->assertJsonPath('order.order_items.0.encoding_surcharge', 100)
+        ->assertJsonPath('order.order_items.0.estimated_total', 1300)
+        ->assertJsonPath('order.order_items.0.order_menu_item.billing_code', 'Video');
 });
 
 it('proxies PATCH /api/orders/{id} with descriptions and show_dates', function () {

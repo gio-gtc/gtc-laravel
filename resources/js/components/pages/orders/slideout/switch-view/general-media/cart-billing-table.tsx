@@ -11,10 +11,10 @@ import type { OrderCartBillingLine } from '@/lib/orders/order-item-specification
 
 interface CartBillingTableProps {
     cartLines: OrderCartBillingLine[];
+    cartTotal: number;
 }
 
-function CartBillingTable({ cartLines }: CartBillingTableProps) {
-    const cartTotal = cartLines.reduce((sum, item) => sum + item.amount, 0);
+function CartBillingTable({ cartLines, cartTotal }: CartBillingTableProps) {
 
     return (
         <Table compactRows>

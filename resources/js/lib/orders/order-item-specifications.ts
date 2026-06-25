@@ -1,3 +1,4 @@
+import { parseWireMoney } from '@/helper-functions/format-currency';
 import { formatShortUsDate } from '@/lib/format/date';
 import {
     durationDisplayLabel,
@@ -129,31 +130,58 @@ export function orderHasStillInCartItems(
 }
 
 export type OrderCartBillingLine = {
-    id: number;
+    id: string | number;
     reference: string;
     amount: number;
 };
 
 export function orderItemLockedPriceAmount(item: OrderItem): number {
-    const raw = item.locked_price;
-    if (raw == null || raw === '') {
-        return 0;
+    return parseWireMoney(item.locked_price);
+}
+
+export function orderItemEstimatedCartTotal(item: OrderItem): number {
+    if (item.estimated_total != null && Number.isFinite(item.estimated_total)) {
+        return item.estimated_total;
     }
 
-    const parsed = typeof raw === 'number' ? raw : parseFloat(String(raw));
-    return Number.isFinite(parsed) ? parsed : 0;
+    return orderItemLockedPriceAmount(item);
+}
+
+export function orderCartBillingTotal(
+    order: ApiOrder | null | undefined,
+): number {
+    return (order?.order_items ?? [])
+        .filter((item) => orderItemWireStatus(item) === 'Still In Cart')
+        .reduce((sum, item) => sum + orderItemEstimatedCartTotal(item), 0);
 }
 
 export function orderCartBillingLines(
     order: ApiOrder | null | undefined,
 ): OrderCartBillingLine[] {
-    return (order?.order_items ?? [])
-        .filter((item) => orderItemWireStatus(item) === 'Still In Cart')
-        .map((item) => ({
-            id: item.id,
+    const lines: OrderCartBillingLine[] = [];
+
+    for (const item of order?.order_items ?? []) {
+        if (orderItemWireStatus(item) !== 'Still In Cart') {
+            continue;
+        }
+
+        lines.push({
+            id: String(item.id),
             reference: orderItemBillingReference(item),
             amount: orderItemLockedPriceAmount(item),
-        }));
+        });
+
+        const surcharge = parseWireMoney(item.encoding_surcharge);
+        if (surcharge > 0) {
+            lines.push({
+                id: `${item.id}-surcharge`,
+                reference: 'Encoding',
+                amount: surcharge,
+            });
+        }
+    }
+
+    return lines;
 }
 
 export function orderItemAssetTracking(item: OrderItem): AssetTrackingMap {
@@ -248,9 +276,10 @@ function parseArtDimensionField(
     return null;
 }
 
-export function parseOrderItemDimensions(
-    specs: OrderItemSpecRecord,
-): { width: number | null; height: number | null } {
+export function parseOrderItemDimensions(specs: OrderItemSpecRecord): {
+    width: number | null;
+    height: number | null;
+} {
     const fromWire = {
         width: parseArtDimensionField(specs, 'w'),
         height: parseArtDimensionField(specs, 'h'),
@@ -261,7 +290,9 @@ export function parseOrderItemDimensions(
 
     const raw =
         specString(specs, 'dimensions') ||
-        (specString(specs, 'type').includes('×') ? specString(specs, 'type') : '');
+        (specString(specs, 'type').includes('×')
+            ? specString(specs, 'type')
+            : '');
 
     const match = raw.match(/(\d+)\s*[x×]\s*(\d+)/i);
     if (match) {
@@ -317,7 +348,9 @@ export function orderItemCutLabel(item: OrderItem): string {
         if (width != null && height != null) {
             parts.push(`${width}×${height}`);
         }
-        return parts.filter(Boolean).join(' · ') || menuName || `Item ${item.id}`;
+        return (
+            parts.filter(Boolean).join(' · ') || menuName || `Item ${item.id}`
+        );
     }
 
     const specDimensions = specString(specs, 'dimensions');

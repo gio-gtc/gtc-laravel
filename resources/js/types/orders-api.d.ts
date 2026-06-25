@@ -63,6 +63,7 @@ export interface OrderMenuItem {
     name: string;
     order_menu_category_id: OrderMenuCategoryId;
     default_price?: string;
+    billing_code?: string;
 }
 
 export interface OrderAssignee {
@@ -158,6 +159,8 @@ export interface OrderItem {
     /** @deprecated Use `status_lookup.name`. */
     status?: OrderItemStatus;
     locked_price?: string;
+    encoding_surcharge?: number;
+    estimated_total?: number;
     due_date: string | null;
     /** @deprecated Use `specifiable` on read. */
     specifications?: OrderItemSpecifications;
@@ -462,10 +465,9 @@ export type SubmitInvoiceLine = {
     invoice_id: number;
     order_item_id: number;
     description: string;
-    unit_price_cents: number;
+    unit_price: string;
     quantity: number;
-    total_cents: number;
-    price: number;
+    total: string;
     created_at: string;
     updated_at: string;
 };
@@ -476,9 +478,9 @@ export type SubmitInvoice = {
     organisation_id: number;
     document_number: string;
     status: 'Held' | 'Unpaid' | 'Paid';
-    subtotal_cents: number;
-    tax_cents: number;
-    total_cents: number;
+    subtotal: string;
+    tax: string;
+    total: string;
     payment_due: string | null;
     lines: SubmitInvoiceLine[];
     created_at?: string;

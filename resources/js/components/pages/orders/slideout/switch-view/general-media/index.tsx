@@ -56,6 +56,7 @@ import {
 } from '@/lib/orders/order-item-api-client';
 import {
     orderCartBillingLines,
+    orderCartBillingTotal,
     orderHasStillInCartItems,
 } from '@/lib/orders/order-item-specifications';
 import { ORDER_ITEM_STATUS_ID } from '@/lib/orders/order-item-statuses';
@@ -1159,6 +1160,11 @@ function GeneralMediaView({
 
     const cartLines = useMemo(
         () => orderCartBillingLines(openOrder),
+        [openOrder],
+    );
+
+    const cartTotal = useMemo(
+        () => orderCartBillingTotal(openOrder),
         [openOrder],
     );
 
@@ -2304,7 +2310,10 @@ function GeneralMediaView({
             {!openOrder?.is_demo ? (
                 <>
                     <SectionContainers title="New Order">
-                        <CartBillingTable cartLines={cartLines} />
+                        <CartBillingTable
+                            cartLines={cartLines}
+                            cartTotal={cartTotal}
+                        />
                     </SectionContainers>
 
                     <div className="flex justify-center gap-1 rounded-lg border bg-gray-50 px-1 py-0.5">
