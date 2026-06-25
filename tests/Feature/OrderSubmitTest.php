@@ -9,7 +9,7 @@ function orderSubmitApiUrl(int $orderId): string
 
 it('proxies order submit to gtc-api', function () {
     Http::fake([
-        orderSubmitApiUrl(5) => Http::response(['data' => ['status' => 'In Progress']], 200),
+        orderSubmitApiUrl(5) => Http::response(['status' => 'In Progress'], 200),
     ]);
 
     $this->actingAsBff()

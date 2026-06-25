@@ -11,6 +11,7 @@ import type {
     AssetTrackingMap,
     OrderItem,
     OrderItemStatus,
+    VirtualBillingLine,
 } from '@/types/orders-api';
 
 export const BROADCAST_SPECIFIABLE_TYPE =
@@ -135,50 +136,26 @@ export type OrderCartBillingLine = {
     amount: number;
 };
 
-export function orderItemLockedPriceAmount(item: OrderItem): number {
-    return parseWireMoney(item.locked_price);
-}
-
-export function orderItemEstimatedCartTotal(item: OrderItem): number {
-    if (item.estimated_total != null && Number.isFinite(item.estimated_total)) {
-        return item.estimated_total;
-    }
-
-    return orderItemLockedPriceAmount(item);
-}
-
 export function orderCartBillingTotal(
-    order: ApiOrder | null | undefined,
+    virtualBillingLines?: VirtualBillingLine[] | null,
 ): number {
-    return (order?.order_items ?? [])
-        .filter((item) => orderItemWireStatus(item) === 'Still In Cart')
-        .reduce((sum, item) => sum + orderItemEstimatedCartTotal(item), 0);
+    return orderCartBillingLines(virtualBillingLines).reduce(
+        (sum, line) => sum + line.amount,
+        0,
+    );
 }
 
 export function orderCartBillingLines(
-    order: ApiOrder | null | undefined,
+    virtualBillingLines?: VirtualBillingLine[] | null,
 ): OrderCartBillingLine[] {
     const lines: OrderCartBillingLine[] = [];
 
-    for (const item of order?.order_items ?? []) {
-        if (orderItemWireStatus(item) !== 'Still In Cart') {
-            continue;
-        }
-
+    for (const [index, line] of (virtualBillingLines ?? []).entries()) {
         lines.push({
-            id: String(item.id),
-            reference: orderItemBillingReference(item),
-            amount: orderItemLockedPriceAmount(item),
+            id: `virtual-billing-${index}`,
+            reference: line.description?.trim() || 'Encoding',
+            amount: parseWireMoney(line.total),
         });
-
-        const surcharge = parseWireMoney(item.encoding_surcharge);
-        if (surcharge > 0) {
-            lines.push({
-                id: `${item.id}-surcharge`,
-                reference: 'Encoding',
-                amount: surcharge,
-            });
-        }
     }
 
     return lines;

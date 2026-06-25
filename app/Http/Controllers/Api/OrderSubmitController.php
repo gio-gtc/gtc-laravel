@@ -27,13 +27,9 @@ class OrderSubmitController extends Controller
             );
         }
 
-        $payload = $result['data']['data'] ?? $result['data'];
-        if (! is_array($payload)) {
-            return response()->json(['message' => 'Invalid submit response.'], 502);
-        }
-
-        $rawOrder = $payload['order'] ?? null;
-        $invoice = $payload['invoice'] ?? null;
+        $payload = $result['data'];
+        $rawOrder = GtcApiClient::unwrapResource($payload, 'order');
+        $invoice = GtcApiClient::unwrapResource($payload, 'invoice');
 
         if (! is_array($rawOrder) || ! is_array($invoice)) {
             return response()->json(['message' => 'Invalid submit response.'], 502);

@@ -15,7 +15,6 @@ interface CartBillingTableProps {
 }
 
 function CartBillingTable({ cartLines, cartTotal }: CartBillingTableProps) {
-
     return (
         <Table compactRows>
             <TableHeader>

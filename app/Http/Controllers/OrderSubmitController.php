@@ -53,8 +53,6 @@ final class OrderSubmitController extends Controller
     {
         $candidates = [
             $data['order'] ?? null,
-            $data['data']['order'] ?? null,
-            $data['data'] ?? null,
             $data,
         ];
 

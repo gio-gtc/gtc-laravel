@@ -111,6 +111,17 @@ final class GtcApiClient
     }
 
     /**
+     * @param  array<string, mixed>  $body
+     * @return array<string, mixed>|null
+     */
+    public static function unwrapResource(array $body, string $key): ?array
+    {
+        $value = $body[$key] ?? null;
+
+        return is_array($value) ? $value : null;
+    }
+
+    /**
      * @return array{ok: true, data: array<string, mixed>}|array{ok: false, message: string, status: int}
      */
     private function interpret(Response $response, string $path): array

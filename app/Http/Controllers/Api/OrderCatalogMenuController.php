@@ -26,9 +26,7 @@ class OrderCatalogMenuController extends Controller
             );
         }
 
-        $catalog = GtcApiClient::unwrapList($result['data'], 'catalog')
-            ?? GtcApiClient::unwrapList($result['data'], 'data')
-            ?? (is_array($result['data']['data'] ?? null) ? $result['data']['data'] : []);
+        $catalog = GtcApiClient::unwrapList($result['data'], 'catalog') ?? [];
 
         return response()->json([
             'data' => is_array($catalog) ? $catalog : [],

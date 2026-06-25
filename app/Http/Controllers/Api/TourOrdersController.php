@@ -30,12 +30,7 @@ class TourOrdersController extends Controller
             );
         }
 
-        $orders = GtcApiClient::unwrapList($result['data'], 'orders')
-            ?? (is_array($result['data']['data'] ?? null) ? $result['data']['data'] : []);
-
-        if (! is_array($orders)) {
-            $orders = [];
-        }
+        $orders = GtcApiClient::unwrapList($result['data'], 'orders') ?? [];
 
         $normalized = OrdersAssembler::normalizeOrders($orders);
 

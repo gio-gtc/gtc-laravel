@@ -27,10 +27,7 @@ class OrderShowController extends Controller
             );
         }
 
-        $raw = $result['data']['data']['order']
-            ?? $result['data']['order']
-            ?? $result['data']['data']
-            ?? $result['data'];
+        $raw = GtcApiClient::unwrapResource($result['data'], 'order');
 
         if (! is_array($raw)) {
             return response()->json(['message' => 'Order not found.'], 404);
@@ -42,6 +39,11 @@ class OrderShowController extends Controller
             return response()->json(['message' => 'Order not found.'], 404);
         }
 
-        return response()->json(['order' => $normalized]);
+        $virtualBillingLines = $result['data']['virtual_billing_lines'] ?? [];
+
+        return response()->json([
+            'order' => $normalized,
+            'virtual_billing_lines' => is_array($virtualBillingLines) ? $virtualBillingLines : [],
+        ]);
     }
 }

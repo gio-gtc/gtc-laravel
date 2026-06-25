@@ -26,12 +26,9 @@ class OrderCartClearController extends Controller
             );
         }
 
-        $payload = $result['data']['data'] ?? $result['data'];
-        if (! is_array($payload)) {
-            return response()->json(['message' => 'Invalid clear cart response.'], 502);
-        }
+        $payload = $result['data'];
 
-        $message = $payload['message'] ?? $result['data']['message'] ?? null;
+        $message = $payload['message'] ?? null;
         $orderDeleted = $payload['order_deleted'] ?? null;
         $count = $payload['count'] ?? null;
 

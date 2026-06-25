@@ -1,5 +1,5 @@
 /**
- * Smoke tests for orderItemBillingReference and cart billing helpers.
+ * Smoke tests for orderItemBillingReference and API-mirrored cart billing helpers.
  * Run: npx tsx scripts/validate-order-item-billing-reference.ts
  */
 import { parseWireMoney } from '../resources/js/helper-functions/format-currency.ts';
@@ -10,7 +10,7 @@ import {
     orderCartBillingTotal,
     orderItemBillingReference,
 } from '../resources/js/lib/orders/order-item-specifications.ts';
-import type { ApiOrder, OrderItem } from '../resources/js/types/orders-api.ts';
+import type { OrderItem, VirtualBillingLine } from '../resources/js/types/orders-api.ts';
 
 function assert(condition: boolean, message: string): void {
     if (!condition) {
@@ -116,42 +116,50 @@ assert(
 
 assert(parseWireMoney('1200.00') === 1200, 'parseWireMoney: decimal string');
 assert(parseWireMoney(null) === 0, 'parseWireMoney: null');
+assert(parseWireMoney('250.00') === 250, 'parseWireMoney: no cents division');
 
-const cartPreviewItem = baseItem({
-    id: 69,
-    locked_price: '1200.00',
-    encoding_surcharge: 100,
-    estimated_total: 1300,
-    status_lookup: { id: 1, name: 'Still In Cart', order_status_id: 1 },
-    specifiable_type: BROADCAST_SPECIFIABLE_TYPE,
-    specifiable: {
-        id: 3,
-        type: 'International International TV Package',
-        cut: '',
-        duration_seconds: '30',
-        language: 'English',
-        encoding: ['Hulu', 'Amazon'],
-        isci: 'ISCI-CART',
+const sampleVirtualBillingLines: VirtualBillingLine[] = [
+    {
+        type: 'Encoding',
+        description: 'Encoding',
+        unit_price: 250,
+        total: 250,
     },
-});
+    {
+        type: 'Encoding',
+        description: 'Encoding',
+        unit_price: 0,
+        total: 0,
+    },
+    {
+        type: 'Encoding',
+        description: 'Encoding',
+        unit_price: 75,
+        total: 75,
+    },
+];
 
-const cartOrder = {
-    id: 16,
-    order_items: [cartPreviewItem],
-} as ApiOrder;
-
-const cartLines = orderCartBillingLines(cartOrder);
-assert(cartLines.length === 2, 'cart: base + surcharge rows');
-assert(cartLines[0]?.amount === 1200, 'cart: base amount from locked_price');
-assert(cartLines[1]?.amount === 100, 'cart: surcharge amount');
+const cartLines = orderCartBillingLines(sampleVirtualBillingLines);
+assert(cartLines.length === 3, 'cart: virtual billing rows only');
+assert(cartLines[0]?.amount === 250, 'cart: virtual encoding total wire');
+assert(cartLines[1]?.amount === 0, 'cart: zero-dollar virtual encoding row');
+assert(cartLines[2]?.amount === 75, 'cart: additional virtual encoding total wire');
 assert(
-    cartLines[1]?.reference ===
-        'Encoding & Delivery Surcharge (Hulu, Amazon)',
-    'cart: surcharge reference includes encodings',
+    cartLines.every((line) => line.reference === 'Encoding'),
+    'cart: virtual encoding descriptions',
 );
 assert(
-    orderCartBillingTotal(cartOrder) === 1300,
-    'cart: total uses estimated_total not row sum',
+    orderCartBillingTotal(sampleVirtualBillingLines) === 325,
+    'cart: total sums virtual_billing_lines totals only',
+);
+
+assert(
+    orderCartBillingLines(null).length === 0,
+    'cart: empty when virtual_billing_lines absent',
+);
+assert(
+    orderCartBillingTotal(null) === 0,
+    'cart: zero total when virtual_billing_lines absent',
 );
 
 console.log('validate-order-item-billing-reference: ok');

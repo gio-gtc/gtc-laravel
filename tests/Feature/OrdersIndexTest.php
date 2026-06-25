@@ -23,6 +23,30 @@ function sampleToursPaginationPayload(): array
     ];
 }
 
+function sampleVirtualBillingLinesPayload(): array
+{
+    return [
+        [
+            'type' => 'Encoding',
+            'description' => 'Encoding',
+            'unit_price' => 250.00,
+            'total' => 250.00,
+        ],
+        [
+            'type' => 'Encoding',
+            'description' => 'Encoding',
+            'unit_price' => 0.00,
+            'total' => 0.00,
+        ],
+        [
+            'type' => 'Encoding',
+            'description' => 'Encoding',
+            'unit_price' => 75.00,
+            'total' => 75.00,
+        ],
+    ];
+}
+
 function sampleApiOrderPayload(): array
 {
     return [
@@ -83,6 +107,7 @@ function sampleApiOrderPayload(): array
                 'avatar' => null,
             ],
         ],
+        'cart_grand_total' => 1475.00,
         'order_items' => [
             [
                 'id' => 142,
@@ -94,6 +119,14 @@ function sampleApiOrderPayload(): array
                     'name' => 'Broadcast & Streaming Video Details',
                     'order_menu_category_id' => 1,
                     'billing_code' => 'Video',
+                    'pricing_matrix' => [
+                        'first_cut_price' => 575.00,
+                        'additional_cut_price' => 275.00,
+                        'revision_price' => 275.00,
+                        'base_encoding_bundle' => 250.00,
+                        'base_encoding_limit' => 2,
+                        'additional_encoding' => 75.00,
+                    ],
                 ],
                 'locked_price' => '1200.00',
                 'encoding_surcharge' => 100.00,
@@ -351,9 +384,8 @@ it('proxies GET /api/orders/{id} and normalizes order show payload', function ()
 
     Http::fake([
         $orderShowUrl => Http::response([
-            'data' => [
-                'order' => sampleApiOrderPayload(),
-            ],
+            'order' => sampleApiOrderPayload(),
+            'virtual_billing_lines' => sampleVirtualBillingLinesPayload(),
         ], 200),
     ]);
 
@@ -372,7 +404,14 @@ it('proxies GET /api/orders/{id} and normalizes order show payload', function ()
         ->assertJsonPath('order.order_items.0.locked_price', '1200.00')
         ->assertJsonPath('order.order_items.0.encoding_surcharge', 100)
         ->assertJsonPath('order.order_items.0.estimated_total', 1300)
-        ->assertJsonPath('order.order_items.0.order_menu_item.billing_code', 'Video');
+        ->assertJsonPath('order.order_items.0.order_menu_item.billing_code', 'Video')
+        ->assertJsonPath(
+            'order.order_items.0.order_menu_item.pricing_matrix.first_cut_price',
+            575,
+        )
+        ->assertJsonPath('order.cart_grand_total', 1475)
+        ->assertJsonPath('virtual_billing_lines.0.description', 'Encoding')
+        ->assertJsonPath('virtual_billing_lines.1.total', 0);
 });
 
 it('proxies PATCH /api/orders/{id} with descriptions and show_dates', function () {
@@ -392,7 +431,7 @@ it('proxies PATCH /api/orders/{id} with descriptions and show_dates', function (
 
     Http::fake([
         $orderPatchUrl => Http::response([
-            'data' => array_merge(sampleApiOrderPayload(), $patchBody),
+            'order' => array_merge(sampleApiOrderPayload(), $patchBody),
         ], 200),
     ]);
 

@@ -34,7 +34,7 @@ function bffClientSessionUser(array $overrides = []): array
 it('proxies staff create order to gtc-api with mapped payload', function () {
     Http::fake([
         ordersStoreApiUrl() => Http::response([
-            'data' => ['id' => 99],
+            'id' => 99,
         ], 201),
     ]);
 
@@ -73,7 +73,7 @@ it('proxies staff create order to gtc-api with mapped payload', function () {
 it('proxies multiple show dates and dedupes before sending to gtc-api', function () {
     Http::fake([
         ordersStoreApiUrl() => Http::response([
-            'data' => ['id' => 101],
+            'id' => 101,
         ], 201),
     ]);
 
@@ -99,7 +99,7 @@ it('proxies multiple show dates and dedupes before sending to gtc-api', function
 
 it('sets ordered_by_id from session for client users', function () {
     Http::fake([
-        ordersStoreApiUrl() => Http::response(['data' => ['id' => 100]], 201),
+        ordersStoreApiUrl() => Http::response(['id' => 100], 201),
     ]);
 
     $this->actingAsBff(bffClientSessionUser())

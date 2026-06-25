@@ -1159,12 +1159,12 @@ function GeneralMediaView({
     );
 
     const cartLines = useMemo(
-        () => orderCartBillingLines(openOrder),
+        () => orderCartBillingLines(openOrder?.virtual_billing_lines),
         [openOrder],
     );
 
     const cartTotal = useMemo(
-        () => orderCartBillingTotal(openOrder),
+        () => orderCartBillingTotal(openOrder?.virtual_billing_lines),
         [openOrder],
     );
 

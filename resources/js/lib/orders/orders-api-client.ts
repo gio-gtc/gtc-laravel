@@ -7,6 +7,7 @@ import type {
     GlobalDashboardFilters,
     IndexOrder,
     OrderPatchPayload,
+    OrderShowResponse,
     PaginatedToursResponse,
     SubmitOrderResponse,
     ClearOrderCartResponse,
@@ -98,12 +99,15 @@ export async function fetchOrderShow(
         throw new Error('Could not load order details.');
     }
 
-    const body = (await response.json()) as { order?: ApiOrder };
+    const body = (await response.json()) as OrderShowResponse;
     if (!body.order) {
         throw new Error('Order not found.');
     }
 
-    return body.order;
+    return {
+        ...body.order,
+        virtual_billing_lines: body.virtual_billing_lines ?? [],
+    };
 }
 
 export async function patchOrder(

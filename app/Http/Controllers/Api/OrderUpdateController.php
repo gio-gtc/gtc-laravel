@@ -65,10 +65,7 @@ class OrderUpdateController extends Controller
             );
         }
 
-        $raw = $result['data']['data']['order']
-            ?? $result['data']['order']
-            ?? $result['data']['data']
-            ?? null;
+        $raw = GtcApiClient::unwrapResource($result['data'], 'order');
 
         if (! is_array($raw)) {
             return response()->json(['ok' => true]);
