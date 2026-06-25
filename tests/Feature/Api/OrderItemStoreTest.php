@@ -9,6 +9,14 @@ it('proxies json add order item to gtc-api', function () {
         apiOrderItemsStoreUrl(1) => Http::response([
             'message' => 'Line item created.',
             'data' => samplePolymorphicBroadcastOrderItem(),
+            'virtual_billing_lines' => [
+                [
+                    'type' => 'Encoding',
+                    'description' => 'Encoding',
+                    'unit_price' => 250.00,
+                    'total' => 250.00,
+                ],
+            ],
         ], 201),
     ]);
 
@@ -28,7 +36,9 @@ it('proxies json add order item to gtc-api', function () {
         ->assertJsonPath('order_item.id', 200)
         ->assertJsonPath('order_item.specifiable.encoding.0', 'Station MP4 (Broadcast)')
         ->assertJsonPath('order_item.status_lookup.name', 'Still In Cart')
-        ->assertJsonPath('order_item.specifiable.asset_tracking.Voice Over', false);
+        ->assertJsonPath('order_item.specifiable.asset_tracking.Voice Over', false)
+        ->assertJsonPath('virtual_billing_lines.0.description', 'Encoding')
+        ->assertJsonPath('virtual_billing_lines.0.total', 250);
 
     Http::assertSent(function ($request) {
         if ($request->url() !== apiOrderItemsStoreUrl(1) || $request->method() !== 'POST') {

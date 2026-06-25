@@ -3,10 +3,11 @@ import {
     OrderItemApiError,
 } from '@/lib/orders/order-item-api-client';
 import type { OrderItemBulkPatch } from '@/lib/orders/order-item-adapters/types';
+import type { VirtualBillingLine } from '@/types/orders-api';
 import { toast } from 'react-toastify';
 
 export type CommitOrderItemBulkWriteResult =
-    | { ok: true; message: string }
+    | { ok: true; message: string; virtual_billing_lines?: VirtualBillingLine[] }
     | {
           ok: false;
           message: string;
@@ -14,21 +15,11 @@ export type CommitOrderItemBulkWriteResult =
       };
 
 export async function commitOrderItemBulkWrite(deps: {
-    orderId: number;
     orderItemIds: number[];
     patch: OrderItemBulkPatch;
-    refreshOpenOrder: (orderId: number) => Promise<unknown>;
     successMessage?: string;
-    skipRefresh?: boolean;
 }): Promise<CommitOrderItemBulkWriteResult> {
-    const {
-        orderId,
-        orderItemIds,
-        patch,
-        refreshOpenOrder,
-        successMessage,
-        skipRefresh = false,
-    } = deps;
+    const { orderItemIds, patch, successMessage } = deps;
 
     if (orderItemIds.length === 0) {
         return { ok: false, message: 'No line items selected to update.' };
@@ -39,13 +30,14 @@ export async function commitOrderItemBulkWrite(deps: {
             order_item_ids: orderItemIds,
             ...patch,
         });
-        if (!skipRefresh) {
-            await refreshOpenOrder(orderId);
-        }
         const message =
             successMessage ?? result.message ?? 'Line item(s) updated.';
         toast.success(message);
-        return { ok: true, message };
+        return {
+            ok: true,
+            message,
+            virtual_billing_lines: result.virtual_billing_lines,
+        };
     } catch (error) {
         if (error instanceof OrderItemApiError) {
             const validationMessage = error.errors

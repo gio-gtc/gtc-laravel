@@ -28,7 +28,7 @@ import {
     venueRowToStoreItemPayload,
 } from '@/lib/orders/slideout';
 import { mergeApiAndExtraVenueItems } from '@/lib/orders/slideout/merge-api-and-extra-venue-items';
-import { patchOrderItemsBulkInOrder } from '@/lib/orders/slideout/order-mutations';
+import { patchOrderItemsBulkInOrder, mergeVirtualBillingLines } from '@/lib/orders/slideout/order-mutations';
 import type { OrderCatalogMenu } from '@/types/order-catalog';
 import type { OrderItemsRow, SharedData } from '@/types';
 import type { OrdersCatalogValue } from '@/types/inertia-pages';
@@ -51,6 +51,7 @@ import {
     useRef,
     useState,
     type ReactNode,
+    type SetStateAction,
 } from 'react';
 import { toast } from 'react-toastify';
 
@@ -90,7 +91,6 @@ type OrderSlideoutCatalogContextValue = {
         orderItemIds: number[],
         patch: OrderItemBulkPatch,
         successMessage?: string,
-        options?: { skipRefresh?: boolean },
     ) => Promise<CommitOrderItemBulkWriteResult>;
 };
 
@@ -115,6 +115,23 @@ export function OrderSlideoutCatalogProvider({
     );
     const [orderCatalogLoading, setOrderCatalogLoading] = useState(true);
     const tourInvalidatorRef = useRef<TourOrdersInvalidator | null>(null);
+
+    const syncOpenOrder = useCallback(
+        (update: SetStateAction<ApiOrder | null>) => {
+            setOpenOrder((prev) => {
+                const next =
+                    typeof update === 'function' ? update(prev) : update;
+                if (next) {
+                    setOrdersDetailCache((cache) => ({
+                        ...cache,
+                        [next.id]: next,
+                    }));
+                }
+                return next;
+            });
+        },
+        [],
+    );
 
     useEffect(() => {
         let cancelled = false;
@@ -413,9 +430,10 @@ export function OrderSlideoutCatalogProvider({
                 menuItem.id,
                 {
                     order: openOrder,
-                    setOpenOrder,
+                    setOpenOrder: syncOpenOrder,
                     setExtraVenueItems,
                     applyParentOrderBadgeUpdate,
+                    refreshOpenOrder,
                 },
                 menuItem.tags,
                 menuItem,
@@ -437,7 +455,7 @@ export function OrderSlideoutCatalogProvider({
 
             return result;
         },
-        [openOrder, getMenuItemForCategory, applyParentOrderBadgeUpdate],
+        [openOrder, getMenuItemForCategory, applyParentOrderBadgeUpdate, refreshOpenOrder, syncOpenOrder],
     );
 
     const removeOrderItemFromCart = useCallback(
@@ -472,7 +490,6 @@ export function OrderSlideoutCatalogProvider({
             orderItemIds: number[],
             patch: OrderItemBulkPatch,
             successMessage?: string,
-            options?: { skipRefresh?: boolean },
         ): Promise<CommitOrderItemBulkWriteResult> => {
             if (!openOrder) {
                 toast.error('Open an order before updating line items.');
@@ -482,31 +499,41 @@ export function OrderSlideoutCatalogProvider({
                 };
             }
 
-            const skipRefresh = options?.skipRefresh ?? true;
             const snapshot = openOrder;
 
-            setOpenOrder((prev) =>
+            syncOpenOrder((prev) =>
                 prev
                     ? patchOrderItemsBulkInOrder(prev, orderItemIds, patch)
                     : prev,
             );
 
             const result = await runCommitOrderItemBulkWrite({
-                orderId: openOrder.id,
                 orderItemIds,
                 patch,
-                refreshOpenOrder,
                 successMessage,
-                skipRefresh,
             });
 
             if (!result.ok) {
-                setOpenOrder(snapshot);
+                syncOpenOrder(snapshot);
+                return result;
+            }
+
+            if (result.virtual_billing_lines) {
+                syncOpenOrder((prev) =>
+                    prev
+                        ? mergeVirtualBillingLines(
+                              prev,
+                              result.virtual_billing_lines,
+                          )
+                        : prev,
+                );
+            } else {
+                void refreshOpenOrder(openOrder.id);
             }
 
             return result;
         },
-        [openOrder, refreshOpenOrder],
+        [openOrder, refreshOpenOrder, syncOpenOrder],
     );
 
     const slideoutCatalog = useMemo((): OrdersCatalogValue => {

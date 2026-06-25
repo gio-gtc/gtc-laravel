@@ -17,7 +17,7 @@ import {
     apiOrderToLegacySlideout,
     mapApiOrderItemToVenueRow,
 } from '@/lib/orders/slideout/api-order-slideout';
-import { upsertOrderItem } from '@/lib/orders/slideout/order-mutations';
+import { upsertOrderItem, mergeVirtualBillingLines } from '@/lib/orders/slideout/order-mutations';
 import type { OrderItemsRow } from '@/types';
 import type { OrderCatalogMenuItem } from '@/types/order-catalog';
 import type { ApiOrder, OrderItem, OrderMenuItem, ParentOrderUpdate } from '@/types/orders-api';
@@ -30,6 +30,7 @@ export type SequentialCreateDeps = {
     applyParentOrderBadgeUpdate?: (
         patch: ParentOrderUpdate | undefined,
     ) => void;
+    refreshOpenOrder?: (orderId: number) => Promise<ApiOrder | null>;
 };
 
 function pendingRowsForDrafts<TForm>(
@@ -157,7 +158,7 @@ export async function runSequentialOrderItemCreate<TForm>(
     catalogTags?: string[],
     catalogMenuItem?: OrderCatalogMenuItem,
 ): Promise<SequentialCreateResult> {
-    const { order, setOpenOrder, setExtraVenueItems, applyParentOrderBadgeUpdate } =
+    const { order, setOpenOrder, setExtraVenueItems, applyParentOrderBadgeUpdate, refreshOpenOrder } =
         deps;
     const { drafts, pendingRows } = pendingRowsForDrafts(
         adapter,
@@ -174,6 +175,7 @@ export async function runSequentialOrderItemCreate<TForm>(
     setExtraVenueItems((prev) => [...prev, ...pendingRows]);
 
     let succeeded = 0;
+    let receivedVirtualBillingLines = false;
 
     for (let index = 0; index < drafts.length; index += 1) {
         const draft = drafts[index]!;
@@ -187,6 +189,10 @@ export async function runSequentialOrderItemCreate<TForm>(
 
             applyParentOrderBadgeUpdate?.(result.parent_order_update);
 
+            if (result.virtual_billing_lines) {
+                receivedVirtualBillingLines = true;
+            }
+
             const createdItem = enrichCreatedOrderItem(
                 result.order_item,
                 catalogMenuItem,
@@ -194,10 +200,15 @@ export async function runSequentialOrderItemCreate<TForm>(
 
             let nextOrder: ApiOrder | undefined;
             setOpenOrder((prevOrder) => {
-                nextOrder = prevOrder
-                    ? upsertOrderItem(prevOrder, createdItem)
-                    : undefined;
-                return nextOrder ?? prevOrder;
+                if (!prevOrder) {
+                    return prevOrder;
+                }
+
+                nextOrder = mergeVirtualBillingLines(
+                    upsertOrderItem(prevOrder, createdItem),
+                    result.virtual_billing_lines,
+                );
+                return nextOrder;
             });
             if (nextOrder) {
                 setExtraVenueItems((prevExtra) =>
@@ -221,6 +232,7 @@ export async function runSequentialOrderItemCreate<TForm>(
             );
 
             if (error instanceof OrderItemApiError && error.status === 422) {
+                void refreshOpenOrder?.(order.id);
                 return {
                     succeeded,
                     failed: true,
@@ -229,12 +241,17 @@ export async function runSequentialOrderItemCreate<TForm>(
                 };
             }
 
+            void refreshOpenOrder?.(order.id);
             return {
                 succeeded,
                 failed: true,
                 stoppedAtIndex: index,
             };
         }
+    }
+
+    if (succeeded > 0 && !receivedVirtualBillingLines) {
+        void refreshOpenOrder?.(order.id);
     }
 
     return { succeeded, failed: false };

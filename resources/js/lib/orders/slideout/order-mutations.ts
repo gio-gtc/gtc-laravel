@@ -1,6 +1,6 @@
 import type { OrderItemBulkPatch } from '@/lib/orders/order-item-adapters/types';
 import type { OrderItemsRow } from '@/types';
-import type { ApiOrder, OrderItem } from '@/types/orders-api';
+import type { ApiOrder, OrderItem, VirtualBillingLine } from '@/types/orders-api';
 import {
     isBroadcastOrderItem,
     isKeyArtOrderItem,
@@ -93,6 +93,20 @@ export function patchOrderItemSpecificationsInOrder(
     });
 
     return { ...order, order_items: items };
+}
+
+export function mergeVirtualBillingLines(
+    order: ApiOrder,
+    virtualBillingLines?: VirtualBillingLine[] | null,
+): ApiOrder {
+    if (!virtualBillingLines) {
+        return order;
+    }
+
+    return {
+        ...order,
+        virtual_billing_lines: virtualBillingLines,
+    };
 }
 
 /** Apply bulk-write fields onto matching order items (optimistic modal/inline edit). */

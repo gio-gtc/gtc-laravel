@@ -6,6 +6,7 @@ import type {
     OrderItem,
     ParentOrderUpdate,
     StaffWireUser,
+    VirtualBillingLine,
 } from '@/types/orders-api';
 import type { StoreOrderItemPayload } from '@/lib/orders/slideout/legacy-venue-row-to-api-item';
 
@@ -13,6 +14,7 @@ export type OrderItemMutationResponse = {
     message: string;
     order_item: OrderItem;
     parent_order_update?: ParentOrderUpdate;
+    virtual_billing_lines?: VirtualBillingLine[];
 };
 
 export type AssigneeMutationResponse = {
@@ -281,6 +283,7 @@ export type OrderItemBulkUpdateResponse = {
         updated_items_count: number;
         affected_orders: number[];
     };
+    virtual_billing_lines?: VirtualBillingLine[];
 };
 
 async function parseBulkUpdateResponse(

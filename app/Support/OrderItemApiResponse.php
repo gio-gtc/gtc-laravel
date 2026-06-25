@@ -45,6 +45,17 @@ final class OrderItemApiResponse
 
     /**
      * @param  array<string, mixed>  $data
+     * @return array<int, mixed>
+     */
+    public static function extractVirtualBillingLines(array $data): array
+    {
+        $lines = $data['virtual_billing_lines'] ?? null;
+
+        return is_array($lines) ? $lines : [];
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
      */
     public static function successJson(
         array $data,
@@ -66,6 +77,11 @@ final class OrderItemApiResponse
         $parentOrderUpdate = self::extractParentOrderUpdate($data);
         if ($parentOrderUpdate !== null) {
             $payload['parent_order_update'] = $parentOrderUpdate;
+        }
+
+        $virtualBillingLines = self::extractVirtualBillingLines($data);
+        if ($virtualBillingLines !== []) {
+            $payload['virtual_billing_lines'] = $virtualBillingLines;
         }
 
         return response()->json($payload, $status);

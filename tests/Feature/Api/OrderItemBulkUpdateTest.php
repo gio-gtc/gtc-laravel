@@ -12,6 +12,14 @@ it('proxies bulk update order items to gtc-api', function () {
                 'updated_items_count' => 3,
                 'affected_orders' => [6],
             ],
+            'virtual_billing_lines' => [
+                [
+                    'type' => 'Encoding',
+                    'description' => 'Encoding',
+                    'unit_price' => 250.00,
+                    'total' => 250.00,
+                ],
+            ],
         ], 200),
     ]);
 
@@ -23,7 +31,9 @@ it('proxies bulk update order items to gtc-api', function () {
         ->assertOk()
         ->assertJsonPath('message', 'Selected order line items batch-updated successfully.')
         ->assertJsonPath('meta.updated_items_count', 3)
-        ->assertJsonPath('meta.affected_orders', [6]);
+        ->assertJsonPath('meta.affected_orders', [6])
+        ->assertJsonPath('virtual_billing_lines.0.description', 'Encoding')
+        ->assertJsonPath('virtual_billing_lines.0.total', 250);
 
     Http::assertSent(function ($request) {
         if ($request->url() !== apiOrderItemsBulkUpdateUrl() || $request->method() !== 'POST') {

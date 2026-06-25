@@ -27,7 +27,18 @@ final class OrderItemBulkUpdateApiResponse
         return response()->json([
             'message' => is_string($message) ? $message : $fallbackMessage,
             'meta' => $meta,
-        ], $status);
+        ] + self::virtualBillingLinesPayload($data), $status);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private static function virtualBillingLinesPayload(array $data): array
+    {
+        $lines = OrderItemApiResponse::extractVirtualBillingLines($data);
+
+        return $lines !== [] ? ['virtual_billing_lines' => $lines] : [];
     }
 
     /**

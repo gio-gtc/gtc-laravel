@@ -21,3 +21,15 @@ it('returns null when parent_order_update is missing or invalid', function () {
         'parent_order_update' => ['statuses' => []],
     ]))->toBeNull();
 });
+
+it('extracts virtual_billing_lines when present', function () {
+    $lines = [
+        ['type' => 'Encoding', 'description' => 'Encoding', 'total' => 250],
+    ];
+
+    expect(OrderItemApiResponse::extractVirtualBillingLines([
+        'virtual_billing_lines' => $lines,
+    ]))->toBe($lines);
+
+    expect(OrderItemApiResponse::extractVirtualBillingLines([]))->toBe([]);
+});
