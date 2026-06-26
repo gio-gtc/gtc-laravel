@@ -3,147 +3,104 @@ import { buildFilterCacheKey } from '@/lib/orders/global-dashboard-filters';
 import { fetchTourOrders } from '@/lib/orders/orders-api-client';
 import type { GlobalDashboardFilters, IndexOrder } from '@/types/orders-api';
 
-type TourOrdersCache = Record<number, IndexOrder[]>;
-type FetchIntent = 'prefetch' | 'expand';
+export type TourAccordionEntry = {
+    orders?: IndexOrder[];
+    fetchedAt?: number;
+    isExpanded: boolean;
+    isLoading: boolean;
+    error?: string;
+};
 
-const MAX_CONCURRENT_PREFETCH = 2;
+export type TourAccordionState = Record<number, TourAccordionEntry>;
+
+const TOUR_ORDERS_CACHE_TTL_MS = 5 * 60 * 1000;
+
+function isCacheFresh(fetchedAt: number): boolean {
+    return Date.now() - fetchedAt < TOUR_ORDERS_CACHE_TTL_MS;
+}
+
+function emptyEntry(): TourAccordionEntry {
+    return {
+        isExpanded: false,
+        isLoading: false,
+    };
+}
 
 export function useTourOrdersCache(filters: GlobalDashboardFilters) {
-    const [ordersByTour, setOrdersByTour] = useState<TourOrdersCache>({});
-    const cacheRef = useRef(ordersByTour);
-    cacheRef.current = ordersByTour;
-
-    const [loadingTourIds, setLoadingTourIds] = useState<Set<number>>(
-        () => new Set(),
-    );
-    const [prefetchingTourIds, setPrefetchingTourIds] = useState<Set<number>>(
-        () => new Set(),
-    );
-    const [errorsByTour, setErrorsByTour] = useState<Record<number, string>>(
-        {},
-    );
+    const [tourAccordionState, setTourAccordionState] =
+        useState<TourAccordionState>({});
+    const stateRef = useRef(tourAccordionState);
+    stateRef.current = tourAccordionState;
 
     const filterKeyRef = useRef(buildFilterCacheKey(filters));
     const abortControllersRef = useRef<Map<number, AbortController>>(new Map());
     const inFlightRef = useRef<
         Map<number, Promise<IndexOrder[] | undefined>>
     >(new Map());
-    const prefetchQueueRef = useRef<number[]>([]);
-    const activePrefetchCountRef = useRef(0);
-    const expandRequestedRef = useRef<Set<number>>(new Set());
     const filtersRef = useRef(filters);
     filtersRef.current = filters;
 
-    const resetPrefetchState = useCallback(() => {
-        prefetchQueueRef.current = [];
-        activePrefetchCountRef.current = 0;
-        expandRequestedRef.current.clear();
-        setPrefetchingTourIds(new Set());
-    }, []);
+    const patchTourEntry = useCallback(
+        (tourId: number, patch: Partial<TourAccordionEntry>) => {
+            setTourAccordionState((prev) => ({
+                ...prev,
+                [tourId]: {
+                    ...emptyEntry(),
+                    ...prev[tourId],
+                    ...patch,
+                },
+            }));
+        },
+        [],
+    );
 
     const clearInFlight = useCallback(() => {
         abortControllersRef.current.forEach((c) => c.abort());
         abortControllersRef.current.clear();
         inFlightRef.current.clear();
-        resetPrefetchState();
-    }, [resetPrefetchState]);
+    }, []);
 
     useEffect(() => {
         const nextKey = buildFilterCacheKey(filters);
         if (nextKey !== filterKeyRef.current) {
             filterKeyRef.current = nextKey;
             clearInFlight();
-            setOrdersByTour({});
-            setErrorsByTour({});
-            setLoadingTourIds(new Set());
+            setTourAccordionState({});
         }
     }, [filters, clearInFlight]);
 
-    const setIntentLoading = useCallback(
-        (tourId: number, intent: FetchIntent, active: boolean) => {
-            if (intent === 'expand') {
-                setLoadingTourIds((prev) => {
-                    const next = new Set(prev);
-                    if (active) {
-                        next.add(tourId);
-                    } else {
-                        next.delete(tourId);
-                    }
-                    return next;
-                });
-                if (active) {
-                    setPrefetchingTourIds((prev) => {
-                        if (!prev.has(tourId)) {
-                            return prev;
-                        }
-                        const next = new Set(prev);
-                        next.delete(tourId);
-                        return next;
-                    });
-                }
-                return;
-            }
-
-            setPrefetchingTourIds((prev) => {
-                const next = new Set(prev);
-                if (active) {
-                    next.add(tourId);
-                } else {
-                    next.delete(tourId);
-                }
-                return next;
-            });
-        },
-        [],
-    );
-
-    const drainPrefetchQueueRef = useRef<() => void>(() => {});
-
-    const runFetch = useCallback(
-        async (
+    const executeFetch = useCallback(
+        (
             tourId: number,
-            force: boolean,
-            intent: FetchIntent,
+            options: { showLoading: boolean },
         ): Promise<IndexOrder[] | undefined> => {
-            if (!force && cacheRef.current[tourId] !== undefined) {
-                return cacheRef.current[tourId];
-            }
+            const { showLoading } = options;
 
-            const existing = inFlightRef.current.get(tourId);
-            if (!force && existing) {
-                if (intent === 'expand') {
-                    expandRequestedRef.current.add(tourId);
-                    setIntentLoading(tourId, 'expand', true);
-                }
-                return existing;
-            }
-
-            if (force) {
-                abortControllersRef.current.get(tourId)?.abort();
-            }
+            abortControllersRef.current.get(tourId)?.abort();
 
             const controller = new AbortController();
             abortControllersRef.current.set(tourId, controller);
 
-            if (intent === 'prefetch') {
-                activePrefetchCountRef.current += 1;
+            if (showLoading) {
+                patchTourEntry(tourId, { isLoading: true, error: undefined });
+            } else {
+                patchTourEntry(tourId, { error: undefined });
             }
 
-            setIntentLoading(tourId, intent, true);
-            setErrorsByTour((prev) => {
-                const next = { ...prev };
-                delete next[tourId];
-                return next;
-            });
-
-            const promise = (async () => {
+            let promise!: Promise<IndexOrder[] | undefined>;
+            promise = (async () => {
                 try {
                     const orders = await fetchTourOrders(
                         tourId,
                         filtersRef.current,
                         controller.signal,
                     );
-                    setOrdersByTour((prev) => ({ ...prev, [tourId]: orders }));
+                    patchTourEntry(tourId, {
+                        orders,
+                        fetchedAt: Date.now(),
+                        isLoading: false,
+                        error: undefined,
+                    });
                     return orders;
                 } catch (error) {
                     if (
@@ -152,27 +109,15 @@ export function useTourOrdersCache(filters: GlobalDashboardFilters) {
                     ) {
                         return undefined;
                     }
-                    setErrorsByTour((prev) => ({
-                        ...prev,
-                        [tourId]: 'Could not load orders.',
-                    }));
+                    patchTourEntry(tourId, {
+                        isLoading: false,
+                        error: 'Could not load orders.',
+                    });
                     return undefined;
                 } finally {
                     abortControllersRef.current.delete(tourId);
-                    inFlightRef.current.delete(tourId);
-                    setIntentLoading(tourId, intent, false);
-
-                    if (expandRequestedRef.current.has(tourId)) {
-                        expandRequestedRef.current.delete(tourId);
-                        setIntentLoading(tourId, 'expand', false);
-                    }
-
-                    if (intent === 'prefetch') {
-                        activePrefetchCountRef.current = Math.max(
-                            0,
-                            activePrefetchCountRef.current - 1,
-                        );
-                        drainPrefetchQueueRef.current();
+                    if (inFlightRef.current.get(tourId) === promise) {
+                        inFlightRef.current.delete(tourId);
                     }
                 }
             })();
@@ -180,68 +125,66 @@ export function useTourOrdersCache(filters: GlobalDashboardFilters) {
             inFlightRef.current.set(tourId, promise);
             return promise;
         },
-        [setIntentLoading],
-    );
-
-    const drainPrefetchQueue = useCallback(() => {
-        while (
-            activePrefetchCountRef.current < MAX_CONCURRENT_PREFETCH &&
-            prefetchQueueRef.current.length > 0
-        ) {
-            const nextTourId = prefetchQueueRef.current.shift();
-            if (nextTourId === undefined) {
-                break;
-            }
-
-            if (cacheRef.current[nextTourId] !== undefined) {
-                continue;
-            }
-
-            if (inFlightRef.current.has(nextTourId)) {
-                continue;
-            }
-
-            void runFetch(nextTourId, false, 'prefetch');
-        }
-    }, [runFetch]);
-
-    drainPrefetchQueueRef.current = drainPrefetchQueue;
-
-    const prefetchTourOrders = useCallback(
-        (tourId: number) => {
-            if (cacheRef.current[tourId] !== undefined) {
-                return;
-            }
-
-            if (inFlightRef.current.has(tourId)) {
-                return;
-            }
-
-            if (prefetchQueueRef.current.includes(tourId)) {
-                return;
-            }
-
-            if (activePrefetchCountRef.current >= MAX_CONCURRENT_PREFETCH) {
-                prefetchQueueRef.current.push(tourId);
-                return;
-            }
-
-            void runFetch(tourId, false, 'prefetch');
-        },
-        [runFetch],
+        [patchTourEntry],
     );
 
     const loadTourOrders = useCallback(
-        async (tourId: number, force = false) =>
-            runFetch(tourId, force, 'expand'),
-        [runFetch],
+        async (
+            tourId: number,
+            force = false,
+        ): Promise<IndexOrder[] | undefined> => {
+            const entry = stateRef.current[tourId];
+            const hasOrders = entry?.orders !== undefined;
+            const fetchedAt = entry?.fetchedAt;
+
+            if (!force && hasOrders && fetchedAt !== undefined) {
+                if (isCacheFresh(fetchedAt)) {
+                    return entry.orders;
+                }
+
+                if (!inFlightRef.current.has(tourId)) {
+                    void executeFetch(tourId, { showLoading: false });
+                }
+                return entry.orders;
+            }
+
+            const existing = inFlightRef.current.get(tourId);
+            if (!force && existing) {
+                return existing;
+            }
+
+            const showLoading = !hasOrders;
+            return executeFetch(tourId, { showLoading });
+        },
+        [executeFetch],
+    );
+
+    const expandTour = useCallback(
+        (tourId: number, options?: { force?: boolean }) => {
+            patchTourEntry(tourId, { isExpanded: true });
+            void loadTourOrders(tourId, options?.force ?? false);
+        },
+        [loadTourOrders, patchTourEntry],
+    );
+
+    const toggleTourExpansion = useCallback(
+        (tourId: number) => {
+            const entry = stateRef.current[tourId];
+
+            if (entry?.isExpanded) {
+                patchTourEntry(tourId, { isExpanded: false });
+                return;
+            }
+
+            patchTourEntry(tourId, { isExpanded: true });
+            void loadTourOrders(tourId, false);
+        },
+        [loadTourOrders, patchTourEntry],
     );
 
     const clearCache = useCallback(() => {
         clearInFlight();
-        setOrdersByTour({});
-        setErrorsByTour({});
-        setLoadingTourIds(new Set());
+        setTourAccordionState({});
     }, [clearInFlight]);
 
     const reloadTour = useCallback(
@@ -249,13 +192,32 @@ export function useTourOrdersCache(filters: GlobalDashboardFilters) {
         [loadTourOrders],
     );
 
+    const getTourEntry = useCallback(
+        (tourId: number): TourAccordionEntry | undefined =>
+            tourAccordionState[tourId],
+        [tourAccordionState],
+    );
+
+    const isTourExpanded = useCallback(
+        (tourId: number): boolean =>
+            tourAccordionState[tourId]?.isExpanded ?? false,
+        [tourAccordionState],
+    );
+
+    const getTourOrders = useCallback(
+        (tourId: number): IndexOrder[] | undefined =>
+            tourAccordionState[tourId]?.orders,
+        [tourAccordionState],
+    );
+
     return {
-        ordersByTour,
-        loadingTourIds,
-        prefetchingTourIds,
-        errorsByTour,
+        tourAccordionState,
+        getTourEntry,
+        isTourExpanded,
+        getTourOrders,
+        toggleTourExpansion,
+        expandTour,
         loadTourOrders,
-        prefetchTourOrders,
         reloadTour,
         clearCache,
     };

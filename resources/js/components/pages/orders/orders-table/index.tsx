@@ -75,7 +75,6 @@ function OrdersTable() {
     useEffect(() => {
         loadStaffRoster();
     }, [loadStaffRoster]);
-    const [expandedTours, setExpandedTours] = useState<Set<number>>(new Set());
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedOrderIds, setSelectedOrderIds] = useState<number[]>([]);
     const [isAddOrderModalOpen, setIsAddOrderModalOpen] = useState(false);
@@ -110,12 +109,11 @@ function OrdersTable() {
     } = useTourFeed(catalog.tours, catalog.tours_pagination);
 
     const {
-        ordersByTour,
-        loadingTourIds,
-        prefetchingTourIds,
-        errorsByTour,
+        tourAccordionState,
+        getTourOrders,
+        toggleTourExpansion,
+        expandTour,
         loadTourOrders,
-        prefetchTourOrders,
         reloadTour,
         clearCache,
     } = useTourOrdersCache(globalFilters);
@@ -127,11 +125,10 @@ function OrdersTable() {
 
     const revealTourOrder = useCallback(
         (tourId: number, orderId: number) => {
-            setExpandedTours((prev) => new Set(prev).add(tourId));
-            void loadTourOrders(tourId, true);
+            expandTour(tourId, { force: true });
             setSelectedOrderIds([orderId]);
         },
-        [loadTourOrders],
+        [expandTour],
     );
 
     useOrdersPageFlashSync({ revealTourOrder });
@@ -155,7 +152,6 @@ function OrdersTable() {
 
     const applyGlobalFilterReset = useCallback(
         (nextFilters: GlobalDashboardFilters) => {
-            setExpandedTours(new Set());
             clearCache();
             setOpenOrder(null);
             void resetFeed(nextFilters);
@@ -231,8 +227,7 @@ function OrdersTable() {
                 return;
             }
 
-            setExpandedTours((prev) => new Set(prev).add(order.tour_id));
-            void loadTourOrders(order.tour_id);
+            expandTour(order.tour_id, { force: true });
             setSelectedOrderIds([id]);
             addRecentOrder({
                 orderId: order.id,
@@ -241,7 +236,7 @@ function OrdersTable() {
                 venueName: order.is_demo ? 'Demo' : (order.venue?.name ?? ''),
             });
         })();
-    }, [page.url, openOrderById, loadTourOrders, addRecentOrder, tours]);
+    }, [page.url, openOrderById, expandTour, addRecentOrder, tours]);
 
     const handleFilterChange = useCallback(
         (newFilters: typeof filters) => {
@@ -263,39 +258,21 @@ function OrdersTable() {
         [buildOrdersPageUrl, filters.myCollaborators, page.url, setFilters],
     );
 
-    const handlePrefetchTour = useCallback(
+    const handleToggleTourExpansion = useCallback(
         (tourId: number) => {
-            if (expandedTours.has(tourId)) {
-                return;
+            const wasExpanded = tourAccordionState[tourId]?.isExpanded ?? false;
+
+            toggleTourExpansion(tourId);
+
+            if (wasExpanded) {
+                const orderIds =
+                    getTourOrders(tourId)?.map((order) => order.id) ?? [];
+                setSelectedOrderIds((prevSelected) =>
+                    prevSelected.filter((id) => !orderIds.includes(id)),
+                );
             }
-            prefetchTourOrders(tourId);
         },
-        [expandedTours, prefetchTourOrders],
-    );
-
-    const toggleTourExpansion = useCallback(
-        (tourId: number) => {
-            setExpandedTours((prev) => {
-                const newSet = new Set(prev);
-                const isCurrentlyExpanded = newSet.has(tourId);
-
-                if (isCurrentlyExpanded) {
-                    newSet.delete(tourId);
-                    setSelectedOrderIds((prevSelected) => {
-                        const orderIdsForTour =
-                            ordersByTour[tourId]?.map((o) => o.id) ?? [];
-                        return prevSelected.filter(
-                            (id) => !orderIdsForTour.includes(id),
-                        );
-                    });
-                } else {
-                    newSet.add(tourId);
-                    void loadTourOrders(tourId);
-                }
-                return newSet;
-            });
-        },
-        [loadTourOrders, ordersByTour],
+        [getTourOrders, toggleTourExpansion, tourAccordionState],
     );
 
     const handleOrderRowSelect = (orderId: number) => {
@@ -327,13 +304,13 @@ function OrdersTable() {
         if (selectedOrderIds.length === 0) return null;
         const orderId = selectedOrderIds[0];
         for (const tour of tours) {
-            const ordersForTour = ordersByTour[tour.id] ?? [];
+            const ordersForTour = getTourOrders(tour.id) ?? [];
             if (ordersForTour.some((o) => o.id === orderId)) {
                 return { id: tour.id, name: tour.name };
             }
         }
         return null;
-    }, [selectedOrderIds, tours, ordersByTour]);
+    }, [selectedOrderIds, tours, getTourOrders]);
 
     const sentinelRef = useInfiniteScrollTrigger(
         loadNextPage,
@@ -379,12 +356,13 @@ function OrdersTable() {
                     <TableBody>
                         {tours.length > 0 ? (
                             tours.map((tour) => {
-                                const isExpanded = expandedTours.has(tour.id);
-                                const tourOrders = ordersByTour[tour.id];
-                                const isLoadingTour = loadingTourIds.has(
-                                    tour.id,
-                                );
-                                const tourError = errorsByTour[tour.id];
+                                const tourEntry = tourAccordionState[tour.id];
+                                const isExpanded =
+                                    tourEntry?.isExpanded ?? false;
+                                const tourOrders = tourEntry?.orders;
+                                const isLoadingTour =
+                                    tourEntry?.isLoading ?? false;
+                                const tourError = tourEntry?.error;
                                 const demoOrder =
                                     tourOrders &&
                                     getVisibleIndexOrderDemoContext(
@@ -399,17 +377,11 @@ function OrdersTable() {
                                         <OrdersTableTourHeaderRow
                                             tour={tour}
                                             isExpanded={isExpanded}
-                                            isPrefetching={prefetchingTourIds.has(
-                                                tour.id,
-                                            )}
-                                            isCached={
-                                                ordersByTour[tour.id] !==
-                                                undefined
-                                            }
                                             onToggle={() =>
-                                                toggleTourExpansion(tour.id)
+                                                handleToggleTourExpansion(
+                                                    tour.id,
+                                                )
                                             }
-                                            onPrefetch={handlePrefetchTour}
                                         />
 
                                         {isExpanded && isLoadingTour && (

@@ -127,6 +127,8 @@ export function OrderSlideoutCatalogProvider({
     );
     const [orderCatalogLoading, setOrderCatalogLoading] = useState(true);
     const tourInvalidatorRef = useRef<TourOrdersInvalidator | null>(null);
+    const openOrderFetchAbortRef = useRef<AbortController | null>(null);
+    const openOrderFetchIdRef = useRef(0);
 
     const syncOpenOrder = useCallback(
         (update: SetStateAction<ApiOrder | null>) => {
@@ -250,19 +252,41 @@ export function OrderSlideoutCatalogProvider({
                 return cached;
             }
 
+            openOrderFetchAbortRef.current?.abort();
+            const controller = new AbortController();
+            openOrderFetchAbortRef.current = controller;
+            const fetchId = ++openOrderFetchIdRef.current;
+
             setLoadingOrderId(orderId);
             setOpenOrder(null);
 
             try {
-                const order = await fetchOrderShow(orderId);
+                const order = await fetchOrderShow(orderId, controller.signal);
+                if (fetchId !== openOrderFetchIdRef.current) {
+                    return null;
+                }
                 setOrdersDetailCache((prev) => ({ ...prev, [orderId]: order }));
                 setOpenOrder(order);
                 return order;
-            } catch {
+            } catch (error) {
+                if (
+                    error instanceof DOMException &&
+                    error.name === 'AbortError'
+                ) {
+                    return null;
+                }
+                if (fetchId !== openOrderFetchIdRef.current) {
+                    return null;
+                }
                 toast.error('Could not load order details.');
                 return null;
             } finally {
-                setLoadingOrderId(null);
+                if (fetchId === openOrderFetchIdRef.current) {
+                    setLoadingOrderId(null);
+                }
+                if (openOrderFetchAbortRef.current === controller) {
+                    openOrderFetchAbortRef.current = null;
+                }
             }
         },
         [ordersDetailCache],
