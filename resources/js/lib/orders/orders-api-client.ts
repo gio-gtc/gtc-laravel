@@ -104,10 +104,7 @@ export async function fetchOrderShow(
         throw new Error('Order not found.');
     }
 
-    return {
-        ...body.order,
-        virtual_billing_lines: body.virtual_billing_lines ?? [],
-    };
+    return body.order;
 }
 
 export async function patchOrder(

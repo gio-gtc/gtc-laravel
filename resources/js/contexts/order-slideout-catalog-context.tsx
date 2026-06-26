@@ -3,9 +3,15 @@ import {
     useOrdersCatalog,
 } from '@/contexts/orders-catalog-context';
 import { runSequentialOrderItemCreate } from '@/hooks/use-sequential-order-item-create';
-import { commitOrderItemBulkWrite as runCommitOrderItemBulkWrite } from '@/lib/orders/order-item-bulk-write';
 import type { OrderItemBulkPatch } from '@/lib/orders/order-item-adapters/types';
-import type { CommitOrderItemBulkWriteResult } from '@/lib/orders/order-item-bulk-write';
+import {
+    commitOrderItemBulkWrite as runCommitOrderItemBulkWrite,
+    commitOrderItemSingleWrite as runCommitOrderItemSingleWrite,
+} from '@/lib/orders/order-item-commit-write';
+import type {
+    CommitOrderItemBulkWriteResult,
+    CommitOrderItemSingleWriteResult,
+} from '@/lib/orders/order-item-commit-write';
 import { mergeApiOrderUpdate } from '@/lib/orders/merge-api-order-update';
 import { applyParentOrderUpdate } from '@/lib/orders/apply-parent-order-update';
 import {
@@ -28,7 +34,8 @@ import {
     venueRowToStoreItemPayload,
 } from '@/lib/orders/slideout';
 import { mergeApiAndExtraVenueItems } from '@/lib/orders/slideout/merge-api-and-extra-venue-items';
-import { patchOrderItemsBulkInOrder, mergeVirtualBillingLines } from '@/lib/orders/slideout/order-mutations';
+import { billingInvoicesForDisplay, upsertInvoicesById } from '@/lib/orders/invoice-ledger';
+import { patchOrderItemsBulkInOrder } from '@/lib/orders/slideout/order-mutations';
 import type { OrderCatalogMenu } from '@/types/order-catalog';
 import type { OrderItemsRow, SharedData } from '@/types';
 import type { OrdersCatalogValue } from '@/types/inertia-pages';
@@ -92,6 +99,11 @@ type OrderSlideoutCatalogContextValue = {
         patch: OrderItemBulkPatch,
         successMessage?: string,
     ) => Promise<CommitOrderItemBulkWriteResult>;
+    commitOrderItemSingleWrite: (
+        orderItemId: number,
+        patch: OrderItemBulkPatch,
+        successMessage?: string,
+    ) => Promise<CommitOrderItemSingleWriteResult>;
 };
 
 const OrderSlideoutCatalogContext =
@@ -279,32 +291,22 @@ export function OrderSlideoutCatalogProvider({
         }
 
         const response = await submitOrder(openOrder.id);
-        const orderId = openOrder.id;
 
         setOpenOrder((prev) => {
             const base = prev
                 ? mergeApiOrderUpdate(prev, response.order)
                 : response.order;
 
-            const existingInvoices = base.invoices ?? [];
-            const hasNewInvoice = existingInvoices.some(
-                (invoice) => invoice.id === response.invoice.id,
-            );
-
-            if (hasNewInvoice) {
-                return base;
-            }
-
             return {
                 ...base,
-                invoices: [...existingInvoices, response.invoice],
+                invoices: upsertInvoicesById(base.invoices ?? [], [
+                    response.invoice,
+                ]),
             };
         });
 
-        void refreshOpenOrder(orderId);
-
         return response;
-    }, [openOrder, refreshOpenOrder]);
+    }, [openOrder]);
 
     const clearOpenOrderCart = useCallback(async () => {
         if (!openOrder) {
@@ -331,8 +333,8 @@ export function OrderSlideoutCatalogProvider({
     }, [openOrder, refreshOpenOrder]);
 
     const orderInvoicesForOpenOrder = useMemo((): SubmitInvoice[] => {
-        return openOrder?.invoices ?? [];
-    }, [openOrder?.invoices]);
+        return billingInvoicesForDisplay(openOrder);
+    }, [openOrder]);
 
     const replaceVenueItem = useCallback(
         (row: OrderItemsRow) => {
@@ -518,22 +520,56 @@ export function OrderSlideoutCatalogProvider({
                 return result;
             }
 
-            if (result.virtual_billing_lines) {
-                syncOpenOrder((prev) =>
-                    prev
-                        ? mergeVirtualBillingLines(
-                              prev,
-                              result.virtual_billing_lines,
-                          )
-                        : prev,
-                );
-            } else {
-                void refreshOpenOrder(openOrder.id);
-            }
+            void refreshOpenOrder(openOrder.id);
 
             return result;
         },
         [openOrder, refreshOpenOrder, syncOpenOrder],
+    );
+
+    const commitOrderItemSingleWrite = useCallback(
+        async (
+            orderItemId: number,
+            patch: OrderItemBulkPatch,
+            successMessage?: string,
+        ): Promise<CommitOrderItemSingleWriteResult> => {
+            if (!openOrder) {
+                toast.error('Open an order before updating line items.');
+                return {
+                    ok: false,
+                    message: 'Open an order before updating line items.',
+                };
+            }
+
+            const snapshot = openOrder;
+
+            syncOpenOrder((prev) =>
+                prev
+                    ? patchOrderItemsBulkInOrder(prev, [orderItemId], patch)
+                    : prev,
+            );
+
+            const result = await runCommitOrderItemSingleWrite({
+                orderItemId,
+                patch,
+                order: openOrder,
+                successMessage,
+            });
+
+            if (!result.ok) {
+                syncOpenOrder(snapshot);
+                return result;
+            }
+
+            syncOpenOrder((prev) =>
+                prev ? upsertOrderItem(prev, result.order_item) : prev,
+            );
+            applyParentOrderBadgeUpdate(result.parent_order_update);
+            void refreshOpenOrder(openOrder.id);
+
+            return result;
+        },
+        [openOrder, refreshOpenOrder, syncOpenOrder, applyParentOrderBadgeUpdate],
     );
 
     const slideoutCatalog = useMemo((): OrdersCatalogValue => {
@@ -610,6 +646,7 @@ export function OrderSlideoutCatalogProvider({
             createOrderItemsFromForm,
             removeOrderItemFromCart,
             commitOrderItemBulkWrite,
+            commitOrderItemSingleWrite,
         }),
         [
             openOrder,
@@ -632,6 +669,7 @@ export function OrderSlideoutCatalogProvider({
             createOrderItemsFromForm,
             removeOrderItemFromCart,
             commitOrderItemBulkWrite,
+            commitOrderItemSingleWrite,
         ],
     );
 

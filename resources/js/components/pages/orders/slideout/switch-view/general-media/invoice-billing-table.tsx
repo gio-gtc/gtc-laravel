@@ -12,6 +12,7 @@ import {
 } from '@/helper-functions/format-currency';
 import { formatNumericUsDate } from '@/lib/format/date';
 import { formatSubmitInvoiceLineDescription } from '@/lib/orders/invoice-line-display';
+import { sumInvoiceLineTotals } from '@/lib/orders/invoice-ledger';
 import type { SubmitInvoice } from '@/types/orders-api';
 import { Download } from 'lucide-react';
 
@@ -28,11 +29,10 @@ function invoiceTableDate(invoice: SubmitInvoice): string | null | undefined {
 }
 
 function InvoiceBillingTable({ invoices }: InvoiceBillingTableProps) {
-    const invoicedTotal = invoices.reduce(
-        (sum, invoice) => sum + parseWireMoney(invoice.total),
-        0,
+    const invoicedTotal = sumInvoiceLineTotals(
+        invoices.flatMap((invoice) => invoice.lines),
     );
-    const hasInvoiceRows = invoices.length > 0;
+    const hasInvoiceRows = invoices.some((invoice) => invoice.lines.length > 0);
 
     return (
         <Table compactRows>

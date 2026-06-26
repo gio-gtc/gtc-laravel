@@ -11,8 +11,9 @@ import type {
     AssetTrackingMap,
     OrderItem,
     OrderItemStatus,
-    VirtualBillingLine,
+    SubmitInvoiceLine,
 } from '@/types/orders-api';
+import { sumInvoiceLineTotals } from '@/lib/orders/invoice-ledger';
 
 export const BROADCAST_SPECIFIABLE_TYPE =
     'App\\Models\\OrderItemBroadcastSpecification';
@@ -137,28 +138,19 @@ export type OrderCartBillingLine = {
 };
 
 export function orderCartBillingTotal(
-    virtualBillingLines?: VirtualBillingLine[] | null,
+    invoiceLines?: SubmitInvoiceLine[] | null,
 ): number {
-    return orderCartBillingLines(virtualBillingLines).reduce(
-        (sum, line) => sum + line.amount,
-        0,
-    );
+    return sumInvoiceLineTotals(invoiceLines ?? []);
 }
 
 export function orderCartBillingLines(
-    virtualBillingLines?: VirtualBillingLine[] | null,
+    invoiceLines?: SubmitInvoiceLine[] | null,
 ): OrderCartBillingLine[] {
-    const lines: OrderCartBillingLine[] = [];
-
-    for (const [index, line] of (virtualBillingLines ?? []).entries()) {
-        lines.push({
-            id: `virtual-billing-${index}`,
-            reference: line.description?.trim() || 'Encoding',
-            amount: parseWireMoney(line.total),
-        });
-    }
-
-    return lines;
+    return (invoiceLines ?? []).map((line) => ({
+        id: line.id,
+        reference: line.description?.trim() || '—',
+        amount: parseWireMoney(line.total),
+    }));
 }
 
 export function orderItemAssetTracking(item: OrderItem): AssetTrackingMap {

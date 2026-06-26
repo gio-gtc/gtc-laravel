@@ -55,8 +55,11 @@ import {
     syncOrderItemAssignees,
 } from '@/lib/orders/order-item-api-client';
 import {
+    cartInvoiceLines,
+    sumInvoiceLineTotals,
+} from '@/lib/orders/invoice-ledger';
+import {
     orderCartBillingLines,
-    orderCartBillingTotal,
     orderHasStillInCartItems,
 } from '@/lib/orders/order-item-specifications';
 import { ORDER_ITEM_STATUS_ID } from '@/lib/orders/order-item-statuses';
@@ -395,6 +398,7 @@ function GeneralMediaView({
         applyParentOrderBadgeUpdate,
         removeOrderItemFromCart,
         commitOrderItemBulkWrite,
+        commitOrderItemSingleWrite,
         submitOpenOrder,
         clearOpenOrderCart,
         orderInvoicesForOpenOrder,
@@ -930,8 +934,8 @@ function GeneralMediaView({
                 row,
                 openOrder,
             );
-            const result = await commitOrderItemBulkWrite(
-                [Number(row.id)],
+            const result = await commitOrderItemSingleWrite(
+                Number(row.id),
                 patch,
                 'Line item updated.',
             );
@@ -947,7 +951,7 @@ function GeneralMediaView({
             closeBroadcastModal();
             return { failed: false };
         },
-        [openOrder, auth.user, commitOrderItemBulkWrite, closeBroadcastModal],
+        [openOrder, auth.user, commitOrderItemSingleWrite, closeBroadcastModal],
     );
 
     const handleSocialEditSave = useCallback(
@@ -974,8 +978,8 @@ function GeneralMediaView({
                 row,
                 openOrder,
             );
-            const result = await commitOrderItemBulkWrite(
-                [Number(row.id)],
+            const result = await commitOrderItemSingleWrite(
+                Number(row.id),
                 patch,
                 'Line item updated.',
             );
@@ -995,7 +999,7 @@ function GeneralMediaView({
             openOrder,
             auth.user,
             userRoles,
-            commitOrderItemBulkWrite,
+            commitOrderItemSingleWrite,
             closeSocialVideoModal,
         ],
     );
@@ -1021,8 +1025,8 @@ function GeneralMediaView({
             setRadioFieldErrors(undefined);
 
             const patch = radioUpdateAdapter.rowToFullBulkPatch(row, openOrder);
-            const result = await commitOrderItemBulkWrite(
-                [Number(row.id)],
+            const result = await commitOrderItemSingleWrite(
+                Number(row.id),
                 patch,
                 'Line item updated.',
             );
@@ -1042,7 +1046,7 @@ function GeneralMediaView({
             openOrder,
             auth.user,
             userRoles,
-            commitOrderItemBulkWrite,
+            commitOrderItemSingleWrite,
             closeAudioModal,
         ],
     );
@@ -1159,12 +1163,12 @@ function GeneralMediaView({
     );
 
     const cartLines = useMemo(
-        () => orderCartBillingLines(openOrder?.virtual_billing_lines),
+        () => orderCartBillingLines(cartInvoiceLines(openOrder)),
         [openOrder],
     );
 
     const cartTotal = useMemo(
-        () => orderCartBillingTotal(openOrder?.virtual_billing_lines),
+        () => sumInvoiceLineTotals(cartInvoiceLines(openOrder)),
         [openOrder],
     );
 

@@ -68,14 +68,6 @@ export interface OrderMenuPricingMatrix {
     additional_encoding: number;
 }
 
-/** Order-wide pre-checkout line mirroring invoice encoding breakout. */
-export interface VirtualBillingLine {
-    type: string;
-    description: string;
-    unit_price: number | string;
-    total: number | string;
-}
-
 export interface OrderMenuItem {
     id: number;
     name: string;
@@ -365,17 +357,11 @@ export interface ApiOrder {
 
     /** Present on GET /api/orders/{id} (slideout workspace). */
     invoices?: SubmitInvoice[];
-
-    /** Pre-checkout cart total when order has Still In Cart lines. */
-    cart_grand_total?: number;
-    /** Populated client-side from OrderShowResponse.virtual_billing_lines sibling. */
-    virtual_billing_lines?: VirtualBillingLine[];
 }
 
-/** GET /api/orders/{id} — gtc-api flat root; virtual lines are not nested on order. */
+/** GET /api/orders/{id} — BFF browser proxy. */
 export interface OrderShowResponse {
     order: ApiOrder;
-    virtual_billing_lines?: VirtualBillingLine[];
 }
 
 /** Shared shape for resolving collaborator avatars from index or show payloads. */
@@ -499,6 +485,7 @@ export type SubmitInvoiceLine = {
     total: string;
     created_at: string;
     updated_at: string;
+    order_item: { status_lookup: { name: OrderItemStatus } };
 };
 
 export type SubmitInvoice = {

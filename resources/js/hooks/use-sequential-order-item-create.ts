@@ -17,7 +17,7 @@ import {
     apiOrderToLegacySlideout,
     mapApiOrderItemToVenueRow,
 } from '@/lib/orders/slideout/api-order-slideout';
-import { upsertOrderItem, mergeVirtualBillingLines } from '@/lib/orders/slideout/order-mutations';
+import { upsertOrderItem } from '@/lib/orders/slideout/order-mutations';
 import type { OrderItemsRow } from '@/types';
 import type { OrderCatalogMenuItem } from '@/types/order-catalog';
 import type { ApiOrder, OrderItem, OrderMenuItem, ParentOrderUpdate } from '@/types/orders-api';
@@ -175,7 +175,6 @@ export async function runSequentialOrderItemCreate<TForm>(
     setExtraVenueItems((prev) => [...prev, ...pendingRows]);
 
     let succeeded = 0;
-    let receivedVirtualBillingLines = false;
 
     for (let index = 0; index < drafts.length; index += 1) {
         const draft = drafts[index]!;
@@ -189,10 +188,6 @@ export async function runSequentialOrderItemCreate<TForm>(
 
             applyParentOrderBadgeUpdate?.(result.parent_order_update);
 
-            if (result.virtual_billing_lines) {
-                receivedVirtualBillingLines = true;
-            }
-
             const createdItem = enrichCreatedOrderItem(
                 result.order_item,
                 catalogMenuItem,
@@ -204,10 +199,7 @@ export async function runSequentialOrderItemCreate<TForm>(
                     return prevOrder;
                 }
 
-                nextOrder = mergeVirtualBillingLines(
-                    upsertOrderItem(prevOrder, createdItem),
-                    result.virtual_billing_lines,
-                );
+                nextOrder = upsertOrderItem(prevOrder, createdItem);
                 return nextOrder;
             });
             if (nextOrder) {
@@ -250,7 +242,7 @@ export async function runSequentialOrderItemCreate<TForm>(
         }
     }
 
-    if (succeeded > 0 && !receivedVirtualBillingLines) {
+    if (succeeded > 0) {
         void refreshOpenOrder?.(order.id);
     }
 
