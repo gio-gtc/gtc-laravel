@@ -443,6 +443,12 @@ export interface TourHeader {
     name: string;
 }
 
+/** Flat row from GET /api/tours/options (form/filter dropdowns). */
+export interface TourOption {
+    id: number;
+    name: string;
+}
+
 export interface ToursPaginationMeta {
     current_page: number;
     last_page: number;

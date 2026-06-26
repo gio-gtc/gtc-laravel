@@ -336,6 +336,34 @@ it('redirects guests from tour index proxy', function () {
         ->assertRedirect(route('login'));
 });
 
+it('proxies GET /api/tours/options and returns flat tour selector rows', function () {
+    $optionsUrl = toursIndexUrl().'/options';
+
+    Http::fake([
+        $optionsUrl => Http::response([
+            'data' => [
+                ['id' => 1, 'name' => 'Tour Alpha'],
+                ['id' => 2, 'name' => 'Tour Beta'],
+            ],
+        ], 200),
+    ]);
+
+    $this->actingAsBff()
+        ->getJson('/api/tours/options')
+        ->assertOk()
+        ->assertJsonPath('data.0.id', 1)
+        ->assertJsonPath('data.0.name', 'Tour Alpha')
+        ->assertJsonPath('data.1.id', 2)
+        ->assertJsonCount(2, 'data');
+
+    Http::assertSent(fn ($request) => $request->url() === $optionsUrl);
+});
+
+it('redirects guests from tour options proxy', function () {
+    $this->getJson('/api/tours/options')
+        ->assertRedirect(route('login'));
+});
+
 it('proxies GET /api/tours/{tour}/orders and normalizes orders', function () {
     $tourOrdersUrl = toursIndexUrl().'/12/orders';
 

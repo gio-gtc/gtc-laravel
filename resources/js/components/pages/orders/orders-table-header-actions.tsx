@@ -24,7 +24,6 @@ export default function OrdersTableHeaderActions({
                 <Button
                     variant="outline"
                     size={'md'}
-                    disabled={selectedOrderCount === 0}
                     onClick={onAddOrderClick}
                 >
                     Add Order

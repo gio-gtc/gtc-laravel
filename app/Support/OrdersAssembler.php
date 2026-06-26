@@ -239,4 +239,40 @@ final class OrdersAssembler
             ],
         ];
     }
+
+    /**
+     * Flat tour selector rows from gtc-api GET /api/tours/options.
+     *
+     * @return array<int, array{id: int, name: string}>
+     */
+    public static function parseTourOptionsPayload(mixed $body): array
+    {
+        $raw = GtcApiClient::unwrapList(is_array($body) ? $body : [], 'tours');
+
+        if (! is_array($raw)) {
+            return [];
+        }
+
+        $options = [];
+
+        foreach ($raw as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+
+            $id = $row['id'] ?? null;
+            $name = $row['name'] ?? null;
+
+            if (! is_numeric($id) || ! is_string($name)) {
+                continue;
+            }
+
+            $options[] = [
+                'id' => (int) $id,
+                'name' => $name,
+            ];
+        }
+
+        return $options;
+    }
 }

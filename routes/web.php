@@ -128,7 +128,8 @@ Route::middleware([BffAuth::class])->group(function () {
     // VVV Supabase Chat Routes
     Route::prefix('api')->group(function () {
         Route::get('order-catalog-menu', OrderCatalogMenuController::class)->name('api.order-catalog-menu');
-        Route::get('tours', TourIndexController::class)->name('api.tours.index');
+        Route::get('tours', [TourIndexController::class, 'index'])->name('api.tours.index');
+        Route::get('tours/options', [TourIndexController::class, 'options'])->name('api.tours.options');
         Route::get('tours/{tour}/orders', TourOrdersController::class)->name('api.tours.orders');
         Route::get('orders/{order}', OrderShowController::class)->name('api.orders.show');
         Route::post('orders/{order}/submit', ApiOrderSubmitController::class)->name('api.orders.submit');

@@ -26,6 +26,7 @@ import DatePickerInput from '@/components/utils/date-picker-input';
 import Divider from '@/components/utils/divider';
 import DollarInput from '@/components/utils/dollar-input';
 import { ModalFooterActions } from '@/components/utils/modal-footer-actions';
+import { useTourOptions } from '@/hooks/use-orders-tours';
 import { store as toursStore } from '@/routes/tours';
 import { type SharedData } from '@/types';
 import {
@@ -84,6 +85,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
 
     const { data, setData, post, processing, errors, reset } =
         useForm(initialTourForm);
+    const { invalidateTourOptions } = useTourOptions();
 
     const handleClose = () => {
         reset();
@@ -107,6 +109,7 @@ export default function TourModal({ isOpen, onClose }: TourModalProps) {
                     return;
                 }
 
+                invalidateTourOptions();
                 reset();
                 onClose();
             },

@@ -6,7 +6,6 @@ const noopReplaceVenueItem = (_row: OrderItemsRow) => {};
 /** Defaults for slideout until GET /api/orders/{id} detail props ship. */
 export function resolveSlideoutCatalog(catalog: OrdersCatalogValue) {
     return {
-        tours: catalog.tours ?? [],
         tour_venue_status: catalog.tour_venue_status ?? [],
         tour_venue_stops: catalog.tour_venue_stops ?? [],
         tour_venue_demos: catalog.tour_venue_demos ?? [],

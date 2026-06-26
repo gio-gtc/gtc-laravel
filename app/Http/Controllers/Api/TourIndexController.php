@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class TourIndexController extends Controller
 {
-    public function __invoke(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $client = GtcApiClient::fromRequest($request);
 
@@ -41,6 +41,28 @@ class TourIndexController extends Controller
             'last_page' => $parsed['pagination']['last_page'],
             'total' => $parsed['pagination']['total'],
             'next_page_url' => $parsed['pagination']['next_page_url'],
+        ]);
+    }
+
+    public function options(Request $request): JsonResponse
+    {
+        $client = GtcApiClient::fromRequest($request);
+
+        if ($client === null) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $result = $client->get('/api/tours/options');
+
+        if (! $result['ok']) {
+            return response()->json(
+                ['message' => $result['message']],
+                $result['status'] >= 400 ? $result['status'] : 502,
+            );
+        }
+
+        return response()->json([
+            'data' => OrdersAssembler::parseTourOptionsPayload($result['data']),
         ]);
     }
 }

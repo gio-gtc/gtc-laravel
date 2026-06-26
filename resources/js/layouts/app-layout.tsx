@@ -1,4 +1,5 @@
 import AppLayoutTemplate from '@/layouts/app/app-header-layout';
+import { TourOptionsProvider } from '@/hooks/use-orders-tours';
 import { type BreadcrumbItem, type SharedData } from '@/types';
 import { usePage } from '@inertiajs/react';
 import { useEffect, type ReactNode } from 'react';
@@ -26,8 +27,10 @@ export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => {
     }, [flash?.success, flash?.error]);
 
     return (
-        <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-            {children}
-        </AppLayoutTemplate>
+        <TourOptionsProvider>
+            <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
+                {children}
+            </AppLayoutTemplate>
+        </TourOptionsProvider>
     );
 };

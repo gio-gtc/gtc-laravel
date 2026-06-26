@@ -8,6 +8,13 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import {
     ColumnedRowsChild,
@@ -29,6 +36,7 @@ import {
 } from '@/lib/orders/order-patch-payload';
 import { isCollaboratorUser } from '@/lib/orders/orders-filter-users';
 import { patchOrder } from '@/lib/orders/orders-api-client';
+import { useTourOptions } from '@/hooks/use-orders-tours';
 import { store as ordersStore } from '@/routes/orders';
 import {
     type SharedData,
@@ -109,6 +117,12 @@ export default function AddOrderModal({
 }: AddOrderModalProps) {
     const { auth } = usePage<SharedData>().props;
     const isStaff = auth.user != null && isCollaboratorUser(auth.user);
+    const {
+        options: tourOptions,
+        isLoading: tourOptionsLoading,
+        error: tourOptionsError,
+        loadTourOptions,
+    } = useTourOptions();
 
     const [selectedVenue, setSelectedVenue] =
         useState<VenueSearchOption | null>(null);
@@ -121,7 +135,7 @@ export default function AddOrderModal({
     const [saving, setSaving] = useState(false);
 
     const isEditMode = mode === 'edit' && orderItem != null;
-    const displayName = tour?.name ?? order?.name ?? '';
+    const needsTourSelect = !isEditMode && !tour?.id;
 
     const {
         data,
@@ -140,6 +154,27 @@ export default function AddOrderModal({
         local_deliverable_email: '',
         ordered_by_id: 0,
     });
+
+    const selectedTourName = useMemo(() => {
+        if (tour?.name) {
+            return tour.name;
+        }
+        if (data.tour_id > 0) {
+            return (
+                tourOptions.find((option) => option.id === data.tour_id)?.name ??
+                ''
+            );
+        }
+        return '';
+    }, [tour?.name, data.tour_id, tourOptions]);
+    const displayName = selectedTourName || order?.name || '';
+
+    useEffect(() => {
+        if (!isOpen || !needsTourSelect) {
+            return;
+        }
+        loadTourOptions();
+    }, [isOpen, needsTourSelect, loadTourOptions]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -242,7 +277,7 @@ export default function AddOrderModal({
                 hasValidShowDates(editShowDateStrings)
             );
         }
-        if (!tour?.id || data.tour_id <= 0) return false;
+        if (data.tour_id <= 0) return false;
         if (!selectedVenue?.id) return false;
         if (!data.due_date || !hasValidShowDates(data.show_dates)) return false;
         if (isStaff && !selectedClient?.id) return false;
@@ -341,6 +376,52 @@ export default function AddOrderModal({
 
                 <Divider />
                 <ColumnedRowsParent>
+                    {needsTourSelect && (
+                        <ColumnedRowsChild
+                            labelFor="tour-id"
+                            labelContent="Tour"
+                            required
+                        >
+                            <Select
+                                value={
+                                    data.tour_id > 0
+                                        ? String(data.tour_id)
+                                        : undefined
+                                }
+                                onValueChange={(value) =>
+                                    setData('tour_id', Number(value))
+                                }
+                                disabled={tourOptionsLoading}
+                                required
+                            >
+                                <SelectTrigger id="tour-id">
+                                    <SelectValue
+                                        placeholder={
+                                            tourOptionsLoading
+                                                ? 'Loading tours…'
+                                                : 'Select tour'
+                                        }
+                                    />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {tourOptions.map((option) => (
+                                        <SelectItem
+                                            key={option.id}
+                                            value={String(option.id)}
+                                        >
+                                            {option.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <InputError
+                                message={
+                                    tourOptionsError ?? errors.tour_id
+                                }
+                            />
+                        </ColumnedRowsChild>
+                    )}
+
                     <ColumnedRowsChild
                         labelFor="venue-name"
                         labelContent="Venue Name"
